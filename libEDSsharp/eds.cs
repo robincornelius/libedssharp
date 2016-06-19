@@ -532,7 +532,6 @@ namespace libEDSsharp
         //SubIndex type
         public ODentry(string parameter_name, Int16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
         {
-
             this.parameter_name = parameter_name;
             this.index = index;
             this.subindex = subindex;
@@ -551,16 +550,12 @@ namespace libEDSsharp
         //Array subindex type
         public ODentry(string parameter_name,Int16 index, byte nosubindex)
         {
-
             this.parameter_name = parameter_name;
             this.objecttype = ObjectType.ARRAY;
             this.index = index;
             this.subindex = -1;
             this.nosubindexes = nosubindex;
-            this.objecttype = ObjectType.VAR;
-
-            
-            
+            this.objecttype = ObjectType.VAR;     
         }
 
 
@@ -686,6 +681,19 @@ namespace libEDSsharp
         }
 
         string sectionname = "";
+
+        public ODentry getentryforindex(UInt16 index,Int16 sub)
+        {
+            foreach(ODentry od in ods)
+            {
+                if (od.index == index && od.subindex==sub)
+                    return od;
+
+            }
+
+            return null;
+
+        }
 
         public void parseline(string linex)
         {

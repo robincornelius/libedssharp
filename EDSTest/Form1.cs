@@ -35,24 +35,132 @@ namespace EDSTest
         public Form1()
         {
             InitializeComponent();
-            eds = new EDSsharp();
+        }
 
-            eds.loadfile(@"C:\code\canfestival\canfestival-3-asc\objdictgen\examples\example_objdict.eds");
-            eds.savefile(@"C:\code\canfestival\canfestival-3-asc\objdictgen\examples\example_objdict2.eds");
-
-            textBox1.AppendText(eds.di.ToString());
-            textBox1.AppendText(eds.du.ToString());
-            textBox1.AppendText(eds.md.ToString());
-            textBox1.AppendText(eds.oo.ToString());
-            textBox1.AppendText(eds.c.ToString());
-
-            foreach (ODentry o in eds.ods)
+        private void openEDSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog odf = new OpenFileDialog();
+            odf.Filter = "Electronic Data Sheets (*.eds)|*.eds";
+            if(odf.ShowDialog()==DialogResult.OK)
             {
-                textBox1.AppendText(o.ToString());
+                
+                eds = new EDSsharp();
+                try
+                {
+                    eds.loadfile(odf.FileName);
+                    populateindexlists();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+            }
+        }
+
+        private void populateindexlists()
+        {
+
+            foreach (ODentry od in eds.ods)
+            {
+                if (eds.md.objectlist.ContainsValue(od.index) && od.subindex==-1)
+                {
+                    ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}",od.index));
+                    lvi.SubItems.Add(od.parameter_name);
+                    listView_mandatory_objects.Items.Add(lvi);
+                }
+
+                if (eds.oo.objectlist.ContainsValue(od.index) && od.subindex == -1)
+                {
+                    ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}", od.index));
+                    lvi.SubItems.Add(od.parameter_name);
+                    listView_optional_objects.Items.Add(lvi);
+                }
+
+                if (eds.mo.objectlist.ContainsValue(od.index) && od.subindex == -1)
+                {
+                    ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}", od.index));
+                    lvi.SubItems.Add(od.parameter_name);
+                    listView_manufacture_objects.Items.Add(lvi);
+                }
             }
 
-            textBox1.Text = textBox1.Text.Replace("\n", "\r\n");
+        }
 
+        private void listView_mandatory_objects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void updateselectedindexdisplay(UInt16 index)
+        {
+            ODentry od = eds.getentryforindex(index,-1);
+
+            listView1.Items.Clear();
+
+            if(od.objecttype==ObjectType.VAR)
+            {
+                ListViewItem lvi = new ListViewItem("0");
+                lvi.SubItems.Add(od.parameter_name);
+                lvi.SubItems.Add(od.objecttype.ToString());
+                lvi.SubItems.Add(od.datatype.ToString());
+                lvi.SubItems.Add(od.accesstype.ToString());
+                lvi.SubItems.Add(od.defaultvalue);
+                lvi.SubItems.Add(od.PDOMapping.ToString());
+
+                listView1.Items.Add(lvi);
+            }
+            else
+            {
+                ListViewItem lvi = new ListViewItem(" ");
+                lvi.SubItems.Add(od.parameter_name);
+                lvi.SubItems.Add(od.objecttype.ToString());
+
+                listView1.Items.Add(lvi);
+
+                for(Int16 i=0;i<od.nosubindexes;i++)
+                {
+                    ODentry od2 = eds.getentryforindex(index,i);
+                    ListViewItem lvi2 = new ListViewItem((i).ToString());
+                    lvi2.SubItems.Add(od2.parameter_name);
+                    lvi2.SubItems.Add(od2.objecttype.ToString());
+                    lvi2.SubItems.Add(od2.datatype.ToString());
+                    lvi2.SubItems.Add(od2.accesstype.ToString());
+                    lvi2.SubItems.Add(od2.defaultvalue);
+                    lvi2.SubItems.Add(od2.PDOMapping.ToString());
+                    listView1.Items.Add(lvi2);
+
+                }
+
+            }
+
+            
+
+        }
+
+        private void listView_mandatory_objects_MouseClick(object sender, MouseEventArgs e)
+        {
+            ListViewItem lvi = listView_mandatory_objects.SelectedItems[0];
+            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
+
+            updateselectedindexdisplay(idx);
+        }
+
+        private void listView_optionalobjects_MouseClick(object sender, MouseEventArgs e)
+        {
+            ListViewItem lvi = listView_optional_objects.SelectedItems[0];
+            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
+
+            updateselectedindexdisplay(idx);
+        }
+
+        private void listView_manufacture_objects_MouseClick(object sender, MouseEventArgs e)
+        {
+
+            ListViewItem lvi = listView_manufacture_objects.SelectedItems[0];
+            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
+
+            updateselectedindexdisplay(idx);
         }
     }
 }
