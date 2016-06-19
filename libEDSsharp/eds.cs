@@ -60,6 +60,14 @@ namespace libEDSsharp
           wo=2,
     }
 
+    //Additional Info for CANOpenNode c and h generation
+    public enum StorageLocation
+    {
+        RAM=0,
+        EEPROM=1,
+        ROM=2,
+    }
+
     public class InfoSection
     {
         protected Dictionary<string, string> section;
@@ -503,6 +511,7 @@ namespace libEDSsharp
         public AccessType accesstype;
         public string defaultvalue;
         public bool PDOMapping;
+        public StorageLocation location;
 
         public override string ToString()
         {
@@ -531,6 +540,7 @@ namespace libEDSsharp
 
             writer.WriteLine(string.Format("ParameterName={0}", parameter_name));
             writer.WriteLine(string.Format("ObjectType=0x{0:X}", (int)objecttype));
+            writer.WriteLine(string.Format(";StorageLocation={0}",location.ToString()));
 
             if (objecttype == ObjectType.ARRAY)
             {
@@ -579,14 +589,16 @@ namespace libEDSsharp
 
                 string sectionname = "";
 
-                foreach (string line in File.ReadLines(filename))
+                foreach (string linex in File.ReadLines(filename))
                 {
                   
                     string key = "";
                     string value = "";
 
-                    if (line.IndexOf(';') == 0)
+                    if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation")!=0)
                         continue;
+
+                    string line = linex.TrimStart(';');
 
                     //extract sections
                     {
