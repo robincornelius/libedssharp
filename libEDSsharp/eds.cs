@@ -588,7 +588,7 @@ namespace libEDSsharp
             du = new Dummyusage();
             md = new MandatoryObjects();
             oo = new OptionalObjects();
-            mo = new ManufacturerObjects(]);
+            mo = new ManufacturerObjects();
             c = new Comments();
 
 
@@ -620,106 +620,138 @@ namespace libEDSsharp
 
         }
 
+        string sectionname = "";
+
+        public void parseline(string linex)
+        {
+            string key = "";
+            string value = "";
+
+            //Special Handling of custom fields
+            if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != 0)
+                return;
+
+            string line = linex.TrimStart(';');
+
+            //extract sections
+            {
+                string pat = @"\[([a-z0-9]+)\]";
+
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(line);
+                if (m.Success)
+                {
+                    Group g = m.Groups[1];
+                    sectionname = g.ToString();
+                }
+            }
+
+            //extract keyvalues
+            {
+                string pat = @"([a-z0-9_]+)=(.*)";
+
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(line);
+                if (m.Success)
+                {
+
+                    key = m.Groups[1].ToString();
+                    value = m.Groups[2].ToString();
+
+                    if (!eds.ContainsKey(sectionname))
+                    {
+                        eds.Add(sectionname, new Dictionary<string, string>());
+                    }
+
+                    eds[sectionname].Add(key, value);
+
+                }
+            }
+        }
+
+        public int determinebase(string input)
+        {
+            if (input.Length > 2)
+                if (input[0] == '0' && (input[1] == 'x' || input[1] == 'X'))
+                    return 16;
+
+            if (input.Length > 1)
+                if (input[0] == '0')
+                    return 8;
+
+            return 10;
+
+        }
+
+        public void parseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
+        {
+            string section = kvp.Key;
+
+            string pat = @"^([a-fA-F0-9]+)(sub)?([0-9]*)$";
+
+            Regex r = new Regex(pat);
+            Match m = r.Match(section);
+            if (m.Success)
+            {
+
+                ODentry od = new ODentry();
+
+                od.parameter_name = kvp.Value["ParameterName"];
+
+                if (kvp.Value.ContainsKey("ObjectType"))
+                {
+
+                    int type = Convert.ToInt16(kvp.Value["ObjectType"], determinebase(kvp.Value["ObjectType"]));
+                    od.objecttype = (ObjectType)type;
+                }
+
+              
+                od.index = Convert.ToInt16(m.Groups[1].ToString(), 16);
+
+                if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
+                {
+                    od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
+                }
+
+                if (od.objecttype == ObjectType.VAR || od.objecttype==0)
+                {
+
+                    if (m.Groups[3].Length != 0)
+                    {
+                        Console.WriteLine(m.Groups[3].ToString());
+                        od.subindex = Convert.ToInt16(m.Groups[3].ToString());
+                    }
+                    else
+                        od.subindex = -1;
+
+                    if(kvp.Value.ContainsKey("DataType"))
+                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], determinebase(kvp.Value["DataType"]));
+                    if (kvp.Value.ContainsKey("AccessType"))
+                        od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), kvp.Value["AccessType"]);
+                    if (kvp.Value.ContainsKey("DefaultValue"))
+                        od.defaultvalue = kvp.Value["DefaultValue"];
+                    if (kvp.Value.ContainsKey("PDOMapping"))
+                        od.PDOMapping = Convert.ToInt16(kvp.Value["PDOMapping"]) == 1;
+
+                }
+
+                ods.Add(od);
+            }
+
+        }
+
         public void loadfile(string filename)
         {
             //try
             {
-
-                string sectionname = "";
-
                 foreach (string linex in File.ReadLines(filename))
                 {
-                  
-                    string key = "";
-                    string value = "";
-
-                    //Special Handling of custom fields
-                    if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation")!=0)
-                        continue;
-
-                    string line = linex.TrimStart(';');
-
-                    //extract sections
-                    {
-                        string pat = @"\[([a-z0-9]+)\]";
-
-                        Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                        Match m = r.Match(line);
-                        if (m.Success)
-                        {
-                            Group g = m.Groups[1];
-                            sectionname = g.ToString();
-                        }
-                    }
-
-                    //extract keyvalues
-                    {
-                        string pat = @"([a-z0-9_]+)=(.*)";
-
-                        Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                        Match m = r.Match(line);
-                        if (m.Success)
-                        {
-              
-                            key = m.Groups[1].ToString();
-                            value = m.Groups[2].ToString();
-
-                            if(!eds.ContainsKey(sectionname))
-                            {
-                                eds.Add(sectionname, new Dictionary<string, string>());
-                            }
-
-                            eds[sectionname].Add(key,value);
-
-                        }
-                    }
+                    parseline(linex);                 
                 }
 
                 foreach(KeyValuePair<string, Dictionary<string, string>> kvp in eds)
                 {
-                    string section = kvp.Key;
-
-
-                    string pat = @"^([a-fA-F0-9]+)(sub)?([0-9]*)$";
-
-                    Regex r = new Regex(pat);
-                    Match m = r.Match(section);
-                    if (m.Success)
-                    {
-
-                        ODentry od = new ODentry();
-
-                        od.parameter_name = kvp.Value["ParameterName"];
-                        int type = Convert.ToInt16(kvp.Value["ObjectType"], 16);
-                        od.objecttype = (ObjectType)type;
-                        od.index = Convert.ToInt16(m.Groups[1].ToString(),16);
-
-                        if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
-                        {
-                            od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"],16);
-                        }
-
-                        if (od.objecttype == ObjectType.VAR)
-                        {
-
-                            if (m.Groups[3].Length!=0)
-                            {
-                                Console.WriteLine(m.Groups[3].ToString());
-                                od.subindex = Convert.ToInt16(m.Groups[3].ToString());
-                            }
-                            else
-                                od.subindex = -1;
-
-                            od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], 16);
-                            od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), kvp.Value["AccessType"]);
-                            od.defaultvalue = kvp.Value["DefaultValue"];
-                            od.PDOMapping = Convert.ToInt16(kvp.Value["PDOMapping"]) == 1;
-
-                        }
-
-                        ods.Add(od);
-                    }
-
+                    parseEDSentry(kvp);   
                 }
 
                 fi = new FileInfo(eds["FileInfo"]);
