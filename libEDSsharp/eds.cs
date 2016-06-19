@@ -52,12 +52,6 @@ namespace libEDSsharp
         ARRAY = 9,
     }
 
-    public enum AccessType
-    {
-          rw=0,
-          ro=1,
-          wo=2,
-    }
 
     //Additional Info for CANOpenNode c and h generation
     public enum StorageLocation
@@ -507,10 +501,68 @@ namespace libEDSsharp
         public string parameter_name;
         public ObjectType objecttype;
         public DataType datatype;
-        public AccessType accesstype;
+        public EDSsharp.AccessType accesstype;
         public string defaultvalue;
         public bool PDOMapping;
         public StorageLocation location;
+
+        public ODentry()
+        {
+
+        }
+
+        //Constructor for a simple VAR type
+        public ODentry(string parameter_name,Int16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
+        {
+            this.parameter_name = parameter_name;
+            this.index = index;
+            this.objecttype = ObjectType.VAR;
+            this.datatype = datatype;
+            this.defaultvalue = defaultvalue;
+            this.subindex = -1;
+
+            if (accesstype >= EDSsharp.AccessType_Min && accesstype <= EDSsharp.AccessType_Max)
+                this.accesstype = accesstype;
+            else
+                throw new ParameterException("AccessType invalid");
+
+            this.PDOMapping = PDOMapping;
+        }
+
+        //SubIndex type
+        public ODentry(string parameter_name, Int16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
+        {
+
+            this.parameter_name = parameter_name;
+            this.index = index;
+            this.subindex = subindex;
+            this.objecttype = ObjectType.VAR;
+            this.datatype = datatype;
+            this.defaultvalue = defaultvalue;
+
+            if (accesstype >= EDSsharp.AccessType_Min && accesstype <= EDSsharp.AccessType_Max)
+                this.accesstype = accesstype;
+            else
+                throw new ParameterException("AccessType invalid");
+
+            this.PDOMapping = PDOMapping;
+        }
+
+        //Array subindex type
+        public ODentry(string parameter_name,Int16 index, byte nosubindex)
+        {
+
+            this.parameter_name = parameter_name;
+            this.objecttype = ObjectType.ARRAY;
+            this.index = index;
+            this.subindex = -1;
+            this.nosubindexes = nosubindex;
+            this.objecttype = ObjectType.VAR;
+
+            
+            
+        }
+
 
         public override string ToString()
         {
@@ -567,6 +619,19 @@ namespace libEDSsharp
 
     public class EDSsharp
     {
+
+        public enum AccessType
+        {
+            rw = 0,
+            ro = 1,
+            wo = 2,
+            rwr = 3,
+            rww = 4,
+            cons = 5,
+        }
+
+        public const AccessType AccessType_Min = AccessType.rw;
+        public const AccessType AccessType_Max = AccessType.cons;
 
         Dictionary<string, Dictionary<string, string>> eds;
         public List<ODentry> ods;
@@ -696,16 +761,20 @@ namespace libEDSsharp
 
                 ODentry od = new ODentry();
 
+                if (!kvp.Value.ContainsKey("ParameterName"))
+                    throw new ParameterException("Missing required field ParameterName on" + section);
                 od.parameter_name = kvp.Value["ParameterName"];
 
                 if (kvp.Value.ContainsKey("ObjectType"))
                 {
-
                     int type = Convert.ToInt16(kvp.Value["ObjectType"], determinebase(kvp.Value["ObjectType"]));
                     od.objecttype = (ObjectType)type;
                 }
+                else
+                {
+                    od.objecttype = ObjectType.VAR;
+                }
 
-              
                 od.index = Convert.ToInt16(m.Groups[1].ToString(), 16);
 
                 if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
@@ -713,7 +782,7 @@ namespace libEDSsharp
                     od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
                 }
 
-                if (od.objecttype == ObjectType.VAR || od.objecttype==0)
+                if (od.objecttype == ObjectType.VAR)
                 {
 
                     if (m.Groups[3].Length != 0)
@@ -724,12 +793,30 @@ namespace libEDSsharp
                     else
                         od.subindex = -1;
 
-                    if(kvp.Value.ContainsKey("DataType"))
-                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], determinebase(kvp.Value["DataType"]));
-                    if (kvp.Value.ContainsKey("AccessType"))
-                        od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), kvp.Value["AccessType"]);
+                    if(!kvp.Value.ContainsKey("DataType"))
+                        throw new ParameterException("Missing required field DataType on" + section);
+
+                    od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], determinebase(kvp.Value["DataType"]));
+                    
+                    if (!kvp.Value.ContainsKey("AccessType"))
+                        throw new ParameterException("Missing required AccessType on" + section);
+                    
+                    string accesstype = kvp.Value["AccessType"];
+
+                    // fudging because of enum enumeration and the const keyword
+                    accesstype.Replace("const", "cons");
+                    if (Enum.IsDefined(typeof(AccessType), accesstype))
+                    {
+                        od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), accesstype);
+                    }
+                    else
+                    {
+                        throw new ParameterException("Unknown AccessType on" + section);
+                    }
+                    
                     if (kvp.Value.ContainsKey("DefaultValue"))
                         od.defaultvalue = kvp.Value["DefaultValue"];
+                    
                     if (kvp.Value.ContainsKey("PDOMapping"))
                         od.PDOMapping = Convert.ToInt16(kvp.Value["PDOMapping"]) == 1;
 
@@ -811,5 +898,14 @@ namespace libEDSsharp
 
         }
 
+    }
+}
+
+public class ParameterException : Exception
+{
+    public ParameterException(String message)
+        : base(message)
+    {
+        
     }
 }

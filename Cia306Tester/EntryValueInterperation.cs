@@ -18,18 +18,11 @@ namespace Cia306Tester
             od["1000"].Add("ObjectType", "0x1234");
             od["1000"].Add("ParameterName", "Test");
 
-            foreach (KeyValuePair<string, Dictionary<string, string>> kvp in od)
-            {
-                eds.parseEDSentry(kvp);
-
-                foreach (ODentry o in eds.ods)
-                {
-                    if ((UInt16)o.objecttype != 0x1234)
-                        throw new Exception("Failed to parse value HEX");
-                }
-
-            }
-
+            eds.parseEDSentry(new KeyValuePair<string, Dictionary<string, string>>("1000", od["1000"]));
+            
+            if((UInt16)eds.ods[0].objecttype!=0x1234)
+                throw new Exception("Failed to parse value HEX");
+           
         }
 
         [TestMethod]
@@ -42,17 +35,10 @@ namespace Cia306Tester
             od["1000"].Add("ObjectType", "1234");
             od["1000"].Add("ParameterName", "Test");
 
-            foreach (KeyValuePair<string, Dictionary<string, string>> kvp in od)
-            {
-                eds.parseEDSentry(kvp);
+            eds.parseEDSentry(new KeyValuePair<string, Dictionary<string, string>>("1000", od["1000"]));
 
-                foreach (ODentry o in eds.ods)
-                {
-                    if ((UInt16)o.objecttype != 1234)
-                        throw new Exception("Failed to parse value HEX");
-                }
-
-            }
+            if ((UInt16)eds.ods[0].objecttype != 1234)
+                throw new Exception("Failed to parse value Decimal");
 
         }
 
@@ -66,19 +52,12 @@ namespace Cia306Tester
             od["1000"].Add("ObjectType", "012");
             od["1000"].Add("ParameterName", "Test");
 
-            foreach (KeyValuePair<string, Dictionary<string, string>> kvp in od)
-            {
-                eds.parseEDSentry(kvp);
+            eds.parseEDSentry(new KeyValuePair<string, Dictionary<string, string>>("1000", od["1000"]));
 
-                foreach (ODentry o in eds.ods)
-                {
-                    if ((UInt16)o.objecttype != 10)
-                        throw new Exception("Failed to parse value HEX");
-                }
+            if ((UInt16)eds.ods[0].objecttype != 10)
+                throw new Exception("Failed to parse value Octall");
 
-            }
         }
-
 
     }
 }
