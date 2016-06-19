@@ -38,6 +38,7 @@ namespace EDSTest
             eds = new EDSsharp();
 
             eds.loadfile(@"C:\code\canfestival\canfestival-3-asc\objdictgen\examples\example_objdict.eds");
+            eds.savefile(@"C:\code\canfestival\canfestival-3-asc\objdictgen\examples\example_objdict2.eds");
 
             textBox1.AppendText(eds.di.ToString());
             textBox1.AppendText(eds.du.ToString());

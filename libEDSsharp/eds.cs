@@ -49,6 +49,7 @@ namespace libEDSsharp
     public enum ObjectType
     {
         VAR = 7,
+        REC = 8,
         ARRAY = 9,
     }
 
@@ -64,8 +65,7 @@ namespace libEDSsharp
         protected Dictionary<string, string> section;
 
         protected string infoheader;
-
-
+        protected string edssection;
 
         public virtual void parse(Dictionary<string, string> section)
         {
@@ -151,6 +151,37 @@ namespace libEDSsharp
 
             return msg;
         }
+
+        public void write(StreamWriter writer)
+        {
+            writer.WriteLine("[" + edssection + "]");
+            Type tx = this.GetType();
+            FieldInfo[] fields = this.GetType().GetFields();
+
+            foreach (FieldInfo f in fields)
+            {
+                if (f.Name == "EDSVersionMajor")
+                    continue;                 
+                if (f.Name == "EDSVersionMinor")
+                    continue;
+                if (f.Name == "CreationDateTime")
+                    continue;
+                if (f.Name == "ModificationDateTime")
+                    continue;
+
+                if (f.FieldType.Name == "Boolean")
+                {
+                    writer.WriteLine(string.Format("{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0));
+                }
+                else
+                {
+                    writer.WriteLine(string.Format("{0}={1}", f.Name, f.GetValue(this).ToString()));
+                }
+            }
+
+            writer.WriteLine("");
+
+        }
        
     }
 
@@ -160,11 +191,13 @@ namespace libEDSsharp
          public MandatoryObjects()
          {
               infoheader = "Mandatory Objects";
+              edssection = "MandatoryObjects";
          }
 
          public MandatoryObjects(Dictionary<string, string> section)
          {
              infoheader = "Mandatory Objects";
+             edssection = "MandatoryObjects";
              parse(section);
          }
     }
@@ -174,11 +207,29 @@ namespace libEDSsharp
         public OptionalObjects()
         {
             infoheader = "Optional Objects";
+            edssection = "OptionalObjects";
         }
 
         public OptionalObjects(Dictionary<string, string> section)
         {
             infoheader = "Optional Objects";
+            edssection = "OptionalObjects";
+            parse(section);
+        }
+    }
+
+    public class ManufacturerObjects : SupportedObjects
+    {
+        public ManufacturerObjects()
+        {
+            infoheader = "Manufacturer Objects";
+            edssection = "ManufacturerObjects";
+        }
+
+        public ManufacturerObjects(Dictionary<string, string> section)
+        {
+            infoheader = "Manufacturer Objects";
+            edssection = "ManufacturerObjects";
             parse(section);
         }
     }
@@ -188,6 +239,7 @@ namespace libEDSsharp
 
         public Dictionary<int, int> objectlist;
         public string infoheader;
+        public string edssection;
 
         public virtual void parse(Dictionary<string, string> section)
         {
@@ -220,6 +272,18 @@ namespace libEDSsharp
 
         }
 
+        public void write(StreamWriter writer)
+        {
+            writer.WriteLine("[" + edssection + "]");
+            writer.WriteLine(string.Format("SupportedObjects={0}", objectlist.Count));
+            foreach (KeyValuePair<int, int> kvp in objectlist)
+            {
+                writer.WriteLine(string.Format("{0}=0x{1:X4}", kvp.Key, kvp.Value));
+            }
+
+            writer.WriteLine("");
+        }
+
     }
 
     public class Comments
@@ -227,6 +291,7 @@ namespace libEDSsharp
 
         public List<string> comments;
         public string infoheader = "Comments";
+        public string edssection = "Comments";
 
         public Comments()
         {
@@ -268,6 +333,21 @@ namespace libEDSsharp
 
         }
 
+        public void write(StreamWriter writer)
+        {
+            writer.WriteLine("[" + edssection + "]");
+
+            writer.WriteLine(string.Format("Lines={0}", comments.Count));
+
+            int count = 1;
+            foreach (string s in comments)
+            {
+                writer.WriteLine(string.Format("Line{0}={1}", count, s));
+                count++;
+            }
+
+            writer.WriteLine("");
+        }   
     }
 
 
@@ -285,11 +365,13 @@ namespace libEDSsharp
         public Dummyusage()
         {
              infoheader = "CAN OPEN Dummy Usage";
+             edssection = "DummyUsage";
         }
 
         public Dummyusage(Dictionary<string, string> section)
         {
             infoheader = "CAN OPEN Dummy Usage";
+            edssection = "DummyUsage";
             parse(section);
         }
     }
@@ -302,23 +384,31 @@ namespace libEDSsharp
 
         public byte EDSVersionMajor;//=4.0
         public byte EDSVersionMinor;//=4.0
+        public string EDSVersion;
 
         public string Description;//= //max 243 characters
         public DateTime CreationDateTime;//
+        public string CreationTime;
+        public string CreationDate;
+
         public string CreatedBy;//=CANFestival //max245
         public DateTime ModificationDateTime;//
+        public string ModificationTime;
+        public string ModificationDate;
 
         public string ModifiedBy;//=CANFestival //max244
 
         public FileInfo(Dictionary<string, string> section)
         {
             infoheader = "CAN OPEN FileInfo";
+            edssection = "FileInfo";
             parse(section);
         }
 
         public FileInfo()
         {
             infoheader = "CAN OPEN FileInfo";
+            edssection = "FileInfo";
         }
 
 
@@ -346,13 +436,11 @@ namespace libEDSsharp
                 string[] bits = section["EDSVersion"].Split('.');
                 EDSVersionMajor = Convert.ToByte(bits[0]);
                 EDSVersionMinor = Convert.ToByte(bits[1]);
+                //EDSVersion = String.Format("{0}.{1}", EDSVersionMajor, EDSVersionMinor);
             }
 
 
         }
-
-       
-
     }
 
     public class DeviceInfo : InfoSection
@@ -391,12 +479,14 @@ namespace libEDSsharp
         public DeviceInfo(Dictionary<string, string> section)
         {
             infoheader = "CAN OPEN DeviceInfo";
+            edssection = "DeviceInfo";
             parse(section);
         }
 
         public DeviceInfo()
         {
             infoheader = "CAN OPEN DeviceInfo";
+            edssection = "DeviceInfo";
         }
 
     }
@@ -405,9 +495,9 @@ namespace libEDSsharp
     public class ODentry
     {
         public int index;
-        public int subindex;
+        public int subindex=-1;
         public int nosubindexes;
-        public string paramater_name;
+        public string parameter_name;
         public ObjectType objecttype;
         public DataType datatype;
         public AccessType accesstype;
@@ -418,13 +508,50 @@ namespace libEDSsharp
         {
             if (nosubindexes > 0)
             {
-                return String.Format("{0:x4}[{1}] : {2} : {3}", index, nosubindexes, paramater_name, datatype);
+                return String.Format("{0:x4}[{1}] : {2} : {3}", index, nosubindexes, parameter_name, datatype);
  
             }
             else
             {
-                return String.Format("{0:x4}/{1} : {2} : {3}", index, subindex, paramater_name, datatype);
+                return String.Format("{0:x4}/{1} : {2} : {3}", index, subindex, parameter_name, datatype);
             }
+        }
+
+        public void write(StreamWriter writer)
+        {
+
+            if (subindex != -1)
+            {
+                writer.WriteLine(string.Format("[{0:X}sub{1}]", index,subindex));
+            }
+            else
+            {
+                writer.WriteLine(string.Format("[{0:X}]", index));
+            }
+
+            writer.WriteLine(string.Format("ParameterName={0}", parameter_name));
+            writer.WriteLine(string.Format("ObjectType=0x{0:X}", (int)objecttype));
+
+            if (objecttype == ObjectType.ARRAY)
+            {
+                writer.WriteLine(string.Format("SubNumber={0:X}", nosubindexes));
+            }
+            if (objecttype == ObjectType.REC)
+            {
+                writer.WriteLine(string.Format("SubNumber={0:X}", nosubindexes));
+            }
+
+
+            if (objecttype == ObjectType.VAR)
+            {
+                writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)datatype));
+                writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
+
+                writer.WriteLine(string.Format("DefaultValue={0}", defaultvalue));
+                writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
+            }
+
+            writer.WriteLine("");
         }
 
     }
@@ -438,12 +565,13 @@ namespace libEDSsharp
         public DeviceInfo di;
         public MandatoryObjects md;
         public OptionalObjects oo;
+        public ManufacturerObjects mo;
         public Comments c;
         public Dummyusage du;
 
         public void loadfile(string filename)
         {
-            try
+            //try
             {
 
                 eds = new Dictionary<string, Dictionary<string, string>>();
@@ -501,7 +629,7 @@ namespace libEDSsharp
                     string section = kvp.Key;
 
 
-                    string pat = @"^\[([a-fA-F0-9]+)(sub)?([0-9]*)\]$";
+                    string pat = @"^([a-fA-F0-9]+)(sub)?([0-9]*)$";
 
                     Regex r = new Regex(pat);
                     Match m = r.Match(section);
@@ -510,27 +638,26 @@ namespace libEDSsharp
 
                         ODentry od = new ODentry();
 
-                        od.paramater_name = kvp.Value["ParameterName"];
+                        od.parameter_name = kvp.Value["ParameterName"];
                         int type = Convert.ToInt16(kvp.Value["ObjectType"], 16);
                         od.objecttype = (ObjectType)type;
                         od.index = Convert.ToInt16(m.Groups[1].ToString(),16);
 
-                        if (od.objecttype == ObjectType.ARRAY)
+                        if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                         {
                             od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"],16);
-
                         }
 
                         if (od.objecttype == ObjectType.VAR)
                         {
 
-                            if (m.Groups[3].ToString() != "")
+                            if (m.Groups[3].Length!=0)
                             {
                                 Console.WriteLine(m.Groups[3].ToString());
                                 od.subindex = Convert.ToInt16(m.Groups[3].ToString());
                             }
                             else
-                                od.subindex = 0;
+                                od.subindex = -1;
 
                             od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], 16);
                             od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), kvp.Value["AccessType"]);
@@ -544,25 +671,61 @@ namespace libEDSsharp
 
                 }
 
-                FileInfo fi = new FileInfo();
-                fi.parse(eds["FileInfo"]);
-                Console.WriteLine(fi.ToString());
-
+                fi = new FileInfo(eds["FileInfo"]);
                 di = new DeviceInfo(eds["DeviceInfo"]);
-
                 du = new Dummyusage(eds["DummyUsage"]);
-
                 md = new MandatoryObjects(eds["MandatoryObjects"]);    
-
                 oo = new OptionalObjects(eds["OptionalObjects"]);
-
+                mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
                 c = new Comments(eds["Comments"]);
 
             }
-            catch(Exception e)
+           // catch(Exception e)
+            //{
+              //  Console.WriteLine("** ALL GONE WRONG **" + e.ToString());
+           // }
+        }
+
+        public void savefile(string filename)
+        {
+            StreamWriter writer = File.CreateText(filename);
+            fi.write(writer);
+            di.write(writer);
+            du.write(writer);
+            c.write(writer);
+            md.write(writer);
+
+            foreach(ODentry od in ods)
             {
-                Console.WriteLine("** ALL GONE WRONG **" + e.ToString());
+                if (md.objectlist.ContainsValue(od.index))
+                {
+                    od.write(writer);
+                }
             }
+
+            oo.write(writer);
+
+            foreach (ODentry od in ods)
+            {
+                if (oo.objectlist.ContainsValue(od.index))
+                {
+                    od.write(writer);
+                }
+            }
+
+            mo.write(writer);
+
+            foreach (ODentry od in ods)
+            {
+                if (mo.objectlist.ContainsValue(od.index))
+                {
+                    od.write(writer);
+                }
+            }
+
+
+            writer.Close();
+
         }
 
     }
