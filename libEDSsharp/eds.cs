@@ -28,7 +28,6 @@ using System.Reflection;
 namespace libEDSsharp
 {
 
-
     public enum DataType
     {
         BOOLEAN = 1,
@@ -579,13 +578,52 @@ namespace libEDSsharp
         public Comments c;
         public Dummyusage du;
 
+        public EDSsharp()
+        {
+            eds = new Dictionary<string, Dictionary<string, string>>();
+            ods = new List<ODentry>();
+
+            fi = new FileInfo();
+            di = new DeviceInfo();
+            du = new Dummyusage();
+            md = new MandatoryObjects();
+            oo = new OptionalObjects();
+            mo = new ManufacturerObjects(]);
+            c = new Comments();
+
+
+            //FIXME no way for the Major/Minor to make it to EDSVersion
+            fi.EDSVersionMajor=4;
+            fi.EDSVersionMinor=0;
+
+            fi.FileVersion=1;
+            fi.FileRevision=1;
+
+            //FixMe too need a extra function to sort the data out;
+            fi.CreationDateTime=DateTime.Now;
+            fi.ModificationDateTime=DateTime.Now;
+
+            du.Dummy0001=false;
+            du.Dummy0002=true;
+            du.Dummy0003=true;
+            du.Dummy0004=true;
+            du.Dummy0005=true;
+            du.Dummy0006=true;
+            du.Dummy0007=true;
+
+            ODentry od = new ODentry();
+            
+
+
+
+
+
+        }
+
         public void loadfile(string filename)
         {
             //try
             {
-
-                eds = new Dictionary<string, Dictionary<string, string>>();
-                ods = new List<ODentry>();
 
                 string sectionname = "";
 
@@ -595,6 +633,7 @@ namespace libEDSsharp
                     string key = "";
                     string value = "";
 
+                    //Special Handling of custom fields
                     if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation")!=0)
                         continue;
 
