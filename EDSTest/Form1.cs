@@ -45,14 +45,14 @@ namespace EDSTest
             {
                 
                 eds = new EDSsharp();
-                try
+                //try
                 {
                     eds.loadfile(odf.FileName);
                     populateindexlists();
                 }
-                catch(Exception ex)
+                //catch(Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                //    MessageBox.Show(ex.ToString());
                 }
 
             }
@@ -174,6 +174,19 @@ namespace EDSTest
             {
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
                 cone.export(fbd.SelectedPath, eds);
+            }
+
+        }
+
+        private void openCanOpenNodeXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog odf = new OpenFileDialog();
+            odf.Filter = "XML (*.xml)|*.xml";
+            if (odf.ShowDialog() == DialogResult.OK)
+            {
+
+                CanOpenXML coxml = new CanOpenXML();
+                coxml.readXML(odf.FileName);
             }
 
         }

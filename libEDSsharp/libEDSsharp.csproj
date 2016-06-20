@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CanOpenNodeExporter.cs" />
+    <Compile Include="CanOpenXML.cs" />
     <Compile Include="eds.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

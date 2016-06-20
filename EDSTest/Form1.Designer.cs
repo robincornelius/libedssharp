@@ -53,6 +53,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openEDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCanOpenNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openCanOpenNodeXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -242,7 +243,8 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openEDSToolStripMenuItem,
-            this.exportCanOpenNodeToolStripMenuItem});
+            this.exportCanOpenNodeToolStripMenuItem,
+            this.openCanOpenNodeXMLToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -257,9 +259,16 @@
             // exportCanOpenNodeToolStripMenuItem
             // 
             this.exportCanOpenNodeToolStripMenuItem.Name = "exportCanOpenNodeToolStripMenuItem";
-            this.exportCanOpenNodeToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.exportCanOpenNodeToolStripMenuItem.Text = "Export CanOpenNode";
+            this.exportCanOpenNodeToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.exportCanOpenNodeToolStripMenuItem.Text = "Export CanOpenNode c/h";
             this.exportCanOpenNodeToolStripMenuItem.Click += new System.EventHandler(this.exportCanOpenNodeToolStripMenuItem_Click);
+            // 
+            // openCanOpenNodeXMLToolStripMenuItem
+            // 
+            this.openCanOpenNodeXMLToolStripMenuItem.Name = "openCanOpenNodeXMLToolStripMenuItem";
+            this.openCanOpenNodeXMLToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.openCanOpenNodeXMLToolStripMenuItem.Text = "Open CanOpenNode XML";
+            this.openCanOpenNodeXMLToolStripMenuItem.Click += new System.EventHandler(this.openCanOpenNodeXMLToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -309,6 +318,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem exportCanOpenNodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openCanOpenNodeXMLToolStripMenuItem;
 
     }
 }

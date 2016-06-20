@@ -425,13 +425,13 @@ namespace libEDSsharp
             {
                 string dtcombined = section["CreationTime"] + " " + section["CreationDate"];
 
-                CreationDateTime = DateTime.ParseExact(dtcombined, "hh:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                CreationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
             }
 
             if (section.ContainsKey("ModificationTime") && section.ContainsKey("ModificationTime"))
             {
                 string dtcombined = section["ModificationTime"] + " " + section["ModificationDate"];
-                ModificationDateTime = DateTime.ParseExact(dtcombined, "hh:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                ModificationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
             }
 
             if (section.ContainsKey("EDSVersion"))
@@ -824,7 +824,7 @@ namespace libEDSsharp
                     string accesstype = kvp.Value["AccessType"];
 
                     // fudging because of enum enumeration and the const keyword
-                    accesstype.Replace("const", "cons");
+                    accesstype = accesstype.Replace("const", "cons");
                     if (Enum.IsDefined(typeof(AccessType), accesstype))
                     {
                         od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), accesstype);
