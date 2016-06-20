@@ -30,6 +30,7 @@ namespace libEDSsharp
 
     public enum DataType
     {
+        UNKNOWN = 0,
         BOOLEAN = 1,
         INTEGER8 = 2,
         INTEGER16 = 3,
@@ -47,6 +48,7 @@ namespace libEDSsharp
 
     public enum ObjectType
     {
+        UNKNOWN = -1,
         VAR = 7,
         REC = 8,
         ARRAY = 9,
@@ -56,9 +58,9 @@ namespace libEDSsharp
     //Additional Info for CANOpenNode c and h generation
     public enum StorageLocation
     {
-        RAM=0,
-        EEPROM=1,
-        ROM=2,
+        ROM=1,
+        RAM=2,
+        EEPROM=3,
     }
 
     public class InfoSection
@@ -610,6 +612,11 @@ namespace libEDSsharp
             writer.WriteLine("");
         }
 
+        public string paramater_cname()
+        {
+            string cname = parameter_name.Replace(" ","");
+            return cname;
+        }
     }
 
     public class EDSsharp
@@ -629,7 +636,7 @@ namespace libEDSsharp
         public const AccessType AccessType_Max = AccessType.cons;
 
         Dictionary<string, Dictionary<string, string>> eds;
-        public List<ODentry> ods;
+        public Dictionary<string, ODentry> ods;
         public FileInfo fi;
         public DeviceInfo di;
         public MandatoryObjects md;
@@ -641,7 +648,7 @@ namespace libEDSsharp
         public EDSsharp()
         {
             eds = new Dictionary<string, Dictionary<string, string>>();
-            ods = new List<ODentry>();
+            ods = new Dictionary<string,ODentry>();
 
             fi = new FileInfo();
             di = new DeviceInfo();
@@ -684,12 +691,17 @@ namespace libEDSsharp
 
         public ODentry getentryforindex(UInt16 index,Int16 sub)
         {
-            foreach(ODentry od in ods)
-            {
-                if (od.index == index && od.subindex==sub)
-                    return od;
 
+            string test = "";
+            if (sub == -1)
+                test = string.Format("{0:x4}", index);
+            else
+            {
+                test = string.Format("{0:x4}/{1}", index,sub);
             }
+
+            if (ods.ContainsKey(test))
+                return ods[test];
 
             return null;
 
@@ -830,7 +842,13 @@ namespace libEDSsharp
 
                 }
 
-                ods.Add(od);
+                string idx;
+                if (od.subindex == -1)
+                    idx = string.Format("{0:x4}", od.index);
+                else
+                    idx = string.Format("{0:x4}/{1}", od.index, od.subindex);
+
+                ods.Add(idx,od);
             }
 
         }
@@ -873,8 +891,9 @@ namespace libEDSsharp
             c.write(writer);
             md.write(writer);
 
-            foreach(ODentry od in ods)
+            foreach(KeyValuePair<string,ODentry> kvp in ods)
             {
+                ODentry od = kvp.Value;
                 if (md.objectlist.ContainsValue(od.index))
                 {
                     od.write(writer);
@@ -883,8 +902,9 @@ namespace libEDSsharp
 
             oo.write(writer);
 
-            foreach (ODentry od in ods)
+            foreach (KeyValuePair<string, ODentry> kvp in ods)
             {
+                ODentry od = kvp.Value;
                 if (oo.objectlist.ContainsValue(od.index))
                 {
                     od.write(writer);
@@ -893,8 +913,9 @@ namespace libEDSsharp
 
             mo.write(writer);
 
-            foreach (ODentry od in ods)
+            foreach (KeyValuePair<string, ODentry> kvp in ods)
             {
+                ODentry od = kvp.Value;
                 if (mo.objectlist.ContainsValue(od.index))
                 {
                     od.write(writer);
@@ -906,7 +927,34 @@ namespace libEDSsharp
 
         }
 
+        public DataType getdatatype(ODentry od)
+        {
+            if (od.objecttype == ObjectType.VAR)
+            {
+                if (od.subindex == -1)
+                    return od.datatype;
+            }
+
+            if (od.objecttype == ObjectType.ARRAY)
+            {
+                ODentry sub2 = ods[string.Format("{0:x4}/1", od.index)];
+                DataType t = sub2.datatype;
+                return t;
+            }
+
+            if (od.objecttype == ObjectType.REC) //NOT SURE????
+            {
+                ODentry sub2 = ods[string.Format("{0:x4}/1", od.index)];
+                DataType t = sub2.datatype;
+                return t;
+            }
+
+            return DataType.UNKNOWN;
+
+        }
+
     }
+
 }
 
 public class ParameterException : Exception

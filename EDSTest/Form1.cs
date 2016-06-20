@@ -60,9 +60,9 @@ namespace EDSTest
 
         private void populateindexlists()
         {
-
-            foreach (ODentry od in eds.ods)
+            foreach (KeyValuePair<string,ODentry> kvp in eds.ods)
             {
+                ODentry od = kvp.Value;
                 if (eds.md.objectlist.ContainsValue(od.index) && od.subindex==-1)
                 {
                     ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}",od.index));
@@ -161,6 +161,21 @@ namespace EDSTest
             UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
 
             updateselectedindexdisplay(idx);
+        }
+
+        private void exportCanOpenNodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+            DialogResult result = fbd.ShowDialog();
+
+            if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
+            {
+                CanOpenNodeExporter cone = new CanOpenNodeExporter();
+                cone.export(fbd.SelectedPath, eds);
+            }
+
         }
     }
 }
