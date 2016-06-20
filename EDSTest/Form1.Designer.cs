@@ -252,7 +252,7 @@
             // openEDSToolStripMenuItem
             // 
             this.openEDSToolStripMenuItem.Name = "openEDSToolStripMenuItem";
-            this.openEDSToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.openEDSToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.openEDSToolStripMenuItem.Text = "Open EDS";
             this.openEDSToolStripMenuItem.Click += new System.EventHandler(this.openEDSToolStripMenuItem_Click);
             // 

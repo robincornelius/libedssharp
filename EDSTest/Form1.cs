@@ -187,6 +187,13 @@ namespace EDSTest
 
                 CanOpenXML coxml = new CanOpenXML();
                 coxml.readXML(odf.FileName);
+
+                Bridge b = new Bridge();
+
+                eds = b.convert(coxml.dev);
+
+                populateindexlists();
+
             }
 
         }

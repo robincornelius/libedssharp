@@ -40,9 +40,27 @@ namespace libEDSsharp
         UNSIGNED32 = 7,
         REAL32 = 8,
         VISIBLE_STRING = 9,
-        OCTET_STRING = 0xA,
-        PDO_CommPar = 20,
-        PDO_Mapping = 21,
+        OCTET_STRING = 0x0A,
+        UNICODE_STRING = 0x0B,
+        TIME_OF_DAY = 0x0C,
+        TIME_DIFFERENCE = 0x0D,
+        DOMAIN = 0x0F,
+        INTEGER24 = 0x10,
+        REAL64 = 0x11,
+        INTEGER40 = 0x12,
+        INTEGER48 = 0x13,
+        INTEGER56 = 0x14,
+        INTEGER64 = 0x15,
+        UNSIGNED24 = 0x16,
+        UNSIGNED40 = 0x18,
+        UNSIGNED48 = 0x19,
+        UNSIGNED56 = 0x1A,
+        UNSIGNED64 = 0x1B,
+
+        PDO_COMMUNICATION_PARAMETER = 0x20,  //PDO_CommPar
+        PDO_MAPPING  = 0x21, //PDO_Mapping
+        SDO_PARAMETER = 0x22,
+        IDENTITY = 0x23,
 
     }
 
@@ -191,13 +209,15 @@ namespace libEDSsharp
  
     public class MandatoryObjects : SupportedObjects
     {
-         public MandatoryObjects()
+        public MandatoryObjects()
+            : base()
          {
               infoheader = "Mandatory Objects";
               edssection = "MandatoryObjects";
          }
 
          public MandatoryObjects(Dictionary<string, string> section)
+             : base()
          {
              infoheader = "Mandatory Objects";
              edssection = "MandatoryObjects";
@@ -208,12 +228,14 @@ namespace libEDSsharp
     public class OptionalObjects : SupportedObjects
     {
         public OptionalObjects()
+            : base()
         {
             infoheader = "Optional Objects";
             edssection = "OptionalObjects";
         }
 
         public OptionalObjects(Dictionary<string, string> section)
+            : base()
         {
             infoheader = "Optional Objects";
             edssection = "OptionalObjects";
@@ -223,13 +245,14 @@ namespace libEDSsharp
 
     public class ManufacturerObjects : SupportedObjects
     {
-        public ManufacturerObjects()
+        public ManufacturerObjects() : base()
         {
             infoheader = "Manufacturer Objects";
             edssection = "ManufacturerObjects";
         }
 
         public ManufacturerObjects(Dictionary<string, string> section)
+            : base()
         {
             infoheader = "Manufacturer Objects";
             edssection = "ManufacturerObjects";
@@ -243,6 +266,11 @@ namespace libEDSsharp
         public Dictionary<int, int> objectlist;
         public string infoheader;
         public string edssection;
+
+        public SupportedObjects()
+        {
+            objectlist = new Dictionary<int, int>();
+        }
 
         public virtual void parse(Dictionary<string, string> section)
         {

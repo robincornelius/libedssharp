@@ -15,7 +15,7 @@ using Xml2CSharp;
 
 namespace libEDSsharp
 {
-    class Bridge
+    public class Bridge
     {
 
         public Device convert(EDSsharp eds)
@@ -39,7 +39,7 @@ namespace libEDSsharp
                     if(od.objecttype==ObjectType.VAR)
                     {
                         coo.AccessType = od.accesstype.ToString();
-                        coo.DataType = string.Format("0x{0:x2",od.datatype);
+                        coo.DataType = string.Format("0x{0:x2}",od.datatype);
                         coo.DefaultValue = od.defaultvalue;
                         coo.PDOmapping = od.PDOMapping.ToString();                 
                     }
@@ -61,7 +61,7 @@ namespace libEDSsharp
                                 sub.Name = subod.parameter_name;
                                 sub.ObjectType = subod.objecttype.ToString();
                                 sub.AccessType = subod.accesstype.ToString();
-                                sub.DataType = string.Format("0x{0:x2", subod.datatype);
+                                sub.DataType = string.Format("0x{0:x2}", subod.datatype);
                                 sub.DefaultValue = subod.defaultvalue;
                                 sub.PDOmapping = subod.PDOMapping.ToString();
 
@@ -145,12 +145,30 @@ namespace libEDSsharp
             {
                 ODentry entry = new ODentry();
                 entry.index = Convert.ToInt16(coo.Index, 16);
-                entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType),coo.AccessType);
-                entry.datatype = (DataType)Enum.Parse(typeof(DataType),coo.DataType);
+                entry.parameter_name = coo.Name;
+
+                if (coo.AccessType != null)
+                {
+                    string at = coo.AccessType;
+                    at = at.Replace("const", "cons");
+                    entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), at);
+                }
+
+
+                if (coo.DataType != null)
+                {
+                    byte datatype = Convert.ToByte(coo.DataType, 16);
+                    entry.datatype = (DataType)datatype;
+                }
+
+
+                entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType),coo.ObjectType);
+
+
                 entry.defaultvalue = coo.DefaultValue;
                 entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
                 entry.subindex = -1;
-                entry.PDOMapping = Convert.ToBoolean(coo.PDOmapping);
+                entry.PDOMapping = coo.PDOmapping!="no";
 
                 eds.ods.Add(String.Format("{0:x4}", entry.index), entry);
 
@@ -161,11 +179,11 @@ namespace libEDSsharp
                 else
                 if (entry.index >= 0x2000 && entry.index<=0x6000)
                 {
-                    eds.mo.objectlist.Add(eds.md.objectlist.Count+1,entry.index);
+                    eds.mo.objectlist.Add(eds.mo.objectlist.Count+1,entry.index);
                 }
                 else
                 {
-                     eds.oo.objectlist.Add(eds.md.objectlist.Count+1,entry.index);
+                     eds.oo.objectlist.Add(eds.oo.objectlist.Count+1,entry.index);
                 }
 
                 
@@ -174,13 +192,26 @@ namespace libEDSsharp
                     int subno;
                     ODentry subentry = new ODentry();
                     //entry.index = Convert.ToInt16(coosub.Index, 16);
-                    entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), coosub.AccessType);
-                    entry.datatype = (DataType)Enum.Parse(typeof(DataType), coosub.DataType);
-                    entry.defaultvalue = coosub.DefaultValue;
-                    entry.subindex = Convert.ToInt16(coosub.SubIndex);
-                    entry.PDOMapping = Convert.ToBoolean(coosub.PDOmapping);
 
-                    eds.ods.Add(String.Format("{0:x4}/{x}", entry.index, entry.subindex), entry);
+                    subentry.parameter_name = coosub.Name;
+                    subentry.index = entry.index;
+
+                    if(coosub.AccessType!=null)
+                        subentry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), coosub.AccessType);
+
+                    if (coosub.DataType != null)
+                    {
+                        byte datatype = Convert.ToByte(coosub.DataType, 16);
+                        subentry.datatype = (DataType)datatype;
+                    }
+
+                    subentry.defaultvalue = coosub.DefaultValue;
+                    subentry.subindex = Convert.ToInt16(coosub.SubIndex, 16);
+                    
+                    if(coosub.PDOmapping!=null)
+                        subentry.PDOMapping = coosub.PDOmapping != "no";
+
+                    eds.ods.Add(String.Format("{0:x4}/{1}", entry.index, subentry.subindex), subentry);
                 }
 
 
@@ -223,7 +254,16 @@ namespace libEDSsharp
             eds.fi.CreationDate = dev.Other.File.FileCreationDate;
             eds.fi.CreationTime = dev.Other.File.FileCreationTime;
             eds.fi.CreatedBy = dev.Other.File.FileCreator;
-            eds.fi.FileVersion = Convert.ToByte(dev.Other.File.FileVersion);
+
+            try
+            {
+                eds.fi.FileVersion = Convert.ToByte(dev.Other.File.FileVersion);
+            }
+            catch (Exception e)
+            {
+                eds.fi.FileVersion = 0;
+            }
+
             eds.fi.EDSVersion = "4.0";
             
             //FIX me any other approprate defaults for eds here??
