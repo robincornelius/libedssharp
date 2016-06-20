@@ -20,7 +20,7 @@ namespace Cia306Tester
 
             eds.parseEDSentry(new KeyValuePair<string, Dictionary<string, string>>("1000", od["1000"]));
             
-            if((UInt16)eds.ods[0].objecttype!=0x1234)
+            if((UInt16)eds.ods["1000"].objecttype!=0x1234)
                 throw new Exception("Failed to parse value HEX");
            
         }
@@ -37,7 +37,7 @@ namespace Cia306Tester
 
             eds.parseEDSentry(new KeyValuePair<string, Dictionary<string, string>>("1000", od["1000"]));
 
-            if ((UInt16)eds.ods[0].objecttype != 1234)
+            if ((UInt16)eds.ods["1000"].objecttype != 1234)
                 throw new Exception("Failed to parse value Decimal");
 
         }
@@ -54,7 +54,7 @@ namespace Cia306Tester
 
             eds.parseEDSentry(new KeyValuePair<string, Dictionary<string, string>>("1000", od["1000"]));
 
-            if ((UInt16)eds.ods[0].objecttype != 10)
+            if ((UInt16)eds.ods["1000"].objecttype != 10)
                 throw new Exception("Failed to parse value Octall");
 
         }

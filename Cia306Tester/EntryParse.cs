@@ -25,11 +25,10 @@ namespace Cia306Tester
             {
                eds.parseEDSentry(kvp);
 
-               foreach(ODentry o in eds.ods)
-               {
-                   if(o.index!=0x1000)
+
+                   if(!eds.ods.ContainsKey("1000"))
                        throw new Exception("Failed to parse key HEX");
-               }
+               
                 
             }
 
