@@ -177,7 +177,7 @@ namespace libEDSsharp
                     eds.md.objectlist.Add(eds.md.objectlist.Count+1,entry.index);
                 }
                 else
-                if (entry.index >= 0x2000 && entry.index<=0x6000)
+                if (entry.index >= 0x2000 && entry.index<0x6000)
                 {
                     eds.mo.objectlist.Add(eds.mo.objectlist.Count+1,entry.index);
                 }
