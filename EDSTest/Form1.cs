@@ -13,6 +13,9 @@
 
     You should have received a copy of the GNU General Public License
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
+  
+  
+    Copyright(c) 2016 Robin Cornelius <robin.cornelius@gmail.com>
 */
 
 using System;
@@ -33,8 +36,6 @@ namespace EDSTest
 {
     public partial class Form1 : Form
     {
-        EDSsharp eds;
-        Device dev; //one day this will be multiple devices
 
         ODentry selectedobject;
 
@@ -42,253 +43,70 @@ namespace EDSTest
         {
             InitializeComponent();
 
-            comboBox_datatype.Items.Add("");
-
-            foreach(DataType foo in Enum.GetValues(typeof(DataType )))
-            {
-                comboBox_datatype.Items.Add(foo.ToString());
-            }
-
-            comboBox_objecttype.Items.Add("");
-
-            foreach (ObjectType foo in Enum.GetValues(typeof(ObjectType)))
-            {
-                comboBox_objecttype.Items.Add(foo.ToString());
-            }
-
-            comboBox_accesstype.Items.Add("");
-
-            foreach (EDSsharp.AccessType foo in Enum.GetValues(typeof(EDSsharp.AccessType)))
-            {
-                comboBox_accesstype.Items.Add(foo.ToString());
-            }
-
-
-            comboBox_memory.Items.Add("");
-
-            foreach (StorageLocation foo in Enum.GetValues(typeof(StorageLocation)))
-            {
-                comboBox_memory.Items.Add(foo.ToString());
-            }
-
-            comboBox_pdomap.Items.Add("");
-            comboBox_pdomap.Items.Add("no");
-            comboBox_pdomap.Items.Add("optional");
-            comboBox_pdomap.Items.Add("yes"); //?? 
-            
-            
         }
 
         private void openEDSToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+            EDSsharp eds;
+            Device dev; //one day this will be multiple devices
+
             OpenFileDialog odf = new OpenFileDialog();
             odf.Filter = "Electronic Data Sheets (*.eds)|*.eds";
-            if(odf.ShowDialog()==DialogResult.OK)
+            if (odf.ShowDialog() == DialogResult.OK)
             {
-                
+
                 eds = new EDSsharp();
 
                 //fix me enable exceptions for production code
-                
+
                 //try
                 {
                     eds.loadfile(odf.FileName);
                     Bridge bridge = new Bridge(); //tell me again why bridge is not static?
                     dev = bridge.convert(eds);
-                    populateindexlists();
+
+                    DeviceView device = new DeviceView();
+
+                    device.eds = eds;
+                    tabControl1.TabPages.Add(eds.di.ProductName);
+                    tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+
+                    device.populateindexlists();
                 }
                 //catch(Exception ex)
                 {
-                //    MessageBox.Show(ex.ToString());
+                    //    MessageBox.Show(ex.ToString());
                 }
 
             }
-        }
-
-        private void populateindexlists()
-        {
-
-            if (eds == null)
-                return;
-
-            listView_mandatory_objects.Items.Clear();
-            listView_manufacture_objects.Items.Clear();
-            listView_optional_objects.Items.Clear();
-
-            foreach(KeyValuePair<UInt16,ODentry> kvp in eds.ods)
-            {
-
-             
-                UInt16 index = kvp.Value.index;
-                ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}",   kvp.Value.index));
-                lvi.SubItems.Add(kvp.Value.parameter_name);
-
-                if (index == 0x1000 || index==0x1001 || index==0x1018)
-                {
-                    listView_mandatory_objects.Items.Add(lvi);
-                }
-                else if (index >= 0x2000 && index < 0x6000 )
-                {
-                    listView_manufacture_objects.Items.Add(lvi);
-                }else 
-                {
-                    listView_optional_objects.Items.Add(lvi);
-                }
-
-            }
-        }
-
-        private void listView_mandatory_objects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-           
-        }
-
-
-        private void updateselectedindexdisplay(UInt16 index)
-        {
-
-            listViewDetails.Items.Clear();
-
-            ODentry od = eds.ods[index];
-
-            if(od.objecttype == ObjectType.VAR)
-            {
-                 ListViewItem lvi = new ListViewItem(" ");
-                 lvi.SubItems.Add(od.parameter_name);
-                 lvi.SubItems.Add(od.objecttype.ToString());
-                 lvi.SubItems.Add(od.datatype.ToString());
-                 lvi.SubItems.Add(od.accesstype.ToString());
-                 lvi.SubItems.Add(od.defaultvalue);
-                 lvi.SubItems.Add(od.PDOMapping.ToString());
-                 lvi.Tag = od;
-
-                 listViewDetails.Items.Add(lvi);
-            }
-
-            if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
-            {
-                ListViewItem lvi = new ListViewItem(" ");
-                lvi.SubItems.Add(od.parameter_name);
-
-                lvi.SubItems.Add(od.objecttype.ToString());
-
-                if(od.objecttype==ObjectType.REC)
-                {
-                    if (od.subobjects.Count > 1)
-                    {
-                        lvi.SubItems.Add(od.subobjects[1].datatype.ToString());
-                    }
-                    else
-                    {
-                        lvi.SubItems.Add(" -- ");
-                    }
-
-                    lvi.SubItems.Add(od.accesstype.ToString());
-                    lvi.SubItems.Add("");
-                    lvi.SubItems.Add(od.PDOMapping.ToString());
-                }
-
-                lvi.Tag = od;
-
-                listViewDetails.Items.Add(lvi);
-
-                foreach(KeyValuePair<UInt16,ODentry> kvp in od.subobjects)
-                {
-                    ODentry subod = kvp.Value;
-                    int subindex = kvp.Key;
-
-                    ListViewItem lvi2 = new ListViewItem(string.Format("{0:x}",subindex));
-                    lvi2.SubItems.Add(subod.parameter_name);
-                    lvi2.SubItems.Add(subod.objecttype.ToString());
-
-                    
-                    if (subod.datatype==DataType.UNKNOWN || (od.objecttype==ObjectType.REC && subod.subindex!=0))
-                    {
-                        lvi2.SubItems.Add(" -- ");
-                    }
-                    else
-                    {
-                        lvi2.SubItems.Add(subod.datatype.ToString());
-                    }
-
-                    if (subod.accesstype == EDSsharp.AccessType.UNKNOWN)
-                    {
-                        lvi2.SubItems.Add(" -- ");
-                    }
-                    else
-                    {
-                        lvi2.SubItems.Add(subod.accesstype.ToString());
-                    }
-
-                    lvi2.SubItems.Add(subod.defaultvalue);
-
-                    //fixe me ??
-                    lvi2.SubItems.Add(subod.PDOMapping.ToString());
-                    
-                    lvi2.Tag = subod;
-
-                    listViewDetails.Items.Add(lvi2);
-
-                }
-
-            }
-
-        }
-
-        private void listView_mandatory_objects_MouseClick(object sender, MouseEventArgs e)
-        {
-            ListViewItem lvi = listView_mandatory_objects.SelectedItems[0];
-            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
-            updateselectedindexdisplay(idx);
-
-            selectedobject = eds.ods[idx];
-            validateanddisplaydata();
-
-
-        }
-
-        private void listView_optionalobjects_MouseClick(object sender, MouseEventArgs e)
-        {
-            ListViewItem lvi = listView_optional_objects.SelectedItems[0];
-            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
-
-            updateselectedindexdisplay(idx);
-
-
-            selectedobject = eds.ods[idx];
-            validateanddisplaydata();
-        }
-
-        private void listView_manufacture_objects_MouseClick(object sender, MouseEventArgs e)
-        {
-
-            ListViewItem lvi = listView_manufacture_objects.SelectedItems[0];
-            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
-
-            updateselectedindexdisplay(idx);
-
-            selectedobject = eds.ods[idx];
-            validateanddisplaydata();
-
         }
 
         private void exportCanOpenNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
 
-            DialogResult result = fbd.ShowDialog();
+            /*
 
-            if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
-            {
-                CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                cone.export(fbd.SelectedPath, eds);
-            }
+              FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+              DialogResult result = fbd.ShowDialog();
+
+              if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
+              {
+                  CanOpenNodeExporter cone = new CanOpenNodeExporter();
+                  cone.export(fbd.SelectedPath, eds);
+              }
+             */
 
         }
 
         private void openCanOpenNodeXMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+            EDSsharp eds;
+            Device dev; //one day this will be multiple devices
+
             OpenFileDialog odf = new OpenFileDialog();
             odf.Filter = "XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
@@ -303,158 +121,112 @@ namespace EDSTest
 
                 dev = coxml.dev;
 
-                populateindexlists();
+                tabControl1.TabPages.Add(eds.di.ProductName);
+
+                DeviceView device = new DeviceView();
+
+                device.eds = eds;
+                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+
+                device.populateindexlists();
 
             }
 
         }
 
-        private void listViewDetails_MouseClick(object sender, MouseEventArgs e)
+
+        private void tabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
         {
-            ListViewItem lvi = listViewDetails.SelectedItems[0];
+            Graphics g = e.Graphics;
+            Brush _textBrush;
 
-            ODentry od = (ODentry)lvi.Tag;
+            // Get the item from the collection.
+            TabPage _tabPage = tabControl1.TabPages[e.Index];
 
-            selectedobject = od;
-            validateanddisplaydata();
+            // Get the real bounds for the tab rectangle.
+            Rectangle _tabBounds = tabControl1.GetTabRect(e.Index);
 
-        }
-
-        private void validateanddisplaydata()
-        {
-
-            ODentry od = (ODentry) selectedobject;
-
-            
-            label_index.Text = string.Format("0x{0:x4}",od.index);
-            textBox_name.Text = od.parameter_name;
-            comboBox_accesstype.SelectedItem = od.accesstype.ToString();
-
-            if (od.datatype != DataType.UNKNOWN)
+            if (e.State == DrawItemState.Selected)
             {
-                comboBox_datatype.SelectedItem = od.datatype.ToString();
+
+                // Draw a different background color, and don't paint a focus rectangle.
+                _textBrush = new SolidBrush(Color.Red);
+                g.FillRectangle(Brushes.Gray, e.Bounds);
             }
             else
             {
-                if (od.objecttype == ObjectType.REC)
-                {
-                    if(od.subobjects.Count>=2)
-                    {
-                        comboBox_datatype.SelectedItem = od.subobjects[1].datatype.ToString();
-                    }
-
-                }
-                else
-                {
-                    comboBox_datatype.SelectedItem = "";
-                }
+                _textBrush = new System.Drawing.SolidBrush(e.ForeColor);
+                e.DrawBackground();
             }
 
-            comboBox_objecttype.SelectedItem = od.objecttype.ToString();
-            textBox_description.Text = od.Description.Replace("\n", "\r\n");
-            //FIXME //comboBox_pdomap.SelectedItem = od.PDOmapping;
+            // Use our own font.
+            Font _tabFont = new Font("Arial", (float)10.0, FontStyle.Bold, GraphicsUnit.Pixel);
 
-            checkBox_COS.Checked = od.TPDODetectCos;
-            textBox_accessfunctionname.Text = od.AccessFunctionName;
-            textBox_precode.Text = od.AccessFunctionPreCode;
-            checkBox_enabled.Checked = !od.Disabled;
-
-            comboBox_memory.SelectedItem = od.location.ToString();
-     
-            textBox_accessfunctionname.Enabled = true;
-            textBox_precode.Enabled = true;
-            checkBox_enabled.Enabled = true;
-            comboBox_memory.Enabled = true;
-
-            textBox_defaultvalue.Enabled = true;
-
-            comboBox_accesstype.Enabled = true;
-            comboBox_datatype.Enabled = true;
-            comboBox_objecttype.Enabled = false; 
-            comboBox_pdomap.Enabled = true;
-
-            textBox_defaultvalue.Text = od.defaultvalue;
-
-            if(od.parent!=null && ((od.parent.objecttype==ObjectType.ARRAY && od.subindex==0) ||(od.parent.objecttype==ObjectType.REC)))
-            {
-                textBox_defaultvalue.Enabled = false;
-                comboBox_accesstype.Enabled = false;
-                comboBox_datatype.Enabled = false;
-                comboBox_objecttype.Enabled = false;
-                comboBox_pdomap.Enabled = false;
-            }
-            else
-            {
-                textBox_defaultvalue.Enabled = true;
-                comboBox_accesstype.Enabled = true;
-                comboBox_datatype.Enabled = true;
-                comboBox_objecttype.Enabled = false;
-                comboBox_pdomap.Enabled = true;
-            }
-
-
-
-            return;
-
+            // Draw string. Center the text.
+            StringFormat _stringFlags = new StringFormat();
+            _stringFlags.Alignment = StringAlignment.Center;
+            _stringFlags.LineAlignment = StringAlignment.Center;
+            g.DrawString(_tabPage.Text, _tabFont, _textBrush, _tabBounds, new StringFormat(_stringFlags));
         }
 
-        private void addManufactureObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void closeFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewIndex ni = new NewIndex(eds);
+            if (tabControl1.SelectedTab != null)
+                tabControl1.TabPages.Remove(tabControl1.SelectedTab);
 
-            if(ni.ShowDialog()==DialogResult.OK)
+        }
+
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void saveEDSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab != null)
             {
-              
-                ODentry od = new ODentry();
+                DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                SaveFileDialog sfd = new SaveFileDialog();
 
-                od.objecttype = ni.ot;
-                od.index = ni.index;
-                od.location = StorageLocation.RAM;
-                od.defaultvalue = "";
-                od.accesstype = EDSsharp.AccessType.rw;
-                od.datatype = ni.dt;
-                od.parameter_name = ni.name;
+                sfd.Filter = "Electronic Data Sheets (*.eds)|*.eds";
 
-                if(od.objecttype == ObjectType.REC || od.objecttype==ObjectType.ARRAY)
+                sfd.FileName = dv.eds.fi.FileName;
+
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
+                    dv.eds.savefile(sfd.FileName);
+                }
+
+            }
+        }
+
+        private void saveProjectXMLToolStripMenuItem_Click(object sender, EventArgs e)
+            {
+                if (tabControl1.SelectedTab != null)
+                {
+                    DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                    SaveFileDialog sfd = new SaveFileDialog();
+
+                    sfd.Filter = "Canopen Node XML (*.xml)|*.xml";
+
+                    sfd.FileName = dv.eds.fi.FileName;
+
+                    if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        ODentry sod = new ODentry();
+                        //dv.eds.savefile(sfd.FileName);
 
-                        sod.objecttype = ObjectType.VAR;
-                        sod.subindex = 0;
-                        sod.index = ni.index;
-                        sod.location = StorageLocation.RAM;
-                        sod.defaultvalue = "";
-                        sod.accesstype = EDSsharp.AccessType.ro;
-                        sod.datatype = DataType.UNSIGNED8;
+                        Bridge b = new Bridge();
+                        Device d = b.convert(dv.eds);
 
-                        od.subobjects.Add(0, sod);
+                        CanOpenXML coxml = new CanOpenXML();
+                            coxml.dev = d;
+ 
+                        coxml.writeXML(sfd.FileName)
+    
                     }
-
-                    for (int p = 0; p < ni.nosubindexes; p++)
-                    {
-                        ODentry sod = new ODentry();
-
-                        sod.objecttype = ObjectType.VAR;
-                        sod.subindex = (UInt16)(p+1);
-                        sod.index = ni.index;
-                        sod.location = StorageLocation.RAM;
-                        sod.defaultvalue = "";
-                        sod.accesstype = EDSsharp.AccessType.rw;
-                        sod.datatype = ni.dt;
-                        sod.parent = od;
-
-                        od.subobjects.Add((ushort)(p+1), sod);
-                    }
-
 
 
                 }
-
-                eds.ods.Add(od.index, od);
-
-                populateindexlists();
             }
-        }
     }
 }
