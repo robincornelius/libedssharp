@@ -110,7 +110,11 @@ namespace EDSTest
 
             if (eds == null)
                 return;
-            
+
+            listView_mandatory_objects.Items.Clear();
+            listView_manufacture_objects.Items.Clear();
+            listView_optional_objects.Items.Clear();
+
             foreach(KeyValuePair<UInt16,ODentry> kvp in eds.ods)
             {
 
@@ -392,6 +396,65 @@ namespace EDSTest
 
             return;
 
+        }
+
+        private void addManufactureObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewIndex ni = new NewIndex(eds);
+
+            if(ni.ShowDialog()==DialogResult.OK)
+            {
+              
+                ODentry od = new ODentry();
+
+                od.objecttype = ni.ot;
+                od.index = ni.index;
+                od.location = StorageLocation.RAM;
+                od.defaultvalue = "";
+                od.accesstype = EDSsharp.AccessType.rw;
+                od.datatype = ni.dt;
+                od.parameter_name = ni.name;
+
+                if(od.objecttype == ObjectType.REC || od.objecttype==ObjectType.ARRAY)
+                {
+                    {
+                        ODentry sod = new ODentry();
+
+                        sod.objecttype = ObjectType.VAR;
+                        sod.subindex = 0;
+                        sod.index = ni.index;
+                        sod.location = StorageLocation.RAM;
+                        sod.defaultvalue = "";
+                        sod.accesstype = EDSsharp.AccessType.ro;
+                        sod.datatype = DataType.UNSIGNED8;
+
+                        od.subobjects.Add(0, sod);
+                    }
+
+                    for (int p = 0; p < ni.nosubindexes; p++)
+                    {
+                        ODentry sod = new ODentry();
+
+                        sod.objecttype = ObjectType.VAR;
+                        sod.subindex = (UInt16)(p+1);
+                        sod.index = ni.index;
+                        sod.location = StorageLocation.RAM;
+                        sod.defaultvalue = "";
+                        sod.accesstype = EDSsharp.AccessType.rw;
+                        sod.datatype = ni.dt;
+                        sod.parent = od;
+
+                        od.subobjects.Add((ushort)(p+1), sod);
+                    }
+
+
+
+                }
+
+                eds.ods.Add(od.index, od);
+
+                populateindexlists();
+            }
         }
     }
 }

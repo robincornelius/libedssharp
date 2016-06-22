@@ -168,7 +168,7 @@ namespace libEDSsharp
                 entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType),coo.ObjectType);
 
                 entry.defaultvalue = coo.DefaultValue;
-                entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
+                //entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
                 entry.PDOMapping = coo.PDOmapping!="no";
 
                 entry.AccessFunctionName = coo.AccessFunctionName;

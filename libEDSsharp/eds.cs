@@ -580,7 +580,14 @@ namespace libEDSsharp
         [EdsExport]
         public UInt16 subindex;
         [EdsExport]
-        public int nosubindexes;
+        public int nosubindexes
+        {
+            get
+            {
+                return subobjects.Count;
+            }
+        }
+
         [EdsExport]
         public string parameter_name;
         [EdsExport]
@@ -656,7 +663,7 @@ namespace libEDSsharp
             this.parameter_name = parameter_name;
             this.objecttype = ObjectType.ARRAY;
             this.index = index;
-            this.nosubindexes = nosubindex;
+            //this.nosubindexes = nosubindex;
             this.objecttype = ObjectType.VAR;     
         }
 
@@ -880,10 +887,10 @@ namespace libEDSsharp
 
                 od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
 
-                if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
-                {
-                    od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
-                }
+                //if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
+                //{
+                    //od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
+                //}
 
                 if (od.objecttype == ObjectType.VAR)
                 {
