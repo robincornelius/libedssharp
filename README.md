@@ -1,4 +1,7 @@
-I have plans for a C# CanOpen EDS editor
+A C# CanOpen EDS (Electronic Data Sheet) library and GUI editor
+
+Please consider this code highly experimental and alpha quality and buggy
+It is a work in progress and is rapidly changing.
 
 Current Features
 
@@ -15,11 +18,28 @@ Library
 
 GUI
 ---
-
+* Open multiple devices
 * Open EDS file
+* Save EDS file
 * Open CanOpenNode XML Project file
+* Save CanOpenNode XML File
 * View OD Entries and explore the Object Dictionary
-* BROKEN) Export CanOpenNode c/h files (this is work in progress)
+* Add new OD entries
+* Delete exisiting OD entries
+
+Not finished/broken
+-------------
+* Export CanOpenNode c/h files (this is work in progress) the code is mostly 
+stubbed out and partially working but needs completing
+
+* Cannot add/remove entries to ARRAY and REC objects
+
+* Unit tests are totaly broken, due to massive rewrite/change of plan after
+tests were written.
+
+* PDO page is empty
+
 
 ![alt tag](pic1.jpg)
+![alt tag](pic2.jpg)
 
