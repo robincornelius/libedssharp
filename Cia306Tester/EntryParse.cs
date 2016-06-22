@@ -27,9 +27,7 @@ namespace Cia306Tester
 
 
                    if(!eds.ods.ContainsKey("1000"))
-                       throw new Exception("Failed to parse key HEX");
-               
-                
+                       throw new Exception("Failed to parse key HEX");       
             }
 
         }

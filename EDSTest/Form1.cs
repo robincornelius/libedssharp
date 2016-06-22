@@ -36,9 +36,7 @@ namespace EDSTest
         EDSsharp eds;
         Device dev; //one day this will be multiple devices
 
-        object selectedobject;
-        CANopenObject selectedparent;
-
+        ODentry selectedobject;
 
         public Form1()
         {
@@ -89,6 +87,9 @@ namespace EDSTest
             {
                 
                 eds = new EDSsharp();
+
+                //fix me enable exceptions for production code
+                
                 //try
                 {
                     eds.loadfile(odf.FileName);
@@ -107,16 +108,16 @@ namespace EDSTest
         private void populateindexlists()
         {
 
-            if (dev == null)
+            if (eds == null)
                 return;
-
-            foreach(CANopenObject canobj in dev.CANopenObjectList.CANopenObject)
+            
+            foreach(KeyValuePair<UInt16,ODentry> kvp in eds.ods)
             {
 
-                UInt16 index = Convert.ToUInt16(canobj.Index, 16);
-               
-                ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}", index));
-                lvi.SubItems.Add(canobj.Name);
+             
+                UInt16 index = kvp.Value.index;
+                ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}",   kvp.Value.index));
+                lvi.SubItems.Add(kvp.Value.parameter_name);
 
                 if (index == 0x1000 || index==0x1001 || index==0x1018)
                 {
@@ -129,6 +130,7 @@ namespace EDSTest
                 {
                     listView_optional_objects.Items.Add(lvi);
                 }
+
             }
         }
 
@@ -138,165 +140,93 @@ namespace EDSTest
         }
 
 
-        private CANopenObject getobjectforindex(UInt16 index)
-        {
-            foreach (CANopenObject canobj in dev.CANopenObjectList.CANopenObject)
-            {
-                UInt16 obindex = Convert.ToUInt16(canobj.Index, 16);
-                if (index == obindex)
-                {
-                    return canobj;
-                }
-            }
-
-            return null;
-        }
-
-        private CANopenSubObject getobjectforsubindex(UInt16 index,UInt16 subidx,out CANopenObject parent)
-        {
-            parent = null;
-            foreach (CANopenObject canobj in dev.CANopenObjectList.CANopenObject)
-            {
-                UInt16 obindex = Convert.ToUInt16(canobj.Index, 16);
-                if (index == obindex)
-                {
-                    parent = canobj;
-                    foreach(CANopenSubObject sub in canobj.CANopenSubObject)
-                    {
-                        if(Convert.ToInt16(sub.SubIndex,16)==subidx)
-                        {
-                            return sub;
-                        }
-                    }
-                   
-                }
-            }
-
-            return null;
-        }
-
-
-        private object getwhatweclickedon(string tag,out CANopenObject toplevel)
-        {
-            toplevel = null;
-
-            object ret = null;
-            string[] bits = tag.Split('/');
-
-            Int16 index = -1;
-            Int16 sub = -1;
-
-            if (bits.Length == 1)
-            {
-                index = Convert.ToInt16(bits[0], 16); 
-                toplevel = getobjectforindex((UInt16)index);
-                ret = (object)toplevel;
-            }
-            else
-            {
-                index = Convert.ToInt16(bits[0], 16);
-                sub = Convert.ToInt16(bits[1]);
-                ret = (object)getobjectforsubindex((UInt16)index, (UInt16)sub,out toplevel);
-            }
-
-            return ret;
-        }
-
-
         private void updateselectedindexdisplay(UInt16 index)
         {
 
             listViewDetails.Items.Clear();
 
-            foreach (CANopenObject canobj in dev.CANopenObjectList.CANopenObject)
+            ODentry od = eds.ods[index];
+
+            if(od.objecttype == ObjectType.VAR)
             {
-                UInt16 obindex = Convert.ToUInt16(canobj.Index, 16);
-                if (index == obindex)
+                 ListViewItem lvi = new ListViewItem(" ");
+                 lvi.SubItems.Add(od.parameter_name);
+                 lvi.SubItems.Add(od.objecttype.ToString());
+                 lvi.SubItems.Add(od.datatype.ToString());
+                 lvi.SubItems.Add(od.accesstype.ToString());
+                 lvi.SubItems.Add(od.defaultvalue);
+                 lvi.SubItems.Add(od.PDOMapping.ToString());
+                 lvi.Tag = od;
+
+                 listViewDetails.Items.Add(lvi);
+            }
+
+            if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
+            {
+                ListViewItem lvi = new ListViewItem(" ");
+                lvi.SubItems.Add(od.parameter_name);
+
+                lvi.SubItems.Add(od.objecttype.ToString());
+
+                if(od.objecttype==ObjectType.REC)
                 {
-                    if (Convert.ToInt16(canobj.SubNumber) == 0)
+                    if (od.subobjects.Count > 1)
                     {
-                        ListViewItem lvi = new ListViewItem("0");
-                        lvi.SubItems.Add(canobj.Name);
-
-                        ObjectType ot = (ObjectType)Convert.ToInt16(canobj.ObjectType,16);
-                        lvi.SubItems.Add(ot.ToString());
-                        
-                        DataType dt = (DataType)Convert.ToInt16(canobj.DataType, 16);
-                        lvi.SubItems.Add(dt.ToString());
-
-                        lvi.SubItems.Add(canobj.AccessType);
-                        lvi.SubItems.Add(canobj.DefaultValue);
-                        lvi.SubItems.Add(canobj.PDOmapping);
-
-                        lvi.Tag = string.Format("{0:x4}",index);
-
-                        listViewDetails.Items.Add(lvi);
+                        lvi.SubItems.Add(od.subobjects[1].datatype.ToString());
                     }
                     else
                     {
-                        ListViewItem lvi = new ListViewItem(" ");
-                        lvi.SubItems.Add(canobj.Name);
-
-                        ObjectType ot = (ObjectType)Convert.ToInt16(canobj.ObjectType, 16);
-                        lvi.SubItems.Add(ot.ToString());
-
-                        if (ot == ObjectType.REC)
-                        {
-                            DataType dt = (DataType)Convert.ToInt16(canobj.DataType, 16);
-                            lvi.SubItems.Add(dt.ToString());
-
-                            lvi.SubItems.Add(canobj.AccessType);
-                            lvi.SubItems.Add("");
-                            lvi.SubItems.Add(canobj.PDOmapping);
-                        }
-
-                        lvi.Tag = string.Format("{0:x4}", index);
-             
-                        listViewDetails.Items.Add(lvi);
-
-                        foreach(CANopenSubObject subobj in canobj.CANopenSubObject)
-                        {
-                            ListViewItem lvi2 = new ListViewItem(subobj.SubIndex);
-                            lvi2.SubItems.Add(subobj.Name);
-
-                            ObjectType ot2 = (ObjectType)Convert.ToInt16(subobj.ObjectType, 16);
-                            lvi2.SubItems.Add(ot2.ToString());
-
-                            if(subobj.DataType==null)
-                            {
-                                 lvi2.SubItems.Add(" -- ");
-                            }
-                            else
-                            {
-                                 DataType  dt = (DataType)Convert.ToInt16(subobj.DataType, 16);
-                                 lvi2.SubItems.Add(dt.ToString());
-                            }
-
-                            if(subobj.AccessType==null)
-                            {
-                                lvi2.SubItems.Add(" -- ");
-                            }
-                            else
-                            {
-                                lvi2.SubItems.Add(subobj.AccessType);
-                            }
-
-                            lvi2.SubItems.Add(subobj.DefaultValue);
-
-                            if (subobj.PDOmapping == null)
-                            {
-                                lvi2.SubItems.Add(" -- ");
-                            }
-                            else
-                            {
-                                lvi2.SubItems.Add(subobj.PDOmapping);
-                            }
-
-                            lvi2.Tag = string.Format("{0:x4}/{1:x}", index,subobj.SubIndex);
-                            listViewDetails.Items.Add(lvi2);
-                        }
+                        lvi.SubItems.Add(" -- ");
                     }
+
+                    lvi.SubItems.Add(od.accesstype.ToString());
+                    lvi.SubItems.Add("");
+                    lvi.SubItems.Add(od.PDOMapping.ToString());
                 }
+
+                lvi.Tag = od;
+
+                listViewDetails.Items.Add(lvi);
+
+                foreach(KeyValuePair<UInt16,ODentry> kvp in od.subobjects)
+                {
+                    ODentry subod = kvp.Value;
+                    int subindex = kvp.Key;
+
+                    ListViewItem lvi2 = new ListViewItem(string.Format("{0:x}",subindex));
+                    lvi2.SubItems.Add(subod.parameter_name);
+                    lvi2.SubItems.Add(subod.objecttype.ToString());
+
+                    
+                    if (subod.datatype==DataType.UNKNOWN || (od.objecttype==ObjectType.REC && subod.subindex!=0))
+                    {
+                        lvi2.SubItems.Add(" -- ");
+                    }
+                    else
+                    {
+                        lvi2.SubItems.Add(subod.datatype.ToString());
+                    }
+
+                    if (subod.accesstype == EDSsharp.AccessType.UNKNOWN)
+                    {
+                        lvi2.SubItems.Add(" -- ");
+                    }
+                    else
+                    {
+                        lvi2.SubItems.Add(subod.accesstype.ToString());
+                    }
+
+                    lvi2.SubItems.Add(subod.defaultvalue);
+
+                    //fixe me ??
+                    lvi2.SubItems.Add(subod.PDOMapping.ToString());
+                    
+                    lvi2.Tag = subod;
+
+                    listViewDetails.Items.Add(lvi2);
+
+                }
+
             }
 
         }
@@ -307,7 +237,7 @@ namespace EDSTest
             UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
             updateselectedindexdisplay(idx);
 
-            selectedobject = selectedparent = getobjectforindex(idx);
+            selectedobject = eds.ods[idx];
             validateanddisplaydata();
 
 
@@ -321,7 +251,7 @@ namespace EDSTest
             updateselectedindexdisplay(idx);
 
 
-            selectedobject = selectedparent = getobjectforindex(idx);
+            selectedobject = eds.ods[idx];
             validateanddisplaydata();
         }
 
@@ -333,7 +263,7 @@ namespace EDSTest
 
             updateselectedindexdisplay(idx);
 
-            selectedobject = selectedparent = getobjectforindex(idx);
+            selectedobject = eds.ods[idx];
             validateanddisplaydata();
 
         }
@@ -378,252 +308,89 @@ namespace EDSTest
         private void listViewDetails_MouseClick(object sender, MouseEventArgs e)
         {
             ListViewItem lvi = listViewDetails.SelectedItems[0];
-            string tag = (string)lvi.Tag;
 
-            string[] bits = tag.Split('/');
+            ODentry od = (ODentry)lvi.Tag;
 
-            int index = -1;
-            int sub = -1;
-
-            if(bits.Length==1)
-            {
-                index = Convert.ToInt16(bits[0], 16);
-            }
-            else
-            {
-                index = Convert.ToInt16(bits[0], 16);
-                sub = Convert.ToInt16(bits[1]);
-            }
-
-            foreach (CANopenObject canobj in dev.CANopenObjectList.CANopenObject)
-            {
-                UInt16 obindex = Convert.ToUInt16(canobj.Index, 16);
-                if(index==obindex)
-                {
-                    if(sub==-1)
-                    {
-                        selectedobject = canobj;
-                        validateanddisplaydata();
-                        break;
-                    }
-                    else
-                    {
-                        foreach(CANopenSubObject subobj in canobj.CANopenSubObject)
-                        {
-                            if(Convert.ToInt16(subobj.SubIndex,16)==sub)
-                            {
-                                selectedobject = subobj;
-                                validateanddisplaydata();
-                                break;
-                            }
-                        }
-                    }
-                }
-
-            }
+            selectedobject = od;
+            validateanddisplaydata();
 
         }
 
         private void validateanddisplaydata()
         {
-            if(selectedobject.GetType()==typeof(CANopenObject))
+
+            ODentry od = (ODentry) selectedobject;
+
+            
+            label_index.Text = string.Format("0x{0:x4}",od.index);
+            textBox_name.Text = od.parameter_name;
+            comboBox_accesstype.SelectedItem = od.accesstype.ToString();
+
+            if (od.datatype != DataType.UNKNOWN)
             {
-                CANopenObject obj = (CANopenObject)selectedobject;
-                label_index.Text = obj.Index;
-                textBox_name.Text = obj.Name;
-                textBox_description.Text = obj.Description.Text.Replace("\n", "\r\n");
+                comboBox_datatype.SelectedItem = od.datatype.ToString();
+            }
+            else
+            {
+                if (od.objecttype == ObjectType.REC)
+                {
+                    if(od.subobjects.Count>=2)
+                    {
+                        comboBox_datatype.SelectedItem = od.subobjects[1].datatype.ToString();
+                    }
 
-                if (obj.AccessType != null)
-                {
-                    EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), obj.AccessType.Replace("const", "cons"));
-                    comboBox_accesstype.SelectedItem = at.ToString();
-                }
-                else
-                {
-                    comboBox_accesstype.SelectedItem = "";
-                }
-
-                DataType dt=DataType.UNKNOWN;
-                if (obj.DataType != null)
-                {
-                    dt = (DataType)Convert.ToInt16(obj.DataType, 16);
-                    comboBox_datatype.SelectedItem = dt.ToString();
                 }
                 else
                 {
                     comboBox_datatype.SelectedItem = "";
                 }
+            }
 
-                ObjectType ot = ObjectType.UNKNOWN;
+            comboBox_objecttype.SelectedItem = od.objecttype.ToString();
+            textBox_description.Text = od.Description.Replace("\n", "\r\n");
+            //FIXME //comboBox_pdomap.SelectedItem = od.PDOmapping;
 
-                if (obj.ObjectType != null)
-                {
-                    ot = (ObjectType)Convert.ToInt16(obj.ObjectType, 16);
-                    comboBox_objecttype.SelectedItem = ot.ToString();
-                }
-                else
-                {
-                    comboBox_objecttype.SelectedItem = "";
-                }
+            checkBox_COS.Checked = od.TPDODetectCos;
+            textBox_accessfunctionname.Text = od.AccessFunctionName;
+            textBox_precode.Text = od.AccessFunctionPreCode;
+            checkBox_enabled.Checked = !od.Disabled;
 
-                if(obj.PDOmapping!=null)
-                {
-                    comboBox_pdomap.SelectedItem = obj.PDOmapping;
-                }
-                else
-                {
-                    comboBox_pdomap.SelectedItem = "";
+            comboBox_memory.SelectedItem = od.location.ToString();
+     
+            textBox_accessfunctionname.Enabled = true;
+            textBox_precode.Enabled = true;
+            checkBox_enabled.Enabled = true;
+            comboBox_memory.Enabled = true;
 
-                }
+            textBox_defaultvalue.Enabled = true;
 
-                checkBox_COS.Enabled = true;
-                if(obj.TPDOdetectCOS!=null)
-                {
-                    checkBox_COS.Checked = obj.TPDOdetectCOS == "true";
-                }
+            comboBox_accesstype.Enabled = true;
+            comboBox_datatype.Enabled = true;
+            comboBox_objecttype.Enabled = false; 
+            comboBox_pdomap.Enabled = true;
 
-                if(obj.AccessFunctionName!=null)
-                {
-                    textBox_accessfunctionname.Text = obj.AccessFunctionName;
-                }
-                else
-                {
-                    textBox_accessfunctionname.Text = "";
-                }
+            textBox_defaultvalue.Text = od.defaultvalue;
 
-
-                if(obj.AccessFunctionPreCode!=null)
-                {
-                    textBox_precode.Text = obj.AccessFunctionPreCode;
-                }
-                else
-                {
-                    textBox_precode.Text = "";
-                }
-
-                if (obj.Disabled != null)
-                {
-                    checkBox_enabled.Enabled = true;
-                    checkBox_enabled.Checked = obj.Disabled == "false";
-                }
-                else
-                {
-                    checkBox_enabled.Enabled = false;
-                }
-
-                if(obj.MemoryType!=null)
-                {
-                    comboBox_memory.SelectedItem = obj.MemoryType;
-                }
-                else
-                {
-                    comboBox_memory.SelectedItem = "";
-                }
-
-
-                textBox_accessfunctionname.Enabled = true;
-                textBox_precode.Enabled = true;
-                checkBox_enabled.Enabled = true;
-                comboBox_memory.Enabled = true;
-
-
+            if(od.parent!=null && ((od.parent.objecttype==ObjectType.ARRAY && od.subindex==0) ||(od.parent.objecttype==ObjectType.REC)))
+            {
+                textBox_defaultvalue.Enabled = false;
+                comboBox_accesstype.Enabled = false;
+                comboBox_datatype.Enabled = false;
+                comboBox_objecttype.Enabled = false;
+                comboBox_pdomap.Enabled = false;
+            }
+            else
+            {
                 textBox_defaultvalue.Enabled = true;
-
                 comboBox_accesstype.Enabled = true;
                 comboBox_datatype.Enabled = true;
-                comboBox_objecttype.Enabled = false; 
+                comboBox_objecttype.Enabled = false;
                 comboBox_pdomap.Enabled = true;
-               
-
             }
 
-            if (selectedobject.GetType() == typeof(CANopenSubObject))
-            {
-                 CANopenSubObject obj = (CANopenSubObject)selectedobject;;
 
-                 ObjectType parent_ot = ObjectType.UNKNOWN;                 
-                 CANopenObject parent = selectedparent;
-                 if (parent.ObjectType != null)
-                 {
-                     parent_ot = (ObjectType)Convert.ToInt16(parent.ObjectType, 16);
-                 }
 
-                 textBox_name.Text = obj.Name;
-
-                 if (obj.AccessType != null)
-                 {
-                     EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), obj.AccessType.Replace("const", "cons"));
-                     comboBox_accesstype.SelectedItem = at.ToString();
-                 }
-                 else
-                 {
-                     comboBox_accesstype.SelectedItem = "";
-                 }
-
-                 if (obj.DataType != null)
-                 {
-                     DataType dt = (DataType)Convert.ToInt16(obj.DataType, 16);
-                     comboBox_datatype.SelectedItem = dt.ToString();
-                 }
-                 else
-                 {
-                     comboBox_datatype.SelectedItem = "";
-                 }
-
-                 if (obj.ObjectType != null)
-                 {
-                     ObjectType ot = (ObjectType)Convert.ToInt16(obj.ObjectType, 16);
-                     comboBox_objecttype.SelectedItem = ot.ToString();
-                 }
-                 else
-                 {
-                     comboBox_objecttype.SelectedItem = "";
-                 }
-
-                 if (obj.PDOmapping != null)
-                 {
-                     comboBox_pdomap.SelectedItem = obj.PDOmapping;
-                 }
-                 else
-                 {
-                     comboBox_pdomap.SelectedItem = "";
-
-                 }
-
-                if(obj.DefaultValue!=null)
-                {
-                    textBox_defaultvalue.Text = obj.DefaultValue;
-                }
-
-                //fixme should this be set by parent???
-     
-                checkBox_COS.Enabled = false;
-
-                textBox_accessfunctionname.Enabled = false;
-                textBox_precode.Enabled = false;
-                checkBox_enabled.Enabled = false;
-                comboBox_memory.Enabled=false;
-
-                if((parent_ot==ObjectType.ARRAY && Convert.ToInt16(obj.SubIndex,16)==0) || parent_ot==ObjectType.REC)
-                {
-                        textBox_defaultvalue.Enabled = false;
-                        comboBox_accesstype.Enabled = false;
-                        comboBox_datatype.Enabled = false;
-                        comboBox_objecttype.Enabled = false;
-                        comboBox_pdomap.Enabled = false;
-
-                    }
-                    else
-                    {
-                        textBox_defaultvalue.Enabled = true;
-                        comboBox_accesstype.Enabled = true;
-                        comboBox_datatype.Enabled = true;
-                        comboBox_objecttype.Enabled = false;
-                        comboBox_pdomap.Enabled = true;
-                    }
-                
-  
-            }
+            return;
 
         }
     }

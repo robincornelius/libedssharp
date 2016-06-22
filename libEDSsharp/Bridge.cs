@@ -26,11 +26,11 @@ namespace libEDSsharp
 
             /* OBJECT DICTIONARY */
 
-            foreach(KeyValuePair<string,ODentry> kvp in eds.ods)
+            foreach(KeyValuePair<UInt16,ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
 
-                if(od.subindex==-1)
+               // if(od.subindex==-1)
                 {
                     CANopenObject coo = new CANopenObject();
                     coo.Index =string.Format("{0:x4}",od.index);
@@ -51,25 +51,22 @@ namespace libEDSsharp
                     {
                         coo.SubNumber = od.nosubindexes.ToString(); //-1?? //check me 
                         coo.CANopenSubObject = new List<CANopenSubObject>();
-                        for(int p=0;p<od.nosubindexes;p++)
+
+                        foreach(KeyValuePair<UInt16,ODentry> kvp2 in od.subobjects)
                         {
+                            ODentry subod = kvp2.Value;
+                   
                             CANopenSubObject sub = new CANopenSubObject();
 
-                            ODentry subod;
+                            sub.Name = subod.parameter_name;
+                            sub.ObjectType = subod.objecttype.ToString();
+                            sub.AccessType = subod.accesstype.ToString();
+                            sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
+                            sub.DefaultValue = subod.defaultvalue;
+                            sub.PDOmapping = subod.PDOMapping.ToString();
 
-                            string subidx = string.Format("{0:x4}/{1}", od.index,p);
-                            if(eds.ods.ContainsKey(subidx))
-                            {
-                                subod = eds.ods[subidx];
-                                sub.Name = subod.parameter_name;
-                                sub.ObjectType = subod.objecttype.ToString();
-                                sub.AccessType = subod.accesstype.ToString();
-                                sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
-                                sub.DefaultValue = subod.defaultvalue;
-                                sub.PDOmapping = subod.PDOMapping.ToString();
-
-                                coo.CANopenSubObject.Add(sub);
-                            }                      
+                            coo.CANopenSubObject.Add(sub);
+                                                 
                         }
                     }
 
@@ -150,7 +147,7 @@ namespace libEDSsharp
             foreach(CANopenObject coo in dev.CANopenObjectList.CANopenObject)
             {
                 ODentry entry = new ODentry();
-                entry.index = Convert.ToInt16(coo.Index, 16);
+                entry.index = Convert.ToUInt16(coo.Index, 16);
                 entry.parameter_name = coo.Name;
 
                 if (coo.AccessType != null)
@@ -172,7 +169,6 @@ namespace libEDSsharp
 
                 entry.defaultvalue = coo.DefaultValue;
                 entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
-                entry.subindex = -1;
                 entry.PDOMapping = coo.PDOmapping!="no";
 
                 entry.AccessFunctionName = coo.AccessFunctionName;
@@ -182,7 +178,7 @@ namespace libEDSsharp
                 entry.Label = coo.Label.Text; //FIXME LANG
                 entry.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), coo.MemoryType);
                 
-                eds.ods.Add(String.Format("{0:x4}", entry.index), entry);
+                eds.ods.Add(entry.index, entry);
 
                 if (entry.index == 0x1000 || entry.index==0x1001 || entry.index==0x1018)
                 {
@@ -201,7 +197,7 @@ namespace libEDSsharp
                 
                 foreach(CANopenSubObject coosub in coo.CANopenSubObject)
                 {
-                    int subno;
+
                     ODentry subentry = new ODentry();
                     //entry.index = Convert.ToInt16(coosub.Index, 16);
 
@@ -218,14 +214,14 @@ namespace libEDSsharp
                     }
 
                     subentry.defaultvalue = coosub.DefaultValue;
-                    subentry.subindex = Convert.ToInt16(coosub.SubIndex, 16);
+                    subentry.subindex = Convert.ToUInt16(coosub.SubIndex, 16);
                     
                     if(coosub.PDOmapping!=null)
                         subentry.PDOMapping = coosub.PDOmapping != "no";
 
                     entry.subobjects.Add(subentry.subindex,subentry);
 
-                    eds.ods.Add(String.Format("{0:x4}/{1}", entry.index, subentry.subindex), subentry);
+                    //eds.ods.Add(String.Format("{0:x4}/{1}", entry.index, subentry.subindex), subentry);
                 }
             }
 

@@ -25,7 +25,7 @@ namespace libEDSsharp
 
         private void print_h_bylocation(StreamWriter file,StorageLocation location)
         {
-            foreach (KeyValuePair<string, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
 
@@ -39,7 +39,7 @@ namespace libEDSsharp
                 
                 if (od.nosubindexes == 0)
                 {
-                    if (od.subindex == -1)
+                    //if (od.subindex == -1)
                     {
                         file.WriteLine(string.Format("/*{0:x4}      */ {1} {2};", od.index, od.datatype.ToString(), od.paramater_cname()));
                     }
@@ -251,14 +251,11 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
    ALIASES FOR OBJECT DICTIONARY VARIABLES
 *******************************************************************************/");
 
-            foreach (KeyValuePair<string, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
                 
                 ODentry od = kvp.Value;
-
-                if(od.subindex!=-1)
-                    continue;
 
                 string loc = getlocation(od.location);
               
@@ -275,15 +272,13 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
                     file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(),od.nosubindexes-1));
                     file.WriteLine(string.Format("        #define OD_{0}             {1}.{2}", od.paramater_cname(), loc, od.paramater_cname()));
                     file.WriteLine(string.Format("        #define ODL_{0}_arrayLength             {1}", od.paramater_cname(),od.nosubindexes-1));
-                    for(int p=1;p<od.nosubindexes;p++)
+                    
+                    foreach(KeyValuePair<UInt16,ODentry> kvp2 in od.subobjects)
                     {
-                        string subidx = string.Format("{0:x4}/{1}", od.index,p);
-                        if(eds.ods.ContainsKey(subidx))
-                        {
-                            ODentry sub = eds.ods[subidx];
-                            file.WriteLine(string.Format("        #define ODA_{0}_{1}       {2}", od.paramater_cname(), sub.paramater_cname(),p-1));
-                           
-                        }
+                        ODentry sub = kvp2.Value;
+
+                        file.WriteLine(string.Format("        #define ODA_{0}_{1}       {2}", od.paramater_cname(), sub.paramater_cname(),sub.subindex));
+        
                     }
                 }
 
@@ -378,11 +373,9 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
 
             //TODO Export OD
 
-            foreach (KeyValuePair<string, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
-                if (od.subindex != -1) ///ARRRG fixme
-                    continue;
 
                 string loc = getlocation(od.location);
 
@@ -476,11 +469,9 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
         void export_OD_def_array(StreamWriter file,StorageLocation location)
         {
 
-            foreach (KeyValuePair<string, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
-                if (od.subindex != -1) ///ARRRG fixme
-                    continue;
 
                 if ((od.location != location))
                 {
@@ -495,31 +486,31 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
                 else
                 {
                     file.Write(string.Format("/*{0:x4}*/ {{", od.index));
-                    for (int p = 1; p < od.nosubindexes; p++)
+
+                    foreach(KeyValuePair<UInt16,ODentry> kvp2 in od.subobjects)
                     {
-                        string subidx = string.Format("{0:x4}/{1}", od.index, p);
-                        if (eds.ods.ContainsKey(subidx))
+                        ODentry sub = kvp.Value;
+
+                        switch (sub.datatype)
                         {
-                            ODentry sub = eds.ods[subidx];
-                            switch (sub.datatype)
-                            {
-                                case DataType.UNSIGNED32:
-                                case DataType.INTEGER32:
-                                    file.Write(String.Format("{0}L", sub.defaultvalue));
-                                    break;
+                            case DataType.UNSIGNED32:
+                            case DataType.INTEGER32:
+                                file.Write(String.Format("{0}L", sub.defaultvalue));
+                                break;
 
-                                //FIXME EXPORT FOR REAL DATATYPES ETC 
+                            //FIXME EXPORT FOR REAL DATATYPES ETC 
+                            default:
+                                file.Write(String.Format("{0}", sub.defaultvalue));
+                                break;
 
-                                default:
-                                    file.Write(String.Format("{0}", sub.defaultvalue));
-                                    break;
+                         }
 
-                            }
+                            //fix me extra comma
+                            //if (p < od.nosubindexes - 1)
+                            //    file.Write(",");
 
-                            if (p < od.nosubindexes - 1)
-                                file.Write(",");
                         }
-                    }
+                
                     file.WriteLine("},");
                 }
             }

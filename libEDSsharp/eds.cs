@@ -576,9 +576,9 @@ namespace libEDSsharp
     public class ODentry
     {
         [EdsExport]
-        public int index;
+        public UInt16 index;
         [EdsExport]
-        public int subindex=-1;
+        public UInt16 subindex;
         [EdsExport]
         public int nosubindexes;
         [EdsExport]
@@ -597,9 +597,10 @@ namespace libEDSsharp
         //CanOpenNode specific extra storage
         public string Label = "";
         public string Description = "";
-        
-        public StorageLocation location;
-        public Dictionary<int, ODentry> subobjects = new Dictionary<int, ODentry>();
+
+        public StorageLocation location = StorageLocation.RAM;
+        public Dictionary<UInt16, ODentry> subobjects = new Dictionary<UInt16, ODentry>();
+        public ODentry parent = null;
 
         public string AccessFunctionName = "";
         public string AccessFunctionPreCode ="";
@@ -614,14 +615,13 @@ namespace libEDSsharp
         }
 
         //Constructor for a simple VAR type
-        public ODentry(string parameter_name,Int16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
+        public ODentry(string parameter_name,UInt16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
         {
             this.parameter_name = parameter_name;
             this.index = index;
             this.objecttype = ObjectType.VAR;
             this.datatype = datatype;
             this.defaultvalue = defaultvalue;
-            this.subindex = -1;
 
 
             if (accesstype >= EDSsharp.AccessType_Min && accesstype <= EDSsharp.AccessType_Max)
@@ -633,7 +633,7 @@ namespace libEDSsharp
         }
 
         //SubIndex type
-        public ODentry(string parameter_name, Int16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
+        public ODentry(string parameter_name, UInt16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
         {
             this.parameter_name = parameter_name;
             this.index = index;
@@ -651,12 +651,11 @@ namespace libEDSsharp
         }
 
         //Array subindex type
-        public ODentry(string parameter_name,Int16 index, byte nosubindex)
+        public ODentry(string parameter_name,UInt16 index, byte nosubindex)
         {
             this.parameter_name = parameter_name;
             this.objecttype = ObjectType.ARRAY;
             this.index = index;
-            this.subindex = -1;
             this.nosubindexes = nosubindex;
             this.objecttype = ObjectType.VAR;     
         }
@@ -678,7 +677,7 @@ namespace libEDSsharp
         public void write(StreamWriter writer)
         {
 
-            if (subindex != -1)
+            if (parent!=null)
             {
                 writer.WriteLine(string.Format("[{0:X}sub{1}]", index,subindex));
             }
@@ -731,13 +730,14 @@ namespace libEDSsharp
             rwr = 3,
             rww = 4,
             cons = 5,
+            UNKNOWN
         }
 
         public const AccessType AccessType_Min = AccessType.rw;
         public const AccessType AccessType_Max = AccessType.cons;
 
         Dictionary<string, Dictionary<string, string>> eds;
-        public Dictionary<string, ODentry> ods;
+        public Dictionary<UInt16, ODentry> ods;
         public FileInfo fi;
         public DeviceInfo di;
         public MandatoryObjects md;
@@ -749,7 +749,7 @@ namespace libEDSsharp
         public EDSsharp()
         {
             eds = new Dictionary<string, Dictionary<string, string>>();
-            ods = new Dictionary<string,ODentry>();
+            ods = new Dictionary<UInt16, ODentry>();
 
             fi = new FileInfo();
             di = new DeviceInfo();
@@ -789,24 +789,6 @@ namespace libEDSsharp
         }
 
         string sectionname = "";
-
-        public ODentry getentryforindex(UInt16 index,Int16 sub)
-        {
-
-            string test = "";
-            if (sub == -1)
-                test = string.Format("{0:x4}", index);
-            else
-            {
-                test = string.Format("{0:x4}/{1}", index,sub);
-            }
-
-            if (ods.ContainsKey(test))
-                return ods[test];
-
-            return null;
-
-        }
 
         public void parseline(string linex)
         {
@@ -896,7 +878,7 @@ namespace libEDSsharp
                     od.objecttype = ObjectType.VAR;
                 }
 
-                od.index = Convert.ToInt16(m.Groups[1].ToString(), 16);
+                od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
 
                 if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                 {
@@ -909,11 +891,11 @@ namespace libEDSsharp
                     if (m.Groups[3].Length != 0)
                     {
                         Console.WriteLine(m.Groups[3].ToString());
-                        od.subindex = Convert.ToInt16(m.Groups[3].ToString());
-                        ods[String.Format("{0:x4}", od.index)].subobjects.Add(od.subindex,od);
+                        od.subindex = Convert.ToUInt16(m.Groups[3].ToString());
+                        od.parent = ods[od.index];
+                        ods[od.index].subobjects.Add(od.subindex,od);
                     }
-                    else
-                        od.subindex = -1;
+
 
                     if(!kvp.Value.ContainsKey("DataType"))
                         throw new ParameterException("Missing required field DataType on" + section);
@@ -944,13 +926,11 @@ namespace libEDSsharp
 
                 }
 
-                string idx;
-                if (od.subindex == -1)
-                    idx = string.Format("{0:x4}", od.index);
-                else
-                    idx = string.Format("{0:x4}/{1}", od.index, od.subindex);
-
-                ods.Add(idx,od);
+                //Only add top level to this list
+                if (m.Groups[3].Length == 0)
+                {
+                    ods.Add(od.index, od);
+                }
             }
 
         }
@@ -993,7 +973,7 @@ namespace libEDSsharp
             c.write(writer);
             md.write(writer);
 
-            foreach(KeyValuePair<string,ODentry> kvp in ods)
+            foreach(KeyValuePair<UInt16,ODentry> kvp in ods)
             {
                 ODentry od = kvp.Value;
                 if (md.objectlist.ContainsValue(od.index))
@@ -1004,7 +984,7 @@ namespace libEDSsharp
 
             oo.write(writer);
 
-            foreach (KeyValuePair<string, ODentry> kvp in ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
             {
                 ODentry od = kvp.Value;
                 if (oo.objectlist.ContainsValue(od.index))
@@ -1015,7 +995,7 @@ namespace libEDSsharp
 
             mo.write(writer);
 
-            foreach (KeyValuePair<string, ODentry> kvp in ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
             {
                 ODentry od = kvp.Value;
                 if (mo.objectlist.ContainsValue(od.index))
@@ -1033,20 +1013,20 @@ namespace libEDSsharp
         {
             if (od.objecttype == ObjectType.VAR)
             {
-                if (od.subindex == -1)
+                if (od.parent==null)
                     return od.datatype;
             }
 
             if (od.objecttype == ObjectType.ARRAY)
             {
-                ODentry sub2 = ods[string.Format("{0:x4}/1", od.index)];
+                ODentry sub2 = ods[od.index];
                 DataType t = sub2.datatype;
                 return t;
             }
 
             if (od.objecttype == ObjectType.REC) //NOT SURE????
             {
-                ODentry sub2 = ods[string.Format("{0:x4}/1", od.index)];
+                ODentry sub2 = ods[od.index];
                 DataType t = sub2.datatype;
                 return t;
             }
