@@ -22,6 +22,7 @@ namespace libEDSsharp
         {
             Device dev = new Device();
             dev.CANopenObjectList = new CANopenObjectList();
+            dev.CANopenObjectList.CANopenObject = new List<CANopenObject>();
 
             /* OBJECT DICTIONARY */
 
@@ -39,9 +40,11 @@ namespace libEDSsharp
                     if(od.objecttype==ObjectType.VAR)
                     {
                         coo.AccessType = od.accesstype.ToString();
-                        coo.DataType = string.Format("0x{0:x2}",od.datatype);
+                        coo.DataType = string.Format("0x{0:x2}",(int)od.datatype);
                         coo.DefaultValue = od.defaultvalue;
-                        coo.PDOmapping = od.PDOMapping.ToString();                 
+                        coo.PDOmapping = od.PDOMapping.ToString(); 
+                
+                        
                     }
 
                     if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
@@ -61,7 +64,7 @@ namespace libEDSsharp
                                 sub.Name = subod.parameter_name;
                                 sub.ObjectType = subod.objecttype.ToString();
                                 sub.AccessType = subod.accesstype.ToString();
-                                sub.DataType = string.Format("0x{0:x2}", subod.datatype);
+                                sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
                                 sub.DefaultValue = subod.defaultvalue;
                                 sub.PDOmapping = subod.PDOMapping.ToString();
 
@@ -80,6 +83,7 @@ namespace libEDSsharp
             
             dev.Other = new Other();
             dev.Other.DummyUsage = new DummyUsage();
+            dev.Other.DummyUsage.Dummy = new List<Dummy>();
 
             Dummy d; 
 
@@ -107,6 +111,8 @@ namespace libEDSsharp
 
 
             SupportedBaudRate baud = new SupportedBaudRate();
+            dev.Other.BaudRate = new BaudRate();
+            dev.Other.BaudRate.SupportedBaudRate = new List<SupportedBaudRate>();
 
             baud.Value="10 Kbps";
             if (eds.di.BaudRate_10 == true)
@@ -164,12 +170,18 @@ namespace libEDSsharp
 
                 entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType),coo.ObjectType);
 
-
                 entry.defaultvalue = coo.DefaultValue;
                 entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
                 entry.subindex = -1;
                 entry.PDOMapping = coo.PDOmapping!="no";
 
+                entry.AccessFunctionName = coo.AccessFunctionName;
+                entry.AccessFunctionPreCode = coo.AccessFunctionPreCode;
+                entry.Disabled = coo.Disabled == "true";
+                entry.Description = coo.Description.Text; //FIXME URL/LANG
+                entry.Label = coo.Label.Text; //FIXME LANG
+                entry.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), coo.MemoryType);
+                
                 eds.ods.Add(String.Format("{0:x4}", entry.index), entry);
 
                 if (entry.index == 0x1000 || entry.index==0x1001 || entry.index==0x1018)
@@ -211,10 +223,10 @@ namespace libEDSsharp
                     if(coosub.PDOmapping!=null)
                         subentry.PDOMapping = coosub.PDOmapping != "no";
 
+                    entry.subobjects.Add(subentry.subindex,subentry);
+
                     eds.ods.Add(String.Format("{0:x4}/{1}", entry.index, subentry.subindex), subentry);
                 }
-
-
             }
 
             eds.du.Dummy0001 = dev.Other.DummyUsage.Dummy[0].Entry == "Dummy0001=1";

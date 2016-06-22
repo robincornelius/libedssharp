@@ -82,6 +82,11 @@ namespace libEDSsharp
         EEPROM=3,
     }
 
+  
+    public class EdsExport : Attribute
+    {
+    }
+
     public class InfoSection
     {
         protected Dictionary<string, string> section;
@@ -98,7 +103,8 @@ namespace libEDSsharp
 
             foreach (FieldInfo f in fields)
             {
-                getField(f.Name, f.Name);
+                if(Attribute.IsDefined(f, typeof(EdsExport)))
+                    getField(f.Name, f.Name);
             }
 
         }
@@ -385,12 +391,19 @@ namespace libEDSsharp
 
     public class Dummyusage : InfoSection
     {
+        [EdsExport]
         public bool Dummy0001;
+        [EdsExport]
         public bool Dummy0002;
+        [EdsExport]
         public bool Dummy0003;
+        [EdsExport]
         public bool Dummy0004;
+        [EdsExport]
         public bool Dummy0005;
+        [EdsExport]
         public bool Dummy0006;
+        [EdsExport]
         public bool Dummy0007;
 
  
@@ -410,24 +423,38 @@ namespace libEDSsharp
 
     public class FileInfo : InfoSection
     {
+        [EdsExport]
         public string FileName;//=example_objdict.eds
+        [EdsExport]
         public byte FileVersion;//=1
+        [EdsExport]
         public byte FileRevision;//=1
 
+        [EdsExport]
         public byte EDSVersionMajor;//=4.0
+        [EdsExport]
         public byte EDSVersionMinor;//=4.0
+        [EdsExport]
         public string EDSVersion;
 
+        [EdsExport]
         public string Description;//= //max 243 characters
+
         public DateTime CreationDateTime;//
+        [EdsExport]
         public string CreationTime;
+        [EdsExport]
         public string CreationDate;
 
+        [EdsExport]
         public string CreatedBy;//=CANFestival //max245
-        public DateTime ModificationDateTime;//
-        public string ModificationTime;
-        public string ModificationDate;
 
+        public DateTime ModificationDateTime;//
+        [EdsExport]
+        public string ModificationTime;
+        [EdsExport]
+        public string ModificationDate;
+        [EdsExport]
         public string ModifiedBy;//=CANFestival //max244
 
         public FileInfo(Dictionary<string, string> section)
@@ -478,34 +505,56 @@ namespace libEDSsharp
     public class DeviceInfo : InfoSection
     {
 
+        [EdsExport]
         public string VendorName;
+        [EdsExport]
         public UInt32 VendorNumber;
 
+        [EdsExport]
         public string ProductName;
+        [EdsExport]
         public UInt32 ProductNumber;
+        [EdsExport]
         public UInt32 RevisionNumber;
 
+        [EdsExport]
         public bool BaudRate_10;
+        [EdsExport]
         public bool BaudRate_20;
+        [EdsExport]
         public bool BaudRate_50;
+        [EdsExport]
         public bool BaudRate_125;
+        [EdsExport]
         public bool BaudRate_250;
+        [EdsExport]
         public bool BaudRate_500;
+        [EdsExport]
         public bool BaudRate_800;
+        [EdsExport]
         public bool BaudRate_1000;
 
-        public  bool SimpleBootUpMaster;
+        [EdsExport]
+        public bool SimpleBootUpMaster;
+        [EdsExport]
         public bool SimpleBootUpSlave;
 
+        [EdsExport]
         public byte Granularity;
+        [EdsExport]
         public bool DynamicChannelsSupported;
 
+        [EdsExport]
         public bool CompactPDO;
 
+        [EdsExport]
         public bool GroupMessaging;
+        [EdsExport]
         public UInt16 NrOfRXPDO;
+        [EdsExport]
         public UInt16 NrOfTXPDO;
 
+        [EdsExport]
         public bool LSS_Supported;
 
         public DeviceInfo(Dictionary<string, string> section)
@@ -526,16 +575,38 @@ namespace libEDSsharp
 
     public class ODentry
     {
+        [EdsExport]
         public int index;
+        [EdsExport]
         public int subindex=-1;
+        [EdsExport]
         public int nosubindexes;
+        [EdsExport]
         public string parameter_name;
+        [EdsExport]
         public ObjectType objecttype;
+        [EdsExport]
         public DataType datatype;
+        [EdsExport]
         public EDSsharp.AccessType accesstype;
+        [EdsExport]
         public string defaultvalue;
+        [EdsExport]
         public bool PDOMapping;
+
+        //CanOpenNode specific extra storage
+        public string Label = "";
+        public string Description = "";
+        
         public StorageLocation location;
+        public Dictionary<int, ODentry> subobjects = new Dictionary<int, ODentry>();
+
+        public string AccessFunctionName = "";
+        public string AccessFunctionPreCode ="";
+
+        public bool Disabled = false;
+
+        public bool TPDODetectCos = false;
 
         public ODentry()
         {
@@ -551,6 +622,7 @@ namespace libEDSsharp
             this.datatype = datatype;
             this.defaultvalue = defaultvalue;
             this.subindex = -1;
+
 
             if (accesstype >= EDSsharp.AccessType_Min && accesstype <= EDSsharp.AccessType_Max)
                 this.accesstype = accesstype;
@@ -838,6 +910,7 @@ namespace libEDSsharp
                     {
                         Console.WriteLine(m.Groups[3].ToString());
                         od.subindex = Convert.ToInt16(m.Groups[3].ToString());
+                        ods[String.Format("{0:x4}", od.index)].subobjects.Add(od.subindex,od);
                     }
                     else
                         od.subindex = -1;
