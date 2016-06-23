@@ -113,7 +113,6 @@
             // 
             // exportCanOpenNodeToolStripMenuItem
             // 
-            this.exportCanOpenNodeToolStripMenuItem.Enabled = false;
             this.exportCanOpenNodeToolStripMenuItem.Name = "exportCanOpenNodeToolStripMenuItem";
             this.exportCanOpenNodeToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
             this.exportCanOpenNodeToolStripMenuItem.Text = "Export CanOpenNode c/h";

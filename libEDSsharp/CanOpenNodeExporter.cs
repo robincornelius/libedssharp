@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -124,9 +125,47 @@ namespace libEDSsharp
 
             addGPLheader(file);
 
-
-            file.WriteLine("");
             file.WriteLine("#pramga once");
+            file.WriteLine("");
+
+            file.WriteLine(@"/*******************************************************************************
+   CANopen DATA DYPES
+*******************************************************************************/
+   typedef uint8_t      UNSIGNED8;
+   typedef uint16_t     UNSIGNED16;
+   typedef uint32_t     UNSIGNED32;
+   typedef uint64_t     UNSIGNED64;
+   typedef int8_t       INTEGER8;
+   typedef int16_t      INTEGER16;
+   typedef int32_t      INTEGER32;
+   typedef int64_t      INTEGER64;
+   typedef float32_t    REAL32;
+   typedef float64_t    REAL64;
+   typedef char_t       VISIBLE_STRING;
+   typedef oChar_t      OCTET_STRING;
+   typedef domain_t     DOMAIN;
+
+");
+
+            file.WriteLine("/*******************************************************************************");
+            file.WriteLine("   FILE INFO:");
+            file.WriteLine(string.Format("      FileName:     {0}",eds.fi.FileName));
+            file.WriteLine(string.Format("      FileVersion:  {0}",eds.fi.FileVersion));
+            file.WriteLine(string.Format("      CreationTime: {0}",eds.fi.CreationTime));
+            file.WriteLine(string.Format("      CreationDate: {0}",eds.fi.CreationDate));
+            file.WriteLine(string.Format("      CreatedBy:    {0}",eds.fi.CreatedBy));
+            file.WriteLine("/******************************************************************************/");
+            file.WriteLine("");
+            file.WriteLine("");
+
+            file.WriteLine("/*******************************************************************************");
+            file.WriteLine("   DEVICE INFO:");
+            file.WriteLine(string.Format("      VendorName:     {0}", eds.di.VendorName));
+            file.WriteLine(string.Format("      VendorNumber    {0}", eds.di.VendorNumber));
+            file.WriteLine(string.Format("      ProductName:    {0}", eds.di.ProductName));
+            file.WriteLine(string.Format("      ProductNumber:  {0}", eds.di.ProductNumber));
+            file.WriteLine("/******************************************************************************/");
+            file.WriteLine("");
             file.WriteLine("");
 
             //FIX ME features should auto generate
@@ -147,10 +186,12 @@ namespace libEDSsharp
             //FIX ME we need to count the elements here
             file.WriteLine(@"/*******************************************************************************
    OBJECT DICTIONARY
-*******************************************************************************/
-   #define CO_OD_NoOfElements             65
+*******************************************************************************/");
+            file.WriteLine(string.Format("   #define CO_OD_NoOfElements             {0}",eds.ods.Count));
+            file.WriteLine("");
+            file.WriteLine("");
 
-");
+
 
             file.WriteLine(@"/*******************************************************************************
    TYPE DEFINITIONS FOR RECORDS
@@ -289,17 +330,57 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
                 }
                 else
                 {
+                    
                     //ARRAY TYPES SUBS ONLY FIXME
+
+                    if(od.index==0x2120)
+                    {
+                        int x = 0;
+                        x++;
+                    }
+
+                    DataType dt = od.datatype;
+
+                    if(dt==DataType.UNKNOWN)
+                    {
+
+                    }
+
+
                     file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(),od.nosubindexes-1));
                     file.WriteLine(string.Format("        #define OD_{0}             {1}.{2}", od.paramater_cname(), loc, od.paramater_cname()));
                     file.WriteLine(string.Format("        #define ODL_{0}_arrayLength             {1}", od.paramater_cname(),od.nosubindexes-1));
-                    
-                    foreach(KeyValuePair<UInt16,ODentry> kvp2 in od.subobjects)
-                    {
-                        ODentry sub = kvp2.Value;
 
-                        file.WriteLine(string.Format("        #define ODA_{0}_{1}       {2}", od.paramater_cname(), sub.paramater_cname(),sub.subindex));
-        
+
+                    if (od.objecttype != ObjectType.ARRAY)
+                    {
+                        List <string> ODAs = new List<string>();
+
+                        string ODAout = "";
+
+                        foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
+                        {
+                            ODentry sub = kvp2.Value;
+
+                            if (sub.subindex == 0)
+                                continue;
+
+                            string ODA = string.Format("ODA_{0}_{1}", od.paramater_cname(), sub.paramater_cname());
+
+                            if (ODAs.Contains(ODA))
+                            {
+                                ODAout = "";
+                                break;
+                            }
+
+                            ODAs.Add(ODA);
+
+
+                            ODAout+=(string.Format("        #define ODA_{0}_{1}       {2}\r\n", od.paramater_cname(), sub.paramater_cname(), sub.subindex));
+
+                        }
+
+                        file.Write(ODAout);
                     }
                 }
 
@@ -448,14 +529,22 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
                 if(datasize>1)
                    flags |= 0x80;
 
-         
-                string odf = "CO_ODF"; //FIXME what to do here??
+                string odf;
+
+                if (od.AccessFunctionName != null)
+                {
+                    odf = od.AccessFunctionName;
+                }
+                else
+                {
+                    odf = "CO_ODF";
+                }
 
                 string array = "";
                 if (od.nosubindexes > 0)
-                    array = string.Format("[{0}]", od.nosubindexes-1);
+                    array = string.Format("[0]");
 
-                file.WriteLine(string.Format("{{{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (const void*)&{4}.{5}{6},      {7}}},", od.index, od.nosubindexes, flags, datasize, loc, od.paramater_cname(), array, odf));
+                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (const void*)&{4}.{5}{6},      {7}}},", od.index, od.nosubindexes, flags, datasize, loc, od.paramater_cname(), array, odf));
 
             }
 
@@ -487,6 +576,115 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
             return loc;
         }
 
+        string formatvaluewithdatatype(string defaultvalue, DataType dt)
+        {
+            int nobase = 10;
+            bool nodeidreplace = false;
+            
+            if(defaultvalue.Contains("$NODEID"))
+            {
+                defaultvalue=defaultvalue.Replace("$NODEID", "");
+                defaultvalue=defaultvalue.Replace("+", "");
+                nodeidreplace = true; 
+            }
+
+            String pat = @"^0[xX][0-9]+";
+
+            Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+            Match m = r.Match(defaultvalue);
+            if (m.Success)
+            {
+                nobase = 16;
+            }
+
+            pat = @"^0[0-9]+";
+            r = new Regex(pat, RegexOptions.IgnoreCase);
+            m = r.Match(defaultvalue);
+            if (m.Success)
+            {
+                nobase = 8;
+            }
+            
+            if(nodeidreplace)
+            {
+                UInt16 data = Convert.ToUInt16(defaultvalue, nobase);
+                data += eds.NodeId;
+                defaultvalue = string.Format("0x{0:x}", data);
+                nobase = 16;
+            }
+
+
+            switch (dt)
+            {
+                case DataType.UNSIGNED24:
+                case DataType.UNSIGNED32:
+                    return String.Format("0x{0:x4}L", Convert.ToUInt32(defaultvalue, nobase));
+
+                case DataType.INTEGER24:
+                case DataType.INTEGER32:
+                    return String.Format("0x{0:x4}L", Convert.ToInt32(defaultvalue,nobase));
+
+                case DataType.REAL32:
+                case DataType.REAL64:
+                    return (String.Format("{0}", defaultvalue));
+ 
+
+                    //fix me this looks wrong
+                case DataType.UNICODE_STRING:
+                    return (String.Format("'{0}'", defaultvalue));
+
+                case DataType.VISIBLE_STRING:
+                {
+                    string array="{";
+                    foreach (char s in defaultvalue)
+                    {
+                        array+="'"+s+"'";
+
+                        if (!object.ReferenceEquals(s, defaultvalue.Last())) 
+                        {
+                            array += ", ";
+                        }
+                    }
+
+                    array += "}";
+                    return array;
+                }
+
+
+                case DataType.OCTET_STRING:
+                {
+                    string[] bits = defaultvalue.Split(' ');
+                    string octet = "";
+                    foreach(string s in bits)
+                    {
+                        octet+=formatvaluewithdatatype(s, DataType.UNSIGNED8);
+
+                        if (!object.ReferenceEquals(s,bits.Last())) 
+                        {
+                            octet += ", ";
+                        }
+                    }
+                    return octet;
+                }
+
+                case DataType.INTEGER8:
+                    return String.Format("0x{0:x1}", Convert.ToSByte(defaultvalue, nobase));
+
+                case DataType.INTEGER16:
+                    return String.Format("0x{0:x2}", Convert.ToInt16(defaultvalue, nobase));
+
+                case DataType.UNSIGNED8:
+                    return String.Format("0x{0:x1}L", Convert.ToByte(defaultvalue, nobase));
+
+                case DataType.UNSIGNED16:
+                    return String.Format("0x{0:x2}", Convert.ToUInt16(defaultvalue, nobase));
+
+                default:
+                    return (String.Format("{0:x}", defaultvalue));
+
+            }
+        }
+
         void export_OD_def_array(StreamWriter file,StorageLocation location)
         {
 
@@ -502,7 +700,7 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
 
                 if (od.nosubindexes == 0)
                 {
-                    file.WriteLine(string.Format("/*{0:x4}*/ {1},", od.index, od.defaultvalue));
+                    file.WriteLine(string.Format("/*{0:x4}*/ {1},", od.index, formatvaluewithdatatype(od.defaultvalue, od.datatype)));
                 }
                 else
                 {
@@ -510,26 +708,20 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
 
                     foreach(KeyValuePair<UInt16,ODentry> kvp2 in od.subobjects)
                     {
-                        ODentry sub = kvp.Value;
+                        ODentry sub = kvp2.Value;
 
-                        switch (sub.datatype)
-                        {
-                            case DataType.UNSIGNED32:
-                            case DataType.INTEGER32:
-                                file.Write(String.Format("{0}L", sub.defaultvalue));
-                                break;
+                        DataType dt = sub.datatype;
 
-                            //FIXME EXPORT FOR REAL DATATYPES ETC 
-                            default:
-                                file.Write(String.Format("{0}", sub.defaultvalue));
-                                break;
+                        if (od.objecttype == ObjectType.REC && sub.subindex == 0)
+                            continue;
 
-                         }
+                        if(od.objecttype == ObjectType.REC)
+                            dt=od.datatype;
 
-                            //fix me extra comma
-                            //if (p < od.nosubindexes - 1)
-                            //    file.Write(",");
+                        file.Write(formatvaluewithdatatype(sub.defaultvalue, dt));
 
+                        if (od.subobjects.Keys.Last() != kvp2.Key)
+                                file.Write(", ");
                         }
                 
                     file.WriteLine("},");

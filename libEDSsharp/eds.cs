@@ -755,6 +755,8 @@ namespace libEDSsharp
         public Comments c;
         public Dummyusage du;
 
+        public UInt16 NodeId=0;
+
         public EDSsharp()
         {
             eds = new Dictionary<string, Dictionary<string, string>>();

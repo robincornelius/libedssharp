@@ -84,20 +84,21 @@ namespace EDSTest
 
         private void exportCanOpenNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (tabControl1.SelectedTab != null)
+            {
+                DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
 
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
 
-            /*
+                DialogResult result = fbd.ShowDialog();
 
-              FolderBrowserDialog fbd = new FolderBrowserDialog();
-
-              DialogResult result = fbd.ShowDialog();
-
-              if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
-              {
-                  CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                  cone.export(fbd.SelectedPath, eds);
-              }
-             */
+                if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    CanOpenNodeExporter cone = new CanOpenNodeExporter();
+                    cone.export(fbd.SelectedPath, dv.eds);
+                }
+            }
+             
 
         }
 
@@ -110,7 +111,7 @@ namespace EDSTest
             OpenFileDialog odf = new OpenFileDialog();
             odf.Filter = "XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
-            {
+            { 
 
                 CanOpenXML coxml = new CanOpenXML();
                 coxml.readXML(odf.FileName);
