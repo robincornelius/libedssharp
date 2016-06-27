@@ -272,6 +272,8 @@ namespace libEDSsharp
                     subentry.location = entry.location;
                     subentry.parent = entry;
 
+                    subentry.objecttype = ObjectType.VAR;
+
                     entry.subobjects.Add(subentry.subindex,subentry);
 
                     

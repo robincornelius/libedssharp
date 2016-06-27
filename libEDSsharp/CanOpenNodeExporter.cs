@@ -69,13 +69,14 @@ namespace libEDSsharp
                 {
                     //if (od.subindex == -1)
                     {
-                        file.WriteLine(string.Format("/*{0:x4}      */ {1} {2};", od.index, od.datatype.ToString(), od.paramater_cname()));
+
+                        file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2};", od.index, od.datatype.ToString(), od.paramater_cname()));
                     }
                 }
                 else
                 {
                     DataType t = eds.getdatatype(od);
-                    file.WriteLine(string.Format("/*{0:x4}      */ {1} {2}[{3}];", od.index, t.ToString(), od.paramater_cname(), od.nosubindexes));
+                    file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[{3}];", od.index, t.ToString(), od.paramater_cname(), od.nosubindexes));
                 }
 
             }
@@ -190,7 +191,7 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 
             //FIX ME NMT MASTER should auto generate
-            file.WriteLine(@"/#define CO_NO_NMT_MASTER               0   
+            file.WriteLine(@"  #define CO_NO_NMT_MASTER               0   
 
 ");
 
@@ -211,7 +212,7 @@ namespace libEDSsharp
                 foreach (KeyValuePair<UInt16, subdefstruct> kvp2 in kvp.Value.elements)
                 {
                     subdefstruct sub = kvp2.Value;
-                    file.WriteLine(string.Format("               {0}      {1};", sub.datatype.ToString(), sub.c_declaration));
+                    file.WriteLine(string.Format("               {0,-15}{1};", sub.datatype.ToString(), sub.c_declaration));
                 }
 
                 file.WriteLine(string.Format("               }}              {0};", kvp.Value.c_declaration));
@@ -291,19 +292,7 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
 
                     //ARRAY TYPES SUBS ONLY FIXME
 
-                    if (od.index == 0x2120)
-                    {
-                        int x = 0;
-                        x++;
-                    }
-
                     DataType dt = od.datatype;
-
-                    if (dt == DataType.UNKNOWN)
-                    {
-
-                    }
-
 
                     file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(), od.nosubindexes - 1));
                     file.WriteLine(string.Format("        #define OD_{0}             {1}.{2}", od.paramater_cname(), loc, od.paramater_cname()));
@@ -412,26 +401,15 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
             export_record_types(file);
 
 
-            file.WriteLine(@"/*******************************************************************************
-   SDO SERVER ACCESS FUNCTIONS WITH USER CODE
-*******************************************************************************/
-#define WRITING (dir == 1)
-#define READING (dir == 0)
-
-");
-
-            //TODO Export SDO Server access functions here
-
-            //FIXME CO_OD_NoOfElelemts
-
-            file.WriteLine(@"/*******************************************************************************
+            file.Write(@"/*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
+const sCO_OD_object CO_OD[");
+            
+            file.Write(string.Format("{0}",eds.ods.Count));
+
+            file.WriteLine(@"] = {
 ");
-
-
-            //TODO Export OD
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -696,18 +674,22 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
                     continue;
 
                 defstruct def = defstructs[kvp.Value.datatype];
-                file.WriteLine(String.Format("/*0x{0:x4}*/ const CO_OD_entryRecord_t OD_record{0:x4}[{1}] = {{", od.index, def.elements.Count));
+
+                int count = def.elements.Count;
+
+                if(od.index>=0x1400 && od.index<0x1600)
+                {
+                    count = 3; //CanOpenNode Fudging. Its only 3 paramaters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
+                }
+
+                file.WriteLine(String.Format("/*0x{0:x4}*/ const CO_OD_entryRecord_t OD_record{0:x4}[{1}] = {{", od.index, count));
 
                 foreach (KeyValuePair<UInt16, ODentry> kvpsub in od.subobjects)
                 {
                     ODentry sub = kvpsub.Value;
-                    //{(void*)&CO_OD_ROM.identity.maxSubIndex, 0x05,  1},
-                    //fixme paramater {2} is currently wrong
 
                     file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.{0}.{1}, 0x{2:x2}, 0x{3} }}", def.c_declaration, def.elements[kvpsub.Key].c_declaration, getflags(sub), sizeofdatatype(sub.datatype, sub)));
 
-
-     
                 }
 
                 file.Write("};\r\n\r\n");

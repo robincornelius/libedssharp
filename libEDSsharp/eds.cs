@@ -1030,16 +1030,9 @@ namespace libEDSsharp
         public DataType getdatatype(ODentry od)
         {
 
-            //FIXME this is a bug that we fall into this
-            if(od.objecttype == ObjectType.NULL)
-            {
-                return od.datatype;
-            }
-
             if (od.objecttype == ObjectType.VAR)
             {
-                if (od.parent == null)
-                    return od.datatype;
+                return od.datatype;
             }
 
             if (od.objecttype == ObjectType.ARRAY)
