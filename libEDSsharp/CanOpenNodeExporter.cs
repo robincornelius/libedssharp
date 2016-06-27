@@ -191,64 +191,24 @@ namespace libEDSsharp
             file.WriteLine("");
             file.WriteLine("");
 
-
-
             file.WriteLine(@"/*******************************************************************************
    TYPE DEFINITIONS FOR RECORDS
 *******************************************************************************/
-/*1018      */ typedef struct{
-               UNSIGNED8      maxSubIndex;
-               UNSIGNED32     vendorID;
-               UNSIGNED32     productCode;
-               UNSIGNED32     revisionNumber;
-               UNSIGNED32     serialNumber;
-               }              OD_identity_t;
 
-/*1200[1]   */ typedef struct{
-               UNSIGNED8      maxSubIndex;
-               UNSIGNED32     COB_IDClientToServer;
-               UNSIGNED32     COB_IDServerToClient;
-               }              OD_SDOServerParameter_t;
+            foreach(KeyValuePair<int,defstruct> kvp in eds.defstructs)
+            {
+                file.WriteLine(string.Format("/*{0:x4}    */ typedef struct {"),kvp.Key);
 
-/*1400[4]   */ typedef struct{
-               UNSIGNED8      maxSubIndex;
-               UNSIGNED32     COB_IDUsedByRPDO;
-               UNSIGNED8      transmissionType;
-               }              OD_RPDOCommunicationParameter_t;
+                foreach(KeyValuePair<int,subdefstruct> kvp2 in eds.defstructs.elements)
+                {
+                    subdefstruct sub = kvp2.Value;
+                    file.WriteLine(string.Format("               {0}      {1};",sub.datatype.ToString(),sub.c_declaration));
+                }
 
-/*1600[4]   */ typedef struct{
-               UNSIGNED8      numberOfMappedObjects;
-               UNSIGNED32     mappedObject1;
-               UNSIGNED32     mappedObject2;
-               UNSIGNED32     mappedObject3;
-               UNSIGNED32     mappedObject4;
-               UNSIGNED32     mappedObject5;
-               UNSIGNED32     mappedObject6;
-               UNSIGNED32     mappedObject7;
-               UNSIGNED32     mappedObject8;
-               }              OD_RPDOMappingParameter_t;
+                file.WriteLine(string.Format("               }              {0};"),kvp.Value.c_declaration);
+               
+            }
 
-/*1800[4]   */ typedef struct{
-               UNSIGNED8      maxSubIndex;
-               UNSIGNED32     COB_IDUsedByTPDO;
-               UNSIGNED8      transmissionType;
-               UNSIGNED16     inhibitTime;
-               UNSIGNED8      compatibilityEntry;
-               UNSIGNED16     eventTimer;
-               UNSIGNED8      SYNCStartValue;
-               }              OD_TPDOCommunicationParameter_t;
-
-/*1A00[4]   */ typedef struct{
-               UNSIGNED8      numberOfMappedObjects;
-               UNSIGNED32     mappedObject1;
-               UNSIGNED32     mappedObject2;
-               UNSIGNED32     mappedObject3;
-               UNSIGNED32     mappedObject4;
-               UNSIGNED32     mappedObject5;
-               UNSIGNED32     mappedObject6;
-               UNSIGNED32     mappedObject7;
-               UNSIGNED32     mappedObject8;
-               }              OD_TPDOMappingParameter_t;
 
 /*2120      */ typedef struct{
                UNSIGNED8      maxSubIndex;

@@ -70,9 +70,13 @@ namespace libEDSsharp
     public enum ObjectType
     {
         UNKNOWN = -1,
+        NULL = 0,
+        DOMAIN =2,
+        DEFTYPE=5,
+        DEFSTRUCT=6,
         VAR = 7,
-        REC = 8,
-        ARRAY = 9,
+        ARRAY = 8,
+        REC = 9,
     }
 
 
