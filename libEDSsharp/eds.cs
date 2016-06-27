@@ -761,8 +761,12 @@ namespace libEDSsharp
 
         public UInt16 NodeId=0;
 
+        public Dictionary <int,defstruct> defstructs = new  Dictionary<int,defstruct>();
+
         public EDSsharp()
         {
+            init_defstructs();
+
             eds = new Dictionary<string, Dictionary<string, string>>();
             ods = new Dictionary<UInt16, ODentry>();
 
@@ -1050,6 +1054,134 @@ namespace libEDSsharp
 
         }
 
+        void init_defstructs
+        {
+            
+            {
+                //0x1018 Identity Record Specification, DataType 0x23
+                defstruct ds = new defstruct("Identity Record Specification",
+                "OD_identity_t");
+
+                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
+                ds.elements.Add(1,new subdefstruct("Vendor-ID","vendorID",DataType.UNSIGNED32));
+                ds.elements.Add(2,new subdefstruct("Product code","productCode",DataType.UNSIGNED32));
+                ds.elements.Add(3,new subdefstruct("Revision number","revisionNumber",DataType.UNSIGNED32));
+                ds.elements.Add(4,new subdefstruct("Serial number","serialNumber",DataType.UNSIGNED32));
+                
+                defstructs.Add(0x1018,ds);
+            }
+ 
+            {
+                //0x1200 Identity Record Specification, DataType 0x22
+                defstruct ds = new defstruct("SDO Parameter Record Specification",
+                "OD_identity_t");
+
+                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
+                ds.elements.Add(1,new subdefstruct("COB-ID client -> server","COB_IDClientToServer",DataType.UNSIGNED32));
+                ds.elements.Add(2,new subdefstruct("COB-ID server -> client","COB_IDServerToClient",DataType.UNSIGNED32));
+                ds.elements.Add(3,new subdefstruct("node ID of SDO’s client resp. server","OD_SDOServerParameter_t",DataType.UNSIGNED32));
+                
+                defstructs.Add(0x1200,ds);
+            }
+
+
+            {
+                //0x1800 PDO Communication Parameter Record
+                defstruct ds = new defstruct("PDO Communication Parameter Record",
+                "OD_TPDOCommunicationParameter_t");
+
+                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
+                ds.elements.Add(1,new subdefstruct("COB-ID","COB_IDUsedByTPDO",DataType.UNSIGNED32));
+                ds.elements.Add(2,new subdefstruct("transmission type","transmissionType",DataType.UNSIGNED8));
+                ds.elements.Add(3,new subdefstruct("inhibit time","inhibitTime",DataType.UNSIGNED16));
+                ds.elements.Add(4,new subdefstruct("reserved","compatibilityEntry",DataType.UNSIGNED8));
+                ds.elements.Add(5,new subdefstruct("event timer","eventTimer",DataType.UNSIGNED16));
+                ds.elements.Add(6,new subdefstruct("SYNCStartValue","SYNCStartValue",DataType.UNSIGNED8));
+
+                defstructs.Add(0x1800,ds);
+            }
+
+            {
+                //0x1A00 PDO TX Mapping Paramater DataType 0x21
+                defstruct ds = new defstruct("PDO TX Mapping Parameter Record",
+                "OD_TPDOMappingParameter_t");
+
+                ds.elements.Add(0,new subdefstruct("number of mapped objects in PDO","numberOfMappedObjects",DataType.UNSIGNED8);
+
+                ds.elements.Add(1,new subdefstruct("1st object to be mapped","mappedObject1",DataType.UNSIGNED32));
+                ds.elements.Add(2,new subdefstruct("2nd object to be mapped","mappedObject2",DataType.UNSIGNED32));
+                ds.elements.Add(3,new subdefstruct("3rd object to be mapped","mappedObject3",DataType.UNSIGNED32));
+                ds.elements.Add(4,new subdefstruct("4th object to be mapped","mappedObject4",DataType.UNSIGNED32));
+                ds.elements.Add(5,new subdefstruct("5th object to be mapped","mappedObject5",DataType.UNSIGNED32));
+                ds.elements.Add(6,new subdefstruct("6th object to be mapped","mappedObject6",DataType.UNSIGNED32));
+                ds.elements.Add(7,new subdefstruct("7th object to be mapped","mappedObject7",DataType.UNSIGNED32));
+                ds.elements.Add(8,new subdefstruct("8th object to be mapped","mappedObject8",DataType.UNSIGNED32));
+    
+                defstructs.Add(0x1a00,ds);
+            }
+
+             {
+                //0x1400 PDO Communication Parameter Record
+                defstruct ds = new defstruct("PDO RX Communication Parameter Record",
+                "OD_RPDOCommunicationParameter_t");
+
+                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
+                ds.elements.Add(1,new subdefstruct("COB-ID","COB_IDUsedByTPDO",DataType.UNSIGNED32));
+                ds.elements.Add(2,new subdefstruct("transmission type","transmissionType",DataType.UNSIGNED8));
+          
+                defstructs.Add(0x1400,ds);
+            }
+
+            {
+                //0x1600 PDO TX Mapping Paramater DataType 0x21
+                defstruct ds = new defstruct("PDO RX Mapping Parameter Record",
+                "OD_RPDOMappingParameter_t");
+
+                ds.elements.Add(0,new subdefstruct("number of mapped objects in PDO","numberOfMappedObjects",DataType.UNSIGNED8);
+
+                ds.elements.Add(1,new subdefstruct("1st object to be mapped","mappedObject1",DataType.UNSIGNED32));
+                ds.elements.Add(2,new subdefstruct("2nd object to be mapped","mappedObject2",DataType.UNSIGNED32));
+                ds.elements.Add(3,new subdefstruct("3rd object to be mapped","mappedObject3",DataType.UNSIGNED32));
+                ds.elements.Add(4,new subdefstruct("4th object to be mapped","mappedObject4",DataType.UNSIGNED32));
+                ds.elements.Add(5,new subdefstruct("5th object to be mapped","mappedObject5",DataType.UNSIGNED32));
+                ds.elements.Add(6,new subdefstruct("6th object to be mapped","mappedObject6",DataType.UNSIGNED32));
+                ds.elements.Add(7,new subdefstruct("7th object to be mapped","mappedObject7",DataType.UNSIGNED32));
+                ds.elements.Add(8,new subdefstruct("8th object to be mapped","mappedObject8",DataType.UNSIGNED32));
+    
+                defstructs.Add(0x1600,ds);
+            }
+
+        }
+
+    }
+
+    public class defstruct
+    {
+        public string name;
+        public string c_declaration;
+    
+        public Dictinary<int,subdefstruct> elements;
+
+        public defstruct(string name,string c_dec)
+        {
+            this.name = name;
+            this.c_declaration = c_dec;
+            elements = new Dictinary<int,subdefstruct>();
+        }
+
+    }
+    public class subdefstruct
+    {
+    public string description;
+    public string c_declaration;
+
+    public DataType datatype;
+
+    public subdefstruct(string description,string c_dec,DataType datatype)
+    {
+        this.description = description;
+        this.c_declaration = c_dec;
+        this.datatype = datatype;
     }
 
 }
