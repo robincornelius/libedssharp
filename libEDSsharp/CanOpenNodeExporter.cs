@@ -174,18 +174,22 @@ namespace libEDSsharp
             file.WriteLine("");
             file.WriteLine("");
 
-            //FIX ME features should auto generate
+         
             file.WriteLine(@"/*******************************************************************************
    FEATURES
-*******************************************************************************/
-   #define CO_NO_SYNC                     1   //Associated objects: 1005, 1006, 1007, 2103, 2104
-   #define CO_NO_EMERGENCY                1   //Associated objects: 1014, 1015
-   #define CO_NO_SDO_SERVER               1   //Associated objects: 1200
-   #define CO_NO_SDO_CLIENT               0");
-   
+*******************************************************************************/");
+
+            file.WriteLine(string.Format("  #define CO_NO_SYNC                     {0}   //Associated objects: 1005-1007", noSYNC));
+
+            file.WriteLine(string.Format("  #define CO_NO_EMERGENCY                {0}   //Associated objects: 1014, 1015", noEMCY));
+
+            file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
+            file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
+
             file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 
+            //FIX ME NMT MASTER should auto generate
             file.WriteLine(@"/#define CO_NO_NMT_MASTER               0   
 
 ");
@@ -703,8 +707,12 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
             }
         }
 
-        int noTXpdos = 5;
-        int noRXpdos = 5;
+        int noTXpdos = 0;
+        int noRXpdos = 0;
+        int noSDOclients = 0;
+        int noSDOservers = 0;
+        int noSYNC = 0;
+        int noEMCY = 0;
 
         void countPDOS()
         {
@@ -724,6 +732,22 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
                 {
                     noTXpdos++;
                 }
+
+                if((index & 0xFF80) == 0x1200)
+                {
+                    noSDOservers++;
+                }
+
+                if ((index & 0xFF80) == 0x1280)
+                {
+                    noSDOclients++;
+                }
+
+                if (index == 0x1005)
+                    noSYNC = 1;
+
+                if (index == 0x1014)
+                    noEMCY = 1;
             }
 
         }
