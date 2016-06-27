@@ -435,57 +435,15 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
+
                 ODentry od = kvp.Value;
 
                 string loc = getlocation(od.location);
 
-                byte flags = 0; //fixme magic numbers below
-                flags = (byte)od.location;
-
-                //fixme rwr and rrw are not supported
-                if (od.accesstype == EDSsharp.AccessType.ro
-                    || od.accesstype == EDSsharp.AccessType.rw
-                    || od.accesstype == EDSsharp.AccessType.cons)
-                    flags |= 0x04;
-
-                if (od.accesstype == EDSsharp.AccessType.wo
-                    || od.accesstype == EDSsharp.AccessType.rw)
-                    flags |= 0x08;
-
-                if (od.PDOMapping)
-                    flags |= 0x30; //fix me no control over rx and tx mapping, its both or none
-
-                //fix me we need a detect cos flag from libeds
-                //if(DETECT COS)
-                //  flags |=0x40;
-
-
-                int datasize = 0;
+                byte flags = getflags(od);
 
                 DataType t = eds.getdatatype(od);
-
-                switch (t)
-                {
-                    case DataType.BOOLEAN:
-                    case DataType.INTEGER8:
-                    case DataType.UNSIGNED8:
-                        datasize = 1;
-                        break;
-                    case DataType.UNSIGNED16:
-                    case DataType.INTEGER16:
-                        datasize = 2;
-                        break;
-                    case DataType.INTEGER32:
-                    case DataType.REAL32:
-                    case DataType.UNSIGNED32:
-                        datasize = 4;
-                        break;
-
-                }
-
-                //fix me detect multibyte is this the only case???
-                if (datasize > 1)
-                    flags |= 0x80;
+                int datasize = sizeofdatatype(t,od);
 
                 string odf;
 
@@ -512,6 +470,48 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
 
             file.Close();
         }
+
+
+
+        byte getflags(ODentry od)
+        {
+            byte flags = 0;
+
+            flags = (byte)od.location;
+
+            //fixme rwr and rrw are not supported
+            if (od.accesstype == EDSsharp.AccessType.ro
+                || od.accesstype == EDSsharp.AccessType.rw
+                || od.accesstype == EDSsharp.AccessType.cons)
+                flags |= 0x04;
+
+            if (od.accesstype == EDSsharp.AccessType.wo
+                || od.accesstype == EDSsharp.AccessType.rw)
+                flags |= 0x08;
+
+            if (od.PDOMapping)
+                flags |= 0x10;
+
+            if (od.PDOMapping)
+                flags |= 0x20;
+
+            if (od.PDOMapping)
+                flags |= 0x30; //fix me no control over rx and tx mapping, its both or none
+
+            if(od.TPDODetectCos)
+              flags |=0x40;
+   
+            DataType t = eds.getdatatype(od);
+
+            int datasize = sizeofdatatype(t,od);
+
+            if (datasize > 1)
+                flags |= 0x80;
+
+            return flags;
+
+        }
+
 
         string getlocation(StorageLocation location)
         {
@@ -643,7 +643,7 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
             }
         }
 
-        int sizeofdatatype(DataType dt)
+       int sizeofdatatype(DataType dt,ODentry od)
         {
             switch (dt)
             {
@@ -665,8 +665,12 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
                 case DataType.REAL32:
                     return 4;
 
+                case DataType.VISIBLE_STRING:
+                    return 0;
+                    
+
                 default:
-                    throw new Exception("NOT FINISHED CODE");
+                    
                     return 0;
 
 
@@ -699,8 +703,11 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
                     ODentry sub = kvpsub.Value;
                     //{(void*)&CO_OD_ROM.identity.maxSubIndex, 0x05,  1},
                     //fixme paramater {2} is currently wrong
-                    file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.{0}.{1}, {2}, {3}}}", def.c_declaration, def.elements[kvpsub.Key].c_declaration, formatvaluewithdatatype(sub.defaultvalue, sub.datatype), sizeofdatatype(sub.datatype)));
 
+                    file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.{0}.{1}, 0x{2:x2}, 0x{3} }}", def.c_declaration, def.elements[kvpsub.Key].c_declaration, getflags(sub), sizeofdatatype(sub.datatype, sub)));
+
+
+     
                 }
 
                 file.Write("};\r\n\r\n");
@@ -829,7 +836,7 @@ const sCO_OD_object CO_OD[CO_OD_NoOfElements] = {
 
                         DataType dt = sub.datatype;
 
-                        if (od.objecttype == ObjectType.REC && sub.subindex == 0)
+                        if ((od.objecttype == ObjectType.REC ||od.objecttype==ObjectType.ARRAY) && sub.subindex == 0)
                             continue;
 
                         if (od.objecttype == ObjectType.REC)

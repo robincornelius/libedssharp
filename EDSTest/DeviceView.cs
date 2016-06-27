@@ -204,11 +204,11 @@ namespace EDSTest
 
                 lvi.SubItems.Add(od.objecttype.ToString());
 
-                if(od.objecttype==ObjectType.REC)
+                if(od.objecttype==ObjectType.ARRAY)
                 {
                     if (od.subobjects.Count > 1)
                     {
-                        lvi.SubItems.Add(od.subobjects[1].datatype.ToString());
+                        lvi.SubItems.Add(od.datatype.ToString());
                     }
                     else
                     {
@@ -234,7 +234,7 @@ namespace EDSTest
                     lvi2.SubItems.Add(subod.objecttype.ToString());
 
                     
-                    if (subod.datatype==DataType.UNKNOWN || (od.objecttype==ObjectType.REC && subod.subindex!=0))
+                    if (subod.datatype==DataType.UNKNOWN || (od.objecttype==ObjectType.ARRAY && subod.subindex!=0))
                     {
                         lvi2.SubItems.Add(" -- ");
                     }

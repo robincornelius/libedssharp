@@ -269,7 +269,12 @@ namespace libEDSsharp
                     if(coosub.PDOmapping!=null)
                         subentry.PDOMapping = coosub.PDOmapping != "no";
 
+                    subentry.location = entry.location;
+                    subentry.parent = entry;
+
                     entry.subobjects.Add(subentry.subindex,subentry);
+
+                    
 
                     //eds.ods.Add(String.Format("{0:x4}/{1}", entry.index, subentry.subindex), subentry);
                 }
