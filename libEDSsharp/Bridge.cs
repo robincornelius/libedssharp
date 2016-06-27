@@ -182,6 +182,34 @@ namespace libEDSsharp
                     byte datatype = Convert.ToByte(coo.DataType, 16);
                     entry.datatype = (DataType)datatype;
                 }
+                else
+                {
+                    //CanOpenNode Project XML did not correctly set DataTypes for record sets
+
+                    if (entry.index == 0x1018)
+                        entry.datatype = DataType.IDENTITY;
+
+                    if (entry.index >= 0x1200 && entry.index<0x1400) //check me is this the correct range??
+                        entry.datatype = DataType.SDO_PARAMETER;
+
+
+                    if (entry.index >= 0x1400 && entry.index < 0x1600) //check me is this the correct range??
+                        entry.datatype = DataType.PDO_COMMUNICATION_PARAMETER;
+
+
+                    if (entry.index >= 0x1600 && entry.index < 0x1800) //check me is this the correct range??
+                        entry.datatype = DataType.PDO_MAPPING;
+
+
+                    if (entry.index >= 0x1800 && entry.index < 0x1a00) //check me is this the correct range??
+                        entry.datatype = DataType.PDO_COMMUNICATION_PARAMETER;
+
+
+                    if (entry.index >= 0x1a00 && entry.index < 0x1c00) //check me is this the correct range??
+                        entry.datatype = DataType.PDO_MAPPING;
+
+
+                }
 
 
                 entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType),coo.ObjectType);

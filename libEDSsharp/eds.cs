@@ -759,13 +759,12 @@ namespace libEDSsharp
         public Comments c;
         public Dummyusage du;
 
-        public UInt16 NodeId=0;
+        public UInt16 NodeId = 0;
 
-        public Dictionary <int,defstruct> defstructs = new  Dictionary<int,defstruct>();
+
 
         public EDSsharp()
         {
-            init_defstructs();
 
             eds = new Dictionary<string, Dictionary<string, string>>();
             ods = new Dictionary<UInt16, ODentry>();
@@ -780,26 +779,26 @@ namespace libEDSsharp
 
 
             //FIXME no way for the Major/Minor to make it to EDSVersion
-            fi.EDSVersionMajor=4;
-            fi.EDSVersionMinor=0;
+            fi.EDSVersionMajor = 4;
+            fi.EDSVersionMinor = 0;
 
-            fi.FileVersion=1;
-            fi.FileRevision=1;
+            fi.FileVersion = 1;
+            fi.FileRevision = 1;
 
             //FixMe too need a extra function to sort the data out;
-            fi.CreationDateTime=DateTime.Now;
-            fi.ModificationDateTime=DateTime.Now;
+            fi.CreationDateTime = DateTime.Now;
+            fi.ModificationDateTime = DateTime.Now;
 
-            du.Dummy0001=false;
-            du.Dummy0002=true;
-            du.Dummy0003=true;
-            du.Dummy0004=true;
-            du.Dummy0005=true;
-            du.Dummy0006=true;
-            du.Dummy0007=true;
+            du.Dummy0001 = false;
+            du.Dummy0002 = true;
+            du.Dummy0003 = true;
+            du.Dummy0004 = true;
+            du.Dummy0005 = true;
+            du.Dummy0006 = true;
+            du.Dummy0007 = true;
 
             ODentry od = new ODentry();
-            
+
 
 
 
@@ -901,7 +900,7 @@ namespace libEDSsharp
 
                 //if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                 //{
-                    //od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
+                //od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
                 //}
 
                 if (od.objecttype == ObjectType.VAR)
@@ -912,18 +911,18 @@ namespace libEDSsharp
                         Console.WriteLine(m.Groups[3].ToString());
                         od.subindex = Convert.ToUInt16(m.Groups[3].ToString());
                         od.parent = ods[od.index];
-                        ods[od.index].subobjects.Add(od.subindex,od);
+                        ods[od.index].subobjects.Add(od.subindex, od);
                     }
 
 
-                    if(!kvp.Value.ContainsKey("DataType"))
+                    if (!kvp.Value.ContainsKey("DataType"))
                         throw new ParameterException("Missing required field DataType on" + section);
 
                     od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], determinebase(kvp.Value["DataType"]));
-                    
+
                     if (!kvp.Value.ContainsKey("AccessType"))
                         throw new ParameterException("Missing required AccessType on" + section);
-                    
+
                     string accesstype = kvp.Value["AccessType"];
 
                     // fudging because of enum enumeration and the const keyword
@@ -936,10 +935,10 @@ namespace libEDSsharp
                     {
                         throw new ParameterException("Unknown AccessType on" + section);
                     }
-                    
+
                     if (kvp.Value.ContainsKey("DefaultValue"))
                         od.defaultvalue = kvp.Value["DefaultValue"];
-                    
+
                     if (kvp.Value.ContainsKey("PDOMapping"))
                         od.PDOMapping = Convert.ToInt16(kvp.Value["PDOMapping"]) == 1;
 
@@ -960,27 +959,27 @@ namespace libEDSsharp
             {
                 foreach (string linex in File.ReadLines(filename))
                 {
-                    parseline(linex);                 
+                    parseline(linex);
                 }
 
-                foreach(KeyValuePair<string, Dictionary<string, string>> kvp in eds)
+                foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
                 {
-                    parseEDSentry(kvp);   
+                    parseEDSentry(kvp);
                 }
 
                 fi = new FileInfo(eds["FileInfo"]);
                 di = new DeviceInfo(eds["DeviceInfo"]);
                 du = new Dummyusage(eds["DummyUsage"]);
-                md = new MandatoryObjects(eds["MandatoryObjects"]);    
+                md = new MandatoryObjects(eds["MandatoryObjects"]);
                 oo = new OptionalObjects(eds["OptionalObjects"]);
                 mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
                 c = new Comments(eds["Comments"]);
 
             }
-           // catch(Exception e)
+            // catch(Exception e)
             //{
-              //  Console.WriteLine("** ALL GONE WRONG **" + e.ToString());
-           // }
+            //  Console.WriteLine("** ALL GONE WRONG **" + e.ToString());
+            // }
         }
 
         public void savefile(string filename)
@@ -992,7 +991,7 @@ namespace libEDSsharp
             c.write(writer);
             md.write(writer);
 
-            foreach(KeyValuePair<UInt16,ODentry> kvp in ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
             {
                 ODentry od = kvp.Value;
                 if (md.objectlist.ContainsValue(od.index))
@@ -1032,7 +1031,7 @@ namespace libEDSsharp
         {
             if (od.objecttype == ObjectType.VAR)
             {
-                if (od.parent==null)
+                if (od.parent == null)
                     return od.datatype;
             }
 
@@ -1054,143 +1053,15 @@ namespace libEDSsharp
 
         }
 
-        void init_defstructs
+    }
+
+        public class ParameterException : Exception
         {
-            
+            public ParameterException(String message)
+                : base(message)
             {
-                //0x1018 Identity Record Specification, DataType 0x23
-                defstruct ds = new defstruct("Identity Record Specification",
-                "OD_identity_t");
-
-                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
-                ds.elements.Add(1,new subdefstruct("Vendor-ID","vendorID",DataType.UNSIGNED32));
-                ds.elements.Add(2,new subdefstruct("Product code","productCode",DataType.UNSIGNED32));
-                ds.elements.Add(3,new subdefstruct("Revision number","revisionNumber",DataType.UNSIGNED32));
-                ds.elements.Add(4,new subdefstruct("Serial number","serialNumber",DataType.UNSIGNED32));
-                
-                defstructs.Add(0x1018,ds);
-            }
- 
-            {
-                //0x1200 Identity Record Specification, DataType 0x22
-                defstruct ds = new defstruct("SDO Parameter Record Specification",
-                "OD_identity_t");
-
-                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
-                ds.elements.Add(1,new subdefstruct("COB-ID client -> server","COB_IDClientToServer",DataType.UNSIGNED32));
-                ds.elements.Add(2,new subdefstruct("COB-ID server -> client","COB_IDServerToClient",DataType.UNSIGNED32));
-                ds.elements.Add(3,new subdefstruct("node ID of SDO’s client resp. server","OD_SDOServerParameter_t",DataType.UNSIGNED32));
-                
-                defstructs.Add(0x1200,ds);
-            }
-
-
-            {
-                //0x1800 PDO Communication Parameter Record
-                defstruct ds = new defstruct("PDO Communication Parameter Record",
-                "OD_TPDOCommunicationParameter_t");
-
-                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
-                ds.elements.Add(1,new subdefstruct("COB-ID","COB_IDUsedByTPDO",DataType.UNSIGNED32));
-                ds.elements.Add(2,new subdefstruct("transmission type","transmissionType",DataType.UNSIGNED8));
-                ds.elements.Add(3,new subdefstruct("inhibit time","inhibitTime",DataType.UNSIGNED16));
-                ds.elements.Add(4,new subdefstruct("reserved","compatibilityEntry",DataType.UNSIGNED8));
-                ds.elements.Add(5,new subdefstruct("event timer","eventTimer",DataType.UNSIGNED16));
-                ds.elements.Add(6,new subdefstruct("SYNCStartValue","SYNCStartValue",DataType.UNSIGNED8));
-
-                defstructs.Add(0x1800,ds);
-            }
-
-            {
-                //0x1A00 PDO TX Mapping Paramater DataType 0x21
-                defstruct ds = new defstruct("PDO TX Mapping Parameter Record",
-                "OD_TPDOMappingParameter_t");
-
-                ds.elements.Add(0,new subdefstruct("number of mapped objects in PDO","numberOfMappedObjects",DataType.UNSIGNED8);
-
-                ds.elements.Add(1,new subdefstruct("1st object to be mapped","mappedObject1",DataType.UNSIGNED32));
-                ds.elements.Add(2,new subdefstruct("2nd object to be mapped","mappedObject2",DataType.UNSIGNED32));
-                ds.elements.Add(3,new subdefstruct("3rd object to be mapped","mappedObject3",DataType.UNSIGNED32));
-                ds.elements.Add(4,new subdefstruct("4th object to be mapped","mappedObject4",DataType.UNSIGNED32));
-                ds.elements.Add(5,new subdefstruct("5th object to be mapped","mappedObject5",DataType.UNSIGNED32));
-                ds.elements.Add(6,new subdefstruct("6th object to be mapped","mappedObject6",DataType.UNSIGNED32));
-                ds.elements.Add(7,new subdefstruct("7th object to be mapped","mappedObject7",DataType.UNSIGNED32));
-                ds.elements.Add(8,new subdefstruct("8th object to be mapped","mappedObject8",DataType.UNSIGNED32));
-    
-                defstructs.Add(0x1a00,ds);
-            }
-
-             {
-                //0x1400 PDO Communication Parameter Record
-                defstruct ds = new defstruct("PDO RX Communication Parameter Record",
-                "OD_RPDOCommunicationParameter_t");
-
-                ds.elements.Add(0,new subdefstruct("number of supported entries in the record","maxSubIndex",DataType.UNSIGNED8));
-                ds.elements.Add(1,new subdefstruct("COB-ID","COB_IDUsedByTPDO",DataType.UNSIGNED32));
-                ds.elements.Add(2,new subdefstruct("transmission type","transmissionType",DataType.UNSIGNED8));
-          
-                defstructs.Add(0x1400,ds);
-            }
-
-            {
-                //0x1600 PDO TX Mapping Paramater DataType 0x21
-                defstruct ds = new defstruct("PDO RX Mapping Parameter Record",
-                "OD_RPDOMappingParameter_t");
-
-                ds.elements.Add(0,new subdefstruct("number of mapped objects in PDO","numberOfMappedObjects",DataType.UNSIGNED8);
-
-                ds.elements.Add(1,new subdefstruct("1st object to be mapped","mappedObject1",DataType.UNSIGNED32));
-                ds.elements.Add(2,new subdefstruct("2nd object to be mapped","mappedObject2",DataType.UNSIGNED32));
-                ds.elements.Add(3,new subdefstruct("3rd object to be mapped","mappedObject3",DataType.UNSIGNED32));
-                ds.elements.Add(4,new subdefstruct("4th object to be mapped","mappedObject4",DataType.UNSIGNED32));
-                ds.elements.Add(5,new subdefstruct("5th object to be mapped","mappedObject5",DataType.UNSIGNED32));
-                ds.elements.Add(6,new subdefstruct("6th object to be mapped","mappedObject6",DataType.UNSIGNED32));
-                ds.elements.Add(7,new subdefstruct("7th object to be mapped","mappedObject7",DataType.UNSIGNED32));
-                ds.elements.Add(8,new subdefstruct("8th object to be mapped","mappedObject8",DataType.UNSIGNED32));
-    
-                defstructs.Add(0x1600,ds);
-            }
-
-        }
-
-    }
-
-    public class defstruct
-    {
-        public string name;
-        public string c_declaration;
-    
-        public Dictinary<int,subdefstruct> elements;
-
-        public defstruct(string name,string c_dec)
-        {
-            this.name = name;
-            this.c_declaration = c_dec;
-            elements = new Dictinary<int,subdefstruct>();
-        }
-
-    }
-    public class subdefstruct
-    {
-    public string description;
-    public string c_declaration;
-
-    public DataType datatype;
-
-    public subdefstruct(string description,string c_dec,DataType datatype)
-    {
-        this.description = description;
-        this.c_declaration = c_dec;
-        this.datatype = datatype;
-    }
-
-}
-
-public class ParameterException : Exception
-{
-    public ParameterException(String message)
-        : base(message)
-    {
         
-    }
-}
+            }
+        }
+
+ }
