@@ -662,11 +662,14 @@ namespace EDSTest
             if (listViewDetails.SelectedItems[0].Tag != null)
             {
                 ODentry od = (ODentry)listViewDetails.SelectedItems[0].Tag;
-                UInt16 count = Convert.ToUInt16(od.parent.subobjects[0].defaultvalue);
-                if (count > 0)
-                    count--;
 
-                od.parent.subobjects[0].defaultvalue = count.ToString();
+                if (od.parent.objecttype == ObjectType.ARRAY)
+                {
+                    UInt16 count = Convert.ToUInt16(od.parent.subobjects[0].defaultvalue);
+                    if (count > 0)
+                        count--;
+                    od.parent.subobjects[0].defaultvalue = count.ToString();
+                }
 
                 od.parent.subobjects.Remove(od.subindex);
 
