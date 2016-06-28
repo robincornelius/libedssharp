@@ -35,14 +35,14 @@ namespace libEDSsharp
         private string folderpath;
         private EDSsharp eds;
 
-        Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
+    //    Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
 
         public void export(string folderpath, EDSsharp eds)
         {
             this.folderpath = folderpath;
             this.eds = eds;
 
-            init_defstructs();
+            //init_defstructs();
 
             countPDOS();
 
@@ -206,18 +206,38 @@ namespace libEDSsharp
    TYPE DEFINITIONS FOR RECORDS
 *******************************************************************************/");
 
-            foreach (KeyValuePair<DataType, defstruct> kvp in defstructs)
+            //We need to identify all the record types used and generate a struct for each one
+            //FIXME the original CanOpenNode exporter said how many items used this struct in the comments
+
+            List<string> structnamelist = new List<string>();
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
-                file.WriteLine(string.Format("/*{0}    */ typedef struct {{", kvp.Key));
-                foreach (KeyValuePair<UInt16, subdefstruct> kvp2 in kvp.Value.elements)
+                ODentry od = kvp.Value;
+
+                if (od.objecttype != ObjectType.REC)
+                    continue;
+
+                string structname = String.Format("OD_{0}_t", make_cname(od.parameter_name));
+
+                if (structnamelist.Contains(structname))
+                    continue;
+
+                structnamelist.Add(structname);
+
+                file.WriteLine(string.Format("/*{0:x4}    */ typedef struct {{", kvp.Key));
+                foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value.subobjects)
                 {
-                    subdefstruct sub = kvp2.Value;
-                    file.WriteLine(string.Format("               {0,-15}{1};", sub.datatype.ToString(), sub.c_declaration));
+                    ODentry subod = kvp2.Value;
+                    file.WriteLine(string.Format("               {0,-15}{1};", subod.datatype.ToString(), make_cname(subod.parameter_name)));
+
                 }
 
-                file.WriteLine(string.Format("               }}              {0};", kvp.Value.c_declaration));
+                file.WriteLine(string.Format("               }}              {0};", structname));
 
             }
+
+    
 
             file.WriteLine(@"/*******************************************************************************
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS
@@ -285,7 +305,7 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
                 if (od.nosubindexes == 0)
                 {
                     file.WriteLine(string.Format("/*{0:x4}, Data Type: {1} */", od.index, t.ToString()));
-                    file.WriteLine(string.Format("        #define OD_{0}             {1}.{2}", od.paramater_cname(), loc, od.paramater_cname()));
+                    file.WriteLine(string.Format("        #define {0,-51}{1}.{2}", string.Format("OD_{0}",od.paramater_cname()), loc, od.paramater_cname()));
                 }
                 else
                 {
@@ -295,8 +315,8 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
                     DataType dt = od.datatype;
 
                     file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(), od.nosubindexes - 1));
-                    file.WriteLine(string.Format("        #define OD_{0}             {1}.{2}", od.paramater_cname(), loc, od.paramater_cname()));
-                    file.WriteLine(string.Format("        #define ODL_{0}_arrayLength             {1}", od.paramater_cname(), od.nosubindexes - 1));
+                    file.WriteLine(string.Format("        #define OD_{0,-48}{1}.{2}", od.paramater_cname(), loc, od.paramater_cname()));
+                    file.WriteLine(string.Format("        #define {0,-51}{1}", string.Format("ODL_{0}_arrayLength", od.paramater_cname()), od.nosubindexes - 1));
 
 
                     if (od.objecttype != ObjectType.ARRAY)
@@ -312,7 +332,7 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
                             if (sub.subindex == 0)
                                 continue;
 
-                            string ODA = string.Format("ODA_{0}_{1}", od.paramater_cname(), sub.paramater_cname());
+                            string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", od.paramater_cname(), sub.paramater_cname()));
 
                             if (ODAs.Contains(ODA))
                             {
@@ -323,7 +343,7 @@ extern CO_OD_ROM_IDENT struct sCO_OD_ROM CO_OD_ROM;
                             ODAs.Add(ODA);
 
 
-                            ODAout += (string.Format("        #define ODA_{0}_{1}       {2}\r\n", od.paramater_cname(), sub.paramater_cname(), sub.subindex));
+                            ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", od.paramater_cname(), sub.paramater_cname()), sub.subindex));
 
                         }
 
@@ -438,7 +458,7 @@ const sCO_OD_object CO_OD[");
                 if (od.nosubindexes > 0)
                     array = string.Format("[0]");
 
-                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (const void*)&{4}.{5}{6},      {7}}},", od.index, od.nosubindexes, flags, datasize, loc, od.paramater_cname(), array, odf));
+                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (const void*)&{4}.{5}{6}}},", od.index, od.nosubindexes, flags, datasize, loc, od.paramater_cname(), array));
 
             }
 
@@ -656,6 +676,25 @@ const sCO_OD_object CO_OD[");
 
         }
 
+       string make_cname(string name)
+       {
+           string[] bits = Regex.Split(name,@"[\W]+");
+
+           string output = "";
+
+           char lastchar = ' ';
+           foreach (string s in bits)
+           {
+               if(Char.IsUpper(lastchar) && Char.IsUpper(s.First()))
+                    output+="_";
+
+               output +=char.ToUpper(s[0]) + s.Substring(1);
+
+               lastchar = output.Last();
+           }
+
+           return output;
+       }
 
         void export_record_types(StreamWriter file)
         {
@@ -673,22 +712,24 @@ const sCO_OD_object CO_OD[");
                 if (od.datatype == DataType.UNKNOWN)
                     continue;
 
-                defstruct def = defstructs[kvp.Value.datatype];
-
-                int count = def.elements.Count;
+                int count = od.subobjects.Count; //don't include index
 
                 if(od.index>=0x1400 && od.index<0x1600)
                 {
                     count = 3; //CanOpenNode Fudging. Its only 3 paramaters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
+                string cname = make_cname(od.parameter_name);
+                
                 file.WriteLine(String.Format("/*0x{0:x4}*/ const CO_OD_entryRecord_t OD_record{0:x4}[{1}] = {{", od.index, count));
 
                 foreach (KeyValuePair<UInt16, ODentry> kvpsub in od.subobjects)
                 {
                     ODentry sub = kvpsub.Value;
 
-                    file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.{0}.{1}, 0x{2:x2}, 0x{3} }}", def.c_declaration, def.elements[kvpsub.Key].c_declaration, getflags(sub), sizeofdatatype(sub.datatype, sub)));
+                    string subcname = make_cname(sub.parameter_name);
+
+                    file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.OD_{0}_t.{1}, 0x{2:x2}, 0x{3} }}", cname, subcname, getflags(sub), sizeofdatatype(sub.datatype, sub)));
 
                 }
 
@@ -843,113 +884,7 @@ const sCO_OD_object CO_OD[");
                 }
             }
 
-
         }
 
-
-
-        void init_defstructs()
-        {
-
-            {
-                //0x1018 Identity Record Specification, DataType 0x23
-                defstruct ds = new defstruct("Identity Record Specification",
-                "OD_identity_t");
-
-                ds.elements.Add(0, new subdefstruct("number of supported entries in the record", "maxSubIndex", DataType.UNSIGNED8, ds));
-                ds.elements.Add(1, new subdefstruct("Vendor-ID", "vendorID", DataType.UNSIGNED32, ds));
-                ds.elements.Add(2, new subdefstruct("Product code", "productCode", DataType.UNSIGNED32, ds));
-                ds.elements.Add(3, new subdefstruct("Revision number", "revisionNumber", DataType.UNSIGNED32, ds));
-                ds.elements.Add(4, new subdefstruct("Serial number", "serialNumber", DataType.UNSIGNED32, ds));
-
-                defstructs.Add(DataType.IDENTITY, ds);
-            }
-
-            {
-                //0x1200 Identity Record Specification, DataType 0x22
-                defstruct ds = new defstruct("SDO Parameter Record Specification",
-                "OD_identity_t");
-
-                ds.elements.Add(0, new subdefstruct("number of supported entries in the record", "maxSubIndex", DataType.UNSIGNED8, ds));
-                ds.elements.Add(1, new subdefstruct("COB-ID client -> server", "COB_IDClientToServer", DataType.UNSIGNED32, ds));
-                ds.elements.Add(2, new subdefstruct("COB-ID server -> client", "COB_IDServerToClient", DataType.UNSIGNED32, ds));
-                ds.elements.Add(3, new subdefstruct("node ID of SDO’s client resp. server", "OD_SDOServerParameter_t", DataType.UNSIGNED32, ds));
-
-                defstructs.Add(DataType.SDO_PARAMETER, ds);
-            }
-
-
-            {
-                //0x1800 PDO Communication Parameter Record
-                defstruct ds = new defstruct("PDO Communication Parameter Record",
-                "OD_TPDOCommunicationParameter_t");
-
-                ds.elements.Add(0, new subdefstruct("number of supported entries in the record", "maxSubIndex", DataType.UNSIGNED8, ds));
-                ds.elements.Add(1, new subdefstruct("COB-ID", "COB_IDUsedByTPDO", DataType.UNSIGNED32, ds));
-                ds.elements.Add(2, new subdefstruct("transmission type", "transmissionType", DataType.UNSIGNED8, ds));
-                ds.elements.Add(3, new subdefstruct("inhibit time", "inhibitTime", DataType.UNSIGNED16, ds));
-                ds.elements.Add(4, new subdefstruct("reserved", "compatibilityEntry", DataType.UNSIGNED8, ds));
-                ds.elements.Add(5, new subdefstruct("event timer", "eventTimer", DataType.UNSIGNED16, ds));
-                ds.elements.Add(6, new subdefstruct("SYNCStartValue", "SYNCStartValue", DataType.UNSIGNED8, ds));
-
-                defstructs.Add(DataType.PDO_COMMUNICATION_PARAMETER, ds);
-            }
-
-            {
-                //0x1A00 PDO TX Mapping Paramater DataType 0x21
-                defstruct ds = new defstruct("PDO Mapping Parameter Record",
-                "OD_TPDOMappingParameter_t");
-
-                ds.elements.Add(0, new subdefstruct("number of mapped objects in PDO", "numberOfMappedObjects", DataType.UNSIGNED8, ds));
-
-                ds.elements.Add(1, new subdefstruct("1st object to be mapped", "mappedObject1", DataType.UNSIGNED32, ds));
-                ds.elements.Add(2, new subdefstruct("2nd object to be mapped", "mappedObject2", DataType.UNSIGNED32, ds));
-                ds.elements.Add(3, new subdefstruct("3rd object to be mapped", "mappedObject3", DataType.UNSIGNED32, ds));
-                ds.elements.Add(4, new subdefstruct("4th object to be mapped", "mappedObject4", DataType.UNSIGNED32, ds));
-                ds.elements.Add(5, new subdefstruct("5th object to be mapped", "mappedObject5", DataType.UNSIGNED32, ds));
-                ds.elements.Add(6, new subdefstruct("6th object to be mapped", "mappedObject6", DataType.UNSIGNED32, ds));
-                ds.elements.Add(7, new subdefstruct("7th object to be mapped", "mappedObject7", DataType.UNSIGNED32, ds));
-                ds.elements.Add(8, new subdefstruct("8th object to be mapped", "mappedObject8", DataType.UNSIGNED32, ds));
-
-                defstructs.Add(DataType.PDO_MAPPING, ds);
-            }
-
-
-
-        }
-
-    }
-
-    public class defstruct
-    {
-        public string name;
-        public string c_declaration;
-
-        public Dictionary<UInt16, subdefstruct> elements;
-
-        public defstruct(string name, string c_dec)
-        {
-            this.name = name;
-            this.c_declaration = c_dec;
-            elements = new Dictionary<UInt16, subdefstruct>();
-        }
-
-    }
-
-    public class subdefstruct
-    {
-        public string description;
-        public string c_declaration;
-
-        public DataType datatype;
-        public defstruct parent;
-
-        public subdefstruct(string description, string c_dec, DataType datatype, defstruct parent)
-        {
-            this.description = description;
-            this.c_declaration = c_dec;
-            this.datatype = datatype;
-            this.parent = parent;
-        }
     }
 }

@@ -216,7 +216,11 @@ namespace libEDSsharp
 
                 entry.defaultvalue = coo.DefaultValue;
                 //entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
-                entry.PDOMapping = coo.PDOmapping!="no";
+
+                if (coo.PDOmapping != null)
+                    entry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), coo.PDOmapping);
+                else
+                    entry.PDOtype = PDOMappingType.no;
 
                 entry.AccessFunctionName = coo.AccessFunctionName;
                 entry.AccessFunctionPreCode = coo.AccessFunctionPreCode;
@@ -267,7 +271,7 @@ namespace libEDSsharp
                     subentry.subindex = Convert.ToUInt16(coosub.SubIndex, 16);
                     
                     if(coosub.PDOmapping!=null)
-                        subentry.PDOMapping = coosub.PDOmapping != "no";
+                        entry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), coosub.PDOmapping);
 
                     subentry.location = entry.location;
                     subentry.parent = entry;

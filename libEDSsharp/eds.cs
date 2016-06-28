@@ -88,6 +88,14 @@ namespace libEDSsharp
         EEPROM=3,
     }
 
+    public enum PDOMappingType
+    {
+        no=0,
+        optional=1,
+        RPDO=2,
+        TPDO=3,
+    }
+
   
     public class EdsExport : Attribute
     {
@@ -605,7 +613,15 @@ namespace libEDSsharp
         [EdsExport]
         public string defaultvalue;
         [EdsExport]
-        public bool PDOMapping;
+        public bool PDOMapping
+        {
+            get
+            {
+                return PDOtype != PDOMappingType.no;
+            }
+        }
+
+        public PDOMappingType PDOtype;
 
         //CanOpenNode specific extra storage
         public string Label = "";
@@ -628,7 +644,7 @@ namespace libEDSsharp
         }
 
         //Constructor for a simple VAR type
-        public ODentry(string parameter_name,UInt16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
+        public ODentry(string parameter_name,UInt16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping)
         {
             this.parameter_name = parameter_name;
             this.index = index;
@@ -642,11 +658,12 @@ namespace libEDSsharp
             else
                 throw new ParameterException("AccessType invalid");
 
-            this.PDOMapping = PDOMapping;
+            this.PDOtype = PDOMapping;
+
         }
 
         //SubIndex type
-        public ODentry(string parameter_name, UInt16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, bool PDOMapping)
+        public ODentry(string parameter_name, UInt16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping)
         {
             this.parameter_name = parameter_name;
             this.index = index;
@@ -660,7 +677,7 @@ namespace libEDSsharp
             else
                 throw new ParameterException("AccessType invalid");
 
-            this.PDOMapping = PDOMapping;
+            this.PDOtype = PDOMapping;
         }
 
         //Array subindex type
@@ -939,8 +956,14 @@ namespace libEDSsharp
                     if (kvp.Value.ContainsKey("DefaultValue"))
                         od.defaultvalue = kvp.Value["DefaultValue"];
 
+                    od.PDOtype = PDOMappingType.no;
                     if (kvp.Value.ContainsKey("PDOMapping"))
-                        od.PDOMapping = Convert.ToInt16(kvp.Value["PDOMapping"]) == 1;
+                    {
+                        bool pdo = Convert.ToInt16(kvp.Value["PDOMapping"]) == 1;
+                        if (pdo == true)
+                            od.PDOtype = PDOMappingType.optional;
+                    }
+                       
 
                 }
 

@@ -36,7 +36,6 @@ namespace EDSTest
     {
 
         public EDSsharp eds;
-        Device dev; //one day this will be multiple devices
 
         ODentry selectedobject;
         ListViewItem selecteditem;

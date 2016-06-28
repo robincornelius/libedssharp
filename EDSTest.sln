@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDSTest", "EDSTest\EDSTest.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libEDSsharp", "libEDSsharp\libEDSsharp.csproj", "{CC0FA4B1-2BFC-43B3-8C56-B428DF2D24E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cia306Tester", "Cia306Tester\Cia306Tester.csproj", "{BA0F2C2B-765D-4689-81D4-C19AAD4639F3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{CC0FA4B1-2BFC-43B3-8C56-B428DF2D24E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC0FA4B1-2BFC-43B3-8C56-B428DF2D24E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC0FA4B1-2BFC-43B3-8C56-B428DF2D24E7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA0F2C2B-765D-4689-81D4-C19AAD4639F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA0F2C2B-765D-4689-81D4-C19AAD4639F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA0F2C2B-765D-4689-81D4-C19AAD4639F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA0F2C2B-765D-4689-81D4-C19AAD4639F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

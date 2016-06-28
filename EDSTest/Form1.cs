@@ -36,13 +36,9 @@ namespace EDSTest
 {
     public partial class Form1 : Form
     {
-
-        ODentry selectedobject;
-
         public Form1()
         {
             InitializeComponent();
-
         }
 
         private void openEDSToolStripMenuItem_Click(object sender, EventArgs e)
