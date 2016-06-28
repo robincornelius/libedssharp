@@ -747,6 +747,72 @@ namespace libEDSsharp
             string cname = parameter_name.Replace(" ","");
             return cname;
         }
+
+        public int sizeofdatatype()
+        {
+            switch (datatype)
+            {
+                case DataType.BOOLEAN:
+                case DataType.UNSIGNED8:
+                case DataType.INTEGER8:
+                    return 1;
+
+                case DataType.INTEGER16:
+                case DataType.UNSIGNED16:
+                    return 2;
+
+                case DataType.UNSIGNED24:
+                case DataType.INTEGER24:
+                    return 3;
+
+                case DataType.INTEGER32:
+                case DataType.UNSIGNED32:
+                case DataType.REAL32:
+                    return 4;
+
+                case DataType.INTEGER40:
+                case DataType.UNSIGNED40:
+                    return 5;
+
+                case DataType.INTEGER48:
+                case DataType.UNSIGNED48:
+                case DataType.TIME_DIFFERENCE:
+                case DataType.TIME_OF_DAY:
+                    return 6;
+
+                case DataType.INTEGER56:
+                case DataType.UNSIGNED56:
+                    return 7;
+
+                case DataType.INTEGER64:
+                case DataType.UNSIGNED64:
+                case DataType.REAL64:
+                    return 8;
+
+
+                case DataType.VISIBLE_STRING:
+                    {
+                        return defaultvalue.Length;
+                    }
+
+                case DataType.OCTET_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
+                    }
+
+                case DataType.UNICODE_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
+                    }
+
+                case DataType.DOMAIN:
+                    return 0;
+
+                default: //FIXME
+                    return 0;
+
+            }
+        }
     }
 
     public class EDSsharp
@@ -1075,6 +1141,8 @@ namespace libEDSsharp
             return DataType.UNKNOWN;
 
         }
+
+     
 
     }
 

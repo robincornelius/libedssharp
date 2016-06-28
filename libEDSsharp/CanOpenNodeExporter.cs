@@ -441,7 +441,7 @@ const sCO_OD_object CO_OD[");
                 byte flags = getflags(od);
 
                 DataType t = eds.getdatatype(od);
-                int datasize = sizeofdatatype(t,od);
+                int datasize = od.sizeofdatatype();
 
                 string odf;
 
@@ -499,9 +499,7 @@ const sCO_OD_object CO_OD[");
             if(od.TPDODetectCos)
               flags |=0x40;
    
-            DataType t = eds.getdatatype(od);
-
-            int datasize = sizeofdatatype(t,od);
+            int datasize = od.sizeofdatatype();
 
             if (datasize > 1)
                 flags |= 0x80;
@@ -641,41 +639,6 @@ const sCO_OD_object CO_OD[");
             }
         }
 
-       int sizeofdatatype(DataType dt,ODentry od)
-        {
-            switch (dt)
-            {
-                case DataType.BOOLEAN:
-                case DataType.UNSIGNED8:
-                case DataType.INTEGER8:
-                    return 1;
-
-                case DataType.INTEGER16:
-                case DataType.UNSIGNED16:
-                    return 2;
-
-                case DataType.UNSIGNED24:
-                case DataType.INTEGER24:
-                    return 3;
-
-                case DataType.INTEGER32:
-                case DataType.UNSIGNED32:
-                case DataType.REAL32:
-                    return 4;
-
-                case DataType.VISIBLE_STRING:
-                    return 0;
-                    
-
-                default:
-                    
-                    return 0;
-
-
-            }
-
-        }
-
        string make_cname(string name)
        {
            string[] bits = Regex.Split(name,@"[\W]+");
@@ -729,7 +692,7 @@ const sCO_OD_object CO_OD[");
 
                     string subcname = make_cname(sub.parameter_name);
 
-                    file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.OD_{0}_t.{1}, 0x{2:x2}, 0x{3} }}", cname, subcname, getflags(sub), sizeofdatatype(sub.datatype, sub)));
+                    file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.OD_{0}_t.{1}, 0x{2:x2}, 0x{3} }}", cname, subcname, getflags(sub), sub.sizeofdatatype()));
 
                 }
 
