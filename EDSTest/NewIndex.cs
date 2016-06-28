@@ -39,7 +39,7 @@ namespace EDSTest
         public byte nosubindexes;
         EDSsharp eds;
 
-        public NewIndex(EDSsharp eds)
+        public NewIndex(EDSsharp eds,DataType dt = DataType.UNKNOWN, ObjectType ot = ObjectType.UNKNOWN)
         {
             this.eds = eds;
 
@@ -49,6 +49,30 @@ namespace EDSTest
             {
                 comboBox_datatype.Items.Add(foo.ToString());
             }
+
+
+            if (ot == ObjectType.ARRAY)
+            {
+                    comboBox_datatype.SelectedItem = dt.ToString();
+                    comboBox_datatype.Enabled = false;
+                    radioButton_array.Enabled = false;
+                    radioButton_rec.Enabled = false;
+                    radioButton_var.Enabled = false;
+                    numericUpDown_index.Enabled = false;
+                   
+            }
+
+            if (ot == ObjectType.REC)
+            {
+                    //comboBox_datatype.SelectedItem = dt.ToString();
+                    radioButton_array.Enabled = false;
+                    radioButton_rec.Enabled = false;
+                    radioButton_var.Enabled = false;
+
+                    numericUpDown_index.Enabled = false;
+                    numericUpDown_subindexes.Enabled = false;
+            }
+
 
             DialogResult = DialogResult.Cancel;
         }

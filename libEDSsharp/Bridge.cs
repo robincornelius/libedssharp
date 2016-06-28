@@ -85,7 +85,7 @@ namespace libEDSsharp
                             sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
                             sub.DefaultValue = subod.defaultvalue;
                             sub.PDOmapping = subod.PDOtype.ToString();
-                            sub.SubIndex = subod.subindex.ToString();
+                            sub.SubIndex = String.Format("{0:x2}",subod.subindex);
                             coo.CANopenSubObject.Add(sub);
                                                  
                         }
@@ -307,6 +307,7 @@ namespace libEDSsharp
                     }
 
                     subentry.defaultvalue = coosub.DefaultValue;
+
                     subentry.subindex = Convert.ToUInt16(coosub.SubIndex, 16);
                     
                     if(coosub.PDOmapping!=null)

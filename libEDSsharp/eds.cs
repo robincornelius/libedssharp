@@ -1142,6 +1142,31 @@ namespace libEDSsharp
 
         }
 
+
+        public int getbase(string defaultvalue)
+        {
+
+            int nobase = 10;
+
+            String pat = @"^0[xX][0-9]+";
+
+            Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+            Match m = r.Match(defaultvalue);
+            if (m.Success)
+            {
+                nobase = 16;
+            }
+
+            pat = @"^0[0-9]+";
+            r = new Regex(pat, RegexOptions.IgnoreCase);
+            m = r.Match(defaultvalue);
+            if (m.Success)
+            {
+                nobase = 8;
+            }
+
+            return nobase;
+        }
      
 
     }

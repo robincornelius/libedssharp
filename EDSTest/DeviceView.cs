@@ -359,6 +359,31 @@ namespace EDSTest
 
             ODentry od = (ODentry)lvi.Tag;
 
+            if (e.Button == MouseButtons.Right)
+            {
+                ODentry parent = od;
+                if (od.parent != null)
+                    parent = od.parent;
+
+                if (parent.objecttype == ObjectType.ARRAY || parent.objecttype == ObjectType.REC)
+                {
+                    if (od.subindex == 0 || od.parent==null)
+                    {
+                        contextMenu_array.Items[1].Enabled = false;
+                    }
+                    else
+                    {
+                        contextMenu_array.Items[1].Enabled = true;
+                    }
+
+                    if (listViewDetails.FocusedItem.Bounds.Contains(e.Location) == true)
+                    {
+                        contextMenu_array.Show(Cursor.Position);
+                    }
+                    
+                }
+            }
+
             selectedobject = od;
             validateanddisplaydata();
 
@@ -586,6 +611,84 @@ namespace EDSTest
                 MessageBox.Show("Update failed, reason :-\n" + ex.ToString());
             }
 
+        }
+
+        private void addSubItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(listViewDetails.SelectedItems[0].Tag!=null)
+            {
+                ODentry od = (ODentry)listViewDetails.SelectedItems[0].Tag;
+
+                DataType dt = DataType.UNKNOWN;
+
+                if(od.parent.objecttype==ObjectType.ARRAY)
+                {
+                    //TODO just add a new record;
+                    ODentry newsub = new ODentry();
+                    newsub.parent = od.parent;
+                    newsub.datatype = DataType.UNKNOWN;
+                    newsub.index = od.index;
+                    newsub.objecttype = ObjectType.VAR;
+                    newsub.subindex = (UInt16)od.parent.subobjects.Count;
+                    od.parent.subobjects.Add((UInt16)(od.parent.subobjects.Count), newsub);
+
+                    UInt16 def = Convert.ToUInt16(od.parent.subobjects[0].defaultvalue);
+                    def++;
+                    od.parent.subobjects[0].defaultvalue = def.ToString();
+
+  
+                }
+
+                if (od.parent.objecttype == ObjectType.REC)
+                {
+                    dt = od.datatype;
+
+                    NewIndex ni = new NewIndex(eds, dt, od.parent.objecttype);
+
+                    if (ni.ShowDialog() == DialogResult.OK)
+                    {
+                        //TODO just add a new sub item of type 
+                    }
+                }
+
+                updateselectedindexdisplay(selectedobject.index);
+                validateanddisplaydata();
+
+            }
+        }
+
+        private void removeSubItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewDetails.SelectedItems[0].Tag != null)
+            {
+                ODentry od = (ODentry)listViewDetails.SelectedItems[0].Tag;
+                UInt16 count = Convert.ToUInt16(od.parent.subobjects[0].defaultvalue);
+                if (count > 0)
+                    count--;
+
+                od.parent.subobjects[0].defaultvalue = count.ToString();
+
+                od.parent.subobjects.Remove(od.subindex);
+
+                UInt16 countx = 0;
+
+                Dictionary<UInt16, ODentry> newlist = new Dictionary<ushort, ODentry>();
+
+                foreach(KeyValuePair<UInt16,ODentry>kvp in od.parent.subobjects)
+                {
+                    ODentry sub = kvp.Value;
+                    sub.subindex = countx;
+                    newlist.Add(countx, sub);
+                    countx++;   
+                }
+
+                od.parent.subobjects = newlist;
+
+                updateselectedindexdisplay(selectedobject.index);
+                validateanddisplaydata();
+            }
+
+            
         }
 
      

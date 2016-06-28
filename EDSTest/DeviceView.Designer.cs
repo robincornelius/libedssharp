@@ -134,6 +134,9 @@
             this.deleteObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button_update_devfile_info = new System.Windows.Forms.Button();
+            this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -147,6 +150,7 @@
             this.groupBox1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenu_array.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -1127,6 +1131,28 @@
             this.button_update_devfile_info.UseVisualStyleBackColor = true;
             this.button_update_devfile_info.Click += new System.EventHandler(this.button_update_devfile_info_Click);
             // 
+            // contextMenu_array
+            // 
+            this.contextMenu_array.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addSubItemToolStripMenuItem,
+            this.removeSubItemToolStripMenuItem});
+            this.contextMenu_array.Name = "contextMenu_array";
+            this.contextMenu_array.Size = new System.Drawing.Size(167, 70);
+            // 
+            // addSubItemToolStripMenuItem
+            // 
+            this.addSubItemToolStripMenuItem.Name = "addSubItemToolStripMenuItem";
+            this.addSubItemToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.addSubItemToolStripMenuItem.Text = "Add sub item";
+            this.addSubItemToolStripMenuItem.Click += new System.EventHandler(this.addSubItemToolStripMenuItem_Click);
+            // 
+            // removeSubItemToolStripMenuItem
+            // 
+            this.removeSubItemToolStripMenuItem.Name = "removeSubItemToolStripMenuItem";
+            this.removeSubItemToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
+            this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
+            // 
             // DeviceView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1154,6 +1180,7 @@
             this.groupBox1.PerformLayout();
             this.tabPage1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenu_array.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1265,5 +1292,8 @@
         private System.Windows.Forms.ToolStripMenuItem deleteObjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem disableObjectToolStripMenuItem;
         private System.Windows.Forms.Button button_update_devfile_info;
+        private System.Windows.Forms.ContextMenuStrip contextMenu_array;
+        private System.Windows.Forms.ToolStripMenuItem addSubItemToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeSubItemToolStripMenuItem;
     }
 }
