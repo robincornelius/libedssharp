@@ -55,18 +55,20 @@ namespace libEDSsharp
                     coo.Index =string.Format("{0:x4}",od.index);
                     coo.Name = od.parameter_name;
                     coo.ObjectType = od.objecttype.ToString();
+                    coo.Disabled = od.Disabled.ToString().ToLower();
+                    coo.MemoryType = od.location.ToString();
+                    coo.AccessType = od.accesstype.ToString();
+                    coo.DataType = string.Format("0x{0:x2}",(int)od.datatype);
+                    coo.DefaultValue = od.defaultvalue;
+                    coo.PDOmapping = od.PDOtype.ToString();
 
-                    if(od.objecttype==ObjectType.VAR)
-                    {
-                        coo.AccessType = od.accesstype.ToString();
-                        coo.DataType = string.Format("0x{0:x2}",(int)od.datatype);
-                        coo.DefaultValue = od.defaultvalue;
-                        coo.PDOmapping = od.PDOMapping.ToString(); 
-                
+                    coo.AccessFunctionPreCode = od.AccessFunctionPreCode;
+                    coo.AccessFunctionName = od.AccessFunctionName;
+
+                    coo.Description = new Description();
+                    coo.Description.Text = od.Description;
                         
-                    }
-
-                    if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
+                    //if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                     {
                         coo.SubNumber = od.nosubindexes.ToString(); //-1?? //check me 
                         coo.CANopenSubObject = new List<CANopenSubObject>();
@@ -82,8 +84,8 @@ namespace libEDSsharp
                             sub.AccessType = subod.accesstype.ToString();
                             sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
                             sub.DefaultValue = subod.defaultvalue;
-                            sub.PDOmapping = subod.PDOMapping.ToString();
-
+                            sub.PDOmapping = subod.PDOtype.ToString();
+                            sub.SubIndex = subod.subindex.ToString();
                             coo.CANopenSubObject.Add(sub);
                                                  
                         }
@@ -133,27 +135,61 @@ namespace libEDSsharp
             baud.Value="10 Kbps";
             if (eds.di.BaudRate_10 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+            baud = new SupportedBaudRate();
             baud.Value = "20 Kbps";
             if (eds.di.BaudRate_20 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+            baud = new SupportedBaudRate();
             baud.Value = "50 Kbps";
             if (eds.di.BaudRate_50 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+            baud = new SupportedBaudRate();
             baud.Value = "125 Kbps";
             if (eds.di.BaudRate_125 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+            baud = new SupportedBaudRate();
             baud.Value = "250 Kbps";
             if (eds.di.BaudRate_250 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+            baud = new SupportedBaudRate();
             baud.Value = "500 Kbps";
             if (eds.di.BaudRate_500 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+            baud = new SupportedBaudRate();
             baud.Value = "800 Kbps";
             if (eds.di.BaudRate_800 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+            baud = new SupportedBaudRate();
             baud.Value = "1000 Kbps";
             if (eds.di.BaudRate_1000 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
+
+
+            dev.Other.DeviceIdentity = new DeviceIdentity();
+            dev.Other.DeviceIdentity.ProductName = eds.di.ProductName;
+            //dev.Other.DeviceIdentity.ProductText = new ProductText();
+            //dev.Other.DeviceIdentity.ProductText.Description
+
+
+            dev.Other.DeviceIdentity.VendorName = eds.di.VendorName;
+
+            //dev.Other.File = new Other.File();
+            dev.Other.File = new File();
+
+            dev.Other.File.FileName = eds.fi.FileName;
+
+            dev.Other.File.FileCreationDate = eds.fi.CreationDate;
+            dev.Other.File.FileCreationTime = eds.fi.CreationTime;
+            dev.Other.File.FileCreator = eds.fi.CreatedBy;
+
+            dev.Other.File.FileVersion = eds.fi.FileVersion.ToString();
 
             return dev;
         }
@@ -225,12 +261,15 @@ namespace libEDSsharp
                 entry.AccessFunctionName = coo.AccessFunctionName;
                 entry.AccessFunctionPreCode = coo.AccessFunctionPreCode;
                 entry.Disabled = coo.Disabled == "true";
+
                 if (coo.Description!=null)
                     entry.Description = coo.Description.Text; //FIXME URL/LANG
+
                 if(coo.Label!=null)
                     entry.Label = coo.Label.Text; //FIXME LANG
                 
-                entry.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), coo.MemoryType);
+                if(coo.MemoryType!=null)
+                    entry.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), coo.MemoryType);
                 
                 eds.ods.Add(entry.index, entry);
 

@@ -133,6 +133,7 @@
             this.addNewObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_update_devfile_info = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -580,6 +581,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.button_update_devfile_info);
             this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox3);
@@ -610,6 +612,7 @@
             // 
             this.textBox_txpdos.Location = new System.Drawing.Point(100, 49);
             this.textBox_txpdos.Name = "textBox_txpdos";
+            this.textBox_txpdos.ReadOnly = true;
             this.textBox_txpdos.Size = new System.Drawing.Size(101, 20);
             this.textBox_txpdos.TabIndex = 41;
             // 
@@ -617,6 +620,7 @@
             // 
             this.textBox_rxpdos.Location = new System.Drawing.Point(100, 24);
             this.textBox_rxpdos.Name = "textBox_rxpdos";
+            this.textBox_rxpdos.ReadOnly = true;
             this.textBox_rxpdos.Size = new System.Drawing.Size(101, 20);
             this.textBox_rxpdos.TabIndex = 40;
             // 
@@ -1090,7 +1094,7 @@
             this.deleteObjectToolStripMenuItem,
             this.disableObjectToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(162, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(162, 70);
             // 
             // addNewObjectToolStripMenuItem
             // 
@@ -1112,6 +1116,16 @@
             this.disableObjectToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.disableObjectToolStripMenuItem.Text = "Disable Object";
             this.disableObjectToolStripMenuItem.Click += new System.EventHandler(this.disableObjectToolStripMenuItem_Click);
+            // 
+            // button_update_devfile_info
+            // 
+            this.button_update_devfile_info.Location = new System.Drawing.Point(99, 571);
+            this.button_update_devfile_info.Name = "button_update_devfile_info";
+            this.button_update_devfile_info.Size = new System.Drawing.Size(113, 35);
+            this.button_update_devfile_info.TabIndex = 44;
+            this.button_update_devfile_info.Text = "Update";
+            this.button_update_devfile_info.UseVisualStyleBackColor = true;
+            this.button_update_devfile_info.Click += new System.EventHandler(this.button_update_devfile_info_Click);
             // 
             // DeviceView
             // 
@@ -1250,5 +1264,6 @@
         private System.Windows.Forms.ToolStripMenuItem addNewObjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteObjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem disableObjectToolStripMenuItem;
+        private System.Windows.Forms.Button button_update_devfile_info;
     }
 }
