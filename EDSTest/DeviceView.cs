@@ -710,9 +710,38 @@ namespace ODEditor
             populateindexlists();
         }
 
-      
+        private void button_save_changes_Click(object sender, EventArgs e)
+        {
+            if (selectedobject == null)
+                return;
 
-      
-     
+            //Allow everything to be updated and control what is allowed via enable/disable for the control
+
+            if (selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY)
+                return;
+
+            selectedobject.defaultvalue = textBox_defaultvalue.Text;
+            selectedobject.TPDODetectCos = checkBox_COS.Checked;
+
+
+            DataType dt = (DataType) Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
+            selectedobject.datatype = dt;
+
+            EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
+            selectedobject.accesstype = at;
+
+            //PDO mapping handle else where
+
+            selectedobject.AccessFunctionName = textBox_accessfunctionname.Text;
+            selectedobject.AccessFunctionPreCode = textBox_precode.Text;
+            selectedobject.Disabled = !checkBox_enabled.Checked;
+
+            selectedobject.location = (StorageLocation) Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
+
+            updateselectedindexdisplay(selectedobject.index);
+            validateanddisplaydata();
+
+        }
+ 
     }
 }

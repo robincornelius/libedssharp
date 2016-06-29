@@ -137,6 +137,7 @@
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_save_changes = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -170,6 +171,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.button_save_changes);
             this.splitContainer1.Panel2.Controls.Add(this.label16);
             this.splitContainer1.Panel2.Controls.Add(this.comboBox_memory);
             this.splitContainer1.Panel2.Controls.Add(this.label15);
@@ -1155,6 +1157,16 @@
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
             this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
             // 
+            // button_save_changes
+            // 
+            this.button_save_changes.Location = new System.Drawing.Point(105, 679);
+            this.button_save_changes.Name = "button_save_changes";
+            this.button_save_changes.Size = new System.Drawing.Size(101, 27);
+            this.button_save_changes.TabIndex = 27;
+            this.button_save_changes.Text = "Save Changes";
+            this.button_save_changes.UseVisualStyleBackColor = true;
+            this.button_save_changes.Click += new System.EventHandler(this.button_save_changes_Click);
+            // 
             // DeviceView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1297,5 +1309,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu_array;
         private System.Windows.Forms.ToolStripMenuItem addSubItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeSubItemToolStripMenuItem;
+        private System.Windows.Forms.Button button_save_changes;
     }
 }
