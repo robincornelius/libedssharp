@@ -78,6 +78,7 @@
             this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button_update_devfile_info = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.textBox_txpdos = new System.Windows.Forms.TextBox();
             this.textBox_rxpdos = new System.Windows.Forms.TextBox();
@@ -133,7 +134,6 @@
             this.addNewObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button_update_devfile_info = new System.Windows.Forms.Button();
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -241,6 +241,7 @@
             this.listView_manufacture_objects.UseCompatibleStateImageBehavior = false;
             this.listView_manufacture_objects.View = System.Windows.Forms.View.Details;
             this.listView_manufacture_objects.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_manufacture_objects_MouseClick);
+            this.listView_manufacture_objects.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listView_manufacture_objects_MouseDown);
             // 
             // columnHeader5
             // 
@@ -264,6 +265,7 @@
             this.listView_optional_objects.UseCompatibleStateImageBehavior = false;
             this.listView_optional_objects.View = System.Windows.Forms.View.Details;
             this.listView_optional_objects.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_optionalobjects_MouseClick);
+            this.listView_optional_objects.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listView_optional_objects_MouseDown);
             // 
             // columnHeader3
             // 
@@ -598,6 +600,16 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Device Info";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // button_update_devfile_info
+            // 
+            this.button_update_devfile_info.Location = new System.Drawing.Point(99, 571);
+            this.button_update_devfile_info.Name = "button_update_devfile_info";
+            this.button_update_devfile_info.Size = new System.Drawing.Size(113, 35);
+            this.button_update_devfile_info.TabIndex = 44;
+            this.button_update_devfile_info.Text = "Update";
+            this.button_update_devfile_info.UseVisualStyleBackColor = true;
+            this.button_update_devfile_info.Click += new System.EventHandler(this.button_update_devfile_info_Click);
             // 
             // groupBox5
             // 
@@ -1121,23 +1133,13 @@
             this.disableObjectToolStripMenuItem.Text = "Disable Object";
             this.disableObjectToolStripMenuItem.Click += new System.EventHandler(this.disableObjectToolStripMenuItem_Click);
             // 
-            // button_update_devfile_info
-            // 
-            this.button_update_devfile_info.Location = new System.Drawing.Point(99, 571);
-            this.button_update_devfile_info.Name = "button_update_devfile_info";
-            this.button_update_devfile_info.Size = new System.Drawing.Size(113, 35);
-            this.button_update_devfile_info.TabIndex = 44;
-            this.button_update_devfile_info.Text = "Update";
-            this.button_update_devfile_info.UseVisualStyleBackColor = true;
-            this.button_update_devfile_info.Click += new System.EventHandler(this.button_update_devfile_info_Click);
-            // 
             // contextMenu_array
             // 
             this.contextMenu_array.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addSubItemToolStripMenuItem,
             this.removeSubItemToolStripMenuItem});
             this.contextMenu_array.Name = "contextMenu_array";
-            this.contextMenu_array.Size = new System.Drawing.Size(167, 70);
+            this.contextMenu_array.Size = new System.Drawing.Size(167, 48);
             // 
             // addSubItemToolStripMenuItem
             // 

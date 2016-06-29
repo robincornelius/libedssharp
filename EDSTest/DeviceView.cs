@@ -281,26 +281,26 @@ namespace ODEditor
 
         }
 
-        private void listView_optionalobjects_MouseClick(object sender, MouseEventArgs e)
+        private void list_mouseclick(ListView listview, MouseEventArgs e)
         {
-            ListViewItem lvi = listView_optional_objects.SelectedItems[0];
+            ListViewItem lvi = listview.SelectedItems[0];
             UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
 
             if (e.Button == MouseButtons.Right)
             {
 
-                if (listView_optional_objects.FocusedItem.Bounds.Contains(e.Location) == true)
+                if (listview.FocusedItem.Bounds.Contains(e.Location) == true)
                 {
                     selecteditem = lvi;
 
                     ODentry od = (ODentry)lvi.Tag;
                     if (od.Disabled == true)
                     {
-                        contextMenuStrip1.Items[2].Text = "Enable Object";
+                        disableObjectToolStripMenuItem.Text = "Enable Object";
                     }
                     else
                     {
-                        contextMenuStrip1.Items[2].Text = "Disable Object";
+                        disableObjectToolStripMenuItem.Text = "Disable Object";
                     }
 
                     contextMenuStrip1.Show(Cursor.Position);
@@ -315,43 +315,48 @@ namespace ODEditor
             selectedobject = eds.ods[idx];
             validateanddisplaydata();
         }
+
+        private void listView_MouseDown(ListView listview, MouseEventArgs e)
+        {
+            ListViewHitTestInfo HI = listview.HitTest(e.Location);
+            if (e.Button == MouseButtons.Right)
+            {
+                if (HI.Location == ListViewHitTestLocations.None)
+                {
+                    deleteObjectToolStripMenuItem.Enabled = false;
+                    disableObjectToolStripMenuItem.Enabled = false;
+                    contextMenuStrip1.Show(Cursor.Position);
+                }
+                else
+                {
+                    deleteObjectToolStripMenuItem.Enabled = true;
+                    disableObjectToolStripMenuItem.Enabled = true;
+                }
+            }
+        }
+
+        private void listView_optionalobjects_MouseClick(object sender, MouseEventArgs e)
+        {
+            list_mouseclick(listView_optional_objects, e);
+        }
+
+
+        private void listView_manufacture_objects_MouseDown(object sender, MouseEventArgs e)
+        {
+            listView_MouseDown(listView_manufacture_objects,e); 
+        }
+
 
         private void listView_manufacture_objects_MouseClick(object sender, MouseEventArgs e)
         {
-
-            ListViewItem lvi = listView_manufacture_objects.SelectedItems[0];
-            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
-
-            if (e.Button == MouseButtons.Right)
-            {
-
-                if (listView_manufacture_objects.FocusedItem.Bounds.Contains(e.Location) == true)
-                {
-                    selecteditem = lvi;
-                    ODentry od = (ODentry)lvi.Tag;
-                    if(od.Disabled==true)
-                    {
-                        contextMenuStrip1.Items[2].Text = "Enable Object";
-                    }
-                    else
-                    {
-                        contextMenuStrip1.Items[2].Text = "Disable Object";
-                    }
-
-                    contextMenuStrip1.Show(Cursor.Position);
-                }
-
-                return;
-            }
-
-
-            updateselectedindexdisplay(idx);
-
-            selectedobject = eds.ods[idx];
-            validateanddisplaydata();
-
+            list_mouseclick(listView_manufacture_objects, e);
         }
 
+
+        private void listView_optional_objects_MouseDown(object sender, MouseEventArgs e)
+        {
+            listView_MouseDown(listView_optional_objects, e); 
+        }
 
         private void listViewDetails_MouseClick(object sender, MouseEventArgs e)
         {
@@ -698,6 +703,10 @@ namespace ODEditor
         {
             populateindexlists();
         }
+
+      
+
+      
      
     }
 }
