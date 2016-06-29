@@ -717,6 +717,9 @@ namespace ODEditor
 
             //Allow everything to be updated and control what is allowed via enable/disable for the control
 
+            selectedobject.parameter_name = textBox_name.Text;
+            selectedobject.Description = textBox_description.Text;
+
             if (selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY)
                 return;
 
