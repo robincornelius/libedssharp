@@ -563,8 +563,10 @@ namespace libEDSsharp
 
         [EdsExport]
         public bool GroupMessaging;
+
         [EdsExport]
         public UInt16 NrOfRXPDO;
+
         [EdsExport]
         public UInt16 NrOfTXPDO;
 
@@ -1066,6 +1068,7 @@ namespace libEDSsharp
                 mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
                 c = new Comments(eds["Comments"]);
 
+                updatePDOcount();
             }
             // catch(Exception e)
             //{
@@ -1075,6 +1078,8 @@ namespace libEDSsharp
 
         public void savefile(string filename)
         {
+            updatePDOcount();
+
             StreamWriter writer = File.CreateText(filename);
             fi.write(writer);
             di.write(writer);
@@ -1168,6 +1173,23 @@ namespace libEDSsharp
             }
 
             return nobase;
+        }
+
+        public void updatePDOcount()
+        {
+            di.NrOfRXPDO = 0;
+            di.NrOfTXPDO = 0;
+            foreach(KeyValuePair<UInt16,ODentry> kvp in ods)
+            {
+                ODentry od = kvp.Value;
+                if(od.Disabled==false && ((od.index&0xFF00) == 0x1400 ))
+                    di.NrOfRXPDO++;
+
+                if(od.Disabled==false && ((od.index&0xFF00) == 0x1800 ))
+                    di.NrOfTXPDO++;
+
+            }
+
         }
      
 

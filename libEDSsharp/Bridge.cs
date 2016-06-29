@@ -39,6 +39,8 @@ namespace libEDSsharp
 
         public Device convert(EDSsharp eds)
         {
+            eds.updatePDOcount();
+
             Device dev = new Device();
             dev.CANopenObjectList = new CANopenObjectList();
             dev.CANopenObjectList.CANopenObject = new List<CANopenObject>();
@@ -374,6 +376,8 @@ namespace libEDSsharp
             eds.fi.CreationTime = dev.Other.File.FileCreationTime;
             eds.fi.CreatedBy = dev.Other.File.FileCreator;
 
+            dev.Other.Capabilities = dev.Other.Capabilities;
+
             try
             {
                 eds.fi.FileVersion = Convert.ToByte(dev.Other.File.FileVersion);
@@ -386,6 +390,8 @@ namespace libEDSsharp
             eds.fi.EDSVersion = "4.0";
             
             //FIX me any other approprate defaults for eds here??
+
+            eds.updatePDOcount();
 
             return eds;
         }
