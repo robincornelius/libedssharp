@@ -42,6 +42,7 @@
             this.listView_mandatory_objects = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.button_save_changes = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.comboBox_memory = new System.Windows.Forms.ComboBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -137,7 +138,8 @@
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button_save_changes = new System.Windows.Forms.Button();
+            this.label32 = new System.Windows.Forms.Label();
+            this.textBox_concretenodeid = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -300,6 +302,16 @@
             // 
             this.columnHeader2.Text = "Name";
             this.columnHeader2.Width = 200;
+            // 
+            // button_save_changes
+            // 
+            this.button_save_changes.Location = new System.Drawing.Point(105, 679);
+            this.button_save_changes.Name = "button_save_changes";
+            this.button_save_changes.Size = new System.Drawing.Size(101, 27);
+            this.button_save_changes.TabIndex = 27;
+            this.button_save_changes.Text = "Save Changes";
+            this.button_save_changes.UseVisualStyleBackColor = true;
+            this.button_save_changes.Click += new System.EventHandler(this.button_save_changes_Click);
             // 
             // label16
             // 
@@ -589,6 +601,8 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.textBox_concretenodeid);
+            this.tabPage2.Controls.Add(this.label32);
             this.tabPage2.Controls.Add(this.button_update_devfile_info);
             this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox4);
@@ -1157,15 +1171,21 @@
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
             this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
             // 
-            // button_save_changes
+            // label32
             // 
-            this.button_save_changes.Location = new System.Drawing.Point(105, 679);
-            this.button_save_changes.Name = "button_save_changes";
-            this.button_save_changes.Size = new System.Drawing.Size(101, 27);
-            this.button_save_changes.TabIndex = 27;
-            this.button_save_changes.Text = "Save Changes";
-            this.button_save_changes.UseVisualStyleBackColor = true;
-            this.button_save_changes.Click += new System.EventHandler(this.button_save_changes_Click);
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(412, 259);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(91, 13);
+            this.label32.TabIndex = 45;
+            this.label32.Text = "Concrete node ID";
+            // 
+            // textBox_concretenodeid
+            // 
+            this.textBox_concretenodeid.Location = new System.Drawing.Point(509, 252);
+            this.textBox_concretenodeid.Name = "textBox_concretenodeid";
+            this.textBox_concretenodeid.Size = new System.Drawing.Size(80, 20);
+            this.textBox_concretenodeid.TabIndex = 46;
             // 
             // DeviceView
             // 
@@ -1182,6 +1202,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -1310,5 +1331,7 @@
         private System.Windows.Forms.ToolStripMenuItem addSubItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeSubItemToolStripMenuItem;
         private System.Windows.Forms.Button button_save_changes;
+        private System.Windows.Forms.TextBox textBox_concretenodeid;
+        private System.Windows.Forms.Label label32;
     }
 }

@@ -181,6 +181,8 @@ namespace Xml2CSharp
 		public string ProductName { get; set; }
 		[XmlElement(ElementName="productText")]
 		public ProductText ProductText { get; set; }
+        [XmlElement(ElementName = "concreteNoideId")]
+        public string ConcreteNoideId { get; set; }
 	}
 
 	[XmlRoot(ElementName="characteristicName")]

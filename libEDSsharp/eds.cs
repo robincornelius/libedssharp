@@ -584,6 +584,8 @@ namespace libEDSsharp
             edssection = "DeviceInfo";
         }
 
+        public int concreteNodeId = -1;
+
     }
 
 

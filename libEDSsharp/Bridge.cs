@@ -177,6 +177,8 @@ namespace libEDSsharp
             //dev.Other.DeviceIdentity.ProductText = new ProductText();
             //dev.Other.DeviceIdentity.ProductText.Description
 
+            if (eds.di.concreteNodeId!=-1)
+                dev.Other.DeviceIdentity.ConcreteNoideId = eds.di.concreteNodeId.ToString();
 
             dev.Other.DeviceIdentity.VendorName = eds.di.VendorName;
 
@@ -212,7 +214,6 @@ namespace libEDSsharp
                     entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), at);
                 }
 
-
                 if (coo.DataType != null)
                 {
                     byte datatype = Convert.ToByte(coo.DataType, 16);
@@ -247,7 +248,7 @@ namespace libEDSsharp
 
                 }
 
-
+               
                 entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType),coo.ObjectType);
 
                 entry.defaultvalue = coo.DefaultValue;
@@ -358,6 +359,15 @@ namespace libEDSsharp
             eds.di.ProductName = dev.Other.DeviceIdentity.ProductName;
             //dev.Other.DeviceIdentity.ProductText
             eds.di.VendorName = dev.Other.DeviceIdentity.VendorName;
+
+            if (dev.Other.DeviceIdentity.ConcreteNoideId != null)
+            {
+                eds.di.concreteNodeId = Convert.ToByte(dev.Other.DeviceIdentity.ConcreteNoideId);
+            }
+            else
+            {
+                eds.di.concreteNodeId = -1;
+            }
 
             eds.fi.FileName = dev.Other.File.FileName;
             eds.fi.CreationDate = dev.Other.File.FileCreationDate;

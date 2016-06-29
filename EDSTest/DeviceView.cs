@@ -124,7 +124,14 @@ namespace ODEditor
             textBox_rxpdos.Text = eds.di.NrOfRXPDO.ToString();
             textBox_txpdos.Text = eds.di.NrOfTXPDO.ToString();
 
-
+            if(eds.di.concreteNodeId==-1)
+            {
+                textBox_concretenodeid.Text = "";
+            }
+            else
+            {
+                textBox_concretenodeid.Text = eds.di.concreteNodeId.ToString();
+            }
 
       
           
@@ -612,6 +619,13 @@ namespace ODEditor
                 eds.di.DynamicChannelsSupported = checkBox_dynamicchan.Checked;
                 eds.di.LSS_Supported = checkBox_lss.Checked;
                 eds.di.Granularity = Convert.ToByte(textBox_Gran.Text);
+
+                eds.di.concreteNodeId = -1;
+                if(textBox_concretenodeid.Text!="")
+                {
+                    eds.di.concreteNodeId = Convert.ToByte(textBox_concretenodeid.Text);
+                }
+               
 
                 //These are read only and auto calculated
                 //textBox_rxpdos.Text = eds.di.NrOfRXPDO.ToString();
