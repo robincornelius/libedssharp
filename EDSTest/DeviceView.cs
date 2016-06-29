@@ -30,7 +30,7 @@ using libEDSsharp;
 using System.Globalization;
 using Xml2CSharp;
 
-namespace EDSTest
+namespace ODEditor
 {
     public partial class DeviceView : UserControl
     {
@@ -694,6 +694,10 @@ namespace EDSTest
             
         }
 
+        public void refresh()
+        {
+            populateindexlists();
+        }
      
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace EDSTest
+﻿namespace ODEditor
 {
     partial class DeviceView
     {

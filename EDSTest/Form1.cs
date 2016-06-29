@@ -27,18 +27,73 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using libEDSsharp;
 using System.Globalization;
 using Xml2CSharp;
 
 
-namespace EDSTest
+namespace ODEditor
 {
-    public partial class Form1 : Form
+    public partial class ODEditor_MainForm : Form
     {
-        public Form1()
+        public ODEditor_MainForm()
         {
             InitializeComponent();
+            loadprofiles();
+
+            insertToolStripMenuItem.Enabled = false;
+        }
+
+        private void loadprofiles()
+        {
+            string[] profilelist = Directory.GetFiles(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)+Path.DirectorySeparatorChar+"Profiles");
+            ToolStripMenuItem[] items = new ToolStripMenuItem[profilelist.Length];
+
+            int x = 0;
+            foreach(string file in profilelist)
+            {
+            
+                ToolStripMenuItem i = new ToolStripMenuItem();
+                i.Name = Path.GetFileName(file);
+                i.Text = Path.GetFileName(file);
+                i.Click += ProfileAddClick;
+                items[x++] = i;   
+            }
+
+            insertToolStripMenuItem.DropDownItems.AddRange(items);
+        
+        }
+
+        void ProfileAddClick(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab != null)
+            {
+                DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                ToolStripMenuItem item = (ToolStripMenuItem)sender;
+
+                string filename = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Profiles" + Path.DirectorySeparatorChar + item.Name;
+
+                CanOpenXML coxml = new CanOpenXML();
+                coxml.readXML(filename);
+
+                Bridge b = new Bridge();
+
+                EDSsharp eds;
+                Device dev; //one day this will be multiple devices
+
+                eds = b.convert(coxml.dev);
+                dev = coxml.dev;
+
+                foreach(KeyValuePair<UInt16,ODentry> kvp in eds.ods)
+                {
+                    if (!dv.eds.ods.ContainsKey(kvp.Key))
+                        dv.eds.ods.Add(kvp.Key, kvp.Value);
+                }
+
+                dv.refresh();
+
+            }
         }
 
         private void openEDSToolStripMenuItem_Click(object sender, EventArgs e)
@@ -225,5 +280,29 @@ namespace EDSTest
 
                 }
             }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EDSsharp eds = new EDSsharp();
+            eds.di.ProductName = "New Product";
+
+            tabControl1.TabPages.Add(eds.di.ProductName);
+
+            DeviceView device = new DeviceView();
+
+            device.eds = eds;
+            tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+
+            device.populateindexlists();
+        }
+
+        private void tabControl1_ControlsChanged(object sender, ControlEventArgs e)
+        {
+                insertToolStripMenuItem.Enabled = tabControl1.TabCount>0;
+                saveEDSToolStripMenuItem.Enabled = tabControl1.TabCount>0;
+                saveProjectXMLToolStripMenuItem.Enabled = tabControl1.TabCount>0;
+                exportCanOpenNodeToolStripMenuItem.Enabled = tabControl1.TabCount>0;
+                closeFileToolStripMenuItem.Enabled = tabControl1.TabCount>0;       
+        }
     }
 }

@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using libEDSsharp;
 
-namespace EDSTest
+namespace ODEditor
 {
     public partial class NewIndex : Form
     {
