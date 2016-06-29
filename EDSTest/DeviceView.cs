@@ -449,13 +449,19 @@ namespace ODEditor
 
             textBox_defaultvalue.Text = od.defaultvalue;
 
-            if(od.parent!=null && ((od.parent.objecttype==ObjectType.ARRAY && od.subindex==0) ||(od.parent.objecttype==ObjectType.REC)))
+            if (od.parent != null && ((od.parent.objecttype == ObjectType.ARRAY) || (od.parent.objecttype == ObjectType.REC && od.subindex == 0)))
             {
                 textBox_defaultvalue.Enabled = false;
                 comboBox_accesstype.Enabled = false;
                 comboBox_datatype.Enabled = false;
                 comboBox_objecttype.Enabled = false;
                 comboBox_pdomap.Enabled = false;
+
+                checkBox_enabled.Checked = false;
+                textBox_accessfunctionname.Enabled = false;
+                textBox_precode.Enabled = false;
+                comboBox_memory.Enabled = false;
+
             }
             else
             {
@@ -499,10 +505,10 @@ namespace ODEditor
                       sod.subindex = 0;
                       sod.index = ni.index;
                       sod.location = StorageLocation.RAM;
-                      sod.defaultvalue = "";
+                      sod.defaultvalue = ni.nosubindexes.ToString();
                       sod.accesstype = EDSsharp.AccessType.ro;
                       sod.datatype = DataType.UNSIGNED8;
-
+                      sod.parent = od;
                       od.subobjects.Add(0, sod);
                   }
 

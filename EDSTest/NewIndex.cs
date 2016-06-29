@@ -96,10 +96,21 @@ namespace ODEditor
 
             name = textBox_name.Text;
 
+            if(name=="")
+            {
+                MessageBox.Show("Please specify a name");
+                return;
+            }
+
             nosubindexes = (byte)numericUpDown_subindexes.Value;
 
-            dt = (DataType) Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
+            if(comboBox_datatype.SelectedItem==null)
+            {
+                MessageBox.Show(String.Format("Please select a datatype"));
+                return;
+            }
 
+            dt = (DataType) Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
 
             if (eds.ods.ContainsKey(index))
             {
