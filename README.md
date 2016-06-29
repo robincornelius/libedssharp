@@ -15,6 +15,7 @@ Library
 * Write CanOpenNode xmlproject file
 * Switch formats between EDS and CanOpenNode XML (note to EDS will result in
   data loss as the format supports less information).
+* Export C and H files in CanOpenNode format CO_OD.c and CO_OD.h
 
 GUI
 ---
@@ -26,13 +27,16 @@ GUI
 * View OD Entries and explore the Object Dictionary
 * Add new OD entries
 * Delete exisiting OD entries
+* Create new Devices
+* Add default profiles
+* Create profiles that can be added to any project (just save the device xml file to the profiles/ 
+directory, only include the minimum number of objects that you want to auto insert) This will auto add to insert menu
+* Edit Device and File Info sections
 
 Not finished/broken
 -------------
-* Export CanOpenNode c/h files (this is work in progress) the code is mostly 
-stubbed out and partially working but needs completing
 
-* Cannot add/remove entries to ARRAY and REC objects
+* Cannot add entries to REC objects (remove may also be dicy)
 
 * Unit tests are totaly broken, due to massive rewrite/change of plan after
 tests were written.
