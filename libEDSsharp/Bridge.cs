@@ -314,7 +314,7 @@ namespace libEDSsharp
                     subentry.subindex = Convert.ToUInt16(coosub.SubIndex, 16);
                     
                     if(coosub.PDOmapping!=null)
-                        entry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), coosub.PDOmapping);
+                        subentry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), coosub.PDOmapping);
 
                     subentry.location = entry.location;
                     subentry.parent = entry;

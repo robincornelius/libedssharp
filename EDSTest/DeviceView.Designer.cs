@@ -79,6 +79,8 @@
             this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.textBox_concretenodeid = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
             this.button_update_devfile_info = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.textBox_txpdos = new System.Windows.Forms.TextBox();
@@ -138,8 +140,21 @@
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label32 = new System.Windows.Forms.Label();
-            this.textBox_concretenodeid = new System.Windows.Forms.TextBox();
+            this.listView_TXPDO = new System.Windows.Forms.ListView();
+            this.label33 = new System.Windows.Forms.Label();
+            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listView_configuredTXPDO = new System.Windows.Forms.ListView();
+            this.label34 = new System.Windows.Forms.Label();
+            this.columnHeader19 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader20 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader21 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listView_TXPDOslots = new System.Windows.Forms.ListView();
+            this.columnHeader18 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader23 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -152,6 +167,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenu_array.SuspendLayout();
             this.SuspendLayout();
@@ -616,6 +632,22 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Device Info";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // textBox_concretenodeid
+            // 
+            this.textBox_concretenodeid.Location = new System.Drawing.Point(509, 252);
+            this.textBox_concretenodeid.Name = "textBox_concretenodeid";
+            this.textBox_concretenodeid.Size = new System.Drawing.Size(80, 20);
+            this.textBox_concretenodeid.TabIndex = 46;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(412, 259);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(91, 13);
+            this.label32.TabIndex = 45;
+            this.label32.Text = "Concrete node ID";
             // 
             // button_update_devfile_info
             // 
@@ -1111,6 +1143,11 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.listView_TXPDOslots);
+            this.tabPage3.Controls.Add(this.label34);
+            this.tabPage3.Controls.Add(this.listView_configuredTXPDO);
+            this.tabPage3.Controls.Add(this.label33);
+            this.tabPage3.Controls.Add(this.listView_TXPDO);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -1171,21 +1208,113 @@
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
             this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
             // 
-            // label32
+            // listView_TXPDO
             // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(412, 259);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(91, 13);
-            this.label32.TabIndex = 45;
-            this.label32.Text = "Concrete node ID";
+            this.listView_TXPDO.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader13,
+            this.columnHeader15,
+            this.columnHeader16,
+            this.columnHeader17});
+            this.listView_TXPDO.FullRowSelect = true;
+            this.listView_TXPDO.Location = new System.Drawing.Point(24, 48);
+            this.listView_TXPDO.MultiSelect = false;
+            this.listView_TXPDO.Name = "listView_TXPDO";
+            this.listView_TXPDO.Size = new System.Drawing.Size(492, 199);
+            this.listView_TXPDO.TabIndex = 0;
+            this.listView_TXPDO.UseCompatibleStateImageBehavior = false;
+            this.listView_TXPDO.View = System.Windows.Forms.View.Details;
             // 
-            // textBox_concretenodeid
+            // label33
             // 
-            this.textBox_concretenodeid.Location = new System.Drawing.Point(509, 252);
-            this.textBox_concretenodeid.Name = "textBox_concretenodeid";
-            this.textBox_concretenodeid.Size = new System.Drawing.Size(80, 20);
-            this.textBox_concretenodeid.TabIndex = 46;
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(21, 32);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(147, 13);
+            this.label33.TabIndex = 1;
+            this.label33.Text = "Available Objects for TX PDO";
+            // 
+            // columnHeader13
+            // 
+            this.columnHeader13.Text = "Index";
+            this.columnHeader13.Width = 55;
+            // 
+            // columnHeader15
+            // 
+            this.columnHeader15.Text = "Sub";
+            this.columnHeader15.Width = 40;
+            // 
+            // columnHeader16
+            // 
+            this.columnHeader16.Text = "Name";
+            this.columnHeader16.Width = 206;
+            // 
+            // columnHeader17
+            // 
+            this.columnHeader17.Text = "Datatype";
+            this.columnHeader17.Width = 183;
+            // 
+            // listView_configuredTXPDO
+            // 
+            this.listView_configuredTXPDO.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader19,
+            this.columnHeader20,
+            this.columnHeader21,
+            this.columnHeader22});
+            this.listView_configuredTXPDO.Location = new System.Drawing.Point(525, 291);
+            this.listView_configuredTXPDO.Name = "listView_configuredTXPDO";
+            this.listView_configuredTXPDO.Size = new System.Drawing.Size(314, 199);
+            this.listView_configuredTXPDO.TabIndex = 2;
+            this.listView_configuredTXPDO.UseCompatibleStateImageBehavior = false;
+            this.listView_configuredTXPDO.View = System.Windows.Forms.View.Details;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(522, 275);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(101, 13);
+            this.label34.TabIndex = 3;
+            this.label34.Text = "Configured TX PDO";
+            // 
+            // columnHeader19
+            // 
+            this.columnHeader19.Text = "Index";
+            // 
+            // columnHeader20
+            // 
+            this.columnHeader20.Text = "Sub";
+            this.columnHeader20.Width = 39;
+            // 
+            // columnHeader21
+            // 
+            this.columnHeader21.Text = "Name";
+            this.columnHeader21.Width = 151;
+            // 
+            // columnHeader22
+            // 
+            this.columnHeader22.Text = "Bytes";
+            // 
+            // listView_TXPDOslots
+            // 
+            this.listView_TXPDOslots.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader18,
+            this.columnHeader23});
+            this.listView_TXPDOslots.FullRowSelect = true;
+            this.listView_TXPDOslots.Location = new System.Drawing.Point(24, 291);
+            this.listView_TXPDOslots.Name = "listView_TXPDOslots";
+            this.listView_TXPDOslots.Size = new System.Drawing.Size(314, 199);
+            this.listView_TXPDOslots.TabIndex = 4;
+            this.listView_TXPDOslots.UseCompatibleStateImageBehavior = false;
+            this.listView_TXPDOslots.View = System.Windows.Forms.View.Details;
+            this.listView_TXPDOslots.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_TXPDOslots_MouseClick);
+            // 
+            // columnHeader18
+            // 
+            this.columnHeader18.Text = "Index";
+            // 
+            // columnHeader23
+            // 
+            this.columnHeader23.Text = "COB";
             // 
             // DeviceView
             // 
@@ -1214,6 +1343,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage1.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenu_array.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -1333,5 +1464,20 @@
         private System.Windows.Forms.Button button_save_changes;
         private System.Windows.Forms.TextBox textBox_concretenodeid;
         private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.ListView listView_TXPDO;
+        private System.Windows.Forms.ColumnHeader columnHeader13;
+        private System.Windows.Forms.ColumnHeader columnHeader15;
+        private System.Windows.Forms.ColumnHeader columnHeader16;
+        private System.Windows.Forms.ColumnHeader columnHeader17;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.ListView listView_configuredTXPDO;
+        private System.Windows.Forms.ColumnHeader columnHeader19;
+        private System.Windows.Forms.ColumnHeader columnHeader20;
+        private System.Windows.Forms.ColumnHeader columnHeader21;
+        private System.Windows.Forms.ColumnHeader columnHeader22;
+        private System.Windows.Forms.ListView listView_TXPDOslots;
+        private System.Windows.Forms.ColumnHeader columnHeader18;
+        private System.Windows.Forms.ColumnHeader columnHeader23;
     }
 }
