@@ -261,7 +261,7 @@ namespace ODEditor
                     lvi2.SubItems.Add(subod.defaultvalue);
 
                     //fixe me ??
-                    lvi2.SubItems.Add(subod.PDOMapping.ToString());
+                    lvi2.SubItems.Add(subod.PDOtype.ToString());
                     
                     lvi2.Tag = subod;
 
@@ -780,22 +780,10 @@ namespace ODEditor
                 {
                     ODentry odsub = kvp2.Value;
 
-                    if(od.objecttype==ObjectType.ARRAY)
+                    if (odsub.PDOtype == PDOMappingType.optional || odsub.PDOtype == PDOMappingType.TPDO)
                     {
-                        if(od.PDOtype == PDOMappingType.optional || od.PDOtype == PDOMappingType.TPDO)
-                        {
-                            addTXPDOoption(odsub);
-                        }
+                        addTXPDOoption(odsub);
                     }
-
-                    if (od.objecttype == ObjectType.REC)
-                    {
-                        if (odsub.PDOtype == PDOMappingType.optional || odsub.PDOtype == PDOMappingType.TPDO)
-                        {
-                            addTXPDOoption(odsub);
-                        }
-                    }
-  
                 }
 
             }

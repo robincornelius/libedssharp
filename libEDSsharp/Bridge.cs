@@ -316,6 +316,11 @@ namespace libEDSsharp
                     if(coosub.PDOmapping!=null)
                         subentry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), coosub.PDOmapping);
 
+                    if (entry.objecttype == ObjectType.ARRAY)
+                    {
+                        subentry.PDOtype = entry.PDOtype;
+                    }
+
                     subentry.location = entry.location;
                     subentry.parent = entry;
 

@@ -985,7 +985,7 @@ namespace libEDSsharp
 
                 od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
 
-                //if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
+
                 //{
                 //od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
                 //}
