@@ -91,7 +91,7 @@ namespace ODEditor
                         dv.eds.ods.Add(kvp.Key, kvp.Value);
                 }
 
-                dv.refresh();
+                dv.doUpdateOD();
 
             }
         }
@@ -123,7 +123,8 @@ namespace ODEditor
                     tabControl1.TabPages.Add(eds.di.ProductName);
                     tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
 
-                    device.populateindexlists();
+                    device.dispatch_updateOD();
+                    
                 }
                 //catch(Exception ex)
                 {
@@ -180,7 +181,7 @@ namespace ODEditor
                 device.eds = eds;
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
 
-                device.populateindexlists();
+                device.dispatch_updateOD();
 
             }
 
@@ -293,7 +294,7 @@ namespace ODEditor
             device.eds = eds;
             tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
 
-            device.populateindexlists();
+            device.dispatch_updateOD();
         }
 
         private void tabControl1_ControlsChanged(object sender, ControlEventArgs e)

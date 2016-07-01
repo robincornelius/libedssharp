@@ -44,6 +44,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeviceInfoView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DeviceInfoView.Designer.cs">
+      <DependentUpon>DeviceInfoView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceODView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DeviceODView.Designer.cs">
+      <DependentUpon>DeviceODView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DevicePDOView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DevicePDOView.Designer.cs">
+      <DependentUpon>DevicePDOView.cs</DependentUpon>
+    </Compile>
     <Compile Include="DeviceView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -56,6 +74,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyTabUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="NewIndex.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +85,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DeviceInfoView.resx">
+      <DependentUpon>DeviceInfoView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeviceODView.resx">
+      <DependentUpon>DeviceODView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DevicePDOView.resx">
+      <DependentUpon>DevicePDOView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DeviceView.resx">
       <DependentUpon>DeviceView.cs</DependentUpon>
     </EmbeddedResource>
