@@ -535,6 +535,9 @@ const sCO_OD_object CO_OD[");
             int nobase = 10;
             bool nodeidreplace = false;
 
+            if (defaultvalue == null)
+                return "";
+
             if (defaultvalue.Contains("$NODEID"))
             {
                 defaultvalue = defaultvalue.Replace("$NODEID", "");
@@ -542,7 +545,7 @@ const sCO_OD_object CO_OD[");
                 nodeidreplace = true;
             }
 
-            String pat = @"^0[xX][0-9]+";
+            String pat = @"^0[xX][0-9a-fA-F]+";
 
             Regex r = new Regex(pat, RegexOptions.IgnoreCase);
             Match m = r.Match(defaultvalue);
@@ -551,7 +554,7 @@ const sCO_OD_object CO_OD[");
                 nobase = 16;
             }
 
-            pat = @"^0[0-9]+";
+            pat = @"^0[0-7]+";
             r = new Regex(pat, RegexOptions.IgnoreCase);
             m = r.Match(defaultvalue);
             if (m.Success)

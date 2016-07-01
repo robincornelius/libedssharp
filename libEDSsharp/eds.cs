@@ -438,7 +438,7 @@ namespace libEDSsharp
     public class FileInfo : InfoSection
     {
         [EdsExport]
-        public string FileName;//=example_objdict.eds
+        public string FileName="";//=example_objdict.eds
         [EdsExport]
         public byte FileVersion;//=1
         [EdsExport]
@@ -449,27 +449,27 @@ namespace libEDSsharp
         [EdsExport]
         public byte EDSVersionMinor;//=4.0
         [EdsExport]
-        public string EDSVersion;
+        public string EDSVersion="";
 
         [EdsExport]
-        public string Description;//= //max 243 characters
+        public string Description="";//= //max 243 characters
 
         public DateTime CreationDateTime;//
         [EdsExport]
-        public string CreationTime;
+        public string CreationTime="";
         [EdsExport]
-        public string CreationDate;
+        public string CreationDate="";
 
         [EdsExport]
         public string CreatedBy;//=CANFestival //max245
 
         public DateTime ModificationDateTime;//
         [EdsExport]
-        public string ModificationTime;
+        public string ModificationTime="";
         [EdsExport]
-        public string ModificationDate;
+        public string ModificationDate="";
         [EdsExport]
-        public string ModifiedBy;//=CANFestival //max244
+        public string ModifiedBy="";//=CANFestival //max244
 
         public FileInfo(Dictionary<string, string> section)
         {
@@ -520,12 +520,12 @@ namespace libEDSsharp
     {
 
         [EdsExport]
-        public string VendorName;
+        public string VendorName="";
         [EdsExport]
         public UInt32 VendorNumber;
 
         [EdsExport]
-        public string ProductName;
+        public string ProductName="";
         [EdsExport]
         public UInt32 ProductNumber;
         [EdsExport]
@@ -759,6 +759,8 @@ namespace libEDSsharp
             if (dt == DataType.UNKNOWN && this.parent != null)
                 dt = parent.datatype;
  
+                
+
             switch (dt)
             {
                 case DataType.BOOLEAN:
@@ -801,16 +803,22 @@ namespace libEDSsharp
 
                 case DataType.VISIBLE_STRING:
                     {
+                        if (defaultvalue == null)
+                            return 0;
                         return defaultvalue.Length;
                     }
 
                 case DataType.OCTET_STRING:
                     {
+                        if (defaultvalue == null)
+                            return 0;
                         return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
                     }
 
                 case DataType.UNICODE_STRING:
                     {
+                        if (defaultvalue == null)
+                            return 0;
                         return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
                     }
 
