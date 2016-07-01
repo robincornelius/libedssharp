@@ -608,7 +608,7 @@ namespace ODEditor
                     od.parent.subobjects[0].defaultvalue = count.ToString();
                 }
 
-                od.parent.subobjects.Remove(od.subindex);
+                bool success = od.parent.subobjects.Remove(od.subindex);
 
                 UInt16 countx = 0;
 

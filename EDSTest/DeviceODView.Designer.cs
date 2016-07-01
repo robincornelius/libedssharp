@@ -559,13 +559,13 @@
             this.removeSubItemToolStripMenuItem});
             this.contextMenu_array.Name = "contextMenu_array";
             this.contextMenu_array.Size = new System.Drawing.Size(167, 70);
-            this.contextMenu_array.Click += new System.EventHandler(this.addSubItemToolStripMenuItem_Click);
             // 
             // addSubItemToolStripMenuItem
             // 
             this.addSubItemToolStripMenuItem.Name = "addSubItemToolStripMenuItem";
             this.addSubItemToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.addSubItemToolStripMenuItem.Text = "Add sub item";
+            this.addSubItemToolStripMenuItem.Click += new System.EventHandler(this.addSubItemToolStripMenuItem_Click);
             // 
             // removeSubItemToolStripMenuItem
             // 
