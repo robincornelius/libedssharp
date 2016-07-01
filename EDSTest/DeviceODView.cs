@@ -560,7 +560,6 @@ namespace ODEditor
 
                 if (od.parent.objecttype == ObjectType.ARRAY)
                 {
-                    //TODO just add a new record;
                     ODentry newsub = new ODentry();
                     newsub.parent = od.parent;
                     newsub.datatype = DataType.UNKNOWN;
@@ -569,7 +568,7 @@ namespace ODEditor
                     newsub.subindex = (UInt16)od.parent.subobjects.Count;
                     od.parent.subobjects.Add((UInt16)(od.parent.subobjects.Count), newsub);
 
-                    UInt16 def = Convert.ToUInt16(od.parent.subobjects[0].defaultvalue);
+                    UInt16 def = Convert.ToUInt16(od.parent.subobjects[0].defaultvalue,16);
                     def++;
                     od.parent.subobjects[0].defaultvalue = def.ToString();
 
@@ -584,7 +583,19 @@ namespace ODEditor
 
                     if (ni.ShowDialog() == DialogResult.OK)
                     {
-                        //TODO just add a new sub item of type 
+                        ODentry newsub = new ODentry();
+                        newsub.parent = od.parent;
+                        newsub.datatype = ni.dt;
+                        newsub.index = od.index;
+                        newsub.objecttype = ObjectType.VAR;
+                        newsub.subindex = (UInt16)od.parent.subobjects.Count;
+                        newsub.parameter_name = ni.name;
+
+                        od.parent.subobjects.Add((UInt16)(od.parent.subobjects.Count), newsub);
+
+                        UInt16 def = Convert.ToUInt16(od.parent.subobjects[0].defaultvalue,16);
+                        def++;
+                        od.parent.subobjects[0].defaultvalue = def.ToString();
                     }
                 }
 
