@@ -44,7 +44,7 @@ namespace ODEditor
             
             foreach(TabPage tp in tabControl1.TabPages)
             {
-            foreach(Object o in tp.Controls)
+                foreach(Object o in tp.Controls)
                 {
                     if (o is MyTabUserControl)
                     {
