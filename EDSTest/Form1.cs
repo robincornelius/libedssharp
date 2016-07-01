@@ -73,7 +73,7 @@ namespace ODEditor
             if (tabControl1.SelectedTab != null)
             {
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
-                dv.updateecenthandlers();
+               
                 ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
                 string filename = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Profiles" + Path.DirectorySeparatorChar + item.Name;
@@ -96,7 +96,6 @@ namespace ODEditor
                 }
 
                 
-                //FIXME WHY IS THIS NULL!!!!!
                 dv.dispatch_updateOD();
 
             }
