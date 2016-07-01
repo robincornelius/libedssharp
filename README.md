@@ -33,15 +33,13 @@ GUI
 directory, only include the minimum number of objects that you want to auto insert) This will auto add to insert menu
 * Edit Device and File Info sections
 * Set TX PDO mappings
+* Set RX PDO mappings
 
 Not finished/broken
 -------------
 
 * Unit tests are totaly broken, due to massive rewrite/change of plan after
 tests were written.
-
-* PDO mappings only support TX
-
 
 ![alt tag](pic1.jpg)
 ![alt tag](pic2.jpg)
