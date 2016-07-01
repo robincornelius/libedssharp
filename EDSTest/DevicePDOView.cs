@@ -40,6 +40,9 @@ namespace ODEditor
                 {
                     ODentry odsub = kvp2.Value;
 
+                    if (odsub.subindex == 0)
+                        continue;
+
                     if (odsub.PDOtype == PDOMappingType.optional || odsub.PDOtype == PDOMappingType.TPDO)
                     {
                         addTXPDOoption(odsub);
@@ -61,8 +64,7 @@ namespace ODEditor
                     ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", idx));
                     lvi.Tag = od;
 
-                    //fixme process $NODEID etc
-                    lvi.SubItems.Add(od.subobjects[1].defaultvalue);
+                    lvi.SubItems.Add(String.Format("0x{0:x3}",eds.GetNodeID(od.subobjects[1].defaultvalue)));
 
                     listView_TXPDOslots.Items.Add(lvi);
                 }

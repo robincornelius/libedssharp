@@ -32,9 +32,9 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.deviceInfoView = new ODEditor.DeviceInfoView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.deviceODView1 = new ODEditor.DeviceODView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.devicePDOView1 = new ODEditor.DevicePDOView();
-            this.deviceODView1 = new ODEditor.DeviceODView();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -70,6 +70,7 @@
             this.deviceInfoView.Name = "deviceInfoView";
             this.deviceInfoView.Size = new System.Drawing.Size(754, 525);
             this.deviceInfoView.TabIndex = 0;
+            this.deviceInfoView.Load += new System.EventHandler(this.deviceInfoView_Load);
             // 
             // tabPage1
             // 
@@ -81,6 +82,13 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Object Dictionary";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // deviceODView1
+            // 
+            this.deviceODView1.Location = new System.Drawing.Point(0, 2);
+            this.deviceODView1.Name = "deviceODView1";
+            this.deviceODView1.Size = new System.Drawing.Size(1112, 749);
+            this.deviceODView1.TabIndex = 0;
             // 
             // tabPage3
             // 
@@ -99,13 +107,6 @@
             this.devicePDOView1.Name = "devicePDOView1";
             this.devicePDOView1.Size = new System.Drawing.Size(760, 542);
             this.devicePDOView1.TabIndex = 0;
-            // 
-            // deviceODView1
-            // 
-            this.deviceODView1.Location = new System.Drawing.Point(0, 2);
-            this.deviceODView1.Name = "deviceODView1";
-            this.deviceODView1.Size = new System.Drawing.Size(1112, 749);
-            this.deviceODView1.TabIndex = 0;
             // 
             // DeviceView
             // 

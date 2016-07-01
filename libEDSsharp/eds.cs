@@ -1191,6 +1191,33 @@ namespace libEDSsharp
             }
 
         }
+
+        //Split on + , replace $NODEID with concrete value and add together
+        public UInt16 GetNodeID(string input)
+        {
+            if (di.concreteNodeId==-1)
+            {
+                input = input.Replace("$NODEID", "");
+                input = input.Replace("+", "");
+                input = input.Replace(" ", "");
+                return Convert.ToUInt16(input, 16);
+            }
+
+            input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
+
+            string[] bits = input.Split('+');
+
+            if(bits.Length!=2)
+            {
+                throw new FormatException("cannot parse " + input + "\nExpecting N+$NODEID or $NODEID+N");
+            }
+
+            UInt16 b1 = Convert.ToUInt16(bits[0],16);
+            UInt16 b2 = Convert.ToUInt16(bits[1],16);
+
+            return (UInt16)(b1+b2);
+
+        }
      
 
     }
