@@ -754,7 +754,12 @@ namespace libEDSsharp
 
         public int sizeofdatatype()
         {
-            switch (datatype)
+            DataType dt = datatype;
+
+            if (dt == DataType.UNKNOWN && this.parent != null)
+                dt = parent.datatype;
+ 
+            switch (dt)
             {
                 case DataType.BOOLEAN:
                 case DataType.UNSIGNED8:

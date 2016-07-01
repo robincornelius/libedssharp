@@ -37,6 +37,9 @@ namespace ODEditor
 {
     public partial class ODEditor_MainForm : Form
     {
+
+        public static Dictionary<UInt16, EDSsharp> TXCobMap = new Dictionary<UInt16, EDSsharp>();
+
         public ODEditor_MainForm()
         {
             InitializeComponent();

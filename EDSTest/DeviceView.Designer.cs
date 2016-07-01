@@ -105,7 +105,7 @@
             // 
             this.devicePDOView1.Location = new System.Drawing.Point(3, 6);
             this.devicePDOView1.Name = "devicePDOView1";
-            this.devicePDOView1.Size = new System.Drawing.Size(760, 542);
+            this.devicePDOView1.Size = new System.Drawing.Size(1025, 583);
             this.devicePDOView1.TabIndex = 0;
             // 
             // DeviceView

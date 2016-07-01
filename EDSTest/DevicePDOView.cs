@@ -8,20 +8,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using libEDSsharp;
+using System.Collections.Specialized;
 
 namespace ODEditor
 {
-    public partial class DevicePDOView : UserControl
+    public partial class DevicePDOView : MyTabUserControl
     {
         public EDSsharp eds = null;
+        StringCollection TXchoices = new StringCollection();
 
         public DevicePDOView()
         {
             InitializeComponent();
+            listView_TXCOBmap.onComboBoxIndexChanged += listView_TXCOBmap_onComboBoxIndexChanged;
         }
+
 
         public void updatePDOinfo()
         {
+
+            listView_TXCOBmap.FullRowSelect = true;
+            listView_TXCOBmap.GridLines = true;
+
+            TXchoices.Clear();
+
+            TXchoices.Add(String.Format("empty"));
+
             listView_TXPDO.Items.Clear();
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -51,7 +63,20 @@ namespace ODEditor
 
             }
 
-            listView_TXPDOslots.Items.Clear();
+            // Clean out any existing TX cob entries for this device.
+            List<UInt16> removes = new List<ushort>();
+            foreach (KeyValuePair<UInt16, EDSsharp> kvp in ODEditor_MainForm.TXCobMap)
+            {
+                if (kvp.Value == eds)
+                    removes.Add(kvp.Key);
+
+            }
+            foreach (UInt16 u in removes)
+                ODEditor_MainForm.TXCobMap.Remove(u);
+
+            int row=0;
+
+            listView_TXCOBmap.Items.Clear();
 
             for (UInt16 idx = 0x1800; idx < 0x18ff; idx++)
             {
@@ -64,19 +89,40 @@ namespace ODEditor
                     ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", idx));
                     lvi.Tag = od;
 
-                    lvi.SubItems.Add(String.Format("0x{0:x3}",eds.GetNodeID(od.subobjects[1].defaultvalue)));
+                    UInt16 cob = eds.GetNodeID(od.subobjects[1].defaultvalue);
+                    lvi.SubItems.Add(String.Format("0x{0:x3}",cob));
 
-                    listView_TXPDOslots.Items.Add(lvi);
+                    if (!ODEditor_MainForm.TXCobMap.ContainsKey(cob))
+                        ODEditor_MainForm.TXCobMap.Add(cob, eds);
+
+                    ListViewItem lvi2 = new ListViewItem(String.Format("0x{0:x4}", cob));
+                    lvi2.SubItems.Add("   ");
+                    lvi2.SubItems.Add("   ");
+                    lvi2.SubItems.Add("   ");
+                    lvi2.SubItems.Add("   ");
+                    lvi2.SubItems.Add("   ");
+                    lvi2.SubItems.Add("   ");
+                    lvi2.SubItems.Add("   ");
+                    lvi2.SubItems.Add("   ");
+
+
+                    listView_TXCOBmap.Items.Add(lvi2);
+
+                    updatePDOTXslot(od, row);
+
+
+                    row++;
+
+                  
                 }
             }
-
-
-
 
         }
 
         private void addTXPDOoption(ODentry od)
         {
+
+            TXchoices.Add(String.Format("0x{0:x4}/{1:x2}", od.index, od.subindex));
 
             ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", od.index));
             lvi.SubItems.Add(String.Format("0x{0:x2}", od.subindex));
@@ -86,63 +132,143 @@ namespace ODEditor
 
             listView_TXPDO.Items.Add(lvi);
 
+        }
+
+        void updatePDOTXslot(ODentry od , int row)
+        {
+           
+            UInt16 idx = (UInt16)(od.index + 0x200);
+
+            ODentry oddef = eds.ods[idx];
+
+            int byteoff = 0;
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in oddef.subobjects)
+            {
+                if (byteoff >= 8)
+                    continue;
+
+                ODentry sub = kvp.Value;
+                if (sub.subindex == 0)
+                    continue;
+
+                UInt32 data = Convert.ToUInt32(sub.defaultvalue, 16);
+
+                if (data == 0) //FIX ME also include dummy usage here
+                {
+                    listView_TXCOBmap.AddComboBoxCell(row, byteoff + 1, TXchoices);
+                    listView_TXCOBmap.Items[row].SubItems[byteoff + 1].Text = "empty";
+                    byteoff++;
+                    continue;
+                }           
+
+                //format is 0x6000 01 08
+                byte datasize = (byte)(data & 0x000000FF);
+                UInt16 pdoindex = (UInt16)((data >> 16) & 0x0000FFFF);
+                byte pdosub = (byte)((data >> 8) & 0x000000FF);
+
+                //fixme sanity checking here please
+                if (!eds.ods.ContainsKey(pdoindex))
+                    continue;
+
+                ODentry targetod = eds.ods[pdoindex];
+
+                if(pdosub!=0)
+                {
+                    targetod = targetod.subobjects[pdosub];
+                }
+
+                listView_TXCOBmap.AddComboBoxCell(row, byteoff+1, TXchoices);
+   
+                String target = String.Format("0x{0:x4}/{1:x2}", targetod.index, targetod.subindex);
+                listView_TXCOBmap.Items[row].SubItems[byteoff+1].Text = target;
+
+                int PDOdatasize = targetod.sizeofdatatype();
+               
+                while (PDOdatasize != 1)
+                {
+                    listView_TXCOBmap.Items[row].SubItems[byteoff + PDOdatasize].Text = " - ";
+                    PDOdatasize--;
+
+                }
+
+                byteoff += targetod.sizeofdatatype();
+
+              
+
+            }
+        }
+
+        void listView_TXCOBmap_onComboBoxIndexChanged(int row, int col, string Text)
+        {
+          
+            //row+0x1a00 will be the slot to adjust
+
+            UInt16 slot = (UInt16)(0x1a00 + row +1);
+            ODentry slotod = eds.ods[slot];
+
+
+            //Now rebuild the entire slot working out data size as we go
+
+            for(byte p=1;p<slotod.subobjects.Count;p++)
+            {
+                slotod.subobjects[p].defaultvalue = "00000000";
+            }
+
+            byte subcount = 1;
+
+            int totaldatalength = 0;
+
+            ListViewItem item = listView_TXCOBmap.Items[row];
+            foreach(ListViewItem.ListViewSubItem subitem in item.SubItems)
+            {
+                if (subitem.Text == "" || subitem.Text == " - " || subitem.Text == "   ")
+                    continue;
+
+                string[] bits = subitem.Text.Split('/');
+                if (bits.Length != 2) //ignore the first column
+                    continue;
+                UInt16 index = Convert.ToUInt16(bits[0], 16);
+                Byte sub = Convert.ToByte(bits[1], 16);
+
+                ODentry od = eds.ods[index];
+                if(sub!=0)
+                    od = od.subobjects[sub];
+
+                //fixme for non basic types will this work?? i think
+                //its not even allowed for PDO but need trap in code to
+                //prevent this and throw error here
+                int datalength = 8* od.sizeofdatatype();
+
+                totaldatalength += datalength;
+
+                if(totaldatalength>64)
+                {
+                    MessageBox.Show(String.Format("Too much data in TX PDO {0}", slotod.index));
+                    break;
+                }
+
+                string value = string.Format("{0:x4}{1:x2}{2:x2}", index, sub, datalength);
+
+                if (subcount >= slotod.subobjects.Count())
+                {
+                    MessageBox.Show("PDO Mapping array is too small, please add more elements in OD editor");
+                    break;
+                }
+
+                slotod.subobjects[subcount].defaultvalue = value;
+
+                subcount++;
+                
+            }
+
+            updatePDOinfo();
+            doUpdateOD();
 
         }
 
-        private void listView_TXPDOslots_MouseClick(object sender, MouseEventArgs e)
+        private void listView_TXCOBmap_MouseClick(object sender, MouseEventArgs e)
         {
-
-            listView_configuredTXPDO.Items.Clear();
-            if (listView_TXPDOslots.SelectedItems.Count > 0)
-            {
-                ODentry od = (ODentry)listView_TXPDOslots.SelectedItems[0].Tag;
-
-                UInt16 idx = (UInt16)(od.index + 0x200);
-
-                ODentry oddef = eds.ods[idx];
-
-                foreach (KeyValuePair<UInt16, ODentry> kvp in oddef.subobjects)
-                {
-                    ODentry sub = kvp.Value;
-                    if (sub.subindex == 0)
-                        continue;
-
-                    UInt32 data = Convert.ToUInt32(sub.defaultvalue, 16);
-
-                    if (data == 0)
-                        continue;
-
-                    //format is 0x6000 01 08
-                    byte datasize = (byte)(data & 0x000000FF);
-                    UInt16 pdoindex = (UInt16)((data >> 16) & 0x0000FFFF);
-                    byte pdosub = (byte)((data >> 8) & 0x000000FF);
-
-                    ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}", pdoindex));
-                    lvi.SubItems.Add(string.Format("0x{0:x2}", pdosub));
-
-                    //fixme sanity checking here please
-                    if (!eds.ods.ContainsKey(pdoindex))
-                        continue;
-
-                    ODentry targetod = eds.ods[pdoindex];
-
-                    if (pdosub != 0)
-                    {
-                        //fixme sanity checking here please
-                        if (!targetod.subobjects.ContainsKey(pdosub))
-                            continue;
-                        targetod = targetod.subobjects[pdosub];
-                    }
-
-                    lvi.SubItems.Add(string.Format("{0}", targetod.parameter_name));
-
-                    lvi.SubItems.Add(string.Format("{0}", datasize / 8));
-
-                    listView_configuredTXPDO.Items.Add(lvi);
-
-
-                }
-            }
 
         }
  
