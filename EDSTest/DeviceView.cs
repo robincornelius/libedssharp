@@ -39,6 +39,7 @@ namespace ODEditor
 
         public DeviceView()
         {
+          
             InitializeComponent();
             
             foreach(TabPage tp in tabControl1.TabPages)
@@ -55,6 +56,9 @@ namespace ODEditor
                     }
                 }
             }
+
+            devicePDOView1.init(true);
+            devicePDOView2.init(false);
      
         }
 
@@ -78,6 +82,10 @@ namespace ODEditor
 
             devicePDOView1.eds = eds;
             devicePDOView1.updatePDOinfo();
+
+            devicePDOView2.eds = eds;
+            devicePDOView2.updatePDOinfo();
+
         }
 
         public void dispatch_updateOD()
@@ -87,6 +95,8 @@ namespace ODEditor
 
             deviceODView1.eds = eds;
             deviceODView1.populateindexlists();
+            deviceODView1.validateanddisplaydata();
+
   
         }
 

@@ -116,8 +116,19 @@ namespace ODEditor
 
         }
 
-        private void validateanddisplaydata()
+        public void updatedetailslist()
         {
+            if (selectedobject == null)
+                return;
+
+            updateselectedindexdisplay(selectedobject.index);
+        }
+
+        public void validateanddisplaydata()
+        {
+
+            if (selectedobject == null)
+                return;
 
             ODentry od = (ODentry)selectedobject;
 

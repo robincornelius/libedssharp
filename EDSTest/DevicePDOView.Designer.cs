@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label33 = new System.Windows.Forms.Label();
+            this.label_availableobjects = new System.Windows.Forms.Label();
             this.listView_TXPDO = new System.Windows.Forms.ListView();
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -36,6 +36,7 @@
             this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listView_TXCOBmap = new CustomListView.ListViewEx();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,16 +45,17 @@
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // label33
+            // label_availableobjects
             // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(13, 13);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(147, 13);
-            this.label33.TabIndex = 6;
-            this.label33.Text = "Available Objects for TX PDO";
+            this.label_availableobjects.AutoSize = true;
+            this.label_availableobjects.Location = new System.Drawing.Point(13, 13);
+            this.label_availableobjects.Name = "label_availableobjects";
+            this.label_availableobjects.Size = new System.Drawing.Size(130, 13);
+            this.label_availableobjects.TabIndex = 6;
+            this.label_availableobjects.Text = "Available Objects for PDO";
             // 
             // listView_TXPDO
             // 
@@ -95,6 +97,7 @@
             // 
             this.listView_TXCOBmap.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
+            this.columnHeader10,
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4,
@@ -116,6 +119,10 @@
             // 
             this.columnHeader1.Text = "COB";
             this.columnHeader1.Width = 50;
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "Slot";
             // 
             // columnHeader2
             // 
@@ -157,12 +164,22 @@
             this.columnHeader9.Text = "Byte7";
             this.columnHeader9.Width = 100;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(17, 238);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(119, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Assigned PDO mapping";
+            // 
             // DevicePDOView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.listView_TXCOBmap);
-            this.Controls.Add(this.label33);
+            this.Controls.Add(this.label_availableobjects);
             this.Controls.Add(this.listView_TXPDO);
             this.Name = "DevicePDOView";
             this.Size = new System.Drawing.Size(973, 695);
@@ -173,7 +190,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Label label_availableobjects;
         private System.Windows.Forms.ListView listView_TXPDO;
         private System.Windows.Forms.ColumnHeader columnHeader13;
         private System.Windows.Forms.ColumnHeader columnHeader15;
@@ -189,5 +206,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
+        private System.Windows.Forms.Label label1;
     }
 }

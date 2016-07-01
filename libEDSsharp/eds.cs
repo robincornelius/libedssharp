@@ -1000,7 +1000,6 @@ namespace libEDSsharp
 
                     if (m.Groups[3].Length != 0)
                     {
-                        Console.WriteLine(m.Groups[3].ToString());
                         od.subindex = Convert.ToUInt16(m.Groups[3].ToString());
                         od.parent = ods[od.index];
                         ods[od.index].subobjects.Add(od.subindex, od);

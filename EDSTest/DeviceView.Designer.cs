@@ -34,11 +34,15 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.deviceODView1 = new ODEditor.DeviceODView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.devicePDOView1 = new ODEditor.DevicePDOView();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.devicePDOView1 = new DevicePDOView();
+            this.devicePDOView2 = new DevicePDOView();
+
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -46,6 +50,7 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -98,15 +103,32 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(1114, 747);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "PDO Mapping";
+            this.tabPage3.Text = "TX PDO Mapping";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // devicePDOView1
             // 
-            this.devicePDOView1.Location = new System.Drawing.Point(3, 6);
+            this.devicePDOView1.Location = new System.Drawing.Point(3, 3);
             this.devicePDOView1.Name = "devicePDOView1";
             this.devicePDOView1.Size = new System.Drawing.Size(1025, 583);
             this.devicePDOView1.TabIndex = 0;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.devicePDOView2);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(1114, 747);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "RX PDO Mapping";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // devicePDOView2
+            // 
+            this.devicePDOView2.Location = new System.Drawing.Point(3, 3);
+            this.devicePDOView2.Name = "devicePDOView2";
+            this.devicePDOView2.Size = new System.Drawing.Size(973, 695);
+            this.devicePDOView2.TabIndex = 0;
             // 
             // DeviceView
             // 
@@ -119,6 +141,7 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -132,5 +155,7 @@
         private DeviceInfoView deviceInfoView;
         private DevicePDOView devicePDOView1;
         private DeviceODView deviceODView1;
+        private System.Windows.Forms.TabPage tabPage4;
+        private DevicePDOView devicePDOView2;
     }
 }

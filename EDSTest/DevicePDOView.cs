@@ -16,13 +16,29 @@ namespace ODEditor
     {
         public EDSsharp eds = null;
         StringCollection TXchoices = new StringCollection();
+        bool isTXPDO;
+
+        UInt16 startcob = 0x1800;
+        UInt16 startmap = 0x1a00;
 
         public DevicePDOView()
         {
+          
             InitializeComponent();
             listView_TXCOBmap.onComboBoxIndexChanged += listView_TXCOBmap_onComboBoxIndexChanged;
         }
 
+        public void init(bool isTXPDO)
+        {
+            this.isTXPDO = isTXPDO;
+
+            if (isTXPDO == false)
+            {
+                startcob = 0x1400;
+                startmap = 0x1600;
+            }
+
+        }
 
         public void updatePDOinfo()
         {
@@ -43,7 +59,7 @@ namespace ODEditor
                 if (od.Disabled == true)
                     continue;
 
-                if (od.objecttype == ObjectType.VAR && (od.PDOtype == PDOMappingType.optional || od.PDOtype == PDOMappingType.TPDO))
+                if (od.objecttype == ObjectType.VAR && (od.PDOtype == PDOMappingType.optional || (isTXPDO && (od.PDOtype == PDOMappingType.TPDO)) || (!isTXPDO && (od.PDOtype == PDOMappingType.RPDO))))
                 {
                     addTXPDOoption(od);
                 }
@@ -55,7 +71,7 @@ namespace ODEditor
                     if (odsub.subindex == 0)
                         continue;
 
-                    if (odsub.PDOtype == PDOMappingType.optional || odsub.PDOtype == PDOMappingType.TPDO)
+                    if (odsub.PDOtype == PDOMappingType.optional || (isTXPDO && (odsub.PDOtype == PDOMappingType.TPDO)) || (!isTXPDO && (odsub.PDOtype == PDOMappingType.RPDO)))
                     {
                         addTXPDOoption(odsub);
                     }
@@ -78,7 +94,10 @@ namespace ODEditor
 
             listView_TXCOBmap.Items.Clear();
 
-            for (UInt16 idx = 0x1800; idx < 0x18ff; idx++)
+      
+
+         
+            for (UInt16 idx = startcob; idx < startcob+0x00ff; idx++)
             {
                 if (eds.ods.ContainsKey(idx))
                 {
@@ -96,6 +115,7 @@ namespace ODEditor
                         ODEditor_MainForm.TXCobMap.Add(cob, eds);
 
                     ListViewItem lvi2 = new ListViewItem(String.Format("0x{0:x4}", cob));
+                    lvi2.SubItems.Add(string.Format("{0:x4}",idx));       
                     lvi2.SubItems.Add("   ");
                     lvi2.SubItems.Add("   ");
                     lvi2.SubItems.Add("   ");
@@ -156,8 +176,8 @@ namespace ODEditor
 
                 if (data == 0) //FIX ME also include dummy usage here
                 {
-                    listView_TXCOBmap.AddComboBoxCell(row, byteoff + 1, TXchoices);
-                    listView_TXCOBmap.Items[row].SubItems[byteoff + 1].Text = "empty";
+                    listView_TXCOBmap.AddComboBoxCell(row, byteoff + 2, TXchoices);
+                    listView_TXCOBmap.Items[row].SubItems[byteoff + 2].Text = "empty";
                     byteoff++;
                     continue;
                 }           
@@ -178,16 +198,16 @@ namespace ODEditor
                     targetod = targetod.subobjects[pdosub];
                 }
 
-                listView_TXCOBmap.AddComboBoxCell(row, byteoff+1, TXchoices);
+                listView_TXCOBmap.AddComboBoxCell(row, byteoff+2, TXchoices);
    
                 String target = String.Format("0x{0:x4}/{1:x2}", targetod.index, targetod.subindex);
-                listView_TXCOBmap.Items[row].SubItems[byteoff+1].Text = target;
+                listView_TXCOBmap.Items[row].SubItems[byteoff+2].Text = target;
 
                 int PDOdatasize = targetod.sizeofdatatype();
                
                 while (PDOdatasize != 1)
                 {
-                    listView_TXCOBmap.Items[row].SubItems[byteoff + PDOdatasize].Text = " - ";
+                    listView_TXCOBmap.Items[row].SubItems[byteoff + PDOdatasize+1].Text = " - ";
                     PDOdatasize--;
 
                 }
@@ -204,7 +224,9 @@ namespace ODEditor
           
             //row+0x1a00 will be the slot to adjust
 
-            UInt16 slot = (UInt16)(0x1a00 + row +1);
+
+
+            UInt16 slot = (UInt16)(0x200 + Convert.ToUInt16(listView_TXCOBmap.Items[row].SubItems[1].Text, 16));
             ODentry slotod = eds.ods[slot];
 
 
