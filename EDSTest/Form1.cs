@@ -6,7 +6,7 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Foobar is distributed in the hope that it will be useful,
+    libEDSsharp is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -73,6 +73,7 @@ namespace ODEditor
             if (tabControl1.SelectedTab != null)
             {
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                dv.updateecenthandlers();
                 ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
                 string filename = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Profiles" + Path.DirectorySeparatorChar + item.Name;
@@ -94,7 +95,9 @@ namespace ODEditor
                         dv.eds.ods.Add(kvp.Key, kvp.Value);
                 }
 
-                dv.doUpdateOD();
+                
+                //FIXME WHY IS THIS NULL!!!!!
+                dv.dispatch_updateOD();
 
             }
         }
