@@ -32,18 +32,17 @@ GUI
 * Create profiles that can be added to any project (just save the device xml file to the profiles/ 
 directory, only include the minimum number of objects that you want to auto insert) This will auto add to insert menu
 * Edit Device and File Info sections
+* Set TX PDO mappings
 
 Not finished/broken
 -------------
 
-* Cannot add entries to REC objects (remove may also be dicy)
-
 * Unit tests are totaly broken, due to massive rewrite/change of plan after
 tests were written.
 
-* PDO page is empty
+* PDO mappings only support TX
 
 
 ![alt tag](pic1.jpg)
 ![alt tag](pic2.jpg)
-
+![alt tag](pic3.jpg)
