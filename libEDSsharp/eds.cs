@@ -632,7 +632,7 @@ namespace libEDSsharp
         public string Description = "";
 
         public StorageLocation location = StorageLocation.RAM;
-        public Dictionary<UInt16, ODentry> subobjects = new Dictionary<UInt16, ODentry>();
+        public SortedDictionary<UInt16, ODentry> subobjects = new SortedDictionary<UInt16, ODentry>();
         public ODentry parent = null;
 
         public string AccessFunctionName = "";
@@ -850,7 +850,7 @@ namespace libEDSsharp
         public const AccessType AccessType_Max = AccessType.cons;
 
         Dictionary<string, Dictionary<string, string>> eds;
-        public Dictionary<UInt16, ODentry> ods;
+        public SortedDictionary<UInt16, ODentry> ods;
         public FileInfo fi;
         public DeviceInfo di;
         public MandatoryObjects md;
@@ -867,7 +867,7 @@ namespace libEDSsharp
         {
 
             eds = new Dictionary<string, Dictionary<string, string>>();
-            ods = new Dictionary<UInt16, ODentry>();
+            ods = new SortedDictionary<UInt16, ODentry>();
 
             fi = new FileInfo();
             di = new DeviceInfo();

@@ -634,7 +634,7 @@ namespace ODEditor
 
                 UInt16 countx = 0;
 
-                Dictionary<UInt16, ODentry> newlist = new Dictionary<ushort, ODentry>();
+                SortedDictionary<UInt16, ODentry> newlist = new SortedDictionary<ushort, ODentry>();
 
                 foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
                 {
