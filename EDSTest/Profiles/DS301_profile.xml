@@ -281,22 +281,36 @@ bit 16-31: index from OD</description>
       <CANopenSubObject subIndex="07" name="mapped object 7" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" />
       <CANopenSubObject subIndex="08" name="mapped object 8" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" />
     </CANopenObject>
+    <CANopenObject index="100c" name="Guard Time" objectType="VAR" memoryType="ROM" dataType="0x06" accessType="ro" PDOmapping="no" defaultValue="" subNumber="0" accessFunctionName="" disabled="false">
+      <description>The objects at index 100Ch and 100Dh include the guard time in milliseconds and the life time factor.
+The life time factor multiplied with the guard time gives the life time for the Life Guarding Protocol. It is
+0 if not used.</description>
+      <accessFunctionPreCode />
+    </CANopenObject>
+    <CANopenObject index="100d" name="Life time factor" objectType="VAR" memoryType="RAM" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="" subNumber="0" accessFunctionName="" disabled="false">
+      <description>The life time factor multiplied with the guard time gives the life time for the node guarding protocol. It is
+0 if not used.</description>
+      <accessFunctionPreCode />
+    </CANopenObject>
+    <CANopenObject index="1012" name="COB-ID TIME" objectType="VAR" memoryType="ROM" dataType="0x07" accessType="ro" PDOmapping="no" defaultValue="" subNumber="0" accessFunctionName="" disabled="false">
+      <description>Index 1012h defines the COB-ID of the Time-Stamp Object (TIME). Further, it defines whether the
+device consumes the TIME or whether the device generates the TIME.</description>
+      <accessFunctionPreCode />
+    </CANopenObject>
+    <CANopenObject index="1013" name="High resolution time stamp" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="" subNumber="0" accessFunctionName="" disabled="false">
+      <description>This object contains a time stamp with a resolution of 1 µs (see 9.3.2). It can be mapped into a PDO in
+order to define a high resolution time stamp message. (Note that the data type of the standard time
+stamp message (TIME) is fixed). Further application specific use is encouraged.</description>
+      <accessFunctionPreCode />
+    </CANopenObject>
   </CANopenObjectList>
   <other>
-    <file fileName="IO Example" fileCreator="JP" fileCreationDate="2016-03-25" fileCreationTime="18:04:29" fileVersion="0" />
+    <file fileName="" fileCreationDate="" fileCreationTime="" fileVersion="1" />
     <DeviceIdentity>
-      <vendorName>CANopenNode</vendorName>
-      <productName>CANopenNode</productName>
+      <vendorName />
+      <productName>New Product</productName>
     </DeviceIdentity>
-    <baudRate>
-      <supportedBaudRate value="10 Kbps" />
-      <supportedBaudRate value="20 Kbps" />
-      <supportedBaudRate value="50 Kbps" />
-      <supportedBaudRate value="125 Kbps" />
-      <supportedBaudRate value="250 Kbps" />
-      <supportedBaudRate value="500 Kbps" />
-      <supportedBaudRate value="800 Kbps" />
-    </baudRate>
+    <baudRate />
     <dummyUsage>
       <dummy entry="False" />
       <dummy entry="True" />
