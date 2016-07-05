@@ -172,7 +172,9 @@ namespace ODEditor
                 if (sub.subindex == 0)
                     continue;
 
-                UInt32 data = Convert.ToUInt32(sub.defaultvalue, 16);
+                
+
+                UInt32 data = Convert.ToUInt32(sub.defaultvalue, eds.determinebase(sub.defaultvalue));
 
                 if (data == 0) //FIX ME also include dummy usage here
                 {

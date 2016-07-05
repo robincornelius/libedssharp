@@ -125,51 +125,62 @@ namespace libEDSsharp
 
         public bool getField(string name, string varname)
         {
-            if (section.ContainsKey(name))
+            FieldInfo f = null;
+
+            try 
             {
-
-                Type tx = this.GetType();
-
-                FieldInfo f  = tx.GetField(varname);
-                object var = null;
-
-                switch(f.FieldType.Name)
-                { 
-                    case "String":
-                        var = section[name];
-                        break;
-
-                    case "UInt32":
-                        var = Convert.ToUInt32(section[name],16);
-                        break;
-
-                    case "Int16":
-                        var = Convert.ToInt16(section[name]);
-                        break;
-
-                    case "UInt16":
-                        var = Convert.ToUInt16(section[name]);
-                        break;
-
-                    case "Byte":
-                        var = Convert.ToByte(section[name]);
-                        break;
-
-                    case "Boolean":
-                        var = section[name] == "1"; //beacuse Convert is Awesome
-                        break;
-
-                    default:
-                        Console.WriteLine(String.Format("Unhanded variable {0} for {1}",f.FieldType.Name,varname));
-                        break;
-                }
-
-                if (var != null)
+                if (section.ContainsKey(name))
                 {
-                    tx.GetField(varname).SetValue(this, var);
-                    return true;
-                }
 
+                    Type tx = this.GetType();
+
+                    f = tx.GetField(varname);
+                    object var = null;
+
+                    switch (f.FieldType.Name)
+                    {
+                        case "String":
+                            var = section[name];
+                            break;
+
+                        case "UInt32":
+                            var = Convert.ToUInt32(section[name], 16);
+                            break;
+
+                        case "Int16":
+                            var = Convert.ToInt16(section[name]);
+                            break;
+
+                        case "UInt16":
+                            var = Convert.ToUInt16(section[name]);
+                            break;
+
+                        case "Byte":
+                            var = Convert.ToByte(section[name]);
+                            break;
+
+                        case "Boolean":
+                            var = section[name] == "1"; //beacuse Convert is Awesome
+                            break;
+
+                        default:
+                            Console.WriteLine(String.Format("Unhanded variable {0} for {1}", f.FieldType.Name, varname));
+                            break;
+                    }
+
+                    if (var != null)
+                    {
+                        tx.GetField(varname).SetValue(this, var);
+                        return true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                if (e is OverflowException)
+                {
+                    Warnings.warning_list.Add(string.Format("Warning parsing {0} tried to fit {1} into {2}", name, section[name], f.FieldType.Name));
+                }
             }
 
             return false;
@@ -490,25 +501,47 @@ namespace libEDSsharp
 
             base.parse(section);
 
-
-            if (section.ContainsKey("CreationTime") && section.ContainsKey("CreationDate"))
+            string dtcombined = "";
+            try
             {
-                string dtcombined = section["CreationTime"] + " " + section["CreationDate"];
-
-                CreationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                if (section.ContainsKey("CreationTime") && section.ContainsKey("CreationDate"))
+                {
+                    dtcombined = section["CreationTime"] + " " + section["CreationDate"];
+                    CreationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                }
+            }
+            catch(Exception e)
+            {
+                if (e is System.FormatException)
+                {
+                    Warnings.warning_list.Add(String.Format("Unable to parse DateTime {0} for CreationTime, not in DS306 format", dtcombined));
+                }
             }
 
-            if (section.ContainsKey("ModificationTime") && section.ContainsKey("ModificationTime"))
+            try
             {
-                string dtcombined = section["ModificationTime"] + " " + section["ModificationDate"];
-                ModificationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                if (section.ContainsKey("ModificationTime") && section.ContainsKey("ModificationTime"))
+                {
+                    dtcombined = section["ModificationTime"] + " " + section["ModificationDate"];
+                    ModificationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                }
             }
+            catch (Exception e)
+            {
+                if (e is System.FormatException)
+                {
+                    Warnings.warning_list.Add(String.Format("Unable to parse DateTime {0} for ModificationTime, not in DS306 format", dtcombined));
+                }
+            }
+            
 
             if (section.ContainsKey("EDSVersion"))
             {
                 string[] bits = section["EDSVersion"].Split('.');
-                EDSVersionMajor = Convert.ToByte(bits[0]);
-                EDSVersionMinor = Convert.ToByte(bits[1]);
+                if(bits.Length >=1 )
+                    EDSVersionMajor = Convert.ToByte(bits[0]);
+                if (bits.Length >= 2)
+                    EDSVersionMinor = Convert.ToByte(bits[1]);
                 //EDSVersion = String.Format("{0}.{1}", EDSVersionMajor, EDSVersionMinor);
             }
 
@@ -1207,28 +1240,36 @@ namespace libEDSsharp
         //Split on + , replace $NODEID with concrete value and add together
         public UInt16 GetNodeID(string input)
         {
-            if (di.concreteNodeId==-1)
+            try
             {
-                input = input.Replace("$NODEID", "");
-                input = input.Replace("+", "");
-                input = input.Replace(" ", "");
-                return Convert.ToUInt16(input, 16);
+                if (di.concreteNodeId == -1)
+                {
+                    input = input.Replace("$NODEID", "");
+                    input = input.Replace("+", "");
+                    input = input.Replace(" ", "");
+                    return Convert.ToUInt16(input, determinebase(input));
+                }
+
+                input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
+
+                string[] bits = input.Split('+');
+
+                if (bits.Length != 2)
+                {
+                    throw new FormatException("cannot parse " + input + "\nExpecting N+$NODEID or $NODEID+N");
+                }
+
+                UInt16 b1 = Convert.ToUInt16(bits[0], determinebase(bits[0]));
+                UInt16 b2 = Convert.ToUInt16(bits[1], determinebase(bits[1]));
+
+                return (UInt16)(b1 + b2);
+            }
+            catch(Exception e)
+            {
+                Warnings.warning_list.Add(String.Format("Error parsing node id {0}", input));
             }
 
-            input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
-
-            string[] bits = input.Split('+');
-
-            if(bits.Length!=2)
-            {
-                throw new FormatException("cannot parse " + input + "\nExpecting N+$NODEID or $NODEID+N");
-            }
-
-            UInt16 b1 = Convert.ToUInt16(bits[0],16);
-            UInt16 b2 = Convert.ToUInt16(bits[1],16);
-
-            return (UInt16)(b1+b2);
-
+            return 0;
         }
      
 
@@ -1241,6 +1282,12 @@ namespace libEDSsharp
             {
         
             }
+        }
+
+        public static class Warnings
+        {
+            public static List<string> warning_list = new List<string>();
+
         }
 
  }

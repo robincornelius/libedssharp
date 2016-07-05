@@ -88,6 +88,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Warnings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Warnings.Designer.cs">
+      <DependentUpon>Warnings.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="DeviceInfoView.resx">
       <DependentUpon>DeviceInfoView.cs</DependentUpon>
     </EmbeddedResource>
@@ -116,6 +122,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Warnings.resx">
+      <DependentUpon>Warnings.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

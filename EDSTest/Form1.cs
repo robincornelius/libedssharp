@@ -112,11 +112,13 @@ namespace ODEditor
             if (odf.ShowDialog() == DialogResult.OK)
             {
 
+                Warnings.warning_list.Clear();
+
                 eds = new EDSsharp();
 
                 //fix me enable exceptions for production code
 
-                //try
+                try
                 {
                     eds.loadfile(odf.FileName);
                     Bridge bridge = new Bridge(); //tell me again why bridge is not static?
@@ -131,10 +133,17 @@ namespace ODEditor
                     device.dispatch_updateOD();
                     
                 }
-                //catch(Exception ex)
+                catch(Exception ex)
                 {
-                    //    MessageBox.Show(ex.ToString());
+                    Warnings.warning_list.Add(e.ToString());  
                 }
+
+                if(Warnings.warning_list.Count!=0)
+                {
+                    WarningsFrm frm = new WarningsFrm();
+                    frm.ShowDialog();
+                }
+
 
             }
         }
