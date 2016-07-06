@@ -135,7 +135,7 @@ namespace ODEditor
                 }
                 catch(Exception ex)
                 {
-                    Warnings.warning_list.Add(e.ToString());  
+                    Warnings.warning_list.Add(ex.ToString());  
                 }
 
                 if(Warnings.warning_list.Count!=0)

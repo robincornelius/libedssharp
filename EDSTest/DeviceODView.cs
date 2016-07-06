@@ -501,7 +501,7 @@ namespace ODEditor
                         sod.subindex = 0;
                         sod.index = ni.index;
                         sod.location = StorageLocation.RAM;
-                        sod.defaultvalue = ni.nosubindexes.ToString();
+                        sod.defaultvalue = String.Format("{0}",ni.nosubindexes);
                         sod.accesstype = EDSsharp.AccessType.ro;
                         sod.datatype = DataType.UNSIGNED8;
                         sod.parent = od;

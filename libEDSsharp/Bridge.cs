@@ -389,6 +389,9 @@ namespace libEDSsharp
             }
             catch (Exception e)
             {
+                if (dev.Other.File != null)
+                    Warnings.warning_list.Add(String.Format("Unable to parse FileVersion\"{0}\" {1}", dev.Other.File.FileVersion,e.ToString()));
+
                 eds.fi.FileVersion = 0;
             }
 

@@ -144,19 +144,19 @@ namespace libEDSsharp
                             break;
 
                         case "UInt32":
-                            var = Convert.ToUInt32(section[name], 16);
+                            var = Convert.ToUInt32(section[name], EDSsharp.getbase(section[name]));
                             break;
 
                         case "Int16":
-                            var = Convert.ToInt16(section[name]);
+                            var = Convert.ToInt16(section[name], EDSsharp.getbase(section[name]));
                             break;
 
                         case "UInt16":
-                            var = Convert.ToUInt16(section[name]);
+                            var = Convert.ToUInt16(section[name], EDSsharp.getbase(section[name]));
                             break;
 
                         case "Byte":
-                            var = Convert.ToByte(section[name]);
+                            var = Convert.ToByte(section[name], EDSsharp.getbase(section[name]));
                             break;
 
                         case "Boolean":
@@ -312,8 +312,8 @@ namespace libEDSsharp
                 if(kvp.Key=="SupportedObjects")
                     continue;
 
-                int count = Convert.ToInt16(kvp.Key);
-                int target = Convert.ToInt16(kvp.Value, 16);
+                int count = Convert.ToInt16(kvp.Key, EDSsharp.getbase(kvp.Key));
+                int target = Convert.ToInt16(kvp.Value, EDSsharp.getbase(kvp.Value));
                 objectlist.Add(count, target);
             }
         }
@@ -988,25 +988,11 @@ namespace libEDSsharp
             }
         }
 
-        public int determinebase(string input)
-        {
-            if (input.Length > 2)
-                if (input[0] == '0' && (input[1] == 'x' || input[1] == 'X'))
-                    return 16;
-
-            if (input.Length > 1)
-                if (input[0] == '0')
-                    return 8;
-
-            return 10;
-
-        }
-
         public void parseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
         {
             string section = kvp.Key;
 
-            string pat = @"^([a-fA-F0-9]+)(sub)?([0-9]*)$";
+            string pat = @"^([a-fA-F0-9]+)(sub)?([0-9a-fA-F]*)$";
 
             Regex r = new Regex(pat);
             Match m = r.Match(section);
@@ -1021,7 +1007,7 @@ namespace libEDSsharp
 
                 if (kvp.Value.ContainsKey("ObjectType"))
                 {
-                    int type = Convert.ToInt16(kvp.Value["ObjectType"], determinebase(kvp.Value["ObjectType"]));
+                    int type = Convert.ToInt16(kvp.Value["ObjectType"], getbase(kvp.Value["ObjectType"]));
                     od.objecttype = (ObjectType)type;
                 }
                 else
@@ -1029,19 +1015,16 @@ namespace libEDSsharp
                     od.objecttype = ObjectType.VAR;
                 }
 
+                //Indexes in the EDS are always in hex format without the pre 0x
                 od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
-
-
-                //{
-                //od.nosubindexes = Convert.ToInt16(kvp.Value["SubNumber"], determinebase(kvp.Value["SubNumber"]));
-                //}
 
                 if (od.objecttype == ObjectType.VAR)
                 {
 
                     if (m.Groups[3].Length != 0)
                     {
-                        od.subindex = Convert.ToUInt16(m.Groups[3].ToString());
+                        //FIXME are subindexes in hex always?
+                        od.subindex = Convert.ToUInt16(m.Groups[3].ToString(),16);
                         od.parent = ods[od.index];
                         ods[od.index].subobjects.Add(od.subindex, od);
                     }
@@ -1050,7 +1033,7 @@ namespace libEDSsharp
                     if (!kvp.Value.ContainsKey("DataType"))
                         throw new ParameterException("Missing required field DataType on" + section);
 
-                    od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], determinebase(kvp.Value["DataType"]));
+                    od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], getbase(kvp.Value["DataType"]));
 
                     if (!kvp.Value.ContainsKey("AccessType"))
                         throw new ParameterException("Missing required AccessType on" + section);
@@ -1195,7 +1178,7 @@ namespace libEDSsharp
         }
 
 
-        public int getbase(string defaultvalue)
+        static public int getbase(string defaultvalue)
         {
 
             int nobase = 10;
@@ -1247,7 +1230,7 @@ namespace libEDSsharp
                     input = input.Replace("$NODEID", "");
                     input = input.Replace("+", "");
                     input = input.Replace(" ", "");
-                    return Convert.ToUInt16(input, determinebase(input));
+                    return Convert.ToUInt16(input, getbase(input));
                 }
 
                 input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
@@ -1259,14 +1242,14 @@ namespace libEDSsharp
                     throw new FormatException("cannot parse " + input + "\nExpecting N+$NODEID or $NODEID+N");
                 }
 
-                UInt16 b1 = Convert.ToUInt16(bits[0], determinebase(bits[0]));
-                UInt16 b2 = Convert.ToUInt16(bits[1], determinebase(bits[1]));
+                UInt16 b1 = Convert.ToUInt16(bits[0], getbase(bits[0]));
+                UInt16 b2 = Convert.ToUInt16(bits[1], getbase(bits[1]));
 
                 return (UInt16)(b1 + b2);
             }
             catch(Exception e)
             {
-                Warnings.warning_list.Add(String.Format("Error parsing node id {0}", input));
+                Warnings.warning_list.Add(String.Format("Error parsing node id {0} nodes, {1}", input,e.ToString()));
             }
 
             return 0;

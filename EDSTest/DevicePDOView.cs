@@ -19,8 +19,7 @@ namespace ODEditor
         bool isTXPDO;
 
         UInt16 startcob = 0x1800;
-        UInt16 startmap = 0x1a00;
-
+      
         public DevicePDOView()
         {
           
@@ -35,7 +34,6 @@ namespace ODEditor
             if (isTXPDO == false)
             {
                 startcob = 0x1400;
-                startmap = 0x1600;
             }
 
         }
@@ -172,9 +170,9 @@ namespace ODEditor
                 if (sub.subindex == 0)
                     continue;
 
-                
 
-                UInt32 data = Convert.ToUInt32(sub.defaultvalue, eds.determinebase(sub.defaultvalue));
+
+                UInt32 data = Convert.ToUInt32(sub.defaultvalue, EDSsharp.getbase(sub.defaultvalue));
 
                 if (data == 0) //FIX ME also include dummy usage here
                 {
