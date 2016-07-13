@@ -229,16 +229,14 @@ namespace ODEditor
             UInt16 slot = (UInt16)(0x200 + Convert.ToUInt16(listView_TXCOBmap.Items[row].SubItems[1].Text, 16));
             ODentry slotod = eds.ods[slot];
 
-
             //Now rebuild the entire slot working out data size as we go
 
             for(byte p=1;p<slotod.subobjects.Count;p++)
             {
-                slotod.subobjects[p].defaultvalue = "00000000";
+                slotod.subobjects[p].defaultvalue = "0x00000000";
             }
 
             byte subcount = 1;
-
             int totaldatalength = 0;
 
             ListViewItem item = listView_TXCOBmap.Items[row];
@@ -270,7 +268,7 @@ namespace ODEditor
                     break;
                 }
 
-                string value = string.Format("{0:x4}{1:x2}{2:x2}", index, sub, datalength);
+                string value = string.Format("0x{0:x4}{1:x2}{2:x2}", index, sub, datalength);
 
                 if (subcount >= slotod.subobjects.Count())
                 {
@@ -284,8 +282,12 @@ namespace ODEditor
                 
             }
 
+            //write out the number of objects used into the sub object count [0]
+            slotod.subobjects[0].defaultvalue = string.Format("{0}", subcount-1);
+
             updatePDOinfo();
             doUpdateOD();
+            
 
         }
 

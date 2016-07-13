@@ -75,7 +75,6 @@ namespace ODEditor
             comboBox_pdomap.Items.Add("");
             comboBox_pdomap.Items.Add("no");
             comboBox_pdomap.Items.Add("optional");
-            comboBox_pdomap.Items.Add("yes"); //?? 
  
         }
 
@@ -90,29 +89,32 @@ namespace ODEditor
             selectedobject.parameter_name = textBox_name.Text;
             selectedobject.Description = textBox_description.Text;
 
-            if (selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY)
-                return;
+            if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
+            {
 
-            selectedobject.defaultvalue = textBox_defaultvalue.Text;
-            selectedobject.TPDODetectCos = checkBox_COS.Checked;
+                selectedobject.defaultvalue = textBox_defaultvalue.Text;
+                selectedobject.TPDODetectCos = checkBox_COS.Checked;
 
+                DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
+                selectedobject.datatype = dt;
 
-            DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
-            selectedobject.datatype = dt;
+                EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
+                selectedobject.accesstype = at;
 
-            EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
-            selectedobject.accesstype = at;
+                selectedobject.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_pdomap.SelectedItem.ToString());
 
-            //PDO mapping handle else where
+                selectedobject.AccessFunctionName = textBox_accessfunctionname.Text;
+                selectedobject.AccessFunctionPreCode = textBox_precode.Text;
+                selectedobject.Disabled = !checkBox_enabled.Checked;
 
-            selectedobject.AccessFunctionName = textBox_accessfunctionname.Text;
-            selectedobject.AccessFunctionPreCode = textBox_precode.Text;
-            selectedobject.Disabled = !checkBox_enabled.Checked;
-
-            selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
+                selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
+            }
 
             updateselectedindexdisplay(selectedobject.index);
             validateanddisplaydata();
+
+            //Update the PDO mappings as we may have new (or less) objects avaiable
+            doUpdatePDOs();
 
         }
 
@@ -182,6 +184,9 @@ namespace ODEditor
 
             textBox_defaultvalue.Text = od.defaultvalue;
 
+            checkBox_COS.Enabled = true;
+            checkBox_enabled.Enabled = true;
+
             if (od.parent != null && ((od.parent.objecttype == ObjectType.ARRAY) || (od.parent.objecttype == ObjectType.REC && od.subindex == 0)))
             {
                 textBox_defaultvalue.Enabled = false;
@@ -195,6 +200,13 @@ namespace ODEditor
                 textBox_precode.Enabled = false;
                 comboBox_memory.Enabled = false;
 
+                checkBox_COS.Enabled = false;
+                checkBox_enabled.Enabled = false;
+
+                checkBox_COS.Checked = od.parent.TPDODetectCos;
+                checkBox_enabled.Checked = !od.parent.Disabled;
+               
+
             }
             else
             {
@@ -203,18 +215,34 @@ namespace ODEditor
                 comboBox_datatype.Enabled = true;
                 comboBox_objecttype.Enabled = false;
                 comboBox_pdomap.Enabled = true;
+
+                //checkBox_COS.Enabled = false;
+                //checkBox_enabled.Enabled = false;
+
+               
             }
 
             return;
         }
 
 
+
+        ODentry selectedindexod = null;
         private void updateselectedindexdisplay(UInt16 index)
         {
+            selectedindexod = eds.ods[index];
+            updateselectedindexdisplay();
+        }
 
+        public void updateselectedindexdisplay()
+        {
+            
             listViewDetails.Items.Clear();
 
-            ODentry od = eds.ods[index];
+            if (selectedindexod == null)
+                return;
+
+            ODentry od = selectedindexod;
 
             if (od.objecttype == ObjectType.VAR)
             {

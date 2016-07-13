@@ -96,8 +96,10 @@ namespace ODEditor
             deviceODView1.eds = eds;
             deviceODView1.populateindexlists();
             deviceODView1.validateanddisplaydata();
+            deviceODView1.updateselectedindexdisplay();
 
-  
+
+
         }
 
         #endregion
