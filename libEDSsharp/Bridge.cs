@@ -195,6 +195,8 @@ namespace libEDSsharp
 
             dev.Other.File.FileVersion = eds.fi.FileVersion.ToString();
 
+            dev.Other.File.ExportFolder = eds.fi.exportFolder;
+
             return dev;
         }
 
@@ -212,6 +214,8 @@ namespace libEDSsharp
                 if (coo.AccessType != null)
                 {
                     string at = coo.AccessType;
+
+                    //Nasty work around so we can use Enum types
                     at = at.Replace("const", "cons");
                     entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), at);
                 }
@@ -295,7 +299,6 @@ namespace libEDSsharp
                 {
 
                     ODentry subentry = new ODentry();
-                    //entry.index = Convert.ToInt16(coosub.Index, 16);
 
                     subentry.parameter_name = coosub.Name;
                     subentry.index = entry.index;
@@ -328,9 +331,6 @@ namespace libEDSsharp
 
                     entry.subobjects.Add(subentry.subindex,subentry);
 
-                    
-
-                    //eds.ods.Add(String.Format("{0:x4}/{1}", entry.index, subentry.subindex), subentry);
                 }
             }
 
@@ -380,6 +380,7 @@ namespace libEDSsharp
             eds.fi.CreationDate = dev.Other.File.FileCreationDate;
             eds.fi.CreationTime = dev.Other.File.FileCreationTime;
             eds.fi.CreatedBy = dev.Other.File.FileCreator;
+            eds.fi.exportFolder = dev.Other.File.ExportFolder;
 
             dev.Other.Capabilities = dev.Other.Capabilities;
 

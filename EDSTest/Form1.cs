@@ -154,15 +154,23 @@ namespace ODEditor
             {
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
 
-                FolderBrowserDialog fbd = new FolderBrowserDialog();
-                fbd.SelectedPath = @"C:\code\CANopenNode\example";
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.CheckFileExists = false;
 
-                DialogResult result = fbd.ShowDialog();
+                
+                sfd.FileName = "CO_OD.c";
+                sfd.InitialDirectory = dv.eds.fi.exportFolder;
+                sfd.RestoreDirectory = true;
 
-                if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                DialogResult result = sfd.ShowDialog();
+
+                if (result == DialogResult.OK)
                 {
+                    string savePath = Path.GetDirectoryName(sfd.FileName);
+                    dv.eds.fi.exportFolder = savePath;
+
                     CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                    cone.export(fbd.SelectedPath, dv.eds);
+                    cone.export(savePath, dv.eds);                   
                 }
             }
              

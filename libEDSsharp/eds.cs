@@ -482,6 +482,8 @@ namespace libEDSsharp
         [EdsExport]
         public string ModifiedBy="";//=CANFestival //max244
 
+        public string exportFolder = "";
+
         public FileInfo(Dictionary<string, string> section)
         {
             infoheader = "CAN OPEN FileInfo";
