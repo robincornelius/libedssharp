@@ -889,24 +889,30 @@ const CO_OD_entry_t CO_OD[");
 
             if (open)
             {
-                if (index == 0x1200)
+                if (index == 0x1200) //SDO Server
                     return true;
 
-                if (index == 0x1400)
+                if (index == 0x1280) //SDO Client
                     return true;
 
-                if (index == 0x1600)
+                if (index == 0x1400) //RX PDO Config
                     return true;
 
-                if (index == 0x1800)
+                if (index == 0x1600) //RX PDO Map
                     return true;
 
-                if (index == 0x1a00)
+                if (index == 0x1800) //TX PDO Config
+                    return true;
+
+                if (index == 0x1a00) //TX PDO Map
                     return true;
             }
             else
             {
-                if (index == 0x1200)
+                if (index == 0x1200 + noSDOservers - 1)
+                    return true;
+
+                if (index == 0x1280 + noSDOclients - 1) 
                     return true;
 
                 if (index == 0x1400 + noRXpdos - 1)
