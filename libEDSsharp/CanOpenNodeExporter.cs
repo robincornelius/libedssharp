@@ -429,9 +429,16 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
                         ODAs.Add(ODA);
 
-
-                        ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex));
-
+                        //Arrays do not have a size in the raw CO objects, Records do
+                        //so offset by one
+                        if (od.objecttype == ObjectType.ARRAY)
+                        {
+                            ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex - 1));
+                        }
+                        else
+                        {
+                            ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex ));
+                        }
                     }
 
                     file.Write(ODAout);
@@ -520,6 +527,9 @@ const CO_OD_entry_t CO_OD[");
             file.WriteLine(@"] = {
 ");
 
+            bool arrayspecialcase = false;
+            int count = 0;
+
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
@@ -552,8 +562,25 @@ const CO_OD_entry_t CO_OD[");
                 if (od.objecttype == ObjectType.ARRAY && od.nosubindexes > 0)
                     array = string.Format("[0]");
 
+                
+                if(arrayspecial(od.index,true))
+                {
+                    arrayspecialcase = true;
+                    count = 0;
+                }
+
+                if(arrayspecialcase)
+                {
+                    array = string.Format("[{0}]", count);
+                    count++;
+                }
+
                 file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}.{5}{6}}},", od.index, od.nosubindexes, flags, datasize, loc,make_cname(od.parameter_name), array));
 
+                if (arrayspecial(od.index, false))
+                {
+                    arrayspecialcase = false;
+                }
             }
 
 
