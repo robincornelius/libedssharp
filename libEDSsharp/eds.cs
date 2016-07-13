@@ -31,6 +31,7 @@ using System.Reflection;
 namespace libEDSsharp
 {
 
+   
     public enum DataType
     {
         UNKNOWN = 0,
@@ -78,7 +79,6 @@ namespace libEDSsharp
         ARRAY = 8,
         REC = 9,
     }
-
 
     //Additional Info for CANOpenNode c and h generation
     public enum StorageLocation
@@ -781,7 +781,11 @@ namespace libEDSsharp
 
         public string paramater_cname()
         {
-            string cname = parameter_name.Replace(" ","");
+            string cname = parameter_name.Replace("-", "_");
+
+            cname =  Regex.Replace(cname, @"([A-Z]) ([A-Z])", "$1_$2");
+            cname = cname.Replace(" ", "");
+
             return cname;
         }
 
@@ -1162,16 +1166,18 @@ namespace libEDSsharp
             if (od.objecttype == ObjectType.ARRAY)
             {
                 ODentry sub2 = ods[od.index];
-                DataType t = sub2.datatype;
+
+                //FIX ME !!! INCONSISTANT setup of the datatype for arrays when loading xml and eds!!
+
+                DataType t = sub2.subobjects[1].datatype;
+                if (t == DataType.UNKNOWN)
+                    t = sub2.datatype;
+
                 return t;
             }
 
-            if (od.objecttype == ObjectType.REC) //NOT SURE????
-            {
-                ODentry sub2 = ods[od.index];
-                DataType t = sub2.datatype;
-                return t;
-            }
+            //Warning, REC types need to be handled else where as the specific
+            //implementation of a REC type depends on the exporter being used
 
             return DataType.UNKNOWN;
 
