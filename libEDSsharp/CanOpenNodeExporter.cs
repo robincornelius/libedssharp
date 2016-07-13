@@ -99,7 +99,7 @@ namespace libEDSsharp
                         specialarraylength = string.Format("[{0}]", od.sizeofdatatype());
                     }
 
-                    file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}{3};", od.index, od.datatype.ToString(), od.paramater_cname(), specialarraylength));                 
+                    file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}{3};", od.index, od.datatype.ToString(), make_cname(od.parameter_name), specialarraylength));                 
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace libEDSsharp
                         if (lastname == name)
                             continue;
                         lastname = name;
-                        file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[{3}];", od.index, objecttypewords, od.paramater_cname(), au[name]));
+                        file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[{3}];", od.index, objecttypewords, make_cname(od.parameter_name), au[name]));
                     }
                     else
                     {
@@ -142,16 +142,16 @@ namespace libEDSsharp
                         {
                             if (arrayspecial(od.index, true))
                             {
-                                file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[1];", od.index, objecttypewords, od.paramater_cname()));
+                                file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[1];", od.index, objecttypewords, make_cname(od.parameter_name)));
                             }
                             else
                             {
-                                file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2};", od.index, objecttypewords, od.paramater_cname()));
+                                file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2};", od.index, objecttypewords, make_cname(od.parameter_name)));
                             }
                         }
                         else
                         {
-                            file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[{3}];", od.index, objecttypewords, od.paramater_cname(), od.nosubindexes - 1));
+                            file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[{3}];", od.index, objecttypewords, make_cname(od.parameter_name), od.nosubindexes - 1));
                         }
                     }
                 }
@@ -390,50 +390,51 @@ extern struct sCO_OD_ROM CO_OD_ROM;
                 if (od.nosubindexes == 0)
                 {
                     file.WriteLine(string.Format("/*{0:x4}, Data Type: {1} */", od.index, t.ToString()));
-                    file.WriteLine(string.Format("        #define {0,-51}{1}.{2}", string.Format("OD_{0}",od.paramater_cname()), loc, od.paramater_cname()));
-                }
-                else
-                {
-
-                    //ARRAY TYPES SUBS ONLY FIXME
+                    file.WriteLine(string.Format("        #define {0,-51}{1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
 
                     DataType dt = od.datatype;
 
-                    file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(), od.nosubindexes - 1));
-                    file.WriteLine(string.Format("        #define OD_{0,-48}{1}.{2}", od.paramater_cname(), loc, od.paramater_cname()));
-                    file.WriteLine(string.Format("        #define {0,-51}{1}", string.Format("ODL_{0}_arrayLength", od.paramater_cname()), od.nosubindexes - 1));
-
-
-                    if (od.objecttype != ObjectType.ARRAY)
+                    if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                     {
-                        List<string> ODAs = new List<string>();
+                        file.WriteLine(string.Format("        #define {0,-51}{1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.sizeofdatatype()));
+                    }
+                }
+                else
+                {
+                    DataType dt = od.datatype;
 
-                        string ODAout = "";
+                    file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(), od.nosubindexes - 1));
+                    file.WriteLine(string.Format("        #define OD_{0,-48}{1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
+                    file.WriteLine(string.Format("        #define {0,-51}{1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.nosubindexes - 1));
 
-                        foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
+
+                    List<string> ODAs = new List<string>();
+
+                    string ODAout = "";
+
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
+                    {
+                        ODentry sub = kvp2.Value;
+
+                        if (sub.subindex == 0)
+                            continue;
+
+                        string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+
+                        if (ODAs.Contains(ODA))
                         {
-                            ODentry sub = kvp2.Value;
-
-                            if (sub.subindex == 0)
-                                continue;
-
-                            string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", od.paramater_cname(), sub.paramater_cname()));
-
-                            if (ODAs.Contains(ODA))
-                            {
-                                ODAout = "";
-                                break;
-                            }
-
-                            ODAs.Add(ODA);
-
-
-                            ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", od.paramater_cname(), sub.paramater_cname()), sub.subindex));
-
+                            ODAout = "";
+                            break;
                         }
 
-                        file.Write(ODAout);
+                        ODAs.Add(ODA);
+
+
+                        ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex));
+
                     }
+
+                    file.Write(ODAout);
                 }
 
                 file.WriteLine("");
@@ -551,7 +552,7 @@ const CO_OD_entry_t CO_OD[");
                 if (od.objecttype == ObjectType.ARRAY && od.nosubindexes > 0)
                     array = string.Format("[0]");
 
-                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}.{5}{6}}},", od.index, od.nosubindexes, flags, datasize, loc, od.paramater_cname(), array));
+                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}.{5}{6}}},", od.index, od.nosubindexes, flags, datasize, loc,make_cname(od.parameter_name), array));
 
             }
 
@@ -748,6 +749,8 @@ const CO_OD_entry_t CO_OD[");
 
            string output = "";
 
+         
+
            char lastchar = ' ';
            foreach (string s in bits)
            {
@@ -759,7 +762,10 @@ const CO_OD_entry_t CO_OD[");
                lastchar = output.Last();
            }
 
-           return output;
+           if(Char.IsLower(output[1]))
+                output = Char.ToLower(output[0]) + output.Substring(1);
+
+            return output;
        }
 
         void export_record_types(StreamWriter file)

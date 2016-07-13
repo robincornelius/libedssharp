@@ -155,6 +155,7 @@ namespace ODEditor
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
 
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
+                fbd.SelectedPath = @"C:\code\CANopenNode\example";
 
                 DialogResult result = fbd.ShowDialog();
 
