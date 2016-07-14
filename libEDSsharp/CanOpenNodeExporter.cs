@@ -274,7 +274,18 @@ namespace libEDSsharp
             file.WriteLine(@"/*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/");
-            file.WriteLine(string.Format("   #define CO_OD_NoOfElements             {0}", eds.ods.Count));
+
+            //HACk, count the number of enabeld elements here is eds.ods.Count contains disabled entries as well
+
+            int count = 0;
+
+            foreach(KeyValuePair<UInt16,ODentry>kvp in eds.ods)
+            {
+                if (kvp.Value.Disabled == false)
+                    count++;
+            }
+
+            file.WriteLine(string.Format("   #define CO_OD_NoOfElements             {0}", count));
             file.WriteLine("");
             file.WriteLine("");
 

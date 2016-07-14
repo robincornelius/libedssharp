@@ -88,6 +88,7 @@ namespace ODEditor
 
             selectedobject.parameter_name = textBox_name.Text;
             selectedobject.Description = textBox_description.Text;
+            selectedobject.defaultvalue = textBox_defaultvalue.Text;
 
             if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
             {
@@ -160,7 +161,8 @@ namespace ODEditor
             }
 
             comboBox_objecttype.SelectedItem = od.objecttype.ToString();
-            textBox_description.Text = od.Description.Replace("\n", "\r\n");
+            if(od.Description!=null)
+                textBox_description.Text = od.Description.Replace("\n", "\r\n");
             comboBox_pdomap.SelectedItem = od.PDOtype.ToString();
 
             checkBox_COS.Checked = od.TPDODetectCos;
@@ -187,39 +189,34 @@ namespace ODEditor
             checkBox_COS.Enabled = true;
             checkBox_enabled.Enabled = true;
 
-            if (od.parent != null && ((od.parent.objecttype == ObjectType.ARRAY) || (od.parent.objecttype == ObjectType.REC && od.subindex == 0)))
-            {
-                textBox_defaultvalue.Enabled = false;
-                comboBox_accesstype.Enabled = false;
-                comboBox_datatype.Enabled = false;
-                comboBox_objecttype.Enabled = false;
-                comboBox_pdomap.Enabled = false;
 
-                checkBox_enabled.Checked = false;
-                textBox_accessfunctionname.Enabled = false;
-                textBox_precode.Enabled = false;
-                comboBox_memory.Enabled = false;
+            if (od.parent == null)
+                return; //nothing else to do at this point
 
-                checkBox_COS.Enabled = false;
-                checkBox_enabled.Enabled = false;
+            //protect eveything as default
+            textBox_defaultvalue.Enabled = false;
+            comboBox_accesstype.Enabled = false;
+            comboBox_datatype.Enabled = false;
+            comboBox_objecttype.Enabled = false;
+            comboBox_pdomap.Enabled = false;
+            checkBox_enabled.Checked = false;
+            textBox_accessfunctionname.Enabled = false;
+            textBox_precode.Enabled = false;
+            comboBox_memory.Enabled = false;
+            checkBox_COS.Enabled = false;
+            checkBox_enabled.Enabled = false;
+            checkBox_COS.Checked = od.parent.TPDODetectCos;
+            checkBox_enabled.Checked = !od.parent.Disabled;
 
-                checkBox_COS.Checked = od.parent.TPDODetectCos;
-                checkBox_enabled.Checked = !od.parent.Disabled;
-               
-
-            }
-            else
+            if (od.parent.objecttype == ObjectType.ARRAY && od.subindex != 0)
             {
                 textBox_defaultvalue.Enabled = true;
-                comboBox_accesstype.Enabled = true;
-                comboBox_datatype.Enabled = true;
-                comboBox_objecttype.Enabled = false;
-                comboBox_pdomap.Enabled = true;
+            }
 
-                //checkBox_COS.Enabled = false;
-                //checkBox_enabled.Enabled = false;
 
-               
+            if (od.parent.objecttype == ObjectType.REC && od.subindex != 0)
+            {
+                textBox_defaultvalue.Enabled = true;
             }
 
             return;
