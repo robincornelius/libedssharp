@@ -772,6 +772,9 @@ const CO_OD_entry_t CO_OD[");
 
        string make_cname(string name)
        {
+            if (name == null)
+                return null;
+
            string[] bits = Regex.Split(name,@"[\W]+");
 
            string output = "";
