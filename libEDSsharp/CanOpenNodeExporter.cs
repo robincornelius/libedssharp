@@ -267,11 +267,10 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 
-            //FIX ME NMT MASTER should auto generate
-            file.WriteLine(@"  #define CO_NO_NMT_MASTER               0   
-
-");
-
+            //IS this an approprate use for Simple Boot Up master? i think so!
+            file.WriteLine(string.Format("  #define CO_NO_NMT_MASTER               {0}", eds.di.SimpleBootUpMaster==true?1:0));
+            file.WriteLine("");
+            file.WriteLine("");
             file.WriteLine(@"/*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/");

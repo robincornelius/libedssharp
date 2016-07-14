@@ -163,9 +163,12 @@ namespace Xml2CSharp
 		public string FileCreationTime { get; set; }
 		[XmlAttribute(AttributeName="fileVersion")]
 		public string FileVersion { get; set; }
-	}
+        [XmlAttribute(AttributeName = "exportFolder")]
+        public string ExportFolder { get; set; }
 
-	[XmlRoot(ElementName="productText")]
+    }
+
+    [XmlRoot(ElementName="productText")]
 	public class ProductText {
 		[XmlElement(ElementName="label")]
 		public Label Label { get; set; }
