@@ -658,6 +658,9 @@ const CO_OD_entry_t CO_OD[");
             if (defaultvalue == null)
                 return "";
 
+            if (defaultvalue == "")
+                return "";
+
             if (defaultvalue.Contains("$NODEID"))
             {
                 defaultvalue = defaultvalue.Replace("$NODEID", "");
