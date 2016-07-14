@@ -267,8 +267,22 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 
-            //IS this an approprate use for Simple Boot Up master? i think so!
-            file.WriteLine(string.Format("  #define CO_NO_NMT_MASTER               {0}", eds.di.SimpleBootUpMaster==true?1:0));
+
+            bool ismaster = false;
+            if(eds.ods.ContainsKey(0x1f80))
+            {
+                ODentry master = eds.ods[0x1f80];
+
+                // we could do with a cut down function that returns a value rather than a string
+                string meh = formatvaluewithdatatype(master.defaultvalue, master.datatype);
+                meh = meh.Replace("L", "");
+
+                UInt32 NMTStartup = Convert.ToUInt32(meh, 16);
+                if ((NMTStartup & 0x01) == 0x01)
+                    ismaster = true;
+            }
+
+            file.WriteLine(string.Format("  #define CO_NO_NMT_MASTER               {0}", ismaster==true?1:0));
             file.WriteLine("");
             file.WriteLine("");
             file.WriteLine(@"/*******************************************************************************
