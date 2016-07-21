@@ -1189,6 +1189,9 @@ namespace libEDSsharp
         static public int getbase(string defaultvalue)
         {
 
+            if (defaultvalue == null)
+                return 10;
+
             int nobase = 10;
 
             String pat = @"^0[xX][0-9]+";
