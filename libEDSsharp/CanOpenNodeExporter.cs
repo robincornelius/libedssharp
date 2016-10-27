@@ -223,8 +223,8 @@ namespace libEDSsharp
    typedef int16_t      INTEGER16;
    typedef int32_t      INTEGER32;
    typedef int64_t      INTEGER64;
-   typedef float32_t    REAL32;
-   typedef float64_t    REAL64;
+   typedef float32_t    REAL32; 
+   typedef float64_t    REAL64; 
    typedef char_t       VISIBLE_STRING;
    typedef oChar_t      OCTET_STRING;
    typedef domain_t     DOMAIN;
@@ -238,7 +238,7 @@ namespace libEDSsharp
             file.WriteLine(string.Format("      CreationTime: {0}", eds.fi.CreationTime));
             file.WriteLine(string.Format("      CreationDate: {0}", eds.fi.CreationDate));
             file.WriteLine(string.Format("      CreatedBy:    {0}", eds.fi.CreatedBy));
-            file.WriteLine("/******************************************************************************/");
+            file.WriteLine("******************************************************************************/");
             file.WriteLine("");
             file.WriteLine("");
 
@@ -248,7 +248,7 @@ namespace libEDSsharp
             file.WriteLine(string.Format("      VendorNumber    {0}", eds.di.VendorNumber));
             file.WriteLine(string.Format("      ProductName:    {0}", eds.di.ProductName));
             file.WriteLine(string.Format("      ProductNumber:  {0}", eds.di.ProductNumber));
-            file.WriteLine("/******************************************************************************/");
+            file.WriteLine("******************************************************************************/");
             file.WriteLine("");
             file.WriteLine("");
 
@@ -684,7 +684,19 @@ const CO_OD_entry_t CO_OD[");
                 return "";
 
             if (defaultvalue == "")
-                return "";
+            {
+                //No default value, we better supply one for sensible data types
+                if (dt == DataType.VISIBLE_STRING ||
+                    dt == DataType.OCTET_STRING ||
+                    dt == DataType.UNKNOWN ||
+                    dt == DataType.UNICODE_STRING)
+                {
+                    return "";
+                }
+
+                Console.WriteLine("Warning assuming a 0 default");
+                defaultvalue = "0";
+            }
 
             if (defaultvalue.Contains("$NODEID"))
             {
