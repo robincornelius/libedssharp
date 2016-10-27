@@ -30,8 +30,8 @@
         {
             this.radioButton_var = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radioButton_array = new System.Windows.Forms.RadioButton();
             this.radioButton_rec = new System.Windows.Forms.RadioButton();
+            this.radioButton_array = new System.Windows.Forms.RadioButton();
             this.numericUpDown_index = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -71,18 +71,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Object type";
             // 
-            // radioButton_array
-            // 
-            this.radioButton_array.AutoSize = true;
-            this.radioButton_array.Location = new System.Drawing.Point(6, 42);
-            this.radioButton_array.Name = "radioButton_array";
-            this.radioButton_array.Size = new System.Drawing.Size(62, 17);
-            this.radioButton_array.TabIndex = 1;
-            this.radioButton_array.TabStop = true;
-            this.radioButton_array.Text = "ARRAY";
-            this.radioButton_array.UseVisualStyleBackColor = true;
-            this.radioButton_array.CheckedChanged += new System.EventHandler(this.radioButton_array_CheckedChanged);
-            // 
             // radioButton_rec
             // 
             this.radioButton_rec.AutoSize = true;
@@ -95,6 +83,18 @@
             this.radioButton_rec.UseVisualStyleBackColor = true;
             this.radioButton_rec.CheckedChanged += new System.EventHandler(this.radioButton_rec_CheckedChanged);
             // 
+            // radioButton_array
+            // 
+            this.radioButton_array.AutoSize = true;
+            this.radioButton_array.Location = new System.Drawing.Point(6, 42);
+            this.radioButton_array.Name = "radioButton_array";
+            this.radioButton_array.Size = new System.Drawing.Size(62, 17);
+            this.radioButton_array.TabIndex = 1;
+            this.radioButton_array.TabStop = true;
+            this.radioButton_array.Text = "ARRAY";
+            this.radioButton_array.UseVisualStyleBackColor = true;
+            this.radioButton_array.CheckedChanged += new System.EventHandler(this.radioButton_array_CheckedChanged);
+            // 
             // numericUpDown_index
             // 
             this.numericUpDown_index.Hexadecimal = true;
@@ -105,7 +105,7 @@
             0,
             0});
             this.numericUpDown_index.Minimum = new decimal(new int[] {
-            8192,
+            1,
             0,
             0,
             0});
