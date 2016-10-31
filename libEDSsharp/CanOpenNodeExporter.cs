@@ -772,7 +772,7 @@ const CO_OD_entry_t CO_OD[");
                 case DataType.OCTET_STRING:
                     {
                         string[] bits = defaultvalue.Split(' ');
-                        string octet = "";
+                        string octet = "{";
                         foreach (string s in bits)
                         {
                             octet += formatvaluewithdatatype(s, DataType.UNSIGNED8);
@@ -782,6 +782,7 @@ const CO_OD_entry_t CO_OD[");
                                 octet += ", ";
                             }
                         }
+                        octet += "}";
                         return octet;
                     }
 
