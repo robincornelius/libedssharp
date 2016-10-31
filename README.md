@@ -3,6 +3,11 @@ A C# CanOpen EDS (Electronic Data Sheet) library and GUI editor
 Please consider this code highly experimental and alpha quality and buggy
 It is a work in progress and is rapidly changing.
 
+With many thanks to the following contributors for spotting my mistakes and 
+improving the code
+	* s-fuchs - https://github.com/s-fuchs
+
+
 If you would like to try a pre compiled version, then head over to the [releases page!](https://github.com/robincornelius/libedssharp/releases)
 
 
