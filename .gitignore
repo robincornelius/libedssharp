@@ -4,3 +4,8 @@
 /Cia306Tester/obj/Debug
 /libEDSsharp/bin/Debug
 /*.suo
+/libEDSsharp/obj/Release
+/EDSTest/obj/Release
+/EDSTest/bin/Release
+/libEDSsharp/bin/Release
+/.vs/EDSTest/v14/*.suo
