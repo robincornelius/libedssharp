@@ -1127,6 +1127,11 @@ namespace libEDSsharp
                 if (md.objectlist.ContainsValue(od.index))
                 {
                     od.write(writer);
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
+                    {
+                        ODentry od2 = kvp2.Value;
+                        od2.write(writer);
+                    }                    
                 }
             }
 
@@ -1138,6 +1143,11 @@ namespace libEDSsharp
                 if (oo.objectlist.ContainsValue(od.index))
                 {
                     od.write(writer);
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
+                    {
+                        ODentry od2 = kvp2.Value;
+                        od2.write(writer);
+                    }                    
                 }
             }
 
@@ -1149,6 +1159,11 @@ namespace libEDSsharp
                 if (mo.objectlist.ContainsValue(od.index))
                 {
                     od.write(writer);
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
+                    {
+                        ODentry od2 = kvp2.Value;
+                        od2.write(writer);
+                    }                    
                 }
             }
 
