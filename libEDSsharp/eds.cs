@@ -398,6 +398,10 @@ namespace libEDSsharp
 
         public void write(StreamWriter writer)
         {
+            //Comments block is optional so if there are no comments do not include it
+            if(comments==null || comments.Count==0)
+                return;
+
             writer.WriteLine("[" + edssection + "]");
 
             writer.WriteLine(string.Format("Lines={0}", comments.Count));
@@ -472,7 +476,7 @@ namespace libEDSsharp
         public string CreationDate="";
 
         [EdsExport]
-        public string CreatedBy;//=CANFestival //max245
+        public string CreatedBy = "";//=CANFestival //max245
 
         public DateTime ModificationDateTime;//
         [EdsExport]
