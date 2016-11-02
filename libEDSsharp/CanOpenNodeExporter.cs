@@ -1034,14 +1034,6 @@ const CO_OD_entry_t CO_OD[");
                         if ((od.objecttype==ObjectType.ARRAY) && sub.subindex == 0)
                             continue;
 
-                        if (od.objecttype == ObjectType.REC)
-                        {
-                            dt = od.datatype;
-                            if (dt == DataType.UNKNOWN)
-                                dt = sub.datatype;
-
-                        }
-
                         file.Write(formatvaluewithdatatype(sub.defaultvalue, dt));
 
                         if (od.subobjects.Keys.Last() != kvp2.Key)
