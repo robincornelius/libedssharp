@@ -95,7 +95,7 @@ namespace ODEditor
       
 
          
-            for (UInt16 idx = startcob; idx < startcob+0x00ff; idx++)
+            for (UInt16 idx = startcob; idx < startcob+0x01ff; idx++)
             {
                 if (eds.ods.ContainsKey(idx))
                 {

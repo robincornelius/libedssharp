@@ -898,12 +898,12 @@ const CO_OD_entry_t CO_OD[");
                 if (kvp.Value.Disabled == true)
                     continue;
 
-                if ((index & 0xFF00) == 0x1400)
+                if (index >= 0x1400 && index < 0x1600)
                 {
                     noRXpdos++;
                 }
 
-                if ((index & 0xFF00) == 0x1800)
+                if (index >= 0x1800 && index <= 0x1a00)
                 {
                     noTXpdos++;
                 }
