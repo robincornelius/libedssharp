@@ -217,6 +217,7 @@ namespace ODEditor
             if (od.parent.objecttype == ObjectType.REC && od.subindex != 0)
             {
                 textBox_defaultvalue.Enabled = true;
+                comboBox_datatype.Enabled = true;
             }
 
             return;
