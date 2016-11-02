@@ -1240,10 +1240,10 @@ namespace libEDSsharp
             foreach(KeyValuePair<UInt16,ODentry> kvp in ods)
             {
                 ODentry od = kvp.Value;
-                if(od.Disabled==false && ((od.index&0xFF00) == 0x1400 ))
+                if(od.Disabled==false && od.index >= 0x1400 && od.index < 0x1600)
                     di.NrOfRXPDO++;
 
-                if(od.Disabled==false && ((od.index&0xFF00) == 0x1800 ))
+                if(od.Disabled==false && od.index >= 0x1800 && od.index < 0x1A00)
                     di.NrOfTXPDO++;
 
             }
