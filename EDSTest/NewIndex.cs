@@ -38,6 +38,7 @@ namespace ODEditor
         public DataType dt = DataType.UNKNOWN;
         public byte nosubindexes;
         EDSsharp eds;
+        bool childaddition = false;
 
         public NewIndex(EDSsharp eds,DataType dt = DataType.UNKNOWN, ObjectType ot = ObjectType.UNKNOWN)
         {
@@ -59,7 +60,9 @@ namespace ODEditor
                     radioButton_rec.Enabled = false;
                     radioButton_var.Enabled = false;
                     numericUpDown_index.Enabled = false;
-                   
+
+                    childaddition = true;
+
             }
 
             if (ot == ObjectType.REC)
@@ -71,6 +74,9 @@ namespace ODEditor
 
                     numericUpDown_index.Enabled = false;
                     numericUpDown_subindexes.Enabled = false;
+
+                    childaddition = true;
+
             }
 
 
@@ -104,21 +110,30 @@ namespace ODEditor
 
             nosubindexes = (byte)numericUpDown_subindexes.Value;
 
-            if(comboBox_datatype.SelectedItem==null)
+            if(comboBox_datatype.SelectedItem==null && ot != ObjectType.REC)
             {
                 MessageBox.Show(String.Format("Please select a datatype"));
                 return;
             }
 
-            dt = (DataType) Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
+            if (comboBox_datatype.SelectedItem != null)
+            {
+                dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
+            }
+            else
+            {
+                dt = DataType.UNSIGNED8;
+                nosubindexes = 0;
+            }
 
-            if (eds.ods.ContainsKey(index))
+            //When adding a subindex to a rec we will be here with an unknown object
+            if (!childaddition && eds.ods.ContainsKey(index))
             {
                 MessageBox.Show(String.Format("Index 0x{0:x4} already exists in OD", index));
                 return;
             }
 
-            if(dt == DataType.UNKNOWN)
+            if(dt == DataType.UNKNOWN && ot != ObjectType.REC)
             {
                 MessageBox.Show(String.Format("Please select a datatype"));
                 return;
@@ -132,16 +147,19 @@ namespace ODEditor
         private void radioButton_var_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDown_subindexes.Enabled = false;
+            comboBox_datatype.Enabled = true;
         }
 
         private void radioButton_array_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDown_subindexes.Enabled = true;
+            comboBox_datatype.Enabled = true;
         }
 
         private void radioButton_rec_CheckedChanged(object sender, EventArgs e)
         {
-            numericUpDown_subindexes.Enabled = true;
+            numericUpDown_subindexes.Enabled = false;
+            comboBox_datatype.Enabled = false;
         }
     }
 }

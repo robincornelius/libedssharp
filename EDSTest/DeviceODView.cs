@@ -530,6 +530,10 @@ namespace ODEditor
                         sod.accesstype = EDSsharp.AccessType.ro;
                         sod.datatype = DataType.UNSIGNED8;
                         sod.parent = od;
+
+                        sod.parameter_name = "max sub-index";
+
+
                         od.subobjects.Add(0, sod);
                     }
 
