@@ -452,8 +452,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
                                 if (ODAs.Contains(ODA))
                                 {
-                                    ODAout = "";
-                                    break;
+                                    continue;
                                 }
 
                                 ODAs.Add(ODA);
@@ -698,10 +697,7 @@ const CO_OD_entry_t CO_OD[");
             int nobase = 10;
             bool nodeidreplace = false;
 
-            if (defaultvalue == null)
-                return "";
-
-            if (defaultvalue == "")
+            if (defaultvalue == null || defaultvalue == "")
             {
                 //No default value, we better supply one for sensible data types
                 if (dt == DataType.VISIBLE_STRING ||
