@@ -417,13 +417,13 @@ extern struct sCO_OD_ROM CO_OD_ROM;
                     default:
                         {
                             file.WriteLine(string.Format("/*{0:x4}, Data Type: {1} */", od.index, t.ToString()));
-                            file.WriteLine(string.Format("        #define {0,-51}{1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
 
                             DataType dt = od.datatype;
 
                             if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                             {
-                                file.WriteLine(string.Format("        #define {0,-51}{1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.sizeofdatatype()));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.sizeofdatatype()));
                             }
                         }
                         break;
@@ -433,8 +433,8 @@ extern struct sCO_OD_ROM CO_OD_ROM;
                             DataType dt = od.datatype;
 
                             file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(), od.nosubindexes - 1));
-                            file.WriteLine(string.Format("        #define OD_{0,-48}{1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
-                            file.WriteLine(string.Format("        #define {0,-51}{1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.nosubindexes - 1));
+                            file.WriteLine(string.Format("        #define OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.nosubindexes - 1));
 
 
                             List<string> ODAs = new List<string>();
@@ -462,11 +462,11 @@ extern struct sCO_OD_ROM CO_OD_ROM;
                                 //so offset by one
                                 if (od.objecttype == ObjectType.ARRAY)
                                 {
-                                    ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex - 1));
+                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex - 1));
                                 }
                                 else
                                 {
-                                    ODAout += (string.Format("        #define {0,-51}{1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex));
+                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex));
                                 }
                             }
 
@@ -477,7 +477,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
                     case ObjectType.REC:
                         {
                             file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}_t */", od.index, make_cname(od.parameter_name)));
-                            file.WriteLine(string.Format("        #define {0,-51}{1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
 
 
                         }
