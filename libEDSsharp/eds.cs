@@ -222,6 +222,9 @@ namespace libEDSsharp
                 if (f.Name == "ModificationDateTime")
                     continue;
 
+                if (f.GetValue(this) == null)
+                    continue;
+
                 if (f.FieldType.Name == "Boolean")
                 {
                     writer.WriteLine(string.Format("{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0));
