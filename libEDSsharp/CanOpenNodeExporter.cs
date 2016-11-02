@@ -883,6 +883,8 @@ const CO_OD_entry_t CO_OD[");
         int noRXpdos = 0;
         int noSDOclients = 0;
         int noSDOservers = 0;
+        int distTXpdo = 0;
+        int distRXpdo = 0;
         int noSYNC = 0;
         int noEMCY = 0;
 
@@ -901,11 +903,13 @@ const CO_OD_entry_t CO_OD[");
                 if (index >= 0x1400 && index < 0x1600)
                 {
                     noRXpdos++;
+                    distRXpdo = index - 0x1400;
                 }
 
-                if (index >= 0x1800 && index <= 0x1a00)
+                if (index >= 0x1800 && index < 0x1A00)
                 {
                     noTXpdos++;
+                    distTXpdo = index - 0x1800;
                 }
 
                 if((index & 0xFF80) == 0x1200)
@@ -958,16 +962,16 @@ const CO_OD_entry_t CO_OD[");
                 if (index == 0x1280 + noSDOclients - 1) 
                     return true;
 
-                if (index == 0x1400 + noRXpdos - 1)
+                if (index == 0x1400 + distRXpdo )
                     return true;
 
-                if (index == 0x1600 + noRXpdos - 1)
+                if (index == 0x1600 + distRXpdo )
                     return true;
 
-                if (index == 0x1800 + noTXpdos - 1)
+                if (index == 0x1800 + distTXpdo )
                     return true;
 
-                if (index == 0x1a00 + noTXpdos - 1)
+                if (index == 0x1a00 + distTXpdo )
                     return true;
             }
 
