@@ -100,7 +100,7 @@
             this.numericUpDown_index.Hexadecimal = true;
             this.numericUpDown_index.Location = new System.Drawing.Point(85, 21);
             this.numericUpDown_index.Maximum = new decimal(new int[] {
-            24575,
+            65535,
             0,
             0,
             0});
