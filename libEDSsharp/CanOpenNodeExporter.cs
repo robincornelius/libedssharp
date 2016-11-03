@@ -616,7 +616,18 @@ const CO_OD_entry_t CO_OD[");
                     count++;
                 }
 
-                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}.{5}{6}}},", od.index, od.nosubindexes, flags, datasize, loc,make_cname(od.parameter_name), array));
+                //Arrays have 1 less subindex than actually present in the od.subobjects
+                //because the array size is implicit in the OD definition and does not need to be
+                //in the first entry like REC objects do
+                int nosubindexs = od.nosubindexes;
+
+                if (od.objecttype == ObjectType.ARRAY)
+                {
+                    if(nosubindexs>0)
+                        nosubindexs--;
+                }
+
+                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}.{5}{6}}},", od.index, nosubindexs, flags, datasize, loc,make_cname(od.parameter_name), array));
 
                 if (arrayspecial(od.index, false))
                 {
