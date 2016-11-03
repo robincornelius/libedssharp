@@ -111,11 +111,11 @@ namespace ODEditor
                 selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
             }
 
+
             updateselectedindexdisplay(selectedobject.index);
             validateanddisplaydata();
 
-            //Update the PDO mappings as we may have new (or less) objects avaiable
-            doUpdatePDOs();
+            populateindexlists(); 
 
         }
 
@@ -189,9 +189,16 @@ namespace ODEditor
             checkBox_COS.Enabled = true;
             checkBox_enabled.Enabled = true;
 
-
             if (od.parent == null)
+            {
+                //if we are a parent REC then 
+                if (od.objecttype == ObjectType.REC)
+                {
+
+                }
+
                 return; //nothing else to do at this point
+            }
 
             //protect eveything as default
             textBox_defaultvalue.Enabled = false;
@@ -218,6 +225,10 @@ namespace ODEditor
             {
                 textBox_defaultvalue.Enabled = true;
                 comboBox_datatype.Enabled = true;
+                comboBox_pdomap.Enabled = true;
+                comboBox_accesstype.Enabled = true;
+                checkBox_COS.Enabled = true;
+
             }
 
             return;

@@ -103,8 +103,17 @@ namespace ODEditor
                     if (od.Disabled == true)
                         continue;
 
+                    //protect againt not completed new CommunicationParamater sections
+                    //we probably could do better and do more checking but as long as
+                    //we protect against the subobjects[1] read in a few lines all else is
+                    //good
+                    if (od.subobjects.Count < 1)
+                        continue;
+
                     ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", idx));
                     lvi.Tag = od;
+
+                   
 
                     UInt16 cob = eds.GetNodeID(od.subobjects[1].defaultvalue);
                     lvi.SubItems.Add(String.Format("0x{0:x3}",cob));
@@ -145,7 +154,12 @@ namespace ODEditor
             ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", od.index));
             lvi.SubItems.Add(String.Format("0x{0:x2}", od.subindex));
             lvi.SubItems.Add(od.parameter_name);
-            lvi.SubItems.Add(od.datatype.ToString());
+
+            DataType dt = od.datatype;
+            if (dt == DataType.UNKNOWN || od.parent !=null)
+                dt = od.parent.datatype;
+            lvi.SubItems.Add(dt.ToString());
+
             lvi.Tag = (object)od;
 
             listView_TXPDO.Items.Add(lvi);
