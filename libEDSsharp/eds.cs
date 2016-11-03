@@ -778,7 +778,10 @@ namespace libEDSsharp
 
             if (objecttype == ObjectType.VAR)
             {
-                writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)datatype));
+                DataType dt = datatype;
+                if (dt == DataType.UNKNOWN && this.parent != null)
+                    dt = parent.datatype;
+                writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)dt));
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
                 writer.WriteLine(string.Format("DefaultValue={0}", defaultvalue));
