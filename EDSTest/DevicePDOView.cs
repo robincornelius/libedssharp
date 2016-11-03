@@ -140,7 +140,7 @@ namespace ODEditor
         private void addTXPDOoption(ODentry od)
         {
 
-            TXchoices.Add(String.Format("0x{0:x4}/{1:x2}", od.index, od.subindex));
+            TXchoices.Add(String.Format("0x{0:x4}/{1:x2}/", od.index, od.subindex) + od.parameter_name);
 
             ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", od.index));
             lvi.SubItems.Add(String.Format("0x{0:x2}", od.subindex));
@@ -200,7 +200,7 @@ namespace ODEditor
 
                 listView_TXCOBmap.AddComboBoxCell(row, byteoff+2, TXchoices);
    
-                String target = String.Format("0x{0:x4}/{1:x2}", targetod.index, targetod.subindex);
+                String target = String.Format("0x{0:x4}/{1:x2}/", targetod.index, targetod.subindex) + targetod.parameter_name;
                 listView_TXCOBmap.Items[row].SubItems[byteoff+2].Text = target;
 
                 int PDOdatasize = targetod.sizeofdatatype();
@@ -246,7 +246,7 @@ namespace ODEditor
                     continue;
 
                 string[] bits = subitem.Text.Split('/');
-                if (bits.Length != 2) //ignore the first column
+                if (bits.Length != 3) //ignore the first column
                     continue;
                 UInt16 index = Convert.ToUInt16(bits[0], 16);
                 Byte sub = Convert.ToByte(bits[1], 16);

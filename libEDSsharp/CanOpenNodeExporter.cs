@@ -621,7 +621,7 @@ const CO_OD_entry_t CO_OD[");
                 //in the first entry like REC objects do
                 int nosubindexs = od.nosubindexes;
 
-                if (od.objecttype == ObjectType.ARRAY)
+                if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                 {
                     if(nosubindexs>0)
                         nosubindexs--;

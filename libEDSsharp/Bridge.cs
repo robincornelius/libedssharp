@@ -63,7 +63,7 @@ namespace libEDSsharp
                     coo.DataType = string.Format("0x{0:x2}",(int)od.datatype);
                     coo.DefaultValue = od.defaultvalue;
                     coo.PDOmapping = od.PDOtype.ToString();
-
+                    coo.TPDOdetectCOS = od.TPDODetectCos.ToString().ToLower();
                     coo.AccessFunctionPreCode = od.AccessFunctionPreCode;
                     coo.AccessFunctionName = od.AccessFunctionName;
 
@@ -265,6 +265,7 @@ namespace libEDSsharp
                 else
                     entry.PDOtype = PDOMappingType.no;
 
+                entry.TPDODetectCos = coo.TPDOdetectCOS == "true";
                 entry.AccessFunctionName = coo.AccessFunctionName;
                 entry.AccessFunctionPreCode = coo.AccessFunctionPreCode;
                 entry.Disabled = coo.Disabled == "true";

@@ -222,6 +222,9 @@ namespace libEDSsharp
                 if (f.Name == "ModificationDateTime")
                     continue;
 
+                if (f.GetValue(this) == null)
+                    continue;
+
                 if (f.FieldType.Name == "Boolean")
                 {
                     writer.WriteLine(string.Format("{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0));
@@ -775,7 +778,10 @@ namespace libEDSsharp
 
             if (objecttype == ObjectType.VAR)
             {
-                writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)datatype));
+                DataType dt = datatype;
+                if (dt == DataType.UNKNOWN && this.parent != null)
+                    dt = parent.datatype;
+                writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)dt));
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
                 writer.WriteLine(string.Format("DefaultValue={0}", defaultvalue));
