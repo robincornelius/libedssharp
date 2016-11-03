@@ -552,11 +552,7 @@ struct sCO_OD_ROM CO_OD_ROM = {    //constant variables, stored in flash
 
 ");
 
-            //THIS IS BROKEN
-            //does nothing with an eds
-            //generates bad code with a xml
-            //export_record_types(file);
-
+            export_record_types(file);
 
             file.Write(@"/*******************************************************************************
    OBJECT DICTIONARY
@@ -616,18 +612,27 @@ const CO_OD_entry_t CO_OD[");
                     count++;
                 }
 
-                //Arrays have 1 less subindex than actually present in the od.subobjects
-                //because the array size is implicit in the OD definition and does not need to be
-                //in the first entry like REC objects do
+                //Arrays and Recshave 1 less subindex than actually present in the od.subobjects
                 int nosubindexs = od.nosubindexes;
-
                 if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                 {
                     if(nosubindexs>0)
                         nosubindexs--;
                 }
 
-                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}.{5}{6}}},", od.index, nosubindexs, flags, datasize, loc,make_cname(od.parameter_name), array));
+                string pdata; //CO_OD_entry_t pData generator
+
+                if(od.objecttype==ObjectType.REC)
+                {
+                   
+                    pdata = string.Format("OD_record{0:x4}",od.index);
+                }
+                else
+                {
+                    pdata = string.Format("{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
+                }
+
+                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}}},", od.index, nosubindexs, flags, datasize, pdata ));
 
                 if (arrayspecial(od.index, false))
                 {
@@ -647,6 +652,10 @@ const CO_OD_entry_t CO_OD[");
         byte getflags(ODentry od)
         {
             byte flags = 0;
+
+            //aways return 0 for REC objects as CO_OD_getDataPointer() uses this to pickup the details
+            if (od.objecttype == ObjectType.REC)
+                return 0;
 
             flags = (byte)od.location;
 
@@ -867,6 +876,9 @@ const CO_OD_entry_t CO_OD[");
         {
 
 
+            bool arrayopen = false;
+            int arrayindex = 0;
+
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
@@ -876,7 +888,7 @@ const CO_OD_entry_t CO_OD[");
                 if (od.objecttype != ObjectType.REC)
                     continue;
 
-                if (od.datatype == DataType.UNKNOWN)
+                if (od.Disabled == true)
                     continue;
 
                 int count = od.subobjects.Count; //don't include index
@@ -890,13 +902,34 @@ const CO_OD_entry_t CO_OD[");
                 
                 file.WriteLine(String.Format("/*0x{0:x4}*/ const CO_OD_entryRecord_t OD_record{0:x4}[{1}] = {{", od.index, count));
 
+                string arrayaccess = "";
+
+                if (arrayspecial(od.index, true) || arrayopen)
+                {
+                    arrayaccess = string.Format("[{0}]",arrayindex);
+                    arrayindex++;
+                    arrayopen = true;
+                }
+
+
                 foreach (KeyValuePair<UInt16, ODentry> kvpsub in od.subobjects)
                 {
                     ODentry sub = kvpsub.Value;
 
                     string subcname = make_cname(sub.parameter_name);
 
-                    file.WriteLine(string.Format("           {{(void*)&CO_OD_ROM.OD_{0}_t.{1}, 0x{2:x2}, 0x{3} }}", cname, subcname, getflags(sub), sub.sizeofdatatype()));
+                ;
+
+                    file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(),arrayaccess, getlocation(od.location)));
+
+                }
+
+
+                if (arrayspecial(od.index, false))
+                {
+
+                    arrayindex=0;
+                    arrayopen = false;
 
                 }
 
