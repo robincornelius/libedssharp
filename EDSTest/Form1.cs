@@ -328,5 +328,47 @@ namespace ODEditor
                 exportCanOpenNodeToolStripMenuItem.Enabled = tabControl1.TabCount>0;
                 closeFileToolStripMenuItem.Enabled = tabControl1.TabCount>0;       
         }
+
+        private void exportDocumentationHtmlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                Warnings.warning_list.Clear();
+
+                if (tabControl1.SelectedTab != null)
+                {
+                    DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                    SaveFileDialog sfd = new SaveFileDialog();
+
+                    sfd.Filter = "HTML (*.html)|*.html";
+
+                    string name = dv.eds.di.ProductName + ".html";
+                    name.Replace(' ', '_');
+
+                    sfd.FileName = name;
+
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        DocumentationGen docgen = new DocumentationGen();
+                        docgen.genhtmldoc(sfd.FileName, dv.eds);
+
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Warnings.warning_list.Add(ex.ToString());
+            }
+
+            if (Warnings.warning_list.Count != 0)
+            {
+                WarningsFrm frm = new WarningsFrm();
+                frm.ShowDialog();
+            }
+
+        }
     }
 }

@@ -42,6 +42,7 @@
     <Compile Include="Bridge.cs" />
     <Compile Include="CanOpenNodeExporter.cs" />
     <Compile Include="CanOpenXML.cs" />
+    <Compile Include="DocumentationGen.cs" />
     <Compile Include="eds.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
