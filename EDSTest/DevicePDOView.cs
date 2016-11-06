@@ -111,7 +111,7 @@ namespace ODEditor
                     //we probably could do better and do more checking but as long as
                     //we protect against the subobjects[1] read in a few lines all else is
                     //good
-                    if (od.subobjects.Count < 1)
+                    if (od.subobjects.Count <= 1)
                         continue;
 
                     ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", idx));
@@ -175,6 +175,9 @@ namespace ODEditor
            
             UInt16 idx = (UInt16)(od.index + 0x200);
 
+            if (!eds.ods.ContainsKey(idx))
+                return;
+
             ODentry oddef = eds.ods[idx];
 
             int byteoff = 0;
@@ -188,9 +191,9 @@ namespace ODEditor
                 if (sub.subindex == 0)
                     continue;
 
-
-
-                UInt32 data = Convert.ToUInt32(sub.defaultvalue, EDSsharp.getbase(sub.defaultvalue));
+                UInt32 data = 0;
+                if (sub.defaultvalue != "")
+                    data = Convert.ToUInt32(sub.defaultvalue, EDSsharp.getbase(sub.defaultvalue));
 
                 if (data == 0) //FIX ME also include dummy usage here
                 {
