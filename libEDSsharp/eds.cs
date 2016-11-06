@@ -1290,6 +1290,176 @@ namespace libEDSsharp
 
             return 0;
         }
+
+        //RX COM 0x1400
+        //RX Map 0x1600
+        //TX COM 0x1800
+        //TX MAP 0x1a00
+
+        //call this with the comm param index not the mapping
+        public bool createPDO(bool rx,UInt16 index)
+        {
+            bool status;
+
+            //check if we are creating an RX PDO it is a valid index
+            if (rx && (index < 0x1400 || index > 0x15ff))
+                return false;
+
+            //check if we are creating an PDO TX it is a valid index
+            if (!rx & (index < 0x1800 || index > 0x19ff))
+                return false;
+
+            //Check it does not already exist
+            if (ods.ContainsKey(index))
+                return false;
+
+            //check the associated mapping index does not exist
+            if (ods.ContainsKey((UInt16)(index+0x200)))
+                return false;
+
+            ODentry od_comparam;
+            ODentry od_mapping;
+
+            if (rx)
+            {
+                od_comparam = new ODentry("RPDO communication parameter", index, 0);
+                od_comparam.AccessFunctionName = "CO_ODF_RPDOcom";
+                od_comparam.Description = @"0x1400 - 0x15FF RPDO communication parameter
+max sub-index
+
+COB - ID
+ bit  0 - 10: COB - ID for PDO, to change it bit 31 must be set
+ bit 11 - 29: set to 0 for 11 bit COB - ID
+ bit 30:    0(1) - rtr are allowed(are NOT allowed) for PDO
+ bit 31:    0(1) - node uses(does NOT use) PDO
+     
+Transmission type
+ value = 0 - 240:   reciving is synchronous, process after next reception of SYNC object
+ value = 241 - 253: not used
+ value = 254:     manufacturer specific
+ value = 255:     asynchronous";
+
+                od_mapping = new ODentry("RPDO mapping parameter", (UInt16)(index+0x200), 0);
+                od_mapping.AccessFunctionName = "CO_ODF_RPDOmap";
+                od_mapping.Description = @"0x1600 - 0x17FF RPDO mapping parameter (To change mapping, 'Number of mapped objects' must be set to 0)
+Number of mapped objects
+
+mapped object  (subindex 1...8)
+ bit  0 - 7:  data length in bits
+ bit 8 - 15:  subindex from OD
+ bit 16 - 31: index from OD";
+
+
+            }
+            else
+            {
+                od_comparam = new ODentry("TPDO communication parameter", index, 0);
+                od_comparam.AccessFunctionName = "CO_ODF_TPDOcom";
+                od_comparam.Description = @"0x1800 - 0x19FF TPDO communication parameter
+max sub-index
+
+COB - ID
+ bit  0 - 10: COB - ID for PDO, to change it bit 31 must be set
+ bit 11 - 29: set to 0 for 11 bit COB - ID
+ bit 30:    0(1) - rtr are allowed(are NOT allowed) for PDO
+ bit 31:    0(1) - node uses(does NOT use) PDO
+     
+Transmission type
+ value = 0:       transmiting is synchronous, specification in device profile
+ value = 1 - 240:   transmiting is synchronous after every N - th SYNC object
+ value = 241 - 251: not used
+ value = 252 - 253: Transmited only on reception of Remote Transmission Request
+ value = 254:     manufacturer specific
+ value = 255:     asinchronous, specification in device profile
+     
+inhibit time
+ bit 0 - 15:  Minimum time between transmissions of the PDO in 100µs.Zero disables functionality.
+
+compatibility entry
+ bit 0 - 7:   Not used.
+
+event timer
+ bit 0-15:  Time between periodic transmissions of the PDO in ms.Zero disables functionality.
+
+SYNC start value
+ value = 0:       Counter of the SYNC message shall not be processed.
+ value = 1-240:   The SYNC message with the counter value equal to this value shall be regarded as the first received SYNC message.";
+
+
+               od_mapping = new ODentry("TPDO mapping parameter", (UInt16)(index + 0x200), 0);
+                od_mapping.AccessFunctionName = "CO_ODF_TPDOmap";
+                od_mapping.Description = @"0x1A00 - 0x1BFF TPDO mapping parameter. (To change mapping, 'Number of mapped objects' must be set to 0).
+Number of mapped objects
+
+mapped object  (subindex 1...8)
+ bit   0 - 7: data length in bits
+ bit  8 - 15: subindex from OD
+ bit 16 - 31: index from OD";
+            }
+
+            od_comparam.objecttype = ObjectType.REC;
+            od_comparam.location = StorageLocation.ROM;
+            od_comparam.accesstype = AccessType.ro;
+            od_comparam.PDOtype = PDOMappingType.no;
+
+            ODentry sub;
+
+          
+            if(rx)
+            {
+                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "2", AccessType.ro, PDOMappingType.no);
+                od_comparam.subobjects.Add(0, sub);
+                sub = new ODentry("COB-ID used by RPDO", index, 1, DataType.UNSIGNED32, "$NODEID+0x200", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(1, sub);
+                sub = new ODentry("transmission type", index, 2, DataType.UNSIGNED8, "254", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(2, sub);
+
+            }
+            else
+            {
+                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "5", AccessType.ro, PDOMappingType.no);
+                od_comparam.subobjects.Add(0, sub);
+                sub = new ODentry("COB-ID used by TPDO", index, 1, DataType.UNSIGNED32, "$NODEID+0x180", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(1, sub);
+                sub = new ODentry("transmission type", index, 2, DataType.UNSIGNED8, "254", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(2, sub);
+                sub = new ODentry("inhibit time", index, 0, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(3, sub);
+                sub = new ODentry("compatibility entry", index, 0, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(4, sub);
+                sub = new ODentry("event timer", index, 0, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(5, sub);
+            }
+
+            od_mapping.objecttype = ObjectType.REC;
+            od_mapping.location = StorageLocation.ROM;
+            od_mapping.accesstype = AccessType.rw; //Same as default but inconsistant with ROM above
+            od_mapping.PDOtype = PDOMappingType.no;
+
+            sub = new ODentry("Number of mapped objects", index, 0, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no);
+            od_mapping.subobjects.Add(0, sub);
+
+            for (int p=1;p<=8;p++)
+            {
+                sub = new ODentry(string.Format("mapped object {0}",p), (UInt16)(index+0x200), (byte)p, DataType.UNSIGNED32, "0x00000000", AccessType.ro, PDOMappingType.no);
+                od_mapping.subobjects.Add((byte)p, sub);
+            }
+
+            ods.Add(index, od_comparam);
+            ods.Add((UInt16)(index + 0x200), od_mapping);
+
+            return true;
+        }
+
+        public bool createTXPDO(UInt16 index)
+        {
+            return createPDO(false, index);
+        }
+
+        public bool createRXPDO(UInt16 index)
+        {
+            return createPDO(true, index);
+        }
      
 
     }

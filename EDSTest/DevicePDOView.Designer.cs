@@ -28,12 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.label1 = new System.Windows.Forms.Label();
             this.label_availableobjects = new System.Windows.Forms.Label();
             this.listView_TXPDO = new System.Windows.Forms.ListView();
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBox_slot = new System.Windows.Forms.TextBox();
+            this.textBox_syncstart = new System.Windows.Forms.TextBox();
+            this.textBox_eventtimer = new System.Windows.Forms.TextBox();
+            this.textBox_inhibit = new System.Windows.Forms.TextBox();
+            this.textBox_type = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox_cob = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.listView_TXCOBmap = new CustomListView.ListViewEx();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -45,8 +59,18 @@
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label1 = new System.Windows.Forms.Label();
+            this.button_addPDO = new System.Windows.Forms.Button();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(17, 238);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(119, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Assigned PDO mapping";
             // 
             // label_availableobjects
             // 
@@ -92,6 +116,124 @@
             // 
             this.columnHeader17.Text = "Datatype";
             this.columnHeader17.Width = 183;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.textBox_slot);
+            this.groupBox1.Controls.Add(this.textBox_syncstart);
+            this.groupBox1.Controls.Add(this.textBox_eventtimer);
+            this.groupBox1.Controls.Add(this.textBox_inhibit);
+            this.groupBox1.Controls.Add(this.textBox_type);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.textBox_cob);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Location = new System.Drawing.Point(521, 28);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(268, 199);
+            this.groupBox1.TabIndex = 12;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Commuincation parameters";
+            // 
+            // textBox_slot
+            // 
+            this.textBox_slot.Location = new System.Drawing.Point(80, 21);
+            this.textBox_slot.Name = "textBox_slot";
+            this.textBox_slot.ReadOnly = true;
+            this.textBox_slot.Size = new System.Drawing.Size(96, 20);
+            this.textBox_slot.TabIndex = 11;
+            // 
+            // textBox_syncstart
+            // 
+            this.textBox_syncstart.Location = new System.Drawing.Point(80, 168);
+            this.textBox_syncstart.Name = "textBox_syncstart";
+            this.textBox_syncstart.Size = new System.Drawing.Size(96, 20);
+            this.textBox_syncstart.TabIndex = 10;
+            // 
+            // textBox_eventtimer
+            // 
+            this.textBox_eventtimer.Location = new System.Drawing.Point(80, 142);
+            this.textBox_eventtimer.Name = "textBox_eventtimer";
+            this.textBox_eventtimer.Size = new System.Drawing.Size(96, 20);
+            this.textBox_eventtimer.TabIndex = 9;
+            // 
+            // textBox_inhibit
+            // 
+            this.textBox_inhibit.Location = new System.Drawing.Point(80, 111);
+            this.textBox_inhibit.Name = "textBox_inhibit";
+            this.textBox_inhibit.Size = new System.Drawing.Size(96, 20);
+            this.textBox_inhibit.TabIndex = 8;
+            // 
+            // textBox_type
+            // 
+            this.textBox_type.Location = new System.Drawing.Point(80, 78);
+            this.textBox_type.Name = "textBox_type";
+            this.textBox_type.Size = new System.Drawing.Size(96, 20);
+            this.textBox_type.TabIndex = 7;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(10, 173);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(54, 13);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Sync start";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(10, 114);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Inhibit";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(10, 145);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(64, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Event Timer";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(10, 81);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(31, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Type";
+            // 
+            // textBox_cob
+            // 
+            this.textBox_cob.Location = new System.Drawing.Point(80, 47);
+            this.textBox_cob.Name = "textBox_cob";
+            this.textBox_cob.Size = new System.Drawing.Size(96, 20);
+            this.textBox_cob.TabIndex = 2;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(10, 50);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "COB";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(10, 24);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(25, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Slot";
             // 
             // listView_TXCOBmap
             // 
@@ -164,25 +306,30 @@
             this.columnHeader9.Text = "Byte7";
             this.columnHeader9.Width = 100;
             // 
-            // label1
+            // button_addPDO
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 238);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(119, 13);
-            this.label1.TabIndex = 11;
-            this.label1.Text = "Assigned PDO mapping";
+            this.button_addPDO.Location = new System.Drawing.Point(808, 38);
+            this.button_addPDO.Name = "button_addPDO";
+            this.button_addPDO.Size = new System.Drawing.Size(83, 27);
+            this.button_addPDO.TabIndex = 13;
+            this.button_addPDO.Text = "Add new PDO";
+            this.button_addPDO.UseVisualStyleBackColor = true;
+            this.button_addPDO.Click += new System.EventHandler(this.button_addPDO_Click);
             // 
             // DevicePDOView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.button_addPDO);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listView_TXCOBmap);
             this.Controls.Add(this.label_availableobjects);
             this.Controls.Add(this.listView_TXPDO);
             this.Name = "DevicePDOView";
             this.Size = new System.Drawing.Size(973, 695);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,5 +355,19 @@
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.ColumnHeader columnHeader10;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBox_cob;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox_syncstart;
+        private System.Windows.Forms.TextBox textBox_eventtimer;
+        private System.Windows.Forms.TextBox textBox_inhibit;
+        private System.Windows.Forms.TextBox textBox_type;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBox_slot;
+        private System.Windows.Forms.Button button_addPDO;
     }
 }

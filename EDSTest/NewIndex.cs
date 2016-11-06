@@ -40,7 +40,7 @@ namespace ODEditor
         EDSsharp eds;
         bool childaddition = false;
 
-        public NewIndex(EDSsharp eds,DataType dt = DataType.UNKNOWN, ObjectType ot = ObjectType.UNKNOWN)
+        public NewIndex(EDSsharp eds, DataType dt = DataType.UNKNOWN, ObjectType ot = ObjectType.UNKNOWN, ODentry parent =null)
         {
             this.eds = eds;
 
@@ -51,23 +51,8 @@ namespace ODEditor
                 comboBox_datatype.Items.Add(foo.ToString());
             }
 
-
-            if (ot == ObjectType.ARRAY)
-            {
-                    comboBox_datatype.SelectedItem = dt.ToString();
-                    comboBox_datatype.Enabled = false;
-                    radioButton_array.Enabled = false;
-                    radioButton_rec.Enabled = false;
-                    radioButton_var.Enabled = false;
-                    numericUpDown_index.Enabled = false;
-
-                    childaddition = true;
-
-            }
-
             if (ot == ObjectType.REC)
             {
-                    //comboBox_datatype.SelectedItem = dt.ToString();
                     radioButton_array.Enabled = false;
                     radioButton_rec.Enabled = false;
                     radioButton_var.Enabled = false;
@@ -75,7 +60,14 @@ namespace ODEditor
                     numericUpDown_index.Enabled = false;
                     numericUpDown_subindexes.Enabled = false;
 
+                    //order of next two matters
+                    radioButton_rec.Checked = true;
+                    comboBox_datatype.Enabled = true;
+
                     childaddition = true;
+         
+                    numericUpDown_index.Value = parent.index;
+                    Text = "Create new sub index";
 
             }
 

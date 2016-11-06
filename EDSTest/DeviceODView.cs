@@ -194,7 +194,11 @@ namespace ODEditor
                 //if we are a parent REC then 
                 if (od.objecttype == ObjectType.REC)
                 {
-
+                    comboBox_accesstype.Enabled = false;
+                    comboBox_pdomap.Enabled = false;
+                    checkBox_COS.Enabled = false;
+                    comboBox_datatype.Enabled = false;
+                    textBox_defaultvalue.Enabled = false;
                 }
 
                 return; //nothing else to do at this point
@@ -631,7 +635,7 @@ namespace ODEditor
                 {
                     dt = od.datatype;
 
-                    NewIndex ni = new NewIndex(eds, dt, od.parent.objecttype);
+                    NewIndex ni = new NewIndex(eds, dt, od.parent.objecttype, od.parent);
 
                     if (ni.ShowDialog() == DialogResult.OK)
                     {

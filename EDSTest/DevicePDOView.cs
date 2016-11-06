@@ -34,6 +34,10 @@ namespace ODEditor
             if (isTXPDO == false)
             {
                 startcob = 0x1400;
+                textBox_eventtimer.Enabled = false;
+                textBox_inhibit.Enabled = false;
+                textBox_syncstart.Enabled = false;
+                textBox_type.Enabled = false;
             }
 
         }
@@ -307,8 +311,67 @@ namespace ODEditor
 
         private void listView_TXCOBmap_MouseClick(object sender, MouseEventArgs e)
         {
+            if (listView_TXCOBmap.SelectedItems.Count != 1)
+                return;
+
+            UInt16 index = Convert.ToUInt16(listView_TXCOBmap.SelectedItems[0].SubItems[1].Text, 16);
+            ODentry od = eds.ods[index];
+
+            textBox_slot.Text = string.Format("0x{0:x4}",od.index);
+
+            if (od.nosubindexes > 1)
+             textBox_cob.Text = od.subobjects[1].defaultvalue;
+
+            if (od.nosubindexes > 2)
+                textBox_type.Text = od.subobjects[2].defaultvalue;
+
+            if (od.nosubindexes > 3)
+                textBox_inhibit.Text = od.subobjects[3].defaultvalue;
+
+            if (od.nosubindexes > 5)
+                textBox_eventtimer.Text = od.subobjects[5].defaultvalue;
+
+            if (od.nosubindexes > 6)
+                textBox_syncstart.Text = od.subobjects[6].defaultvalue;
 
         }
- 
+
+        private void button_addPDO_Click(object sender, EventArgs e)
+        {
+
+            UInt16 trycreateindex = 0;
+
+            if (this.isTXPDO)
+            {
+                trycreateindex = 0x1800;
+            }
+            else
+            {
+                trycreateindex = 0x1400;
+            }
+
+            for(UInt16 cob = trycreateindex; cob< (UInt16)(trycreateindex+0x0200); cob++)
+            {
+                if(!eds.ods.ContainsKey(cob))
+                {
+                    trycreateindex = cob;
+                    break;
+                }
+            }
+
+            if(!eds.createPDO(!this.isTXPDO,trycreateindex))
+            {
+                MessageBox.Show(String.Format("Failed to create PDO at index {0}", trycreateindex));
+            }
+            else
+            {
+                doUpdatePDOs();
+                doUpdateOD();
+
+            }
+
+
+
+        }
     }
 }
