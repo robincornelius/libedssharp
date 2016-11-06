@@ -401,6 +401,8 @@ extern struct sCO_OD_ROM CO_OD_ROM;
    ALIASES FOR OBJECT DICTIONARY VARIABLES
 *******************************************************************************/");
 
+            List<string> constructed_rec_types = new List<string>();
+
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
@@ -425,6 +427,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
                             {
                                 file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.sizeofdatatype()));
                             }
+                            file.WriteLine("");
                         }
                         break;
 
@@ -470,23 +473,25 @@ extern struct sCO_OD_ROM CO_OD_ROM;
                             }
 
                             file.Write(ODAout);
+                            file.WriteLine("");
                         }
                         break;
 
                     case ObjectType.REC:
                         {
-                            file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}_t */", od.index, make_cname(od.parameter_name)));
-                            file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
+                            string rectype = make_cname(od.parameter_name);
 
+                            if (!constructed_rec_types.Contains(rectype))
+                            {
+                                file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}_t */", od.index, rectype));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", rectype), loc, rectype));
+                                constructed_rec_types.Add(rectype);
+                                file.WriteLine("");
+                            }
 
                         }
                         break;
-
                 }
-
-
-                file.WriteLine("");
-
             }
 
             file.Close();
