@@ -111,6 +111,22 @@ namespace ODEditor
                 selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
             }
 
+            if(selectedobject.parent ==null && selectedobject.objecttype == ObjectType.ARRAY)
+            {
+                // Propogate changes through sub objects
+                // We only really need to do this for PDOMapping to fix bug #13 see report
+                // on git hub for discussion why other parameters are not propogated here
+                // tl;dr; Limitations of CanOpenNode object dictionary perms for sub array objects
+
+                foreach(KeyValuePair<UInt16,ODentry>kvp in selectedobject.subobjects)
+                {
+                    ODentry subod = kvp.Value;
+
+                    subod.PDOtype = selectedobject.PDOtype;
+
+                }
+            }
+
 
             updateselectedindexdisplay(selectedobject.index);
             validateanddisplaydata();
