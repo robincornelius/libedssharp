@@ -649,7 +649,7 @@ namespace libEDSsharp
         }
 
         [EdsExport]
-        public string parameter_name;
+        public string parameter_name = "";
         [EdsExport]
         public ObjectType objecttype;
         [EdsExport]
@@ -657,7 +657,7 @@ namespace libEDSsharp
         [EdsExport]
         public EDSsharp.AccessType accesstype;
         [EdsExport]
-        public string defaultvalue;
+        public string defaultvalue = "";
         [EdsExport]
         public bool PDOMapping
         {
