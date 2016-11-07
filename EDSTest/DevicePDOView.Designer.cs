@@ -36,6 +36,8 @@
             this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button_savepdochanges = new System.Windows.Forms.Button();
+            this.button_deletePDO = new System.Windows.Forms.Button();
             this.textBox_slot = new System.Windows.Forms.TextBox();
             this.textBox_syncstart = new System.Windows.Forms.TextBox();
             this.textBox_eventtimer = new System.Windows.Forms.TextBox();
@@ -119,6 +121,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button_savepdochanges);
+            this.groupBox1.Controls.Add(this.button_deletePDO);
             this.groupBox1.Controls.Add(this.textBox_slot);
             this.groupBox1.Controls.Add(this.textBox_syncstart);
             this.groupBox1.Controls.Add(this.textBox_eventtimer);
@@ -133,10 +137,30 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(521, 28);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(268, 199);
+            this.groupBox1.Size = new System.Drawing.Size(281, 199);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commuincation parameters";
+            // 
+            // button_savepdochanges
+            // 
+            this.button_savepdochanges.Location = new System.Drawing.Point(192, 161);
+            this.button_savepdochanges.Name = "button_savepdochanges";
+            this.button_savepdochanges.Size = new System.Drawing.Size(83, 27);
+            this.button_savepdochanges.TabIndex = 15;
+            this.button_savepdochanges.Text = "Save ";
+            this.button_savepdochanges.UseVisualStyleBackColor = true;
+            this.button_savepdochanges.Click += new System.EventHandler(this.button_savepdochanges_Click);
+            // 
+            // button_deletePDO
+            // 
+            this.button_deletePDO.Location = new System.Drawing.Point(192, 128);
+            this.button_deletePDO.Name = "button_deletePDO";
+            this.button_deletePDO.Size = new System.Drawing.Size(83, 27);
+            this.button_deletePDO.TabIndex = 14;
+            this.button_deletePDO.Text = "Delete PDO";
+            this.button_deletePDO.UseVisualStyleBackColor = true;
+            this.button_deletePDO.Click += new System.EventHandler(this.button_deletePDO_Click);
             // 
             // textBox_slot
             // 
@@ -369,5 +393,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBox_slot;
         private System.Windows.Forms.Button button_addPDO;
+        private System.Windows.Forms.Button button_savepdochanges;
+        private System.Windows.Forms.Button button_deletePDO;
     }
 }

@@ -1423,12 +1423,15 @@ mapped object  (subindex 1...8)
                 od_comparam.subobjects.Add(1, sub);
                 sub = new ODentry("transmission type", index, 2, DataType.UNSIGNED8, "254", AccessType.rw, PDOMappingType.no);
                 od_comparam.subobjects.Add(2, sub);
-                sub = new ODentry("inhibit time", index, 0, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("inhibit time", index, 3, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
                 od_comparam.subobjects.Add(3, sub);
-                sub = new ODentry("compatibility entry", index, 0, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("compatibility entry", index, 4, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
                 od_comparam.subobjects.Add(4, sub);
-                sub = new ODentry("event timer", index, 0, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("event timer", index, 5, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
                 od_comparam.subobjects.Add(5, sub);
+                sub = new ODentry("SYNC start", index, 6, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
+                od_comparam.subobjects.Add(6, sub);
+
             }
 
             od_mapping.objecttype = ObjectType.REC;

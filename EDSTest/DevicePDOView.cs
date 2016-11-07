@@ -34,16 +34,21 @@ namespace ODEditor
             if (isTXPDO == false)
             {
                 startcob = 0x1400;
-                textBox_eventtimer.Enabled = false;
-                textBox_inhibit.Enabled = false;
-                textBox_syncstart.Enabled = false;
-                textBox_type.Enabled = false;
             }
 
         }
 
         public void updatePDOinfo()
         {
+
+            textBox_eventtimer.Enabled = false;
+            textBox_inhibit.Enabled = false;
+            textBox_syncstart.Enabled = false;
+            textBox_type.Enabled = false;
+            textBox_cob.Enabled = false;
+
+            button_deletePDO.Enabled = false;
+            button_savepdochanges.Enabled = false;
 
             listView_TXCOBmap.FullRowSelect = true;
             listView_TXCOBmap.GridLines = true;
@@ -114,7 +119,7 @@ namespace ODEditor
                     if (od.subobjects.Count <= 1)
                         continue;
 
-                    ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", idx));
+                    ListViewItem lvi = new ListViewItem(String.Format("0x{0:x3}", idx));
                     lvi.Tag = od;
 
                    
@@ -125,7 +130,7 @@ namespace ODEditor
                     if (!ODEditor_MainForm.TXCobMap.ContainsKey(cob))
                         ODEditor_MainForm.TXCobMap.Add(cob, eds);
 
-                    ListViewItem lvi2 = new ListViewItem(String.Format("0x{0:x4}", cob));
+                    ListViewItem lvi2 = new ListViewItem(String.Format("0x{0:x3}", cob));
                     lvi2.SubItems.Add(string.Format("{0:x4}",idx));       
                     lvi2.SubItems.Add("   ");
                     lvi2.SubItems.Add("   ");
@@ -337,6 +342,19 @@ namespace ODEditor
             if (od.nosubindexes > 6)
                 textBox_syncstart.Text = od.subobjects[6].defaultvalue;
 
+
+            if (isTXPDO)
+            {
+                textBox_eventtimer.Enabled = true;
+                textBox_inhibit.Enabled = true;
+                textBox_syncstart.Enabled = true;
+            }
+            textBox_type.Enabled = true;
+            textBox_cob.Enabled = true;
+
+            button_deletePDO.Enabled = true;
+            button_savepdochanges.Enabled = true;
+
         }
 
         private void button_addPDO_Click(object sender, EventArgs e)
@@ -375,6 +393,104 @@ namespace ODEditor
 
 
 
+        }
+
+        private void button_deletePDO_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                UInt16 index = (UInt16)(0x200+Convert.ToUInt16(textBox_slot.Text, 16));
+
+                eds.ods.Remove(index);
+                eds.ods.Remove((UInt16)(index + 0x200));
+
+                doUpdatePDOs();
+                doUpdateOD();
+                
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+        private void button_savepdochanges_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                UInt16 index = Convert.ToUInt16(textBox_slot.Text, 16);
+
+                if (!eds.ods.ContainsKey(index))
+                {
+                    MessageBox.Show("Error finding communication paramaters");
+                    return;
+                }
+
+                if (isTXPDO && eds.ods[index].nosubindexes != 7)
+                {
+                    MessageBox.Show("Error with communication paramaters, manual edit required of OD");
+                    return;
+                }
+
+
+                if (!isTXPDO && eds.ods[index].nosubindexes != 3)
+                {
+                    MessageBox.Show("Error with communication paramaters, manual edit required of OD");
+                    return;
+                }
+
+                UInt16 newnode = eds.GetNodeID(textBox_cob.Text);
+                if(newnode < 0x180 || newnode >0x57F)
+                {
+                    MessageBox.Show("PDO COBs should be between 0x180 and 0x57F");
+                    return;
+                }
+
+                int dummy;
+                if(!int.TryParse(textBox_type.Text,out dummy) || dummy<0 || dummy>255)
+                {
+                    MessageBox.Show("Type should be a number between 0 and 255");
+                    return;
+                }
+
+
+                if (isTXPDO)
+                {
+                    if (!int.TryParse(textBox_inhibit.Text, out dummy) || dummy < 0 || dummy > 65535)
+                    {
+                        MessageBox.Show("Inhibit should be a number between 0 and 65535");
+                        return;
+                    }
+
+                    if (!int.TryParse(textBox_eventtimer.Text, out dummy) || dummy < 0 || dummy > 65535)
+                    {
+                        MessageBox.Show("Event timer should be a number between 0 and 65535");
+                        return;
+                    }
+
+                    if (!int.TryParse(textBox_syncstart.Text, out dummy) || dummy < 0 || dummy > 255)
+                    {
+                        MessageBox.Show("Syncstart should be a number between 0 and 255");
+                        return;
+                    }
+
+                    eds.ods[index].subobjects[3].defaultvalue = textBox_inhibit.Text;
+                    eds.ods[index].subobjects[5].defaultvalue = textBox_eventtimer.Text;
+                    eds.ods[index].subobjects[6].defaultvalue = textBox_syncstart.Text;
+                }
+
+                eds.ods[index].subobjects[1].defaultvalue = textBox_cob.Text;
+                eds.ods[index].subobjects[2].defaultvalue = textBox_type.Text;
+
+
+                doUpdatePDOs();
+                doUpdateOD();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }
