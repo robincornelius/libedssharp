@@ -7,8 +7,13 @@ With many thanks to the following contributors for spotting my mistakes and
 improving the code
 	* s-fuchs - https://github.com/s-fuchs
 
+Releases
+--------
 
 If you would like to try a pre compiled version, then head over to the [releases page!](https://github.com/robincornelius/libedssharp/releases)
+
+Current version 0.3.1 - This version is worthy of some serious testing, it may still crash or product some faulty export but I am using this in my own production now and for everthing I am testing it is so far OK.
+In the event of finding a crash or export fault, please open an issue with as much information as possible and even better if you can attach your xml or eds file that would be useful.
 
 
 Current Features
@@ -40,14 +45,9 @@ GUI
 * Create profiles that can be added to any project (just save the device xml file to the profiles/ 
 directory, only include the minimum number of objects that you want to auto insert) This will auto add to insert menu
 * Edit Device and File Info sections
-* Set TX PDO mappings
-* Set RX PDO mappings
+* Set RX/TX PDO mappings easily from dropdown lists of avaiable objects
+* Add and remove new PDO entries (communication paramaters and mapping) in a single button push
 
-Not finished/broken
--------------
-
-* Unit tests are totaly broken, due to massive rewrite/change of plan after
-tests were written.
 
 ![alt tag](pic1.jpg)
 ![alt tag](pic2.jpg)
