@@ -113,13 +113,18 @@ namespace libEDSsharp
             file.Write("<table id=\"odentry\">");
             write2linetableheader("Paramater", "Value");
 
+            ObjectType ot = od.objecttype;
+            if (ot == ObjectType.UNKNOWN && od.parent != null)
+                ot = od.parent.objecttype;
+
+            write2linetablerow("Object Type", ot.ToString());
+
             DataType dt = od.datatype;
             if (dt == DataType.UNKNOWN && od.parent != null)
                 dt = od.parent.datatype;
 
-            write2linetablerow("DataType", dt.ToString());
+            write2linetablerow("Data Type", dt.ToString());
             write2linetablerow("Default Value", od.defaultvalue);
-
 
             write2linetablerow("Location", od.location.ToString());
             write2linetablerow("Access type", od.accesstype.ToString());
