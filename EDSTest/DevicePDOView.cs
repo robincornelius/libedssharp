@@ -400,13 +400,17 @@ namespace ODEditor
 
             try
             {
-                UInt16 index = (UInt16)(0x200+Convert.ToUInt16(textBox_slot.Text, 16));
+                UInt16 index = (UInt16)(Convert.ToUInt16(textBox_slot.Text, 16));
 
-                eds.ods.Remove(index);
-                eds.ods.Remove((UInt16)(index + 0x200));
+                if (MessageBox.Show(String.Format("Really delete PDO params 0x{0:x4} and mapping 0x{1:x4} ?", index, 0x200 + index), "Confirm delete", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
 
-                doUpdatePDOs();
-                doUpdateOD();
+                    eds.ods.Remove(index);
+                    eds.ods.Remove((UInt16)(index + 0x200));
+
+                    doUpdatePDOs();
+                    doUpdateOD();
+                }
                 
             }
             catch (Exception ex)
