@@ -90,6 +90,11 @@ namespace ODEditor
             selectedobject.Description = textBox_description.Text;
             selectedobject.defaultvalue = textBox_defaultvalue.Text;
 
+            if (comboBox_pdomap.Enabled)
+            {
+                selectedobject.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_pdomap.SelectedItem.ToString());
+            }
+
             if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
             {
 
@@ -101,8 +106,6 @@ namespace ODEditor
 
                 EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
                 selectedobject.accesstype = at;
-
-                selectedobject.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_pdomap.SelectedItem.ToString());
 
                 selectedobject.AccessFunctionName = textBox_accessfunctionname.Text;
                 selectedobject.AccessFunctionPreCode = textBox_precode.Text;
@@ -238,6 +241,7 @@ namespace ODEditor
             if (od.parent.objecttype == ObjectType.ARRAY && od.subindex != 0)
             {
                 textBox_defaultvalue.Enabled = true;
+                comboBox_pdomap.Enabled = true;
             }
 
 
