@@ -90,6 +90,8 @@ namespace ODEditor
             selectedobject.Description = textBox_description.Text;
             selectedobject.defaultvalue = textBox_defaultvalue.Text;
 
+            int.TryParse(textBox_subobjectoverride.Text, out selectedobject.accessParamNoSubObjectsOverride);
+
             if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
             {
 
@@ -155,6 +157,7 @@ namespace ODEditor
             label_index.Text = string.Format("0x{0:x4}", od.index);
             textBox_name.Text = od.parameter_name;
             comboBox_accesstype.SelectedItem = od.accesstype.ToString();
+            textBox_subobjectoverride.Text = od.accessParamNoSubObjectsOverride.ToString();
 
             if (od.datatype != DataType.UNKNOWN)
             {

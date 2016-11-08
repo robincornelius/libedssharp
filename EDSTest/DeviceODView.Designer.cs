@@ -84,6 +84,8 @@
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBox_subobjectoverride = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -108,6 +110,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.textBox_subobjectoverride);
+            this.splitContainer1.Panel2.Controls.Add(this.label17);
             this.splitContainer1.Panel2.Controls.Add(this.button_save_changes);
             this.splitContainer1.Panel2.Controls.Add(this.label16);
             this.splitContainer1.Panel2.Controls.Add(this.comboBox_memory);
@@ -240,7 +244,7 @@
             // 
             // button_save_changes
             // 
-            this.button_save_changes.Location = new System.Drawing.Point(105, 679);
+            this.button_save_changes.Location = new System.Drawing.Point(105, 691);
             this.button_save_changes.Name = "button_save_changes";
             this.button_save_changes.Size = new System.Drawing.Size(101, 27);
             this.button_save_changes.TabIndex = 27;
@@ -558,7 +562,7 @@
             this.addSubItemToolStripMenuItem,
             this.removeSubItemToolStripMenuItem});
             this.contextMenu_array.Name = "contextMenu_array";
-            this.contextMenu_array.Size = new System.Drawing.Size(167, 70);
+            this.contextMenu_array.Size = new System.Drawing.Size(167, 48);
             // 
             // addSubItemToolStripMenuItem
             // 
@@ -573,6 +577,22 @@
             this.removeSubItemToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
             this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(10, 658);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(96, 13);
+            this.label17.TabIndex = 28;
+            this.label17.Text = "Subobject override";
+            // 
+            // textBox_subobjectoverride
+            // 
+            this.textBox_subobjectoverride.Location = new System.Drawing.Point(105, 655);
+            this.textBox_subobjectoverride.Name = "textBox_subobjectoverride";
+            this.textBox_subobjectoverride.Size = new System.Drawing.Size(122, 20);
+            this.textBox_subobjectoverride.TabIndex = 29;
             // 
             // DeviceODView
             // 
@@ -650,5 +670,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu_array;
         private System.Windows.Forms.ToolStripMenuItem addSubItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeSubItemToolStripMenuItem;
+        private System.Windows.Forms.TextBox textBox_subobjectoverride;
+        private System.Windows.Forms.Label label17;
     }
 }
