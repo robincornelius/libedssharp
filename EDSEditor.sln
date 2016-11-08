@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDSTest", "EDSTest\EDSTest.csproj", "{13D2D8ED-242B-4283-BF14-AA79FE875F7C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDSEditorGUI", "EDSTest\EDSEditorGUI.csproj", "{13D2D8ED-242B-4283-BF14-AA79FE875F7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libEDSsharp", "libEDSsharp\libEDSsharp.csproj", "{CC0FA4B1-2BFC-43B3-8C56-B428DF2D24E7}"
 EndProject
