@@ -125,7 +125,9 @@ namespace Xml2CSharp
 		public string AccessFunctionPreCode { get; set; }
 		[XmlAttribute(AttributeName="TPDOdetectCOS")]
 		public string TPDOdetectCOS { get; set; }
-	}
+        [XmlAttribute(AttributeName = "SubObjectOverride")]
+        public int accessParamNoSubObjectsOverride{ get; set; }
+    }
 
 	[XmlRoot(ElementName="CANopenSubObject")]
 	public class CANopenSubObject {

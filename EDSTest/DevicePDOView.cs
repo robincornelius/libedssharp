@@ -25,6 +25,10 @@ namespace ODEditor
           
             InitializeComponent();
             listView_TXCOBmap.onComboBoxIndexChanged += listView_TXCOBmap_onComboBoxIndexChanged;
+
+            listView_TXPDO.DoubleBuffering(true);
+            listView_TXCOBmap.DoubleBuffering(true);
+
         }
 
         public void init(bool isTXPDO)
@@ -57,6 +61,9 @@ namespace ODEditor
 
             TXchoices.Add(String.Format("empty"));
 
+
+            listView_TXPDO.BeginUpdate();
+
             listView_TXPDO.Items.Clear();
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -86,6 +93,8 @@ namespace ODEditor
 
             }
 
+            listView_TXPDO.EndUpdate();
+
             // Clean out any existing TX cob entries for this device.
             List<UInt16> removes = new List<ushort>();
             foreach (KeyValuePair<UInt16, EDSsharp> kvp in ODEditor_MainForm.TXCobMap)
@@ -99,11 +108,9 @@ namespace ODEditor
 
             int row=0;
 
+            listView_TXCOBmap.BeginUpdate();
             listView_TXCOBmap.Items.Clear();
 
-      
-
-         
             for (UInt16 idx = startcob; idx < startcob+0x01ff; idx++)
             {
                 if (eds.ods.ContainsKey(idx))
@@ -152,6 +159,8 @@ namespace ODEditor
                   
                 }
             }
+
+            listView_TXCOBmap.EndUpdate();
 
         }
 
