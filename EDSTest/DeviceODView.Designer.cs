@@ -42,6 +42,8 @@
             this.listView_mandatory_objects = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.textBox_subobjectoverride = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.button_save_changes = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.comboBox_memory = new System.Windows.Forms.ComboBox();
@@ -84,8 +86,6 @@
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label17 = new System.Windows.Forms.Label();
-            this.textBox_subobjectoverride = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -177,6 +177,7 @@
             this.columnHeader5,
             this.columnHeader6});
             this.listView_manufacture_objects.FullRowSelect = true;
+            this.listView_manufacture_objects.HideSelection = false;
             this.listView_manufacture_objects.Location = new System.Drawing.Point(12, 439);
             this.listView_manufacture_objects.Name = "listView_manufacture_objects";
             this.listView_manufacture_objects.Size = new System.Drawing.Size(269, 313);
@@ -201,6 +202,7 @@
             this.columnHeader3,
             this.columnHeader4});
             this.listView_optional_objects.FullRowSelect = true;
+            this.listView_optional_objects.HideSelection = false;
             this.listView_optional_objects.Location = new System.Drawing.Point(12, 151);
             this.listView_optional_objects.Name = "listView_optional_objects";
             this.listView_optional_objects.Size = new System.Drawing.Size(269, 269);
@@ -225,6 +227,7 @@
             this.columnHeader1,
             this.columnHeader2});
             this.listView_mandatory_objects.FullRowSelect = true;
+            this.listView_mandatory_objects.HideSelection = false;
             this.listView_mandatory_objects.Location = new System.Drawing.Point(12, 25);
             this.listView_mandatory_objects.Name = "listView_mandatory_objects";
             this.listView_mandatory_objects.Size = new System.Drawing.Size(269, 107);
@@ -241,6 +244,22 @@
             // 
             this.columnHeader2.Text = "Name";
             this.columnHeader2.Width = 200;
+            // 
+            // textBox_subobjectoverride
+            // 
+            this.textBox_subobjectoverride.Location = new System.Drawing.Point(105, 655);
+            this.textBox_subobjectoverride.Name = "textBox_subobjectoverride";
+            this.textBox_subobjectoverride.Size = new System.Drawing.Size(122, 20);
+            this.textBox_subobjectoverride.TabIndex = 29;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(10, 658);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(96, 13);
+            this.label17.TabIndex = 28;
+            this.label17.Text = "Subobject override";
             // 
             // button_save_changes
             // 
@@ -485,6 +504,7 @@
             this.columnHeader12,
             this.columnHeader14});
             this.listViewDetails.FullRowSelect = true;
+            this.listViewDetails.HideSelection = false;
             this.listViewDetails.Location = new System.Drawing.Point(6, 25);
             this.listViewDetails.Name = "listViewDetails";
             this.listViewDetails.Size = new System.Drawing.Size(820, 199);
@@ -577,22 +597,6 @@
             this.removeSubItemToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
             this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(10, 658);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(96, 13);
-            this.label17.TabIndex = 28;
-            this.label17.Text = "Subobject override";
-            // 
-            // textBox_subobjectoverride
-            // 
-            this.textBox_subobjectoverride.Location = new System.Drawing.Point(105, 655);
-            this.textBox_subobjectoverride.Name = "textBox_subobjectoverride";
-            this.textBox_subobjectoverride.Size = new System.Drawing.Size(122, 20);
-            this.textBox_subobjectoverride.TabIndex = 29;
             // 
             // DeviceODView
             // 

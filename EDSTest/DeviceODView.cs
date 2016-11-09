@@ -83,7 +83,6 @@ namespace ODEditor
             listView_optional_objects.DoubleBuffering(true);
             listViewDetails.DoubleBuffering(true);
 
-
         }
 
       

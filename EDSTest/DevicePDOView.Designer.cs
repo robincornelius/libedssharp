@@ -273,6 +273,7 @@
             this.columnHeader8,
             this.columnHeader9});
             this.listView_TXCOBmap.FullRowSelect = true;
+            this.listView_TXCOBmap.HideSelection = false;
             this.listView_TXCOBmap.Location = new System.Drawing.Point(16, 255);
             this.listView_TXCOBmap.Name = "listView_TXCOBmap";
             this.listView_TXCOBmap.Size = new System.Drawing.Size(954, 307);
