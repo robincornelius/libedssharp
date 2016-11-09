@@ -27,10 +27,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using libEDSsharp;
+using System.Reflection;
 
 
 namespace ODEditor
 {
+
     public partial class DeviceODView : MyTabUserControl
     {
         public EDSsharp eds = null;
@@ -75,7 +77,13 @@ namespace ODEditor
             comboBox_pdomap.Items.Add("");
             comboBox_pdomap.Items.Add("no");
             comboBox_pdomap.Items.Add("optional");
- 
+
+            listView_mandatory_objects.DoubleBuffering(true);
+            listView_manufacture_objects.DoubleBuffering(true);
+            listView_optional_objects.DoubleBuffering(true);
+            listViewDetails.DoubleBuffering(true);
+
+
         }
 
       
@@ -760,4 +768,14 @@ namespace ODEditor
 
 
     }
+
+    public static class ControlExtensions
+    {
+        public static void DoubleBuffering(this Control control, bool enable)
+        {
+            var method = typeof(Control).GetMethod("SetStyle", BindingFlags.Instance | BindingFlags.NonPublic);
+            method.Invoke(control, new object[] { ControlStyles.OptimizedDoubleBuffer, enable });
+        }
+    }
+
 }
