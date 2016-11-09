@@ -120,7 +120,7 @@ namespace ODEditor
                 selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
             }
 
-            if(selectedobject.parent ==null && selectedobject.objecttype == ObjectType.ARRAY)
+            if(selectedobject.parent == null && selectedobject.objecttype == ObjectType.ARRAY)
             {
                 // Propogate changes through sub objects
                 // We only really need to do this for PDOMapping to fix bug #13 see report
@@ -132,6 +132,7 @@ namespace ODEditor
                     ODentry subod = kvp.Value;
 
                     subod.PDOtype = selectedobject.PDOtype;
+                    subod.accesstype = selectedobject.accesstype;
 
                 }
             }
@@ -163,7 +164,10 @@ namespace ODEditor
 
             label_index.Text = string.Format("0x{0:x4}", od.index);
             textBox_name.Text = od.parameter_name;
+
             comboBox_accesstype.SelectedItem = od.accesstype.ToString();
+
+
             textBox_subobjectoverride.Text = od.accessParamNoSubObjectsOverride.ToString();
 
             if (od.datatype != DataType.UNKNOWN)
@@ -182,7 +186,8 @@ namespace ODEditor
                 }
                 else
                 {
-                    comboBox_datatype.SelectedItem = "";
+                    if(od.parent!=null)
+                        comboBox_datatype.SelectedItem = od.parent.datatype ;
                 }
             }
 
@@ -248,6 +253,7 @@ namespace ODEditor
             if (od.parent.objecttype == ObjectType.ARRAY && od.subindex != 0)
             {
                 textBox_defaultvalue.Enabled = true;
+
             }
 
 
