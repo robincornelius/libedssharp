@@ -372,7 +372,9 @@ namespace ODEditor
             selectedobject = eds.ods[idx];
             validateanddisplaydata();
 
-
+            listView_mandatory_objects.HideSelection = false;
+            listView_manufacture_objects.HideSelection = true;
+            listView_optional_objects.HideSelection = true;
         }
 
         private void list_mouseclick(ListView listview, MouseEventArgs e)
@@ -408,6 +410,11 @@ namespace ODEditor
 
             selectedobject = eds.ods[idx];
             validateanddisplaydata();
+
+            listView_mandatory_objects.HideSelection = true;
+            listView_manufacture_objects.HideSelection = true;
+            listView_optional_objects.HideSelection = true;
+            listview.HideSelection = false;
         }
 
         private void listView_MouseDown(ListView listview, MouseEventArgs e)
@@ -502,6 +509,23 @@ namespace ODEditor
             doUpdateDeviceInfo();
             doUpdatePDOs();
 
+            /* save scroll positions */
+            int listview_mandatory_position = 0;
+            int listview_manufacture_position = 0;
+            int listview_optional_position = 0;
+
+            if (listView_mandatory_objects.TopItem != null)
+                listview_mandatory_position = listView_mandatory_objects.TopItem.Index;
+            if (listView_manufacture_objects.TopItem != null)
+                listview_manufacture_position = listView_manufacture_objects.TopItem.Index;
+            if (listView_optional_objects.TopItem != null)
+                listview_optional_position = listView_optional_objects.TopItem.Index;
+
+            /* prevent flickering */
+            listView_mandatory_objects.BeginUpdate();
+            listView_manufacture_objects.BeginUpdate();
+            listView_optional_objects.BeginUpdate();
+
             listView_mandatory_objects.Items.Clear();
             listView_manufacture_objects.Items.Clear();
             listView_optional_objects.Items.Clear();
@@ -514,6 +538,9 @@ namespace ODEditor
                 ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}", kvp.Value.index));
                 lvi.SubItems.Add(kvp.Value.parameter_name);
                 lvi.Tag = kvp.Value;
+                if (selectedobject != null)
+                    if (index == selectedobject.index)
+                        lvi.Selected = true;
 
                 if (kvp.Value.Disabled == true)
                     lvi.ForeColor = Color.LightGray;
@@ -532,6 +559,20 @@ namespace ODEditor
                 }
 
             }
+
+            listView_mandatory_objects.EndUpdate();
+            listView_manufacture_objects.EndUpdate();
+            listView_optional_objects.EndUpdate();
+
+            /* reset scroll position and selection */
+            if (listview_mandatory_position != 0 && listView_mandatory_objects.Items.Count > 0)
+                listView_mandatory_objects.TopItem = listView_mandatory_objects.Items[listview_mandatory_position];
+            if (listview_manufacture_position != 0 && listView_manufacture_objects.Items.Count > 0)
+                listView_manufacture_objects.TopItem = listView_manufacture_objects.Items[listview_manufacture_position];
+            if (listview_optional_position != 0 && listView_optional_objects.Items.Count > 0)
+                listView_optional_objects.TopItem = listView_optional_objects.Items[listview_optional_position];
+
+
         }
 
         private void addNewObjectToolStripMenuItem_Click(object sender, EventArgs e)
