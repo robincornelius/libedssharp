@@ -770,11 +770,11 @@ namespace libEDSsharp
 
             if (objecttype == ObjectType.ARRAY)
             {
-                writer.WriteLine(string.Format("SubNumber={0:X}", nosubindexes));
+                writer.WriteLine(string.Format("SubNumber=0x{0:X}", nosubindexes));
             }
             if (objecttype == ObjectType.REC)
             {
-                writer.WriteLine(string.Format("SubNumber={0:X}", nosubindexes));
+                writer.WriteLine(string.Format("SubNumber=0x{0:X}", nosubindexes));
             }
 
 
