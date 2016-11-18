@@ -1419,7 +1419,7 @@ mapped object  (subindex 1...8)
             }
             else
             {
-                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "5", AccessType.ro, PDOMappingType.no);
+                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "6", AccessType.ro, PDOMappingType.no);
                 od_comparam.subobjects.Add(0, sub);
                 sub = new ODentry("COB-ID used by TPDO", index, 1, DataType.UNSIGNED32, "$NODEID+0x180", AccessType.rw, PDOMappingType.no);
                 od_comparam.subobjects.Add(1, sub);
@@ -1431,7 +1431,7 @@ mapped object  (subindex 1...8)
                 od_comparam.subobjects.Add(4, sub);
                 sub = new ODentry("event timer", index, 5, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
                 od_comparam.subobjects.Add(5, sub);
-                sub = new ODentry("SYNC start", index, 6, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("SYNC start value", index, 6, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
                 od_comparam.subobjects.Add(6, sub);
 
             }
