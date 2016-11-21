@@ -247,9 +247,11 @@
             // 
             // button_save_changes
             // 
+            this.button_save_changes.Image = global::ODEditor.Properties.Resources.Save_6530;
+            this.button_save_changes.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.button_save_changes.Location = new System.Drawing.Point(105, 691);
             this.button_save_changes.Name = "button_save_changes";
-            this.button_save_changes.Size = new System.Drawing.Size(101, 27);
+            this.button_save_changes.Size = new System.Drawing.Size(122, 27);
             this.button_save_changes.TabIndex = 27;
             this.button_save_changes.Text = "Save Changes";
             this.button_save_changes.UseVisualStyleBackColor = true;
@@ -541,6 +543,7 @@
             // 
             // addNewObjectToolStripMenuItem
             // 
+            this.addNewObjectToolStripMenuItem.Image = global::ODEditor.Properties.Resources.action_add_16xLG;
             this.addNewObjectToolStripMenuItem.Name = "addNewObjectToolStripMenuItem";
             this.addNewObjectToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.addNewObjectToolStripMenuItem.Text = "Add New Object";
@@ -548,6 +551,7 @@
             // 
             // deleteObjectToolStripMenuItem
             // 
+            this.deleteObjectToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Remove_16xLG;
             this.deleteObjectToolStripMenuItem.Name = "deleteObjectToolStripMenuItem";
             this.deleteObjectToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.deleteObjectToolStripMenuItem.Text = "Delete object";
@@ -579,6 +583,7 @@
             // 
             // addSubItemToolStripMenuItem
             // 
+            this.addSubItemToolStripMenuItem.Image = global::ODEditor.Properties.Resources.action_add_16xLG;
             this.addSubItemToolStripMenuItem.Name = "addSubItemToolStripMenuItem";
             this.addSubItemToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.addSubItemToolStripMenuItem.Text = "Add sub item";
@@ -586,6 +591,7 @@
             // 
             // removeSubItemToolStripMenuItem
             // 
+            this.removeSubItemToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Remove_16xLG;
             this.removeSubItemToolStripMenuItem.Name = "removeSubItemToolStripMenuItem";
             this.removeSubItemToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";

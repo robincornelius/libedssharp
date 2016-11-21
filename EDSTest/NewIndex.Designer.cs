@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewIndex));
             this.radioButton_var = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioButton_rec = new System.Windows.Forms.RadioButton();
@@ -215,7 +216,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(348, 316);
+            this.ClientSize = new System.Drawing.Size(345, 316);
             this.Controls.Add(this.numericUpDown_subindexes);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.comboBox_datatype);
@@ -227,6 +228,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown_index);
             this.Controls.Add(this.groupBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NewIndex";
             this.Text = "Create new OD Index";
             this.groupBox1.ResumeLayout(false);

@@ -161,6 +161,19 @@
     <Content Include="Profiles\DSP302-NMTMaster.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Remove_16xLG.png" />
+    <None Include="Resources\action_add_16xLG.png" />
+    <None Include="Resources\305_Close_16x16_72.png" />
+    <None Include="Resources\DriverTemplate_32x.png" />
+    <None Include="Resources\InsertColumn_5626.png" />
+    <None Include="Resources\ExporttoScript_9881.png" />
+    <None Include="Resources\Compile_191.png" />
+    <None Include="Resources\GenerateAll.png" />
+    <None Include="Resources\Close_6519.png" />
+    <None Include="Resources\Open_6529.png" />
+    <None Include="Resources\NewFile_6276.png" />
+    <None Include="Resources\Save_6530.png" />
+    <None Include="Resources\Save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -67,6 +67,7 @@ namespace ODEditor
                 i.Name = Path.GetFileName(file);
                 i.Text = Path.GetFileName(file);
                 i.Click += ProfileAddClick;
+                i.Image = Properties.Resources.InsertColumn_5626;
                 items[x++] = i;   
             }
 

@@ -137,16 +137,18 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(521, 28);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(281, 199);
+            this.groupBox1.Size = new System.Drawing.Size(295, 199);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commuincation parameters";
             // 
             // button_savepdochanges
             // 
+            this.button_savepdochanges.Image = global::ODEditor.Properties.Resources.Save_6530;
+            this.button_savepdochanges.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.button_savepdochanges.Location = new System.Drawing.Point(192, 161);
             this.button_savepdochanges.Name = "button_savepdochanges";
-            this.button_savepdochanges.Size = new System.Drawing.Size(83, 27);
+            this.button_savepdochanges.Size = new System.Drawing.Size(101, 27);
             this.button_savepdochanges.TabIndex = 15;
             this.button_savepdochanges.Text = "Save ";
             this.button_savepdochanges.UseVisualStyleBackColor = true;
@@ -154,9 +156,11 @@
             // 
             // button_deletePDO
             // 
+            this.button_deletePDO.Image = global::ODEditor.Properties.Resources.Remove_16xLG;
+            this.button_deletePDO.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.button_deletePDO.Location = new System.Drawing.Point(192, 128);
             this.button_deletePDO.Name = "button_deletePDO";
-            this.button_deletePDO.Size = new System.Drawing.Size(83, 27);
+            this.button_deletePDO.Size = new System.Drawing.Size(101, 27);
             this.button_deletePDO.TabIndex = 14;
             this.button_deletePDO.Text = "Delete PDO";
             this.button_deletePDO.UseVisualStyleBackColor = true;
@@ -333,9 +337,11 @@
             // 
             // button_addPDO
             // 
-            this.button_addPDO.Location = new System.Drawing.Point(808, 38);
+            this.button_addPDO.Image = global::ODEditor.Properties.Resources.action_add_16xLG;
+            this.button_addPDO.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.button_addPDO.Location = new System.Drawing.Point(832, 38);
             this.button_addPDO.Name = "button_addPDO";
-            this.button_addPDO.Size = new System.Drawing.Size(83, 27);
+            this.button_addPDO.Size = new System.Drawing.Size(117, 27);
             this.button_addPDO.TabIndex = 13;
             this.button_addPDO.Text = "Add new PDO";
             this.button_addPDO.UseVisualStyleBackColor = true;
