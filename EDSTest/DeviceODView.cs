@@ -658,7 +658,42 @@ namespace ODEditor
 
             ODentry od = (ODentry)item.Tag;
 
-            if (MessageBox.Show(string.Format("Really delete index 0x{0:x4} ?", od.index), "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            //Check object is not used in a PDO before deleting
+
+
+            for (UInt16 idx = 0x1600; idx < 0x1a00 + 0x01ff; idx++)
+            {
+
+                //Cheat as we want to only map 1600-17FF and 1a00-1bff
+                if (idx == 0x1800)
+                    idx = 0x1a00;
+
+                if (eds.ods.ContainsKey(idx))
+                {
+                    ODentry pdood = eds.ods[idx];
+                    for(byte subno=1;subno<pdood.nosubindexes;subno++)
+                    {
+                        try
+                        {
+                            UInt16 odindex = Convert.ToUInt16(pdood.subobjects[subno].defaultvalue.Substring(0, 4), 16);
+                            if(odindex==od.index)
+                            {
+                                MessageBox.Show(string.Format("Cannot delete OD entry it is mapped in PDO {0:4x}", pdood.index));
+                                return;
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            //Failed to parse the PDO
+                        }
+                    }
+
+
+                }
+            }
+
+
+                    if (MessageBox.Show(string.Format("Really delete index 0x{0:x4} ?", od.index), "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 eds.ods.Remove(od.index);
                 populateindexlists();
