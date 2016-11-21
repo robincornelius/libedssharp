@@ -35,14 +35,20 @@ namespace libEDSsharp
         private string folderpath;
         private EDSsharp eds;
 
+        private int enabledcount = 0;
+
     //    Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
 
         public void export(string folderpath, EDSsharp eds)
         {
             this.folderpath = folderpath;
             this.eds = eds;
-
-            //init_defstructs();
+     
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
+                if (kvp.Value.Disabled == false)
+                    enabledcount++;
+            }
 
             countPDOS();
 
@@ -289,17 +295,7 @@ namespace libEDSsharp
    OBJECT DICTIONARY
 *******************************************************************************/");
 
-            //HACk, count the number of enabeld elements here is eds.ods.Count contains disabled entries as well
-
-            int count = 0;
-
-            foreach(KeyValuePair<UInt16,ODentry>kvp in eds.ods)
-            {
-                if (kvp.Value.Disabled == false)
-                    count++;
-            }
-
-            file.WriteLine(string.Format("   #define CO_OD_NoOfElements             {0}", count));
+            file.WriteLine(string.Format("   #define CO_OD_NoOfElements             {0}", enabledcount));
             file.WriteLine("");
             file.WriteLine("");
 
@@ -564,7 +560,8 @@ struct sCO_OD_ROM CO_OD_ROM = {    //constant variables, stored in flash
 *******************************************************************************/
 const CO_OD_entry_t CO_OD[");
             
-            file.Write(string.Format("{0}",eds.ods.Count));
+
+            file.Write(string.Format("{0}", enabledcount));
 
             file.WriteLine(@"] = {
 ");
