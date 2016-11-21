@@ -38,7 +38,11 @@ namespace ODEditor
     public partial class ODEditor_MainForm : Form
     {
 
+        private List<string> _mru = new List<string>();
+        private string appdatafolder;
+
         public static Dictionary<UInt16, EDSsharp> TXCobMap = new Dictionary<UInt16, EDSsharp>();
+        List<EDSsharp> network = new List<EDSsharp>();
 
         public ODEditor_MainForm()
         {
@@ -46,6 +50,8 @@ namespace ODEditor
             loadprofiles();
 
             insertToolStripMenuItem.Enabled = false;
+
+
         }
 
         private void loadprofiles()
@@ -104,47 +110,47 @@ namespace ODEditor
         private void openEDSToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            EDSsharp eds;
-            Device dev; //one day this will be multiple devices
-
             OpenFileDialog odf = new OpenFileDialog();
             odf.Filter = "Electronic Data Sheets (*.eds)|*.eds";
             if (odf.ShowDialog() == DialogResult.OK)
             {
+                openEDSfile(odf.FileName);
+                addtoMRU(odf.FileName);
+            }
+        }
 
-                Warnings.warning_list.Clear();
+        private void openEDSfile(string path)
+        {
+            Warnings.warning_list.Clear();
 
-                eds = new EDSsharp();
+            try
+            {
+                EDSsharp eds = new EDSsharp();
+                Device dev; 
 
-                //fix me enable exceptions for production code
+                eds.loadfile(path);
+                Bridge bridge = new Bridge(); //tell me again why bridge is not static?
+                dev = bridge.convert(eds);
 
-                try
-                {
-                    eds.loadfile(odf.FileName);
-                    Bridge bridge = new Bridge(); //tell me again why bridge is not static?
-                    dev = bridge.convert(eds);
+                DeviceView device = new DeviceView();
 
-                    DeviceView device = new DeviceView();
+                device.eds = eds;
+                tabControl1.TabPages.Add(eds.di.ProductName);
+                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
 
-                    device.eds = eds;
-                    tabControl1.TabPages.Add(eds.di.ProductName);
-                    tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.dispatch_updateOD();
 
-                    device.dispatch_updateOD();
-                    
-                }
-                catch(Exception ex)
-                {
-                    Warnings.warning_list.Add(ex.ToString());  
-                }
+                network.Add(eds);
+            }
+            catch (Exception ex)
+            {
+                Warnings.warning_list.Add(ex.ToString());
+            }
 
-                if(Warnings.warning_list.Count!=0)
-                {
-                    WarningsFrm frm = new WarningsFrm();
-                    frm.ShowDialog();
-                }
-
-
+            if (Warnings.warning_list.Count != 0)
+            {
+                WarningsFrm frm = new WarningsFrm();
+                frm.ShowDialog();
             }
         }
 
@@ -173,6 +179,7 @@ namespace ODEditor
                     cone.export(savePath, dv.eds);                   
                 }
             }
+
              
 
         }
@@ -180,16 +187,26 @@ namespace ODEditor
         private void openCanOpenNodeXMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            EDSsharp eds;
-            Device dev; //one day this will be multiple devices
-
             OpenFileDialog odf = new OpenFileDialog();
             odf.Filter = "XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
-            { 
+            {
+                openXMLfile(odf.FileName);
+                addtoMRU(odf.FileName);
+            }
+
+        }
+
+        private void openXMLfile(string path)
+        {
+
+            try
+            {
+                EDSsharp eds;
+                Device dev; //one day this will be multiple devices
 
                 CanOpenXML coxml = new CanOpenXML();
-                coxml.readXML(odf.FileName);
+                coxml.readXML(path);
 
                 Bridge b = new Bridge();
 
@@ -206,6 +223,18 @@ namespace ODEditor
 
                 device.dispatch_updateOD();
 
+                network.Add(eds);
+
+            }
+            catch (Exception ex)
+            {
+                Warnings.warning_list.Add(ex.ToString());
+            }
+
+            if (Warnings.warning_list.Count != 0)
+            {
+                WarningsFrm frm = new WarningsFrm();
+                frm.ShowDialog();
             }
 
         }
@@ -248,7 +277,14 @@ namespace ODEditor
         private void closeFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (tabControl1.SelectedTab != null)
+            {
+                // tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+
+                DeviceView device = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                network.Remove(device.eds);
+
                 tabControl1.TabPages.Remove(tabControl1.SelectedTab);
+            }
 
         }
 
@@ -295,12 +331,11 @@ namespace ODEditor
                         Device d = b.convert(dv.eds);
 
                         CanOpenXML coxml = new CanOpenXML();
-                            coxml.dev = d;
+                        coxml.dev = d;
 
-                            coxml.writeXML(sfd.FileName);
+                        coxml.writeXML(sfd.FileName);
     
                     }
-
 
                 }
             }
@@ -355,7 +390,6 @@ namespace ODEditor
 
                     }
 
-
                 }
             }
             catch (Exception ex)
@@ -369,6 +403,100 @@ namespace ODEditor
                 frm.ShowDialog();
             }
 
+        }
+
+        private void networkPDOReportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            /*
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.Filter = "HTML (*.html)|*.html";
+
+            string name = "network_view.html";
+            name.Replace(' ', '_');
+
+            sfd.FileName = name;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                NetworkPDOreport npr = new NetworkPDOreport();
+                npr.gennetpdodoc(sfd.FileName, network);
+            }
+            */
+        }
+
+
+
+        void OpenRecentFile(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            var filepath = (string)menuItem.Tag;
+
+
+            if(filepath.Substring(filepath.Length-3).ToLower()=="xml")
+                openXMLfile(filepath);
+            if (filepath.Substring(filepath.Length - 3).ToLower() == "eds")
+                openEDSfile(filepath);
+
+        }
+
+        private void ODEditor_MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            var mruFilePath = Path.Combine(appdatafolder, "MRU.txt");
+            System.IO.File.WriteAllLines(mruFilePath, _mru);
+        }
+
+        private void ODEditor_MainForm_Load(object sender, EventArgs e)
+        {
+            //First lets create an appdata folder
+
+            // The folder for the roaming current user 
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+            // Combine the base folder with your specific folder....
+            appdatafolder = Path.Combine(folder, "EDSEditor");
+
+            // Check if folder exists and if not, create it
+            if (!Directory.Exists(appdatafolder))
+                Directory.CreateDirectory(appdatafolder);
+
+            var mruFilePath = Path.Combine(appdatafolder, "MRU.txt");
+            if (System.IO.File.Exists(mruFilePath))
+                _mru.AddRange(System.IO.File.ReadAllLines(mruFilePath));
+
+            populateMRU();
+        }
+
+        private void addtoMRU(string path)
+        {
+            // if it already exists remove it then let it readd itsself
+            // so it will be promoted to the top of the list
+            if (_mru.Contains(path))
+                _mru.Remove(path);
+
+            _mru.Insert(0, path);
+
+
+            if (_mru.Count > 10)
+                _mru.RemoveAt(10);
+
+            populateMRU();
+
+        }
+
+        private void populateMRU()
+        {
+
+            mnuRecentlyUsed.DropDownItems.Clear();
+
+            foreach (var path in _mru)
+            {
+                var item = new ToolStripMenuItem(path);
+                item.Tag = path;
+                item.Click += OpenRecentFile;
+                mnuRecentlyUsed.DropDownItems.Add(item);
+            }
         }
     }
 }

@@ -38,13 +38,16 @@
             this.saveProjectXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exportCanOpenNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportDocumentationHtmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.closeFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.exportDocumentationHtmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.networkPDOReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuRecentlyUsed = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,9 +71,12 @@
             this.toolStripSeparator3,
             this.openCanOpenNodeXMLToolStripMenuItem,
             this.saveProjectXMLToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.mnuRecentlyUsed,
             this.toolStripSeparator1,
             this.exportCanOpenNodeToolStripMenuItem,
             this.exportDocumentationHtmlToolStripMenuItem,
+            this.networkPDOReportToolStripMenuItem,
             this.toolStripSeparator2,
             this.closeFileToolStripMenuItem,
             this.toolStripSeparator4,
@@ -134,6 +140,13 @@
             this.exportCanOpenNodeToolStripMenuItem.Text = "Export CanOpenNode c/h";
             this.exportCanOpenNodeToolStripMenuItem.Click += new System.EventHandler(this.exportCanOpenNodeToolStripMenuItem_Click);
             // 
+            // exportDocumentationHtmlToolStripMenuItem
+            // 
+            this.exportDocumentationHtmlToolStripMenuItem.Name = "exportDocumentationHtmlToolStripMenuItem";
+            this.exportDocumentationHtmlToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.exportDocumentationHtmlToolStripMenuItem.Text = "Export Documentation html";
+            this.exportDocumentationHtmlToolStripMenuItem.Click += new System.EventHandler(this.exportDocumentationHtmlToolStripMenuItem_Click);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -182,12 +195,23 @@
             this.tabControl1.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tabControl1_ControlsChanged);
             this.tabControl1.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tabControl1_ControlsChanged);
             // 
-            // exportDocumentationHtmlToolStripMenuItem
+            // networkPDOReportToolStripMenuItem
             // 
-            this.exportDocumentationHtmlToolStripMenuItem.Name = "exportDocumentationHtmlToolStripMenuItem";
-            this.exportDocumentationHtmlToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.exportDocumentationHtmlToolStripMenuItem.Text = "Export Documentation html";
-            this.exportDocumentationHtmlToolStripMenuItem.Click += new System.EventHandler(this.exportDocumentationHtmlToolStripMenuItem_Click);
+            this.networkPDOReportToolStripMenuItem.Name = "networkPDOReportToolStripMenuItem";
+            this.networkPDOReportToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.networkPDOReportToolStripMenuItem.Text = "Network PDO report";
+            this.networkPDOReportToolStripMenuItem.Click += new System.EventHandler(this.networkPDOReportToolStripMenuItem_Click);
+            // 
+            // mnuRecentlyUsed
+            // 
+            this.mnuRecentlyUsed.Name = "mnuRecentlyUsed";
+            this.mnuRecentlyUsed.Size = new System.Drawing.Size(221, 22);
+            this.mnuRecentlyUsed.Text = "Recent Files";
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(218, 6);
             // 
             // ODEditor_MainForm
             // 
@@ -198,6 +222,8 @@
             this.Controls.Add(this.menuStrip1);
             this.Name = "ODEditor_MainForm";
             this.Text = "Object Dictionary Editor";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ODEditor_MainForm_FormClosed);
+            this.Load += new System.EventHandler(this.ODEditor_MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -224,6 +250,9 @@
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem insertToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportDocumentationHtmlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem networkPDOReportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem mnuRecentlyUsed;
     }
 }
 
