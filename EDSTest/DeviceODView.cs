@@ -392,6 +392,9 @@ namespace ODEditor
 
         private void list_mouseclick(ListView listview, MouseEventArgs e)
         {
+            if (listview.SelectedItems.Count == 0)
+                return;
+
             ListViewItem lvi = listview.SelectedItems[0];
             UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
 
@@ -813,7 +816,20 @@ namespace ODEditor
 
         }
 
+        private void listView_optional_objects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            list_mouseclick(listView_optional_objects, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
+        }
 
+        private void listView_mandatory_objects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            list_mouseclick(listView_mandatory_objects, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
+        }
+
+        private void listView_manufacture_objects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            list_mouseclick(listView_manufacture_objects, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
+        }
     }
 
     public static class ControlExtensions

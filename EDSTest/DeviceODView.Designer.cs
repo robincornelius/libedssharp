@@ -184,6 +184,7 @@
             this.listView_manufacture_objects.TabIndex = 2;
             this.listView_manufacture_objects.UseCompatibleStateImageBehavior = false;
             this.listView_manufacture_objects.View = System.Windows.Forms.View.Details;
+            this.listView_manufacture_objects.SelectedIndexChanged += new System.EventHandler(this.listView_manufacture_objects_SelectedIndexChanged);
             this.listView_manufacture_objects.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_manufacture_objects_MouseClick);
             this.listView_manufacture_objects.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listView_manufacture_objects_MouseDown);
             // 
@@ -209,6 +210,7 @@
             this.listView_optional_objects.TabIndex = 1;
             this.listView_optional_objects.UseCompatibleStateImageBehavior = false;
             this.listView_optional_objects.View = System.Windows.Forms.View.Details;
+            this.listView_optional_objects.SelectedIndexChanged += new System.EventHandler(this.listView_optional_objects_SelectedIndexChanged);
             this.listView_optional_objects.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_optionalobjects_MouseClick);
             this.listView_optional_objects.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listView_optional_objects_MouseDown);
             // 
@@ -234,6 +236,7 @@
             this.listView_mandatory_objects.TabIndex = 0;
             this.listView_mandatory_objects.UseCompatibleStateImageBehavior = false;
             this.listView_mandatory_objects.View = System.Windows.Forms.View.Details;
+            this.listView_mandatory_objects.SelectedIndexChanged += new System.EventHandler(this.listView_mandatory_objects_SelectedIndexChanged);
             this.listView_mandatory_objects.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_mandatory_objects_MouseClick);
             // 
             // columnHeader1
