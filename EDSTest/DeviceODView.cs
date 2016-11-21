@@ -66,6 +66,8 @@ namespace ODEditor
                 comboBox_accesstype.Items.Add(foo.ToString());
             }
 
+            comboBox_accesstype.Items.Add("0x1003 rw/ro");
+
 
             comboBox_memory.Items.Add("");
 
@@ -106,8 +108,22 @@ namespace ODEditor
                 DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
                 selectedobject.datatype = dt;
 
-                EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
-                selectedobject.accesstype = at;
+                if (comboBox_accesstype.SelectedItem.ToString() == "0x1003 rw/ro")
+                {
+                    selectedobject.accesstype = EDSsharp.AccessType.rw;
+                    for(byte p=0;p<selectedobject.subobjects.Count;p++)
+                    {
+                        if (selectedobject.subobjects[p].subindex == 0)
+                            selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.rw;
+                        else
+                            selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.ro;
+                    }
+                }
+                else
+                {
+                    EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
+                    selectedobject.accesstype = at;
+                }
 
                 selectedobject.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_pdomap.SelectedItem.ToString());
 
@@ -125,12 +141,13 @@ namespace ODEditor
                 // on git hub for discussion why other parameters are not propogated here
                 // tl;dr; Limitations of CanOpenNode object dictionary perms for sub array objects
 
-                foreach(KeyValuePair<UInt16,ODentry>kvp in selectedobject.subobjects)
+                foreach (KeyValuePair<UInt16,ODentry>kvp in selectedobject.subobjects)
                 {
                     ODentry subod = kvp.Value;
 
                     subod.PDOtype = selectedobject.PDOtype;
-                    subod.accesstype = selectedobject.accesstype;
+                    if (comboBox_accesstype.SelectedItem.ToString() != "0x1003 rw/ro")
+                        subod.accesstype = selectedobject.accesstype;
 
                 }
             }

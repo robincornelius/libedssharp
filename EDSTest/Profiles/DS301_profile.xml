@@ -25,15 +25,15 @@ bit 0-7: Zero can be written to erase error history
 Standard Error Field
 bit  0-15: Error code as transmited in the Emergency object
 bit 16-31: Manufacturer specific additional information</description>
-      <CANopenSubObject subIndex="00" name="Number of errors" objectType="VAR" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x08" />
-      <CANopenSubObject subIndex="01" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
-      <CANopenSubObject subIndex="02" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
-      <CANopenSubObject subIndex="03" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
-      <CANopenSubObject subIndex="04" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
-      <CANopenSubObject subIndex="05" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
-      <CANopenSubObject subIndex="06" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
-      <CANopenSubObject subIndex="07" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
-      <CANopenSubObject subIndex="08" name="Standard error field" objectType="VAR" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="00" name="Number of errors" objectType="VAR" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x00" />
+      <CANopenSubObject subIndex="01" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="02" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="03" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="04" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="05" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="06" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="07" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
+      <CANopenSubObject subIndex="08" name="Standard error field" objectType="VAR" dataType="0x00" accessType="ro" PDOmapping="no" defaultValue="0" />
       <accessFunctionPreCode />
     </CANopenObject>
     <CANopenObject index="1005" name="COB-ID SYNC message" objectType="VAR" memoryType="ROM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000080" subNumber="0" accessFunctionName="CO_ODF_1005" disabled="false" TPDOdetectCOS="false">
@@ -320,12 +320,12 @@ bit 16-31: index from OD</description>
     <baudRate />
     <dummyUsage>
       <dummy entry="False" />
-      <dummy entry="False" />
-      <dummy entry="False" />
-      <dummy entry="False" />
-      <dummy entry="False" />
-      <dummy entry="False" />
-      <dummy entry="False" />
+      <dummy entry="True" />
+      <dummy entry="True" />
+      <dummy entry="True" />
+      <dummy entry="True" />
+      <dummy entry="True" />
+      <dummy entry="True" />
     </dummyUsage>
   </other>
 </device>

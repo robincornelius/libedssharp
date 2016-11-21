@@ -36,18 +36,21 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openCanOpenNodeXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuRecentlyUsed = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exportCanOpenNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportDocumentationHtmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.networkPDOReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.closeFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.networkPDOReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuRecentlyUsed = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveNetworkXmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadNetworkXmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,6 +75,9 @@
             this.openCanOpenNodeXMLToolStripMenuItem,
             this.saveProjectXMLToolStripMenuItem,
             this.toolStripSeparator5,
+            this.loadNetworkXmlToolStripMenuItem,
+            this.saveNetworkXmlToolStripMenuItem,
+            this.toolStripSeparator6,
             this.mnuRecentlyUsed,
             this.toolStripSeparator1,
             this.exportCanOpenNodeToolStripMenuItem,
@@ -116,7 +122,7 @@
             // 
             this.openCanOpenNodeXMLToolStripMenuItem.Name = "openCanOpenNodeXMLToolStripMenuItem";
             this.openCanOpenNodeXMLToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.openCanOpenNodeXMLToolStripMenuItem.Text = "Open Project XML";
+            this.openCanOpenNodeXMLToolStripMenuItem.Text = "Open Device XML";
             this.openCanOpenNodeXMLToolStripMenuItem.Click += new System.EventHandler(this.openCanOpenNodeXMLToolStripMenuItem_Click);
             // 
             // saveProjectXMLToolStripMenuItem
@@ -124,8 +130,19 @@
             this.saveProjectXMLToolStripMenuItem.Enabled = false;
             this.saveProjectXMLToolStripMenuItem.Name = "saveProjectXMLToolStripMenuItem";
             this.saveProjectXMLToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.saveProjectXMLToolStripMenuItem.Text = "Save Project XML";
+            this.saveProjectXMLToolStripMenuItem.Text = "Save Device XML";
             this.saveProjectXMLToolStripMenuItem.Click += new System.EventHandler(this.saveProjectXMLToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(218, 6);
+            // 
+            // mnuRecentlyUsed
+            // 
+            this.mnuRecentlyUsed.Name = "mnuRecentlyUsed";
+            this.mnuRecentlyUsed.Size = new System.Drawing.Size(221, 22);
+            this.mnuRecentlyUsed.Text = "Recent Files";
             // 
             // toolStripSeparator1
             // 
@@ -146,6 +163,13 @@
             this.exportDocumentationHtmlToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.exportDocumentationHtmlToolStripMenuItem.Text = "Export Documentation html";
             this.exportDocumentationHtmlToolStripMenuItem.Click += new System.EventHandler(this.exportDocumentationHtmlToolStripMenuItem_Click);
+            // 
+            // networkPDOReportToolStripMenuItem
+            // 
+            this.networkPDOReportToolStripMenuItem.Name = "networkPDOReportToolStripMenuItem";
+            this.networkPDOReportToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.networkPDOReportToolStripMenuItem.Text = "Network PDO report";
+            this.networkPDOReportToolStripMenuItem.Click += new System.EventHandler(this.networkPDOReportToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -193,25 +217,27 @@
             this.tabControl1.TabIndex = 2;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem);
             this.tabControl1.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tabControl1_ControlsChanged);
-            this.tabControl1.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tabControl1_ControlsChanged);
+            this.tabControl1.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tabControl1_Controlsremoved);
             // 
-            // networkPDOReportToolStripMenuItem
+            // saveNetworkXmlToolStripMenuItem
             // 
-            this.networkPDOReportToolStripMenuItem.Name = "networkPDOReportToolStripMenuItem";
-            this.networkPDOReportToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.networkPDOReportToolStripMenuItem.Text = "Network PDO report";
-            this.networkPDOReportToolStripMenuItem.Click += new System.EventHandler(this.networkPDOReportToolStripMenuItem_Click);
+            this.saveNetworkXmlToolStripMenuItem.Enabled = false;
+            this.saveNetworkXmlToolStripMenuItem.Name = "saveNetworkXmlToolStripMenuItem";
+            this.saveNetworkXmlToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.saveNetworkXmlToolStripMenuItem.Text = "Save Network XML";
+            this.saveNetworkXmlToolStripMenuItem.Click += new System.EventHandler(this.saveNetworkXmlToolStripMenuItem_Click);
             // 
-            // mnuRecentlyUsed
+            // loadNetworkXmlToolStripMenuItem
             // 
-            this.mnuRecentlyUsed.Name = "mnuRecentlyUsed";
-            this.mnuRecentlyUsed.Size = new System.Drawing.Size(221, 22);
-            this.mnuRecentlyUsed.Text = "Recent Files";
+            this.loadNetworkXmlToolStripMenuItem.Name = "loadNetworkXmlToolStripMenuItem";
+            this.loadNetworkXmlToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.loadNetworkXmlToolStripMenuItem.Text = "Open Network XML";
+            this.loadNetworkXmlToolStripMenuItem.Click += new System.EventHandler(this.loadNetworkXmlToolStripMenuItem_Click);
             // 
-            // toolStripSeparator5
+            // toolStripSeparator6
             // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(218, 6);
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(218, 6);
             // 
             // ODEditor_MainForm
             // 
@@ -253,6 +279,9 @@
         private System.Windows.Forms.ToolStripMenuItem networkPDOReportToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mnuRecentlyUsed;
+        private System.Windows.Forms.ToolStripMenuItem saveNetworkXmlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadNetworkXmlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
     }
 }
 
