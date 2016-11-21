@@ -888,6 +888,54 @@ namespace libEDSsharp
 
             }
         }
+
+        //warning eds files with gaps in subobject lists have been seen in the wild
+        //this function tries to get the array index based on sub number not array number
+        //it may return null
+        //This needs expanding to be used globally through the application ;-(
+        public ODentry getsubobject(int no)
+        {
+            foreach(ODentry s in subobjects.Values)
+            {
+                if (s.subindex == no)
+                    return s;
+            }
+
+            return null;
+        }
+
+        public string getsubobjectdefaultvalue(int no)
+        {
+            foreach (ODentry s in subobjects.Values)
+            {
+                if (s.subindex == no)
+                    return s.defaultvalue;
+            }
+
+            return "";
+        }
+
+        public bool containssubindex(int no)
+        {
+            foreach (ODentry s in subobjects.Values)
+            {
+                if (s.subindex == no)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public byte getmaxsubindex()
+        {
+            if (objecttype == ObjectType.ARRAY || objecttype == ObjectType.REC)
+                if (containssubindex(0))
+                {
+                    return EDSsharp.ConvertToByte(getsubobjectdefaultvalue(0));
+                }
+
+            return 0;
+        }
     }
 
     public class EDSsharp
@@ -1087,7 +1135,8 @@ namespace libEDSsharp
                     od.PDOtype = PDOMappingType.no;
                     if (kvp.Value.ContainsKey("PDOMapping"))
                     {
-                        bool pdo = Convert.ToInt16(kvp.Value["PDOMapping"],16) == 1;
+                        
+                        bool pdo = Convert.ToInt16(kvp.Value["PDOMapping"],getbase(kvp.Value["PDOMapping"])) == 1;
                         if (pdo == true)
                             od.PDOtype = PDOMappingType.optional;
                     }
@@ -1229,6 +1278,30 @@ namespace libEDSsharp
         }
 
 
+        static public byte ConvertToByte(string defaultvalue)
+        {
+            if (defaultvalue == null)
+                return 0;
+
+            return (Convert.ToByte(defaultvalue, getbase(defaultvalue)));
+        }
+
+        static public UInt16 ConvertToUInt16(string defaultvalue)
+        {
+            if (defaultvalue == null)
+                return 0;
+
+            return (Convert.ToUInt16(defaultvalue, getbase(defaultvalue)));
+        }
+
+        static public UInt32 ConvertToUInt32(string defaultvalue)
+        {
+            if (defaultvalue == null)
+                return 0;
+
+            return (Convert.ToUInt32(defaultvalue, getbase(defaultvalue)));
+        }
+
         static public int getbase(string defaultvalue)
         {
 
@@ -1237,7 +1310,7 @@ namespace libEDSsharp
 
             int nobase = 10;
 
-            String pat = @"^0[xX][0-9]+";
+            String pat = @"^0[xX][0-9a-fA-F]+";
 
             Regex r = new Regex(pat, RegexOptions.IgnoreCase);
             Match m = r.Match(defaultvalue);

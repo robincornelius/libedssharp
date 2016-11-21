@@ -413,7 +413,7 @@ namespace ODEditor
         private void networkPDOReportToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            /*
+            
             SaveFileDialog sfd = new SaveFileDialog();
 
             sfd.Filter = "HTML (*.html)|*.html";
@@ -428,7 +428,7 @@ namespace ODEditor
                 NetworkPDOreport npr = new NetworkPDOreport();
                 npr.gennetpdodoc(sfd.FileName, network);
             }
-            */
+            
         }
 
         void OpenRecentFile(object sender, EventArgs e)
