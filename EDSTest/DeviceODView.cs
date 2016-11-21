@@ -646,6 +646,13 @@ namespace ODEditor
 
                 eds.ods.Add(od.index, od);
 
+                //Now switch to it as well Bug #26
+
+                updateselectedindexdisplay(od.index);
+                selectedobject = eds.ods[od.index];
+                validateanddisplaydata();
+
+
                 populateindexlists();
             }
 
