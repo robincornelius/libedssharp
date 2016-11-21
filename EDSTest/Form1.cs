@@ -211,6 +211,7 @@ namespace ODEditor
                 Bridge b = new Bridge();
 
                 eds = b.convert(coxml.dev);
+                eds.filename = path;
 
                 dev = coxml.dev;
 
@@ -302,7 +303,9 @@ namespace ODEditor
 
                 sfd.Filter = "Electronic Data Sheets (*.eds)|*.eds";
 
-                sfd.FileName = dv.eds.fi.FileName;
+                sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.filename);
+                sfd.RestoreDirectory = true;
+                sfd.FileName = Path.GetFileNameWithoutExtension(dv.eds.filename);
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
@@ -321,9 +324,11 @@ namespace ODEditor
 
                     sfd.Filter = "Canopen Node XML (*.xml)|*.xml";
 
-                    sfd.FileName = dv.eds.fi.FileName;
+                    sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.filename);
+                    sfd.RestoreDirectory = true;
+                    sfd.FileName = Path.GetFileNameWithoutExtension(dv.eds.filename);
 
-                    if (sfd.ShowDialog() == DialogResult.OK)
+                if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         //dv.eds.savefile(sfd.FileName);
 
@@ -426,17 +431,19 @@ namespace ODEditor
             */
         }
 
-
-
         void OpenRecentFile(object sender, EventArgs e)
         {
             var menuItem = (ToolStripMenuItem)sender;
             var filepath = (string)menuItem.Tag;
 
+            string ext = Path.GetExtension(filepath);
 
-            if(filepath.Substring(filepath.Length-3).ToLower()=="xml")
+            if (ext != null)
+                ext = ext.ToLower();
+
+            if ( ext == ".xml" )
                 openXMLfile(filepath);
-            if (filepath.Substring(filepath.Length - 3).ToLower() == "eds")
+            if ( ext == ".eds" )
                 openEDSfile(filepath);
 
         }
@@ -476,7 +483,6 @@ namespace ODEditor
                 _mru.Remove(path);
 
             _mru.Insert(0, path);
-
 
             if (_mru.Count > 10)
                 _mru.RemoveAt(10);

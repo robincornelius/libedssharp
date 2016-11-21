@@ -542,16 +542,23 @@ namespace libEDSsharp
                     Warnings.warning_list.Add(String.Format("Unable to parse DateTime {0} for ModificationTime, not in DS306 format", dtcombined));
                 }
             }
-            
 
-            if (section.ContainsKey("EDSVersion"))
+
+            try
             {
-                string[] bits = section["EDSVersion"].Split('.');
-                if(bits.Length >=1 )
-                    EDSVersionMajor = Convert.ToByte(bits[0]);
-                if (bits.Length >= 2)
-                    EDSVersionMinor = Convert.ToByte(bits[1]);
-                //EDSVersion = String.Format("{0}.{1}", EDSVersionMajor, EDSVersionMinor);
+                if (section.ContainsKey("EDSVersion"))
+                {
+                    string[] bits = section["EDSVersion"].Split('.');
+                    if (bits.Length >= 1)
+                        EDSVersionMajor = Convert.ToByte(bits[0]);
+                    if (bits.Length >= 2)
+                        EDSVersionMinor = Convert.ToByte(bits[1]);
+                    //EDSVersion = String.Format("{0}.{1}", EDSVersionMajor, EDSVersionMinor);
+                }
+            }
+            catch
+            {
+                Warnings.warning_list.Add(String.Format("Unable to parse EDS version {0}", section["EDSVersion"]));
             }
 
 
@@ -900,6 +907,11 @@ namespace libEDSsharp
         public const AccessType AccessType_Min = AccessType.rw;
         public const AccessType AccessType_Max = AccessType.cons;
 
+
+        //This is the last file name used for this eds/xml file and is not
+        //the same as filename within the FileInfo structure.
+        public string filename;
+
         Dictionary<string, Dictionary<string, string>> eds;
         public SortedDictionary<UInt16, ODentry> ods;
         public FileInfo fi;
@@ -1075,7 +1087,7 @@ namespace libEDSsharp
                     od.PDOtype = PDOMappingType.no;
                     if (kvp.Value.ContainsKey("PDOMapping"))
                     {
-                        bool pdo = Convert.ToInt16(kvp.Value["PDOMapping"]) == 1;
+                        bool pdo = Convert.ToInt16(kvp.Value["PDOMapping"],16) == 1;
                         if (pdo == true)
                             od.PDOtype = PDOMappingType.optional;
                     }
@@ -1094,6 +1106,8 @@ namespace libEDSsharp
 
         public void loadfile(string filename)
         {
+
+            this.filename = filename;
             //try
             {
                 foreach (string linex in File.ReadLines(filename))
@@ -1124,6 +1138,8 @@ namespace libEDSsharp
 
         public void savefile(string filename)
         {
+            this.filename = filename;
+
             updatePDOcount();
 
             StreamWriter writer = File.CreateText(filename);
@@ -1274,6 +1290,12 @@ namespace libEDSsharp
                 input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
 
                 string[] bits = input.Split('+');
+
+                if(bits.Length==1)
+                {
+                    //nothing to parse here just return the value
+                    return Convert.ToUInt16(input, getbase(input));
+                }
 
                 if (bits.Length != 2)
                 {
