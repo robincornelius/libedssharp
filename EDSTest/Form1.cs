@@ -175,8 +175,17 @@ namespace ODEditor
                     string savePath = Path.GetDirectoryName(sfd.FileName);
                     dv.eds.fi.exportFolder = savePath;
 
+                    Warnings.warning_list.Clear();
+
                     CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                    cone.export(savePath, dv.eds);                   
+                    cone.export(savePath, dv.eds);
+
+                    if (Warnings.warning_list.Count != 0)
+                    {
+                        WarningsFrm frm = new WarningsFrm();
+                        frm.ShowDialog();
+                    }
+
                 }
             }
 

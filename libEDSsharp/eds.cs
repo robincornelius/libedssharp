@@ -674,8 +674,6 @@ namespace libEDSsharp
             }
         }
 
-        public int accessParamNoSubObjectsOverride = 0;
-
         public PDOMappingType PDOtype;
 
         //CanOpenNode specific extra storage

@@ -97,8 +97,6 @@ namespace ODEditor
             selectedobject.Description = textBox_description.Text;
             selectedobject.defaultvalue = textBox_defaultvalue.Text;
 
-            int.TryParse(textBox_subobjectoverride.Text, out selectedobject.accessParamNoSubObjectsOverride);
-
             if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
             {
 
@@ -166,9 +164,6 @@ namespace ODEditor
             textBox_name.Text = od.parameter_name;
 
             comboBox_accesstype.SelectedItem = od.accesstype.ToString();
-
-
-            textBox_subobjectoverride.Text = od.accessParamNoSubObjectsOverride.ToString();
 
             if (od.datatype != DataType.UNKNOWN)
             {
@@ -496,11 +491,23 @@ namespace ODEditor
                 {
                     if (od.subindex == 0 || od.parent == null)
                     {
-                        contextMenu_array.Items[1].Enabled = false;
+                        contextMenu_array.Items[2].Enabled = false;
                     }
                     else
                     {
-                        contextMenu_array.Items[1].Enabled = true;
+                        contextMenu_array.Items[2].Enabled = true;
+                    }
+
+                    //Only show the special subindex adjust menu for subindex 0 of arrays
+                    if((od.parent!=null) && (parent.objecttype == ObjectType.ARRAY) && (od.subindex==0))
+                    {
+                        contextMenu_array.Items[0].Enabled = true;
+                        contextMenu_array.Items[0].Visible = true;
+                    }
+                    else
+                    {
+                        contextMenu_array.Items[0].Enabled = false;
+                        contextMenu_array.Items[0].Visible = false;
                     }
 
                     if (listViewDetails.FocusedItem.Bounds.Contains(e.Location) == true)
@@ -829,6 +836,33 @@ namespace ODEditor
         private void listView_manufacture_objects_SelectedIndexChanged(object sender, EventArgs e)
         {
             list_mouseclick(listView_manufacture_objects, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
+        }
+
+        private void changeMaxSubIndexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Change the max subindex, it is allowed to have a different max subindex to the physical array size
+            //as depending on implementation it might not be a simple array behind the scenes. Even 0x1010,0x1011 
+            //do this on their implementation in CanopenNode
+
+            if (selecteditemsub.Tag != null)
+            {
+                ODentry od = (ODentry)selecteditemsub.Tag;
+
+                if (od.parent.objecttype == ObjectType.ARRAY && od.subindex==0)
+                {
+                    MaxSubIndexFrm frm = new MaxSubIndexFrm(od.nosubindexes);
+
+                    if(frm.ShowDialog()==DialogResult.OK)
+                    {
+                        od.defaultvalue = string.Format("0x{0:x2}",frm.maxsubindex);
+                        updateselectedindexdisplay(selectedobject.index);
+                        validateanddisplaydata();
+                    }
+                }
+            }
+
+
+            
         }
     }
 

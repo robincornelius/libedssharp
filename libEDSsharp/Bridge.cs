@@ -67,8 +67,6 @@ namespace libEDSsharp
                     coo.AccessFunctionPreCode = od.AccessFunctionPreCode;
                     coo.AccessFunctionName = od.AccessFunctionName;
 
-                    coo.accessParamNoSubObjectsOverride = od.accessParamNoSubObjectsOverride;
-
                     coo.Description = new Description();
                     coo.Description.Text = od.Description;
                         
@@ -212,8 +210,7 @@ namespace libEDSsharp
                 ODentry entry = new ODentry();
                 entry.index = Convert.ToUInt16(coo.Index, 16);
                 entry.parameter_name = coo.Name;
-                entry.accessParamNoSubObjectsOverride = coo.accessParamNoSubObjectsOverride;
-
+             
                 if (coo.AccessType != null)
                 {
                     string at = coo.AccessType;

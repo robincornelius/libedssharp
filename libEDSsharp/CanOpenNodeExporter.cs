@@ -614,7 +614,7 @@ const CO_OD_entry_t CO_OD[");
                     count++;
                 }
 
-                //Arrays and Recshave 1 less subindex than actually present in the od.subobjects
+                //Arrays and Recs have 1 less subindex than actually present in the od.subobjects
                 int nosubindexs = od.nosubindexes;
                 if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                 {
@@ -622,12 +622,15 @@ const CO_OD_entry_t CO_OD[");
                         nosubindexs--;
                 }
 
-                //a special hack for OD entries that use acccess functions
-                //eg the eeprom 0x1011 function that acceps sub index 0x7F but 
-                //actually has no specific array storage allocated
-                //It only appears here in the OD not in the array define
-                if (od.accessParamNoSubObjectsOverride != 0)
-                    nosubindexs = od.accessParamNoSubObjectsOverride;
+                //Arrays really should obey the max subindex paramater not the physical number of elements
+                if (od.objecttype == ObjectType.ARRAY)
+                {
+                    if (od.getmaxsubindex() != nosubindexs)
+                    {
+                        Warnings.warning_list.Add(String.Format("Subindex descripency on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex()));
+                    }
+                    nosubindexs = od.getmaxsubindex();
+                }
 
                 string pdata; //CO_OD_entry_t pData generator
 

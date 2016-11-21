@@ -42,8 +42,6 @@
             this.listView_mandatory_objects = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.textBox_subobjectoverride = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
             this.button_save_changes = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.comboBox_memory = new System.Windows.Forms.ComboBox();
@@ -84,6 +82,7 @@
             this.deleteObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.changeMaxSubIndexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -110,8 +109,6 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.textBox_subobjectoverride);
-            this.splitContainer1.Panel2.Controls.Add(this.label17);
             this.splitContainer1.Panel2.Controls.Add(this.button_save_changes);
             this.splitContainer1.Panel2.Controls.Add(this.label16);
             this.splitContainer1.Panel2.Controls.Add(this.comboBox_memory);
@@ -247,22 +244,6 @@
             // 
             this.columnHeader2.Text = "Name";
             this.columnHeader2.Width = 200;
-            // 
-            // textBox_subobjectoverride
-            // 
-            this.textBox_subobjectoverride.Location = new System.Drawing.Point(105, 655);
-            this.textBox_subobjectoverride.Name = "textBox_subobjectoverride";
-            this.textBox_subobjectoverride.Size = new System.Drawing.Size(122, 20);
-            this.textBox_subobjectoverride.TabIndex = 29;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(10, 658);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(96, 13);
-            this.label17.TabIndex = 28;
-            this.label17.Text = "Subobject override";
             // 
             // button_save_changes
             // 
@@ -582,22 +563,31 @@
             // contextMenu_array
             // 
             this.contextMenu_array.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.changeMaxSubIndexToolStripMenuItem,
             this.addSubItemToolStripMenuItem,
             this.removeSubItemToolStripMenuItem});
             this.contextMenu_array.Name = "contextMenu_array";
-            this.contextMenu_array.Size = new System.Drawing.Size(167, 48);
+            this.contextMenu_array.Size = new System.Drawing.Size(194, 70);
+            // 
+            // changeMaxSubIndexToolStripMenuItem
+            // 
+            this.changeMaxSubIndexToolStripMenuItem.Enabled = false;
+            this.changeMaxSubIndexToolStripMenuItem.Name = "changeMaxSubIndexToolStripMenuItem";
+            this.changeMaxSubIndexToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.changeMaxSubIndexToolStripMenuItem.Text = "Change max sub index";
+            this.changeMaxSubIndexToolStripMenuItem.Click += new System.EventHandler(this.changeMaxSubIndexToolStripMenuItem_Click);
             // 
             // addSubItemToolStripMenuItem
             // 
             this.addSubItemToolStripMenuItem.Name = "addSubItemToolStripMenuItem";
-            this.addSubItemToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.addSubItemToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.addSubItemToolStripMenuItem.Text = "Add sub item";
             this.addSubItemToolStripMenuItem.Click += new System.EventHandler(this.addSubItemToolStripMenuItem_Click);
             // 
             // removeSubItemToolStripMenuItem
             // 
             this.removeSubItemToolStripMenuItem.Name = "removeSubItemToolStripMenuItem";
-            this.removeSubItemToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.removeSubItemToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
             this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
             // 
@@ -677,7 +667,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu_array;
         private System.Windows.Forms.ToolStripMenuItem addSubItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeSubItemToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBox_subobjectoverride;
-        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ToolStripMenuItem changeMaxSubIndexToolStripMenuItem;
     }
 }
