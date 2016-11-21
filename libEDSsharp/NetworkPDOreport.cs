@@ -220,7 +220,7 @@ namespace libEDSsharp
                                                             continue;
                                                         }
 
-                                                        if (offsetend2 > offsetend)
+                                                        if (offsetend2 > offsetend && offsetstart2>offsetstart)
                                                             break; //we are done
 
                                                         offsetstart2 += (byte)(size2 / 8);
