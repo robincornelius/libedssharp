@@ -371,11 +371,26 @@ namespace ODEditor
 
         private void tabControl1_ControlsChanged(object sender, ControlEventArgs e)
         {
-                insertToolStripMenuItem.Enabled = tabControl1.TabCount>0;
-                saveEDSToolStripMenuItem.Enabled = tabControl1.TabCount>0;
-                saveProjectXMLToolStripMenuItem.Enabled = tabControl1.TabCount>0;
-                exportCanOpenNodeToolStripMenuItem.Enabled = tabControl1.TabCount>0;
-                closeFileToolStripMenuItem.Enabled = tabControl1.TabCount>0;       
+            enablesavemenus(tabControl1.TabCount > 0);  
+        }
+
+        private void tabControl1_Controlsremoved(object sender, ControlEventArgs e)
+        {
+            //Because
+            enablesavemenus(tabControl1.TabCount > 1);
+        }
+
+        private void enablesavemenus(bool enable)
+        {
+            insertToolStripMenuItem.Enabled = enable;
+            saveEDSToolStripMenuItem.Enabled = enable;
+            saveProjectXMLToolStripMenuItem.Enabled = enable;
+            exportCanOpenNodeToolStripMenuItem.Enabled = enable;
+            closeFileToolStripMenuItem.Enabled = enable;
+            saveNetworkXmlToolStripMenuItem.Enabled = enable;
+            exportDocumentationHtmlToolStripMenuItem.Enabled = enable;
+            networkPDOReportToolStripMenuItem.Enabled = enable;
+
         }
 
         private void exportDocumentationHtmlToolStripMenuItem_Click(object sender, EventArgs e)
@@ -511,6 +526,60 @@ namespace ODEditor
                 item.Tag = path;
                 item.Click += OpenRecentFile;
                 mnuRecentlyUsed.DropDownItems.Add(item);
+            }
+        }
+
+        private void saveNetworkXmlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.Filter = "CanOpen network XML (*.nxml)|*.nxml";
+
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                //dv.eds.savefile(sfd.FileName);
+
+                NetworkXML net = new NetworkXML();
+                net.writeXML(sfd.FileName, network);
+
+
+            }
+
+        }
+
+        private void loadNetworkXmlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            OpenFileDialog odf = new OpenFileDialog();
+            odf.Filter = "CanOpen network XML (*.nxml)|*.nxml";
+            if (odf.ShowDialog() == DialogResult.OK)
+            {
+                NetworkXML net = new NetworkXML();
+                List<Device> devs = net.readXML(odf.FileName);
+
+
+                foreach (Device d in devs)
+                {
+                    Bridge b = new Bridge();
+
+                    EDSsharp eds = b.convert(d);
+                    //eds.filename = path;  //fixme
+
+                    tabControl1.TabPages.Add(eds.di.ProductName);
+
+                    DeviceView device = new DeviceView();
+
+                    device.eds = eds;
+                    tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+
+                    device.dispatch_updateOD();
+                }
+
+
+
+
+                //addtoMRU(odf.FileName);
             }
         }
     }

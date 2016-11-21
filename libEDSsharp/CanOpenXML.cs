@@ -39,6 +39,38 @@ namespace libEDSsharp
             writer.Close();
         }
     }
+
+
+    public class NetworkXML
+    {
+        Network network = new Network();
+
+        public List<Device> readXML(string file)
+        {       
+            XmlSerializer serializer = new XmlSerializer(typeof(Network));
+            StreamReader reader = new StreamReader(file);
+            network = (Network)serializer.Deserialize(reader);
+            reader.Close();
+            return network.devices;
+        }
+
+        public void writeXML(string file, List<EDSsharp> enet)
+        {
+
+            network.devices = new List<Device>();
+            foreach(EDSsharp e in enet)
+            {
+                Bridge b = new Bridge();
+                Device d = b.convert(e);
+                network.devices.Add(d);
+            }
+
+            XmlSerializer serializer = new XmlSerializer(typeof(Network));
+            StreamWriter writer = new StreamWriter(file);
+            serializer.Serialize(writer, network);
+            writer.Close();
+        }
+    }
 }
 
 namespace Xml2CSharp
@@ -267,5 +299,13 @@ namespace Xml2CSharp
 		[XmlElement(ElementName="other")]
 		public Other Other { get; set; }
 	}
+
+    [XmlRoot(ElementName = "network")]
+    public class Network
+    {
+        [XmlElement(ElementName = "devices")]
+        public List<Device> devices { get; set; }
+    }
+
 
 }
