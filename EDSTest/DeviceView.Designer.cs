@@ -28,16 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DeviceView));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.deviceInfoView = new ODEditor.DeviceInfoView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.deviceODView1 = new ODEditor.DeviceODView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.devicePDOView1 = new ODEditor.DevicePDOView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.devicePDOView1 = new DevicePDOView();
-            this.devicePDOView2 = new DevicePDOView();
-
+            this.devicePDOView2 = new ODEditor.DevicePDOView();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -52,6 +54,7 @@
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.imageList1;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -61,10 +64,11 @@
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.deviceInfoView);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.ImageIndex = 1;
+            this.tabPage2.Location = new System.Drawing.Point(4, 23);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1114, 747);
+            this.tabPage2.Size = new System.Drawing.Size(1114, 746);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Device Info";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -80,10 +84,11 @@
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.deviceODView1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.ImageIndex = 0;
+            this.tabPage1.Location = new System.Drawing.Point(4, 23);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1114, 747);
+            this.tabPage1.Size = new System.Drawing.Size(1114, 746);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Object Dictionary";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -98,10 +103,11 @@
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.devicePDOView1);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.ImageIndex = 2;
+            this.tabPage3.Location = new System.Drawing.Point(4, 23);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1114, 747);
+            this.tabPage3.Size = new System.Drawing.Size(1114, 746);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "TX PDO Mapping";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -116,9 +122,10 @@
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.devicePDOView2);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.ImageIndex = 3;
+            this.tabPage4.Location = new System.Drawing.Point(4, 23);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(1114, 747);
+            this.tabPage4.Size = new System.Drawing.Size(1114, 746);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "RX PDO Mapping";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -129,6 +136,15 @@
             this.devicePDOView2.Name = "devicePDOView2";
             this.devicePDOView2.Size = new System.Drawing.Size(973, 695);
             this.devicePDOView2.TabIndex = 0;
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "ListBox_686.png");
+            this.imageList1.Images.SetKeyName(1, "notebook_16xLG.png");
+            this.imageList1.Images.SetKeyName(2, "Output_16xLG.png");
+            this.imageList1.Images.SetKeyName(3, "SingleInput_8170_16x.png");
             // 
             // DeviceView
             // 
@@ -147,8 +163,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage3;
@@ -157,5 +171,7 @@
         private DeviceODView deviceODView1;
         private System.Windows.Forms.TabPage tabPage4;
         private DevicePDOView devicePDOView2;
+        private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.TabControl tabControl1;
     }
 }

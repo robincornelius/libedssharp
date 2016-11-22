@@ -179,6 +179,10 @@
     <None Include="Resources\Index_8287_16x.png" />
     <None Include="Resources\GenericVSEditor_9905.png" />
     <None Include="Resources\EventLog_5735.png" />
+    <None Include="Resources\ListBox_686.png" />
+    <None Include="Resources\notebook_16xLG.png" />
+    <None Include="Resources\move_to_bottom.png" />
+    <None Include="Resources\move_to_top.png" />
     <Content Include="style.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
