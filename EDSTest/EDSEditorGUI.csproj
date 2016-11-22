@@ -176,6 +176,9 @@
     <None Include="Resources\PrintSetup_11011.png" />
     <None Include="Resources\Print_11009.png" />
     <None Include="Resources\PrintPreviewControl_698.png" />
+    <None Include="Resources\Index_8287_16x.png" />
+    <None Include="Resources\GenericVSEditor_9905.png" />
+    <None Include="Resources\EventLog_5735.png" />
     <Content Include="style.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

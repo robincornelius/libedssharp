@@ -113,6 +113,16 @@ namespace ODEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap EventLog_5735 {
+            get {
+                object obj = ResourceManager.GetObject("EventLog_5735", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ExporttoScript_9881 {
             get {
                 object obj = ResourceManager.GetObject("ExporttoScript_9881", resourceCulture);
@@ -126,6 +136,26 @@ namespace ODEditor.Properties {
         internal static System.Drawing.Bitmap GenerateAll {
             get {
                 object obj = ResourceManager.GetObject("GenerateAll", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap GenericVSEditor_9905 {
+            get {
+                object obj = ResourceManager.GetObject("GenericVSEditor_9905", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Index_8287_16x {
+            get {
+                object obj = ResourceManager.GetObject("Index_8287_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

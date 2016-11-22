@@ -394,37 +394,6 @@ namespace ODEditor
 
         }
 
-        private void exportDocumentationHtmlToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-          
-
-        }
-
-        private void networkPDOReportToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-
-            /*
-            SaveFileDialog sfd = new SaveFileDialog();
-
-            sfd.Filter = "HTML (*.html)|*.html";
-
-            string name = "network_view.html";
-            name.Replace(' ', '_');
-
-            sfd.FileName = name;
-
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                NetworkPDOreport npr = new NetworkPDOreport();
-                npr.gennetpdodoc(sfd.FileName, network);
-            }
-            */
-
-
-
-        }
-
         void OpenRecentFile(object sender, EventArgs e)
         {
             var menuItem = (ToolStripMenuItem)sender;
@@ -439,6 +408,8 @@ namespace ODEditor
                 openXMLfile(filepath);
             if ( ext == ".eds" )
                 openEDSfile(filepath);
+            if (ext == ".nxml")
+                openNetworkfile(filepath);
 
         }
 
@@ -495,6 +466,19 @@ namespace ODEditor
                 var item = new ToolStripMenuItem(path);
                 item.Tag = path;
                 item.Click += OpenRecentFile;
+                switch(Path.GetExtension(path))
+                {
+                    case ".xml":
+                        item.Image = Properties.Resources.GenericVSEditor_9905;
+                        break;
+                    case ".eds":
+                        item.Image = Properties.Resources.EventLog_5735;
+                        break;
+                    case ".nxml":
+                        item.Image = Properties.Resources.Index_8287_16x;
+                        break;
+                }
+
                 mnuRecentlyUsed.DropDownItems.Add(item);
             }
         }
@@ -512,7 +496,7 @@ namespace ODEditor
 
                 NetworkXML net = new NetworkXML();
                 net.writeXML(sfd.FileName, network);
-
+                addtoMRU(sfd.FileName);
 
             }
 
@@ -525,33 +509,34 @@ namespace ODEditor
             odf.Filter = "CanOpen network XML (*.nxml)|*.nxml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
-                NetworkXML net = new NetworkXML();
-                List<Device> devs = net.readXML(odf.FileName);
+                openNetworkfile(odf.FileName);
+            }
+        }
 
+        private void openNetworkfile(string file)
+        {
+            NetworkXML net = new NetworkXML();
+            List<Device> devs = net.readXML(file);
 
-                foreach (Device d in devs)
-                {
-                    Bridge b = new Bridge();
+            foreach (Device d in devs)
+            {
+                Bridge b = new Bridge();
 
-                    EDSsharp eds = b.convert(d);
-                    //eds.filename = path;  //fixme
+                EDSsharp eds = b.convert(d);
+                //eds.filename = path;  //fixme
 
-                    tabControl1.TabPages.Add(eds.di.ProductName);
+                tabControl1.TabPages.Add(eds.di.ProductName);
 
-                    DeviceView device = new DeviceView();
+                DeviceView device = new DeviceView();
 
-                    device.eds = eds;
-                    tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.eds = eds;
+                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
 
-                    network.Add(eds);
+                network.Add(eds);
 
-                    device.dispatch_updateOD();
-                }
+                device.dispatch_updateOD();
 
-
-
-
-                //addtoMRU(odf.FileName);
+                addtoMRU(file);
             }
         }
 

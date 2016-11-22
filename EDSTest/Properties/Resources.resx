@@ -154,6 +154,15 @@
   <data name="_305_Close_16x16_72" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\305_Close_16x16_72.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="EventLog_5735" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EventLog_5735.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GenericVSEditor_9905" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GenericVSEditor_9905.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Index_8287_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Index_8287_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="PrintPreviewControl_698" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PrintPreviewControl_698.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
