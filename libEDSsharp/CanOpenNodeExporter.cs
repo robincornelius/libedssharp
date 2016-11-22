@@ -900,6 +900,9 @@ const CO_OD_entry_t CO_OD[");
             if (name == null)
                 return null;
 
+            if (name == "")
+                return "";
+
            string[] bits = Regex.Split(name,@"[\W]+");
 
            string output = "";
