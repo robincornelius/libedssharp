@@ -203,6 +203,11 @@ namespace ODEditor
                 }
             }
 
+            //Bug#25 set the combobox text to be the same as the selected item as this does not happen automaticly
+            //when the combobox is disabled
+            if (comboBox_datatype.SelectedItem!=null)
+                comboBox_datatype.Text = comboBox_datatype.SelectedItem.ToString();
+
             comboBox_objecttype.SelectedItem = od.objecttype.ToString();
             if(od.Description!=null)
                 textBox_description.Text = od.Description.Replace("\n", "\r\n");
