@@ -35,7 +35,7 @@ namespace libEDSsharp
 
             file = new StreamWriter(filepath, false);
 
-           file.Write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"></head><body>");
+           file.Write("<!DOCTYPE html><html><head></head><body>");
 
            file.Write(string.Format("<h1> {0} Documementation </h1>",eds.di.ProductName));
 

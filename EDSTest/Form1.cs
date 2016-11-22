@@ -389,56 +389,22 @@ namespace ODEditor
             exportCanOpenNodeToolStripMenuItem.Enabled = enable;
             closeFileToolStripMenuItem.Enabled = enable;
             saveNetworkXmlToolStripMenuItem.Enabled = enable;
-            exportDocumentationHtmlToolStripMenuItem.Enabled = enable;
-            networkPDOReportToolStripMenuItem.Enabled = enable;
+            documentationToolStripMenuItem.Enabled = enable;
+            networkPDOToolStripMenuItem.Enabled = enable;
 
         }
 
         private void exportDocumentationHtmlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-
-                Warnings.warning_list.Clear();
-
-                if (tabControl1.SelectedTab != null)
-                {
-                    DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
-                    SaveFileDialog sfd = new SaveFileDialog();
-
-                    sfd.Filter = "HTML (*.html)|*.html";
-
-                    string name = dv.eds.di.ProductName + ".html";
-                    name.Replace(' ', '_');
-
-                    sfd.FileName = name;
-
-                    if (sfd.ShowDialog() == DialogResult.OK)
-                    {
-                        DocumentationGen docgen = new DocumentationGen();
-                        docgen.genhtmldoc(sfd.FileName, dv.eds);
-
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Warnings.warning_list.Add(ex.ToString());
-            }
-
-            if (Warnings.warning_list.Count != 0)
-            {
-                WarningsFrm frm = new WarningsFrm();
-                frm.ShowDialog();
-            }
+          
 
         }
 
         private void networkPDOReportToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            
+
+            /*
             SaveFileDialog sfd = new SaveFileDialog();
 
             sfd.Filter = "HTML (*.html)|*.html";
@@ -453,7 +419,10 @@ namespace ODEditor
                 NetworkPDOreport npr = new NetworkPDOreport();
                 npr.gennetpdodoc(sfd.FileName, network);
             }
-            
+            */
+
+
+
         }
 
         void OpenRecentFile(object sender, EventArgs e)
@@ -574,6 +543,8 @@ namespace ODEditor
                     device.eds = eds;
                     tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
 
+                    network.Add(eds);
+
                     device.dispatch_updateOD();
                 }
 
@@ -581,6 +552,54 @@ namespace ODEditor
 
 
                 //addtoMRU(odf.FileName);
+            }
+        }
+
+        private void networkPDOToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string temp = Path.GetTempFileName();
+            NetworkPDOreport npr = new NetworkPDOreport();
+            npr.gennetpdodoc(temp, network);
+
+            ReportView rv = new ReportView(temp);
+
+            rv.Show();
+        }
+
+        private void documentationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                Warnings.warning_list.Clear();
+
+                if (tabControl1.SelectedTab != null)
+                {
+                    DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                    SaveFileDialog sfd = new SaveFileDialog();
+
+                    string temp = Path.GetTempFileName();
+
+                    this.UseWaitCursor = true;
+
+                    DocumentationGen docgen = new DocumentationGen();
+                    docgen.genhtmldoc(temp, dv.eds);
+                    ReportView rv = new ReportView(temp);
+                    rv.Show();
+
+                    this.UseWaitCursor = false;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Warnings.warning_list.Add(ex.ToString());
+            }
+
+            if (Warnings.warning_list.Count != 0)
+            {
+                WarningsFrm frm = new WarningsFrm();
+                frm.ShowDialog();
             }
         }
     }
