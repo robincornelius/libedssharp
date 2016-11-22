@@ -171,120 +171,123 @@ namespace libEDSsharp
 
                                 file.Write(string.Format("<tr> <th>Node</th> <th>Dev Name</th> <th>OD Index</th> <th>Name</th> <th>Size</td></tr>"));
 
+                                offsetend += (byte)(size / 8);
+
                                 foreach (EDSsharp eds2 in network)
                                 {
 
                                     if (eds == eds2)
                                         continue;
-
-                                    offsetend += (byte)(size / 8);
-
-                                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in eds2.ods)
+                                    else
                                     {
-                                        if (kvp2.Key >= 0x1400 && kvp2.Key < 0x1600)
+
+                                        foreach (KeyValuePair<UInt16, ODentry> kvp2 in eds2.ods)
                                         {
-                                            if (eds2.ods.ContainsKey((UInt16)(kvp2.Key + 0x200)))
+                                            if (kvp2.Key >= 0x1400 && kvp2.Key < 0x1600)
                                             {
-                                                UInt16 RXCOB = eds2.GetNodeID(kvp2.Value.getsubobjectdefaultvalue(1));
-                                                if (RXCOB == TXCOB)
+                                                if (eds2.ods.ContainsKey((UInt16)(kvp2.Key + 0x200)))
                                                 {
-
-                                                    ODentry map2 = eds2.ods[(UInt16)(kvp2.Key + 0x200)];
-
-                                                    //Get the actual subindex to use
-
-                                                    byte offsetstart2 = 0;
-                                                    byte offsetend2 = 0;
-
-                                                    Byte size2 =0;
-                                                    UInt32 mapping2 = 0;
-                                                    UInt16 index2 = 0;
-                                                    UInt16 subindex2 = 0;
-
-                                                    byte totalsize2 = 0;
-
-                                                    //Sanity check the total size
-
-                                                    for (byte sub2 = 1; sub2 <= map2.getmaxsubindex(); sub2++)
+                                                    UInt16 RXCOB = eds2.GetNodeID(kvp2.Value.getsubobjectdefaultvalue(1));
+                                                    if (RXCOB == TXCOB)
                                                     {
-                                                        mapping2 = EDSsharp.ConvertToUInt32(map2.getsubobjectdefaultvalue(sub2));
-                                                        size2 = (byte)(mapping2);
-                                                        totalsize2 += size2;
-                                                    }
-                                                    if(totalsize2!=totalsize)
-                                                    {
-                                                        file.WriteLine("<B> Critical error with network RX PDO size != TX PDO SIZE");
-                                                    }
 
-                                                    for (byte sub2 = 1; sub2 <= map2.getmaxsubindex(); sub2++)
-                                                    {
-                                                        mapping2 = EDSsharp.ConvertToUInt32(map2.getsubobjectdefaultvalue(sub2));
-                                                        index2 = (UInt16)(mapping2 >> 16);
-                                                        subindex2 = (UInt16)(0x00FF & (mapping2 >> 8));
-                                                        size2 = (byte)mapping2;
+                                                        ODentry map2 = eds2.ods[(UInt16)(kvp2.Key + 0x200)];
 
-                                                        if (mapping2 == 0)
-                                                            continue;
+                                                        //Get the actual subindex to use
 
-                                                        offsetend2 += (byte)(size2 / 8);
+                                                        byte offsetstart2 = 0;
+                                                        byte offsetend2 = 0;
+
+                                                        Byte size2 = 0;
+                                                        UInt32 mapping2 = 0;
+                                                        UInt16 index2 = 0;
+                                                        UInt16 subindex2 = 0;
+
+                                                        byte totalsize2 = 0;
+
+                                                        //Sanity check the total size
+
+                                                        for (byte sub2 = 1; sub2 <= map2.getmaxsubindex(); sub2++)
+                                                        {
+                                                            mapping2 = EDSsharp.ConvertToUInt32(map2.getsubobjectdefaultvalue(sub2));
+                                                            size2 = (byte)(mapping2);
+                                                            totalsize2 += size2;
+                                                        }
+                                                        if (totalsize2 != totalsize)
+                                                        {
+                                                            file.WriteLine("<B> Critical error with network RX PDO size != TX PDO SIZE");
+                                                        }
+
+                                                        for (byte sub2 = 1; sub2 <= map2.getmaxsubindex(); sub2++)
+                                                        {
+                                                            mapping2 = EDSsharp.ConvertToUInt32(map2.getsubobjectdefaultvalue(sub2));
+                                                            index2 = (UInt16)(mapping2 >> 16);
+                                                            subindex2 = (UInt16)(0x00FF & (mapping2 >> 8));
+                                                            size2 = (byte)mapping2;
+
+                                                            if (mapping2 == 0)
+                                                                continue;
+
+                                                            offsetend2 += (byte)(size2 / 8);
 
 
-                                                       // if(offsetstart == offsetstart2 && offsetend == offsetend2)
+                                                            // if(offsetstart == offsetstart2 && offsetend == offsetend2)
                                                             //we are all good equal data 1:1 mapping
 
-                                                        if(offsetstart2<offsetstart)
-                                                        {
-                                                            //more data needed to reach start
+                                                            if (offsetstart2 < offsetstart)
+                                                            {
+                                                                //more data needed to reach start
+                                                                offsetstart2 += (byte)(size2 / 8);
+                                                                continue;
+                                                            }
+
+                                                            if (offsetend2 > offsetend && offsetstart2 > offsetstart)
+                                                                break; //we are done
+
                                                             offsetstart2 += (byte)(size2 / 8);
-                                                            continue;
+
+                                                            if (offsetend2 > offsetend)
+                                                            {
+                                                                //merge cell required on parent table
+                                                                //meh difficult to do from here
+                                                            }
+
+
+                                                            String name2;
+
+                                                            if (subindex2 == 0)
+                                                            {
+                                                                name2 = eds2.ods[index2].parameter_name;
+
+                                                            }
+                                                            else
+                                                            {
+                                                                name2 = eds2.ods[index2].getsubobject(subindex2).parameter_name;
+                                                            }
+
+                                                            string sizemsg = "";
+
+                                                            if (size != size2)
+                                                            {
+                                                                sizemsg = " <b>WARNING</b>";
+                                                            }
+
+
+                                                            file.Write(string.Format("<tr> <td>0x{0:x2}</td> <td>{1}</td> <td>0x{2:x4}/0x{3:x2}</td> <td>{4}</td><td>{5}{6}</td></tr>", eds2.di.concreteNodeId, eds2.di.ProductName, index2, subindex2, name2, size2, sizemsg));
+
                                                         }
 
-                                                        if (offsetend2 > offsetend && offsetstart2>offsetstart)
-                                                            break; //we are done
-
-                                                        offsetstart2 += (byte)(size2 / 8);
-
-                                                        if (offsetend2 > offsetend)
-                                                        {
-                                                            //merge cell required on parent table
-                                                            //meh difficult to do from here
-                                                        }
-                                                        
-                                                   
-                                                        String name2;
-
-                                                        if (subindex2 == 0)
-                                                        {
-                                                            name2 = eds2.ods[index2].parameter_name;
-
-                                                        }
-                                                        else
-                                                        {
-                                                            name2 = eds2.ods[index2].getsubobject(subindex2).parameter_name;
-                                                        }
-
-                                                        string sizemsg = "";
-
-                                                        if (size != size2)
-                                                        {
-                                                            sizemsg = " <b>WARNING</b>";
-                                                        }
-                                                   
-
-                                                        file.Write(string.Format("<tr> <td>0x{0:x2}</td> <td>{1}</td> <td>0x{2:x4}/0x{3:x2}</td> <td>{4}</td><td>{5}{6}</td></tr>", eds2.di.concreteNodeId, eds2.di.ProductName, index2, subindex2, name2, size2, sizemsg));
 
                                                     }
-
-
                                                 }
                                             }
                                         }
-                                    }
 
-                                    offsetstart += (byte)(size / 8);
+                                      
+                                    }
                                 }
 
-                               
+                                offsetstart += (byte)(size / 8);
 
                                 file.Write("</table>");
 

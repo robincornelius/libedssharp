@@ -173,6 +173,9 @@
     <Content Include="Profiles\DSP302-NMTMaster.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\PrintSetup_11011.png" />
+    <None Include="Resources\Print_11009.png" />
+    <None Include="Resources\PrintPreviewControl_698.png" />
     <Content Include="style.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

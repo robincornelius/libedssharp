@@ -27,5 +27,20 @@ namespace ODEditor
             mshtml.IHTMLStyleSheet styleSheet = CurrentDocument.createStyleSheet("", 0);
             styleSheet.cssText = text;
         }
+
+        private void toolStripButton_print_Click(object sender, EventArgs e)
+        {
+            webBrowser1.ShowPrintDialog();
+        }
+
+        private void toolStripButton_preview_Click(object sender, EventArgs e)
+        {
+            webBrowser1.ShowPrintPreviewDialog();
+        }
+
+        private void toolStripButton_save_Click(object sender, EventArgs e)
+        {
+            webBrowser1.ShowSaveAsDialog();
+        }
     }
 }

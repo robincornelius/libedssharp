@@ -163,6 +163,36 @@ namespace ODEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Print_11009 {
+            get {
+                object obj = ResourceManager.GetObject("Print_11009", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PrintPreviewControl_698 {
+            get {
+                object obj = ResourceManager.GetObject("PrintPreviewControl_698", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PrintSetup_11011 {
+            get {
+                object obj = ResourceManager.GetObject("PrintSetup_11011", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Remove_16xLG {
             get {
                 object obj = ResourceManager.GetObject("Remove_16xLG", resourceCulture);
