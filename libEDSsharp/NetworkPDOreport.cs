@@ -151,6 +151,9 @@ namespace libEDSsharp
 
                                 String name;
 
+                                if (!eds.ods.ContainsKey(index))
+                                    break;
+
                                 if (subindex == 0)
                                 {
                                     name = eds.ods[index].parameter_name;
