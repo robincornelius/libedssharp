@@ -47,8 +47,11 @@ directory, only include the minimum number of objects that you want to auto inse
 * Edit Device and File Info sections
 * Set RX/TX PDO mappings easily from dropdown lists of avaiable objects
 * Add and remove new PDO entries (communication paramaters and mapping) in a single button push
+* Save groups of EDS/XML files as a network objects with abality to set concrete node IDs
+* View report of all configured PDO across the network
 
 
 ![alt tag](pic1.jpg)
 ![alt tag](pic2.jpg)
 ![alt tag](pic3.jpg)
+![alt tag](pic4.jpg)
