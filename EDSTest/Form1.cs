@@ -138,6 +138,7 @@ namespace ODEditor
                 device.eds = eds;
                 tabControl1.TabPages.Add(eds.di.ProductName);
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.Dock = DockStyle.Fill;
 
                 device.dispatch_updateOD();
 
@@ -231,6 +232,7 @@ namespace ODEditor
 
                 device.eds = eds;
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.Dock = DockStyle.Fill;
 
                 device.dispatch_updateOD();
 
@@ -366,6 +368,7 @@ namespace ODEditor
 
             device.eds = eds;
             tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+            device.Dock = DockStyle.Fill;
 
             device.dispatch_updateOD();
         }
@@ -526,11 +529,13 @@ namespace ODEditor
                 //eds.filename = path;  //fixme
 
                 tabControl1.TabPages.Add(eds.di.ProductName);
+                
 
                 DeviceView device = new DeviceView();
 
                 device.eds = eds;
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.Dock = DockStyle.Fill;
 
                 network.Add(eds);
 

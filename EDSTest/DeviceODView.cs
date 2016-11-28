@@ -887,6 +887,26 @@ namespace ODEditor
 
             
         }
+
+        private void textBox_precode_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label14_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox_accessfunctionname_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public static class ControlExtensions

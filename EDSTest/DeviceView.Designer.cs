@@ -75,9 +75,10 @@
             // 
             // deviceInfoView
             // 
-            this.deviceInfoView.Location = new System.Drawing.Point(6, 6);
+            this.deviceInfoView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deviceInfoView.Location = new System.Drawing.Point(3, 3);
             this.deviceInfoView.Name = "deviceInfoView";
-            this.deviceInfoView.Size = new System.Drawing.Size(754, 525);
+            this.deviceInfoView.Size = new System.Drawing.Size(1108, 740);
             this.deviceInfoView.TabIndex = 0;
             this.deviceInfoView.Load += new System.EventHandler(this.deviceInfoView_Load);
             // 
@@ -95,9 +96,10 @@
             // 
             // deviceODView1
             // 
-            this.deviceODView1.Location = new System.Drawing.Point(0, 2);
+            this.deviceODView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deviceODView1.Location = new System.Drawing.Point(3, 3);
             this.deviceODView1.Name = "deviceODView1";
-            this.deviceODView1.Size = new System.Drawing.Size(1112, 749);
+            this.deviceODView1.Size = new System.Drawing.Size(1108, 740);
             this.deviceODView1.TabIndex = 0;
             // 
             // tabPage3
