@@ -88,6 +88,7 @@ namespace libEDSsharp
                             sub.DefaultValue = subod.defaultvalue;
                             sub.PDOmapping = subod.PDOtype.ToString();
                             sub.SubIndex = String.Format("{0:x2}",subod.subindex);
+                            sub.TPDOdetectCOS = subod.TPDODetectCos.ToString().ToLower();
                             coo.CANopenSubObject.Add(sub);
                                                  
                         }
@@ -329,6 +330,17 @@ namespace libEDSsharp
                     subentry.parent = entry;
 
                     subentry.objecttype = ObjectType.VAR;
+
+                    if(coosub.TPDOdetectCOS!=null)
+                    {
+                        subentry.TPDODetectCos = coosub.TPDOdetectCOS == "true";  
+                    }
+                    else
+                    {
+                        if(coo.TPDOdetectCOS!=null)
+                            subentry.TPDODetectCos = coo.TPDOdetectCOS == "true";
+                    }
+                       
 
                     entry.subobjects.Add(subentry.subindex,subentry);
 

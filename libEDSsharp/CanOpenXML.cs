@@ -175,7 +175,9 @@ namespace Xml2CSharp
 		public string PDOmapping { get; set; }
 		[XmlAttribute(AttributeName="defaultValue")]
 		public string DefaultValue { get; set; }
-	}
+        [XmlAttribute(AttributeName = "TPDOdetectCOS")]
+        public string TPDOdetectCOS { get; set; }
+    }
 
 	[XmlRoot(ElementName="CANopenObjectList")]
 	public class CANopenObjectList {
