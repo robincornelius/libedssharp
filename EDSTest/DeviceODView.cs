@@ -221,8 +221,14 @@ namespace ODEditor
                 comboBox_datatype.Text = comboBox_datatype.SelectedItem.ToString();
 
             comboBox_objecttype.SelectedItem = od.objecttype.ToString();
-            if(od.Description!=null)
+            if (od.Description != null)
+            {
                 textBox_description.Text = od.Description.Replace("\n", "\r\n");
+            }
+            else
+            {
+                textBox_description.Text = "";
+            }
             comboBox_pdomap.SelectedItem = od.PDOtype.ToString();
 
             checkBox_COS.Checked = od.TPDODetectCos;
