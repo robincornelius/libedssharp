@@ -152,6 +152,18 @@ namespace ODEditor
                 }
             }
 
+            //If we edit a parent REC object we also need to change the storage location of subobjects
+            //this does occur implicity anyway and it also occurs during load of file but the GUI was displaying
+            //incorrect data in the shaded combobox item for storage location
+            if (selectedobject.parent == null && selectedobject.objecttype == ObjectType.REC)
+            {
+                foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
+                {
+                    ODentry subod = kvp.Value;
+                    subod.location = selectedobject.location;
+                }
+            }
+
 
             updateselectedindexdisplay(selectedobject.index);
             validateanddisplaydata();
