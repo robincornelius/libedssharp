@@ -47,33 +47,7 @@
             this.listView_manufacture_objects = new System.Windows.Forms.ListView();
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button_save_changes = new System.Windows.Forms.Button();
-            this.label16 = new System.Windows.Forms.Label();
-            this.comboBox_memory = new System.Windows.Forms.ComboBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.checkBox_enabled = new System.Windows.Forms.CheckBox();
-            this.textBox_precode = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.textBox_accessfunctionname = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.checkBox_COS = new System.Windows.Forms.CheckBox();
-            this.textBox_defaultvalue = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.comboBox_pdomap = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.comboBox_accesstype = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.comboBox_datatype = new System.Windows.Forms.ComboBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.comboBox_objecttype = new System.Windows.Forms.ComboBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox_description = new System.Windows.Forms.TextBox();
-            this.textBox_name = new System.Windows.Forms.TextBox();
-            this.label_index = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.listViewDetails = new System.Windows.Forms.ListView();
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -82,6 +56,33 @@
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox_precode = new System.Windows.Forms.TextBox();
+            this.button_save_changes = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.textBox_accessfunctionname = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.comboBox_memory = new System.Windows.Forms.ComboBox();
+            this.label_index = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.checkBox_enabled = new System.Windows.Forms.CheckBox();
+            this.textBox_name = new System.Windows.Forms.TextBox();
+            this.textBox_description = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.comboBox_objecttype = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.comboBox_datatype = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.checkBox_COS = new System.Windows.Forms.CheckBox();
+            this.comboBox_accesstype = new System.Windows.Forms.ComboBox();
+            this.textBox_defaultvalue = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.comboBox_pdomap = new System.Windows.Forms.ComboBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addNewObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,7 +91,6 @@
             this.changeMaxSubIndexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -106,12 +106,12 @@
             this.splitContainer3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
-            this.contextMenu_array.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
+            this.contextMenu_array.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -321,247 +321,49 @@
             this.columnHeader6.Text = "Name";
             this.columnHeader6.Width = 200;
             // 
-            // button_save_changes
+            // splitContainer4
             // 
-            this.button_save_changes.Image = global::ODEditor.Properties.Resources.Save_6530;
-            this.button_save_changes.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_save_changes.Location = new System.Drawing.Point(16, 326);
-            this.button_save_changes.Name = "button_save_changes";
-            this.button_save_changes.Size = new System.Drawing.Size(122, 27);
-            this.button_save_changes.TabIndex = 27;
-            this.button_save_changes.Text = "Save Changes";
-            this.button_save_changes.UseVisualStyleBackColor = true;
-            this.button_save_changes.Click += new System.EventHandler(this.button_save_changes_Click);
+            this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer4.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer4.Name = "splitContainer4";
+            this.splitContainer4.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // label16
+            // splitContainer4.Panel1
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(243, 224);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(71, 13);
-            this.label16.TabIndex = 26;
-            this.label16.Text = "Memory Type";
+            this.splitContainer4.Panel1.Controls.Add(this.listViewDetails);
             // 
-            // comboBox_memory
+            // splitContainer4.Panel2
             // 
-            this.comboBox_memory.FormattingEnabled = true;
-            this.comboBox_memory.Location = new System.Drawing.Point(320, 219);
-            this.comboBox_memory.Name = "comboBox_memory";
-            this.comboBox_memory.Size = new System.Drawing.Size(122, 21);
-            this.comboBox_memory.TabIndex = 25;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(13, 306);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(46, 13);
-            this.label15.TabIndex = 24;
-            this.label15.Text = "Enabled";
-            // 
-            // checkBox_enabled
-            // 
-            this.checkBox_enabled.AutoSize = true;
-            this.checkBox_enabled.Location = new System.Drawing.Point(108, 306);
-            this.checkBox_enabled.Name = "checkBox_enabled";
-            this.checkBox_enabled.Size = new System.Drawing.Size(15, 14);
-            this.checkBox_enabled.TabIndex = 23;
-            this.checkBox_enabled.UseVisualStyleBackColor = true;
-            // 
-            // textBox_precode
-            // 
-            this.textBox_precode.Location = new System.Drawing.Point(120, 394);
-            this.textBox_precode.Name = "textBox_precode";
-            this.textBox_precode.Size = new System.Drawing.Size(278, 20);
-            this.textBox_precode.TabIndex = 22;
-            this.textBox_precode.Visible = false;
-            this.textBox_precode.TextChanged += new System.EventHandler(this.textBox_precode_TextChanged);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(25, 397);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(47, 13);
-            this.label14.TabIndex = 21;
-            this.label14.Text = "Precode";
-            this.label14.Visible = false;
-            this.label14.Click += new System.EventHandler(this.label14_Click);
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(25, 373);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(83, 13);
-            this.label13.TabIndex = 20;
-            this.label13.Text = "Access function";
-            this.label13.Visible = false;
-            this.label13.Click += new System.EventHandler(this.label13_Click);
-            // 
-            // textBox_accessfunctionname
-            // 
-            this.textBox_accessfunctionname.Location = new System.Drawing.Point(120, 370);
-            this.textBox_accessfunctionname.Name = "textBox_accessfunctionname";
-            this.textBox_accessfunctionname.Size = new System.Drawing.Size(278, 20);
-            this.textBox_accessfunctionname.TabIndex = 19;
-            this.textBox_accessfunctionname.Visible = false;
-            this.textBox_accessfunctionname.TextChanged += new System.EventHandler(this.textBox_accessfunctionname_TextChanged);
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(243, 251);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(55, 13);
-            this.label12.TabIndex = 18;
-            this.label12.Text = "PDO COS";
-            // 
-            // checkBox_COS
-            // 
-            this.checkBox_COS.AutoSize = true;
-            this.checkBox_COS.Location = new System.Drawing.Point(338, 251);
-            this.checkBox_COS.Name = "checkBox_COS";
-            this.checkBox_COS.Size = new System.Drawing.Size(15, 14);
-            this.checkBox_COS.TabIndex = 17;
-            this.checkBox_COS.UseVisualStyleBackColor = true;
-            // 
-            // textBox_defaultvalue
-            // 
-            this.textBox_defaultvalue.Location = new System.Drawing.Point(108, 276);
-            this.textBox_defaultvalue.Name = "textBox_defaultvalue";
-            this.textBox_defaultvalue.Size = new System.Drawing.Size(278, 20);
-            this.textBox_defaultvalue.TabIndex = 16;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(13, 279);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(70, 13);
-            this.label11.TabIndex = 15;
-            this.label11.Text = "Default value";
-            // 
-            // comboBox_pdomap
-            // 
-            this.comboBox_pdomap.FormattingEnabled = true;
-            this.comboBox_pdomap.Location = new System.Drawing.Point(108, 248);
-            this.comboBox_pdomap.Name = "comboBox_pdomap";
-            this.comboBox_pdomap.Size = new System.Drawing.Size(122, 21);
-            this.comboBox_pdomap.TabIndex = 14;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(13, 251);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(54, 13);
-            this.label10.TabIndex = 13;
-            this.label10.Text = "PDO Map";
-            // 
-            // comboBox_accesstype
-            // 
-            this.comboBox_accesstype.FormattingEnabled = true;
-            this.comboBox_accesstype.Location = new System.Drawing.Point(108, 221);
-            this.comboBox_accesstype.Name = "comboBox_accesstype";
-            this.comboBox_accesstype.Size = new System.Drawing.Size(122, 21);
-            this.comboBox_accesstype.TabIndex = 12;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(13, 224);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(69, 13);
-            this.label9.TabIndex = 11;
-            this.label9.Text = "Access Type";
-            // 
-            // comboBox_datatype
-            // 
-            this.comboBox_datatype.FormattingEnabled = true;
-            this.comboBox_datatype.Location = new System.Drawing.Point(108, 195);
-            this.comboBox_datatype.Name = "comboBox_datatype";
-            this.comboBox_datatype.Size = new System.Drawing.Size(122, 21);
-            this.comboBox_datatype.TabIndex = 10;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(13, 198);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(57, 13);
-            this.label8.TabIndex = 9;
-            this.label8.Text = "Data Type";
-            // 
-            // comboBox_objecttype
-            // 
-            this.comboBox_objecttype.Enabled = false;
-            this.comboBox_objecttype.FormattingEnabled = true;
-            this.comboBox_objecttype.Location = new System.Drawing.Point(108, 169);
-            this.comboBox_objecttype.Name = "comboBox_objecttype";
-            this.comboBox_objecttype.Size = new System.Drawing.Size(122, 21);
-            this.comboBox_objecttype.TabIndex = 8;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 172);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(65, 13);
-            this.label7.TabIndex = 7;
-            this.label7.Text = "Object Type";
-            // 
-            // textBox_description
-            // 
-            this.textBox_description.Location = new System.Drawing.Point(108, 51);
-            this.textBox_description.Multiline = true;
-            this.textBox_description.Name = "textBox_description";
-            this.textBox_description.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_description.Size = new System.Drawing.Size(683, 102);
-            this.textBox_description.TabIndex = 6;
-            // 
-            // textBox_name
-            // 
-            this.textBox_name.Location = new System.Drawing.Point(108, 29);
-            this.textBox_name.Name = "textBox_name";
-            this.textBox_name.Size = new System.Drawing.Size(278, 20);
-            this.textBox_name.TabIndex = 5;
-            // 
-            // label_index
-            // 
-            this.label_index.AutoSize = true;
-            this.label_index.Location = new System.Drawing.Point(105, 10);
-            this.label_index.Name = "label_index";
-            this.label_index.Size = new System.Drawing.Size(33, 13);
-            this.label_index.TabIndex = 4;
-            this.label_index.Text = "Index";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 54);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(60, 13);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "Description";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(13, 32);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 13);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Name";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 10);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(33, 13);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Index";
+            this.splitContainer4.Panel2.Controls.Add(this.label4);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_precode);
+            this.splitContainer4.Panel2.Controls.Add(this.button_save_changes);
+            this.splitContainer4.Panel2.Controls.Add(this.label14);
+            this.splitContainer4.Panel2.Controls.Add(this.label5);
+            this.splitContainer4.Panel2.Controls.Add(this.label13);
+            this.splitContainer4.Panel2.Controls.Add(this.label16);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_accessfunctionname);
+            this.splitContainer4.Panel2.Controls.Add(this.label6);
+            this.splitContainer4.Panel2.Controls.Add(this.comboBox_memory);
+            this.splitContainer4.Panel2.Controls.Add(this.label_index);
+            this.splitContainer4.Panel2.Controls.Add(this.label15);
+            this.splitContainer4.Panel2.Controls.Add(this.checkBox_enabled);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_name);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_description);
+            this.splitContainer4.Panel2.Controls.Add(this.label7);
+            this.splitContainer4.Panel2.Controls.Add(this.comboBox_objecttype);
+            this.splitContainer4.Panel2.Controls.Add(this.label8);
+            this.splitContainer4.Panel2.Controls.Add(this.comboBox_datatype);
+            this.splitContainer4.Panel2.Controls.Add(this.label12);
+            this.splitContainer4.Panel2.Controls.Add(this.label9);
+            this.splitContainer4.Panel2.Controls.Add(this.checkBox_COS);
+            this.splitContainer4.Panel2.Controls.Add(this.comboBox_accesstype);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_defaultvalue);
+            this.splitContainer4.Panel2.Controls.Add(this.label10);
+            this.splitContainer4.Panel2.Controls.Add(this.label11);
+            this.splitContainer4.Panel2.Controls.Add(this.comboBox_pdomap);
+            this.splitContainer4.Size = new System.Drawing.Size(830, 749);
+            this.splitContainer4.SplitterDistance = 176;
+            this.splitContainer4.TabIndex = 28;
             // 
             // listViewDetails
             // 
@@ -582,6 +384,7 @@
             this.listViewDetails.TabIndex = 0;
             this.listViewDetails.UseCompatibleStateImageBehavior = false;
             this.listViewDetails.View = System.Windows.Forms.View.Details;
+            this.listViewDetails.SelectedIndexChanged += new System.EventHandler(this.listViewDetails_SelectedIndexChanged);
             this.listViewDetails.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewDetails_MouseClick);
             // 
             // columnHeader7
@@ -616,6 +419,248 @@
             // columnHeader14
             // 
             this.columnHeader14.Text = "PDO Map";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(13, 10);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(33, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Index";
+            // 
+            // textBox_precode
+            // 
+            this.textBox_precode.Location = new System.Drawing.Point(120, 394);
+            this.textBox_precode.Name = "textBox_precode";
+            this.textBox_precode.Size = new System.Drawing.Size(278, 20);
+            this.textBox_precode.TabIndex = 22;
+            this.textBox_precode.Visible = false;
+            this.textBox_precode.TextChanged += new System.EventHandler(this.textBox_precode_TextChanged);
+            // 
+            // button_save_changes
+            // 
+            this.button_save_changes.Image = global::ODEditor.Properties.Resources.Save_6530;
+            this.button_save_changes.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.button_save_changes.Location = new System.Drawing.Point(16, 326);
+            this.button_save_changes.Name = "button_save_changes";
+            this.button_save_changes.Size = new System.Drawing.Size(122, 27);
+            this.button_save_changes.TabIndex = 27;
+            this.button_save_changes.Text = "Save Changes";
+            this.button_save_changes.UseVisualStyleBackColor = true;
+            this.button_save_changes.Click += new System.EventHandler(this.button_save_changes_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(25, 397);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(47, 13);
+            this.label14.TabIndex = 21;
+            this.label14.Text = "Precode";
+            this.label14.Visible = false;
+            this.label14.Click += new System.EventHandler(this.label14_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 32);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(35, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Name";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(25, 373);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(83, 13);
+            this.label13.TabIndex = 20;
+            this.label13.Text = "Access function";
+            this.label13.Visible = false;
+            this.label13.Click += new System.EventHandler(this.label13_Click);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(243, 224);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(71, 13);
+            this.label16.TabIndex = 26;
+            this.label16.Text = "Memory Type";
+            // 
+            // textBox_accessfunctionname
+            // 
+            this.textBox_accessfunctionname.Location = new System.Drawing.Point(120, 370);
+            this.textBox_accessfunctionname.Name = "textBox_accessfunctionname";
+            this.textBox_accessfunctionname.Size = new System.Drawing.Size(278, 20);
+            this.textBox_accessfunctionname.TabIndex = 19;
+            this.textBox_accessfunctionname.Visible = false;
+            this.textBox_accessfunctionname.TextChanged += new System.EventHandler(this.textBox_accessfunctionname_TextChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(13, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(60, 13);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Description";
+            // 
+            // comboBox_memory
+            // 
+            this.comboBox_memory.FormattingEnabled = true;
+            this.comboBox_memory.Location = new System.Drawing.Point(320, 219);
+            this.comboBox_memory.Name = "comboBox_memory";
+            this.comboBox_memory.Size = new System.Drawing.Size(122, 21);
+            this.comboBox_memory.TabIndex = 25;
+            // 
+            // label_index
+            // 
+            this.label_index.AutoSize = true;
+            this.label_index.Location = new System.Drawing.Point(105, 10);
+            this.label_index.Name = "label_index";
+            this.label_index.Size = new System.Drawing.Size(33, 13);
+            this.label_index.TabIndex = 4;
+            this.label_index.Text = "Index";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(13, 306);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(46, 13);
+            this.label15.TabIndex = 24;
+            this.label15.Text = "Enabled";
+            // 
+            // checkBox_enabled
+            // 
+            this.checkBox_enabled.AutoSize = true;
+            this.checkBox_enabled.Location = new System.Drawing.Point(108, 306);
+            this.checkBox_enabled.Name = "checkBox_enabled";
+            this.checkBox_enabled.Size = new System.Drawing.Size(15, 14);
+            this.checkBox_enabled.TabIndex = 23;
+            this.checkBox_enabled.UseVisualStyleBackColor = true;
+            // 
+            // textBox_name
+            // 
+            this.textBox_name.Location = new System.Drawing.Point(108, 29);
+            this.textBox_name.Name = "textBox_name";
+            this.textBox_name.Size = new System.Drawing.Size(278, 20);
+            this.textBox_name.TabIndex = 5;
+            // 
+            // textBox_description
+            // 
+            this.textBox_description.Location = new System.Drawing.Point(108, 51);
+            this.textBox_description.Multiline = true;
+            this.textBox_description.Name = "textBox_description";
+            this.textBox_description.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox_description.Size = new System.Drawing.Size(683, 102);
+            this.textBox_description.TabIndex = 6;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 172);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(65, 13);
+            this.label7.TabIndex = 7;
+            this.label7.Text = "Object Type";
+            // 
+            // comboBox_objecttype
+            // 
+            this.comboBox_objecttype.Enabled = false;
+            this.comboBox_objecttype.FormattingEnabled = true;
+            this.comboBox_objecttype.Location = new System.Drawing.Point(108, 169);
+            this.comboBox_objecttype.Name = "comboBox_objecttype";
+            this.comboBox_objecttype.Size = new System.Drawing.Size(122, 21);
+            this.comboBox_objecttype.TabIndex = 8;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(13, 198);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(57, 13);
+            this.label8.TabIndex = 9;
+            this.label8.Text = "Data Type";
+            // 
+            // comboBox_datatype
+            // 
+            this.comboBox_datatype.FormattingEnabled = true;
+            this.comboBox_datatype.Location = new System.Drawing.Point(108, 195);
+            this.comboBox_datatype.Name = "comboBox_datatype";
+            this.comboBox_datatype.Size = new System.Drawing.Size(122, 21);
+            this.comboBox_datatype.TabIndex = 10;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(243, 251);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(55, 13);
+            this.label12.TabIndex = 18;
+            this.label12.Text = "PDO COS";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(13, 224);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(69, 13);
+            this.label9.TabIndex = 11;
+            this.label9.Text = "Access Type";
+            // 
+            // checkBox_COS
+            // 
+            this.checkBox_COS.AutoSize = true;
+            this.checkBox_COS.Location = new System.Drawing.Point(338, 251);
+            this.checkBox_COS.Name = "checkBox_COS";
+            this.checkBox_COS.Size = new System.Drawing.Size(15, 14);
+            this.checkBox_COS.TabIndex = 17;
+            this.checkBox_COS.UseVisualStyleBackColor = true;
+            // 
+            // comboBox_accesstype
+            // 
+            this.comboBox_accesstype.FormattingEnabled = true;
+            this.comboBox_accesstype.Location = new System.Drawing.Point(108, 221);
+            this.comboBox_accesstype.Name = "comboBox_accesstype";
+            this.comboBox_accesstype.Size = new System.Drawing.Size(122, 21);
+            this.comboBox_accesstype.TabIndex = 12;
+            // 
+            // textBox_defaultvalue
+            // 
+            this.textBox_defaultvalue.Location = new System.Drawing.Point(108, 276);
+            this.textBox_defaultvalue.Name = "textBox_defaultvalue";
+            this.textBox_defaultvalue.Size = new System.Drawing.Size(278, 20);
+            this.textBox_defaultvalue.TabIndex = 16;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(13, 251);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(54, 13);
+            this.label10.TabIndex = 13;
+            this.label10.Text = "PDO Map";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(13, 279);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(70, 13);
+            this.label11.TabIndex = 15;
+            this.label11.Text = "Default value";
+            // 
+            // comboBox_pdomap
+            // 
+            this.comboBox_pdomap.FormattingEnabled = true;
+            this.comboBox_pdomap.Location = new System.Drawing.Point(108, 248);
+            this.comboBox_pdomap.Name = "comboBox_pdomap";
+            this.comboBox_pdomap.Size = new System.Drawing.Size(122, 21);
+            this.comboBox_pdomap.TabIndex = 14;
             // 
             // contextMenuStrip1
             // 
@@ -682,50 +727,6 @@
             this.removeSubItemToolStripMenuItem.Text = "Remove sub item";
             this.removeSubItemToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemToolStripMenuItem_Click);
             // 
-            // splitContainer4
-            // 
-            this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer4.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer4.Name = "splitContainer4";
-            this.splitContainer4.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer4.Panel1
-            // 
-            this.splitContainer4.Panel1.Controls.Add(this.listViewDetails);
-            // 
-            // splitContainer4.Panel2
-            // 
-            this.splitContainer4.Panel2.Controls.Add(this.label4);
-            this.splitContainer4.Panel2.Controls.Add(this.textBox_precode);
-            this.splitContainer4.Panel2.Controls.Add(this.button_save_changes);
-            this.splitContainer4.Panel2.Controls.Add(this.label14);
-            this.splitContainer4.Panel2.Controls.Add(this.label5);
-            this.splitContainer4.Panel2.Controls.Add(this.label13);
-            this.splitContainer4.Panel2.Controls.Add(this.label16);
-            this.splitContainer4.Panel2.Controls.Add(this.textBox_accessfunctionname);
-            this.splitContainer4.Panel2.Controls.Add(this.label6);
-            this.splitContainer4.Panel2.Controls.Add(this.comboBox_memory);
-            this.splitContainer4.Panel2.Controls.Add(this.label_index);
-            this.splitContainer4.Panel2.Controls.Add(this.label15);
-            this.splitContainer4.Panel2.Controls.Add(this.checkBox_enabled);
-            this.splitContainer4.Panel2.Controls.Add(this.textBox_name);
-            this.splitContainer4.Panel2.Controls.Add(this.textBox_description);
-            this.splitContainer4.Panel2.Controls.Add(this.label7);
-            this.splitContainer4.Panel2.Controls.Add(this.comboBox_objecttype);
-            this.splitContainer4.Panel2.Controls.Add(this.label8);
-            this.splitContainer4.Panel2.Controls.Add(this.comboBox_datatype);
-            this.splitContainer4.Panel2.Controls.Add(this.label12);
-            this.splitContainer4.Panel2.Controls.Add(this.label9);
-            this.splitContainer4.Panel2.Controls.Add(this.checkBox_COS);
-            this.splitContainer4.Panel2.Controls.Add(this.comboBox_accesstype);
-            this.splitContainer4.Panel2.Controls.Add(this.textBox_defaultvalue);
-            this.splitContainer4.Panel2.Controls.Add(this.label10);
-            this.splitContainer4.Panel2.Controls.Add(this.label11);
-            this.splitContainer4.Panel2.Controls.Add(this.comboBox_pdomap);
-            this.splitContainer4.Size = new System.Drawing.Size(830, 749);
-            this.splitContainer4.SplitterDistance = 176;
-            this.splitContainer4.TabIndex = 28;
-            // 
             // DeviceODView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -751,13 +752,13 @@
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.contextMenuStrip1.ResumeLayout(false);
-            this.contextMenu_array.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);
             this.splitContainer4.Panel2.ResumeLayout(false);
             this.splitContainer4.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenu_array.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

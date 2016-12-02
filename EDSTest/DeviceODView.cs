@@ -919,6 +919,19 @@ namespace ODEditor
         {
 
         }
+
+        private void listViewDetails_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            if (listViewDetails.SelectedItems.Count == 0)
+                return;
+
+            ListViewItem lvi = listViewDetails.SelectedItems[0];
+
+            selecteditemsub = lvi;
+            selectedobject = (ODentry)lvi.Tag;
+            validateanddisplaydata();
+        }
     }
 
     public static class ControlExtensions
