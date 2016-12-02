@@ -260,12 +260,14 @@ namespace libEDSsharp
 
                                                             if (subindex2 == 0)
                                                             {
-                                                                name2 = eds2.ods[index2].parameter_name;
+                                                                //fixme getobject could return null
+                                                                name2 = eds2.getobject(index2).parameter_name;
 
                                                             }
                                                             else
                                                             {
-                                                                name2 = eds2.ods[index2].getsubobject(subindex2).parameter_name;
+                                                                //fixme getobject could return null
+                                                                name2 = eds2.getobject(index2).getsubobject(subindex2).parameter_name;
                                                             }
 
                                                             string sizemsg = "";

@@ -61,6 +61,15 @@ namespace ODEditor
 
             TXchoices.Add(String.Format("empty"));
 
+            //TXchoices.Add(string.Format("Dummy Bool")); //not sure how this works at all for a bit???
+
+            TXchoices.Add(string.Format("0x002/00/Dummy Int8"));
+            TXchoices.Add(string.Format("0x003/00/Dummy Int16"));
+            TXchoices.Add(string.Format("0x004/00/Dummy Int32"));
+            TXchoices.Add(string.Format("0x005/00/Dummy UInt8"));
+            TXchoices.Add(string.Format("0x006/00/Dummy UInt16"));
+            TXchoices.Add(string.Format("0x007/00/Dummy UInt32"));
+
 
             listView_TXPDO.BeginUpdate();
 
@@ -209,7 +218,7 @@ namespace ODEditor
                 if (sub.defaultvalue != "")
                     data = Convert.ToUInt32(sub.defaultvalue, EDSsharp.getbase(sub.defaultvalue));
 
-                if (data == 0) //FIX ME also include dummy usage here
+                if (data == 0)
                 {
                     listView_TXCOBmap.AddComboBoxCell(row, byteoff + 2, TXchoices);
                     listView_TXCOBmap.Items[row].SubItems[byteoff + 2].Text = "empty";
@@ -222,34 +231,77 @@ namespace ODEditor
                 UInt16 pdoindex = (UInt16)((data >> 16) & 0x0000FFFF);
                 byte pdosub = (byte)((data >> 8) & 0x000000FF);
 
-                //fixme sanity checking here please
-                if (!eds.ods.ContainsKey(pdoindex))
-                    continue;
+                String target = "";
+                int PDOdatasize = 0;
 
-                ODentry targetod = eds.ods[pdoindex];
-
-                if(pdosub!=0)
+                //dummy objects
+                if (pdoindex>=0x0002 && pdoindex<=0x007)
                 {
-                    targetod = targetod.subobjects[pdosub];
+                    //the dummy objects
+                    switch (pdoindex)
+                    {
+                        case 0x002:
+                            target = "0x0002/00/Dummy Int8";
+                            PDOdatasize = 1;
+                            break;
+                        case 0x003:
+                            target = "0x0002/00/Dummy Int16";
+                            PDOdatasize = 2;
+                            break;
+                        case 0x004:
+                            target = "0x0002/00/Dummy Int32";
+                            PDOdatasize = 4;
+                            break;
+                        case 0x005:
+                            target = "0x0002/00/Dummy UInt8";
+                            PDOdatasize = 1;
+                            break;
+                        case 0x006:
+                            target = "0x0002/00/Dummy UInt16";
+                            PDOdatasize = 2;
+                            break;
+                        case 0x007:
+                            target = "0x0002/00/Dummy UInt32";
+                            PDOdatasize = 4;
+                            break;     
+                    }
+
+                    if (PDOdatasize == 0)
+                        continue;
+                 
                 }
+                else
+                {
+                    //fixme sanity checking here please
+                    if (!eds.ods.ContainsKey(pdoindex))
+                        continue;
+
+                    ODentry targetod = eds.ods[pdoindex];
+
+                    if (pdosub != 0)
+                    {
+                        //FIXME direct sub array access, unprotected and will fault with holes in range
+                        targetod = targetod.subobjects[pdosub];
+                    }
+
+                    target = String.Format("0x{0:x4}/{1:x2}/", targetod.index, targetod.subindex) + targetod.parameter_name;
+                    PDOdatasize = targetod.sizeofdatatype();
+                }
+                
 
                 listView_TXCOBmap.AddComboBoxCell(row, byteoff+2, TXchoices);
-   
-                String target = String.Format("0x{0:x4}/{1:x2}/", targetod.index, targetod.subindex) + targetod.parameter_name;
                 listView_TXCOBmap.Items[row].SubItems[byteoff+2].Text = target;
 
-                int PDOdatasize = targetod.sizeofdatatype();
-               
-                while (PDOdatasize != 1)
+                int oldPDOdatasize = PDOdatasize;
+
+                while (oldPDOdatasize != 1)
                 {
-                    listView_TXCOBmap.Items[row].SubItems[byteoff + PDOdatasize+1].Text = " - ";
-                    PDOdatasize--;
+                    listView_TXCOBmap.Items[row].SubItems[byteoff + oldPDOdatasize + 1].Text = " - ";
+                    oldPDOdatasize--;
 
                 }
 
-                byteoff += targetod.sizeofdatatype();
-
-              
+                byteoff += PDOdatasize;
 
             }
         }
@@ -286,14 +338,48 @@ namespace ODEditor
                 UInt16 index = Convert.ToUInt16(bits[0], 16);
                 Byte sub = Convert.ToByte(bits[1], 16);
 
-                ODentry od = eds.ods[index];
-                if(sub!=0)
-                    od = od.subobjects[sub];
 
-                //fixme for non basic types will this work?? i think
-                //its not even allowed for PDO but need trap in code to
-                //prevent this and throw error here
-                int datalength = 8* od.sizeofdatatype();
+                int datalength = 0;
+
+                if (index >= 0x002 && index <= 0x007)
+                {
+                    //the dummy objects
+                    switch(index)
+                    {
+                        case 0x002:
+                            datalength = 8;
+                            break;
+                        case 0x003:
+                            datalength = 16;
+                            break;
+                        case 0x004:
+                            datalength = 32;
+                            break;
+                        case 0x005:
+                            datalength = 8;
+                            break;
+                        case 0x006:
+                            datalength = 16;
+                            break;
+                        case 0x007:
+                            datalength = 32;
+                            break;
+
+                    }
+
+                }
+                else
+                {
+
+                    ODentry od = eds.ods[index];
+                    if (sub != 0)
+                        od = od.subobjects[sub];
+
+                    //fixme for non basic types will this work?? i think
+                    //its not even allowed for PDO but need trap in code to
+                    //prevent this and throw error here
+                    datalength = 8 * od.sizeofdatatype();
+                }
 
                 totaldatalength += datalength;
 

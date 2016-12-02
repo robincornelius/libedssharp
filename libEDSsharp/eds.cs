@@ -960,6 +960,8 @@ namespace libEDSsharp
 
         Dictionary<string, Dictionary<string, string>> eds;
         public SortedDictionary<UInt16, ODentry> ods;
+        public SortedDictionary<UInt16, ODentry> dummy_ods;
+
         public FileInfo fi;
         public DeviceInfo di;
         public MandatoryObjects md;
@@ -977,6 +979,7 @@ namespace libEDSsharp
 
             eds = new Dictionary<string, Dictionary<string, string>>();
             ods = new SortedDictionary<UInt16, ODentry>();
+            dummy_ods = new SortedDictionary<UInt16, ODentry>();
 
             fi = new FileInfo();
             di = new DeviceInfo();
@@ -1008,10 +1011,12 @@ namespace libEDSsharp
 
             ODentry od = new ODentry();
 
-
-
-
-
+            dummy_ods.Add(2, new ODentry("Dummy Int8", 0x002, 0x00, DataType.INTEGER8, "0", AccessType.ro, PDOMappingType.optional));
+            dummy_ods.Add(3, new ODentry("Dummy Int16", 0x002, 0x00, DataType.INTEGER16, "0", AccessType.ro, PDOMappingType.optional));
+            dummy_ods.Add(4, new ODentry("Dummy Int32", 0x002, 0x00, DataType.INTEGER32, "0", AccessType.ro, PDOMappingType.optional));
+            dummy_ods.Add(5, new ODentry("Dummy UInt8", 0x002, 0x00, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional));
+            dummy_ods.Add(6, new ODentry("Dummy UInt16", 0x002, 0x00, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional));
+            dummy_ods.Add(7, new ODentry("Dummy UInt32", 0x002, 0x00, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional));
 
         }
 
@@ -1558,8 +1563,23 @@ mapped object  (subindex 1...8)
         {
             return createPDO(true, index);
         }
-     
 
+        public ODentry getobject(UInt16 no)
+        {
+
+            if(no>=0x002 && no<=0x007)
+            {
+                return dummy_ods[no];
+            }
+
+            if (ods.ContainsKey(no))
+            {
+                return ods[no];
+            }
+
+            return null;
+
+        }
     }
 
         public class ParameterException : Exception
