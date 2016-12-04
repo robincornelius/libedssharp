@@ -489,7 +489,9 @@ namespace libEDSsharp
         [EdsExport]
         public string ModifiedBy="";//=CANFestival //max244
 
+        //Folder CO_OD.c and CO_OD.h will be exported into
         public string exportFolder = "";
+
 
         public FileInfo(Dictionary<string, string> section)
         {
@@ -956,7 +958,8 @@ namespace libEDSsharp
 
         //This is the last file name used for this eds/xml file and is not
         //the same as filename within the FileInfo structure.
-        public string filename;
+        public string edsfilename = null;
+        public string xmlfilename = null;
 
         Dictionary<string, Dictionary<string, string>> eds;
         public SortedDictionary<UInt16, ODentry> ods;
@@ -1159,7 +1162,7 @@ namespace libEDSsharp
         public void loadfile(string filename)
         {
 
-            this.filename = filename;
+            edsfilename = filename;
             //try
             {
                 foreach (string linex in File.ReadLines(filename))
@@ -1190,7 +1193,7 @@ namespace libEDSsharp
 
         public void savefile(string filename)
         {
-            this.filename = filename;
+            this.edsfilename = filename;
 
             updatePDOcount();
 

@@ -53,6 +53,8 @@
             this.documentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.networkPDOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.saveExportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -83,8 +85,10 @@
             this.toolStripSeparator6,
             this.mnuRecentlyUsed,
             this.toolStripSeparator1,
+            this.saveExportAllToolStripMenuItem,
             this.exportCanOpenNodeToolStripMenuItem,
             this.toolStripSeparator2,
+            this.toolStripSeparator7,
             this.closeFileToolStripMenuItem,
             this.toolStripSeparator4,
             this.quitToolStripMenuItem});
@@ -96,7 +100,7 @@
             // 
             this.newToolStripMenuItem.Image = global::ODEditor.Properties.Resources.NewFile_6276;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -104,7 +108,7 @@
             // 
             this.openEDSToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Open_6529;
             this.openEDSToolStripMenuItem.Name = "openEDSToolStripMenuItem";
-            this.openEDSToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.openEDSToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.openEDSToolStripMenuItem.Text = "Open EDS";
             this.openEDSToolStripMenuItem.Click += new System.EventHandler(this.openEDSToolStripMenuItem_Click);
             // 
@@ -113,20 +117,20 @@
             this.saveEDSToolStripMenuItem.Enabled = false;
             this.saveEDSToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.saveEDSToolStripMenuItem.Name = "saveEDSToolStripMenuItem";
-            this.saveEDSToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.saveEDSToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.saveEDSToolStripMenuItem.Text = "Save EDS";
             this.saveEDSToolStripMenuItem.Click += new System.EventHandler(this.saveEDSToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(230, 6);
             // 
             // openCanOpenNodeXMLToolStripMenuItem
             // 
             this.openCanOpenNodeXMLToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Open_6529;
             this.openCanOpenNodeXMLToolStripMenuItem.Name = "openCanOpenNodeXMLToolStripMenuItem";
-            this.openCanOpenNodeXMLToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.openCanOpenNodeXMLToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.openCanOpenNodeXMLToolStripMenuItem.Text = "Open Device XML";
             this.openCanOpenNodeXMLToolStripMenuItem.Click += new System.EventHandler(this.openCanOpenNodeXMLToolStripMenuItem_Click);
             // 
@@ -135,20 +139,20 @@
             this.saveProjectXMLToolStripMenuItem.Enabled = false;
             this.saveProjectXMLToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.saveProjectXMLToolStripMenuItem.Name = "saveProjectXMLToolStripMenuItem";
-            this.saveProjectXMLToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.saveProjectXMLToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.saveProjectXMLToolStripMenuItem.Text = "Save Device XML";
             this.saveProjectXMLToolStripMenuItem.Click += new System.EventHandler(this.saveProjectXMLToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(230, 6);
             // 
             // loadNetworkXmlToolStripMenuItem
             // 
             this.loadNetworkXmlToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Open_6529;
             this.loadNetworkXmlToolStripMenuItem.Name = "loadNetworkXmlToolStripMenuItem";
-            this.loadNetworkXmlToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.loadNetworkXmlToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.loadNetworkXmlToolStripMenuItem.Text = "Open Network XML";
             this.loadNetworkXmlToolStripMenuItem.Click += new System.EventHandler(this.loadNetworkXmlToolStripMenuItem_Click);
             // 
@@ -157,59 +161,59 @@
             this.saveNetworkXmlToolStripMenuItem.Enabled = false;
             this.saveNetworkXmlToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.saveNetworkXmlToolStripMenuItem.Name = "saveNetworkXmlToolStripMenuItem";
-            this.saveNetworkXmlToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.saveNetworkXmlToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.saveNetworkXmlToolStripMenuItem.Text = "Save Network XML";
             this.saveNetworkXmlToolStripMenuItem.Click += new System.EventHandler(this.saveNetworkXmlToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(230, 6);
             // 
             // mnuRecentlyUsed
             // 
             this.mnuRecentlyUsed.Name = "mnuRecentlyUsed";
-            this.mnuRecentlyUsed.Size = new System.Drawing.Size(210, 22);
+            this.mnuRecentlyUsed.Size = new System.Drawing.Size(233, 22);
             this.mnuRecentlyUsed.Text = "Recent Files";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
             // 
             // exportCanOpenNodeToolStripMenuItem
             // 
             this.exportCanOpenNodeToolStripMenuItem.Enabled = false;
             this.exportCanOpenNodeToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Compile_191;
             this.exportCanOpenNodeToolStripMenuItem.Name = "exportCanOpenNodeToolStripMenuItem";
-            this.exportCanOpenNodeToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.exportCanOpenNodeToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.exportCanOpenNodeToolStripMenuItem.Text = "Export CanOpenNode c/h";
             this.exportCanOpenNodeToolStripMenuItem.Click += new System.EventHandler(this.exportCanOpenNodeToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(230, 6);
             // 
             // closeFileToolStripMenuItem
             // 
             this.closeFileToolStripMenuItem.Enabled = false;
             this.closeFileToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Close_6519;
             this.closeFileToolStripMenuItem.Name = "closeFileToolStripMenuItem";
-            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.closeFileToolStripMenuItem.Text = "Close file";
             this.closeFileToolStripMenuItem.Click += new System.EventHandler(this.closeFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(230, 6);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Image = global::ODEditor.Properties.Resources._305_Close_16x16_72;
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -263,6 +267,20 @@
             this.tabControl1.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tabControl1_ControlsChanged);
             this.tabControl1.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tabControl1_Controlsremoved);
             // 
+            // saveExportAllToolStripMenuItem
+            // 
+            this.saveExportAllToolStripMenuItem.Enabled = false;
+            this.saveExportAllToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
+            this.saveExportAllToolStripMenuItem.Name = "saveExportAllToolStripMenuItem";
+            this.saveExportAllToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.saveExportAllToolStripMenuItem.Text = "Save eds + xml+ Export device";
+            this.saveExportAllToolStripMenuItem.Click += new System.EventHandler(this.saveExportAllToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(230, 6);
+            // 
             // ODEditor_MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -308,6 +326,8 @@
         private System.Windows.Forms.ToolStripMenuItem reportsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem documentationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem networkPDOToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveExportAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }
 
