@@ -1200,6 +1200,32 @@ namespace libEDSsharp
             di.write(writer);
             du.write(writer);
             c.write(writer);
+
+
+            //regenerate the object lists
+            md.objectlist.Clear();
+            mo.objectlist.Clear();
+            oo.objectlist.Clear();
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
+            {
+                ODentry entry = kvp.Value;
+
+                if (entry.index == 0x1000 || entry.index == 0x1001 || entry.index == 0x1018)
+                {
+                    md.objectlist.Add(md.objectlist.Count + 1, entry.index);
+                }
+                else
+               if (entry.index >= 0x2000 && entry.index < 0x6000)
+                {
+                    mo.objectlist.Add(mo.objectlist.Count + 1, entry.index);
+                }
+                else
+                {
+                    oo.objectlist.Add(oo.objectlist.Count + 1, entry.index);
+                }
+            }
+
             md.write(writer);
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
