@@ -346,7 +346,9 @@ namespace CustomListView
                     combo.Items.Add(text);
                 }
                 // Set the current text, take it from the current listview cell
+                noevent = true;
                 combo.Text = this.Items[row].SubItems[col].Text;
+                noevent = false;
                 // Calculate and set drop down width
                 combo.DropDownWidth = this.GetDropDownWidth(data);
                 // Show the combo
@@ -596,6 +598,8 @@ namespace CustomListView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        /// 
+        bool noevent = false;
         private void combo_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -605,7 +609,7 @@ namespace CustomListView
                     this.Items[row].SubItems[col].Text = this.combo.Text;
                     this.combo.Visible = !this.hideComboAfterSelChange;
 
-                    if (onComboBoxIndexChanged != null)
+                    if (noevent==false && onComboBoxIndexChanged != null)
                         onComboBoxIndexChanged(row, col, combo.Text);
                 }
             }

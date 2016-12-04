@@ -137,6 +137,8 @@ namespace ODEditor
 
                 DeviceView device = new DeviceView();
 
+                eds.onDataDirty += Eds_onDataDirty;
+
                 device.eds = eds;
                 tabControl1.TabPages.Add(eds.di.ProductName);
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
@@ -231,6 +233,8 @@ namespace ODEditor
 
                 DeviceView device = new DeviceView();
 
+                eds.onDataDirty += Eds_onDataDirty;
+
                 device.eds = eds;
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
                 device.Dock = DockStyle.Fill;
@@ -253,6 +257,30 @@ namespace ODEditor
 
         }
 
+        private void Eds_onDataDirty(bool dirty, EDSsharp sender)
+        {
+            foreach(TabPage page in tabControl1.TabPages)
+            {
+                foreach(Control c in page.Controls)
+                {
+                    if(c.GetType() == typeof(DeviceView))
+                    {
+                        DeviceView d = (DeviceView)c;
+                        if (d.eds.dirty == true)
+                        {
+                            page.BackColor = Color.Red;
+                        }
+                        else
+                        {
+                            page.BackColor = default(Color);
+                        }
+                    }
+
+                }
+
+            }
+
+        }
 
         private void tabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
         {
@@ -295,6 +323,13 @@ namespace ODEditor
                 // tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
 
                 DeviceView device = (DeviceView)tabControl1.SelectedTab.Controls[0];
+
+                if(device.eds.dirty==true)
+                {
+                    if (MessageBox.Show( "All usaved changes will be lost\n continue?", "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
+                        return;
+                }
+
                 network.Remove(device.eds);
 
                 tabControl1.TabPages.Remove(tabControl1.SelectedTab);
@@ -304,7 +339,7 @@ namespace ODEditor
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close();
+             Close();
         }
 
         private void saveEDSToolStripMenuItem_Click(object sender, EventArgs e)
@@ -352,6 +387,8 @@ namespace ODEditor
                         coxml.dev = d;
 
                         coxml.writeXML(sfd.FileName);
+
+                        dv.eds.dirty = false;
     
                     }
 
@@ -368,6 +405,8 @@ namespace ODEditor
             DeviceView device = new DeviceView();
 
             device.eds = eds;
+            eds.onDataDirty += Eds_onDataDirty;
+
             tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
             device.Dock = DockStyle.Fill;
 
@@ -543,6 +582,7 @@ namespace ODEditor
                 device.Dock = DockStyle.Fill;
 
                 network.Add(eds);
+                eds.onDataDirty += Eds_onDataDirty;
 
                 device.dispatch_updateOD();
 
@@ -655,6 +695,32 @@ namespace ODEditor
 
 
 
+
+            }
+        }
+
+        private void ODEditor_MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+            foreach (TabPage page in tabControl1.TabPages)
+            {
+                foreach (Control c in page.Controls)
+                {
+                    if (c.GetType() == typeof(DeviceView))
+                    {
+                        DeviceView d = (DeviceView)c;
+                        if (d.eds.dirty == true)
+                        {
+                           if(MessageBox.Show("Warning you have unsaved changes\n Do you wish to continue","Unsaved changes",MessageBoxButtons.YesNo)==DialogResult.No)
+                            {
+                                e.Cancel = true;
+                                return;
+                            }
+                        }
+                       
+                    }
+
+                }
 
             }
         }

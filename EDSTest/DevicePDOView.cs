@@ -308,10 +308,10 @@ namespace ODEditor
 
         void listView_TXCOBmap_onComboBoxIndexChanged(int row, int col, string Text)
         {
-          
+
             //row+0x1a00 will be the slot to adjust
 
-
+            eds.dirty = true;
 
             UInt16 slot = (UInt16)(0x200 + Convert.ToUInt16(listView_TXCOBmap.Items[row].SubItems[1].Text, 16));
             ODentry slotod = eds.ods[slot];
@@ -486,6 +486,7 @@ namespace ODEditor
 
             }
 
+            eds.dirty = true;
 
 
         }
@@ -506,7 +507,9 @@ namespace ODEditor
                     doUpdatePDOs();
                     doUpdateOD();
                 }
-                
+
+                eds.dirty = true;
+
             }
             catch (Exception ex)
             {
@@ -585,6 +588,8 @@ namespace ODEditor
 
                 doUpdatePDOs();
                 doUpdateOD();
+
+                eds.dirty = true;
             }
             catch (Exception ex)
             {

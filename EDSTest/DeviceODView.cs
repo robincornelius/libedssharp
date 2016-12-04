@@ -38,6 +38,7 @@ namespace ODEditor
         public EDSsharp eds = null;
 
         ODentry selectedobject;
+        ODentry lastselectedobject;
         ListViewItem selecteditem;
         ListViewItem selecteditemsub;
 
@@ -45,21 +46,15 @@ namespace ODEditor
         {
             InitializeComponent();
 
-            comboBox_datatype.Items.Add("");
-
             foreach (DataType foo in Enum.GetValues(typeof(DataType)))
             {
                 comboBox_datatype.Items.Add(foo.ToString());
             }
 
-            comboBox_objecttype.Items.Add("");
-
             foreach (ObjectType foo in Enum.GetValues(typeof(ObjectType)))
             {
                 comboBox_objecttype.Items.Add(foo.ToString());
             }
-
-            comboBox_accesstype.Items.Add("");
 
             foreach (EDSsharp.AccessType foo in Enum.GetValues(typeof(EDSsharp.AccessType)))
             {
@@ -68,15 +63,11 @@ namespace ODEditor
 
             comboBox_accesstype.Items.Add("0x1003 rw/ro");
 
-
-            comboBox_memory.Items.Add("");
-
             foreach (StorageLocation foo in Enum.GetValues(typeof(StorageLocation)))
             {
                 comboBox_memory.Items.Add(foo.ToString());
             }
 
-            comboBox_pdomap.Items.Add("");
             comboBox_pdomap.Items.Add("no");
             comboBox_pdomap.Items.Add("optional");
 
@@ -85,13 +76,39 @@ namespace ODEditor
             listView_optional_objects.DoubleBuffering(true);
             listViewDetails.DoubleBuffering(true);
 
+            foreach(Control c in splitContainer4.Panel2.Controls)
+            {
+                if (c is CheckBox)
+                {
+                    ((CheckBox)c).CheckedChanged += DataDirty;
+                }
+                else
+                {
+                    c.TextChanged += DataDirty;
+                }
+            }
         }
 
-      
+        bool updating = false;
+
+        private void DataDirty(object sender, EventArgs e)
+        {
+            if (updating == true)
+                return;
+
+            button_save_changes.BackColor = Color.Red;
+
+
+        }
+
         private void button_save_changes_Click(object sender, EventArgs e)
         {
             if (selectedobject == null)
                 return;
+
+            eds.dirty = true;
+
+            button_save_changes.BackColor = default(Color);
 
             //Allow everything to be updated and control what is allowed via enable/disable for the control
 
@@ -132,6 +149,7 @@ namespace ODEditor
                 selectedobject.Disabled = !checkBox_enabled.Checked;
 
                 selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
+
             }
 
             if(selectedobject.parent == null && selectedobject.objecttype == ObjectType.ARRAY)
@@ -183,8 +201,14 @@ namespace ODEditor
         public void validateanddisplaydata()
         {
 
+
             if (selectedobject == null)
                 return;
+
+            lastselectedobject = selectedobject;
+
+            updating = true;
+
 
             ODentry od = (ODentry)selectedobject;
 
@@ -265,6 +289,7 @@ namespace ODEditor
                     textBox_defaultvalue.Enabled = false;
                 }
 
+                updating = false;
                 return; //nothing else to do at this point
             }
 
@@ -300,6 +325,8 @@ namespace ODEditor
                 checkBox_COS.Enabled = true;
 
             }
+
+            updating = false;
 
             return;
         }
@@ -412,6 +439,8 @@ namespace ODEditor
 
             ListViewItem lvi = listView_mandatory_objects.SelectedItems[0];
 
+            if (checkdirty())
+                return;
 
             UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
             updateselectedindexdisplay(idx);
@@ -427,6 +456,9 @@ namespace ODEditor
         private void list_mouseclick(ListView listview, MouseEventArgs e)
         {
             if (listview.SelectedItems.Count == 0)
+                return;
+
+            if (checkdirty())
                 return;
 
             ListViewItem lvi = listview.SelectedItems[0];
@@ -469,6 +501,8 @@ namespace ODEditor
 
         private void listView_MouseDown(ListView listview, MouseEventArgs e)
         {
+
+
             ListViewHitTestInfo HI = listview.HitTest(e.Location);
             if (e.Button == MouseButtons.Right)
             {
@@ -514,6 +548,9 @@ namespace ODEditor
             ListViewItem lvi = listViewDetails.SelectedItems[0];
 
             if (listViewDetails.SelectedItems.Count == 0)
+                return;
+
+            if (checkdirty())
                 return;
 
             selecteditemsub = lvi;
@@ -645,6 +682,8 @@ namespace ODEditor
             if (ni.ShowDialog() == DialogResult.OK)
             {
 
+                eds.dirty = true;
+
                 ODentry od = new ODentry();
 
                 od.objecttype = ni.ot;
@@ -744,13 +783,15 @@ namespace ODEditor
                         }
                     }
 
+                  
 
                 }
             }
 
 
-                    if (MessageBox.Show(string.Format("Really delete index 0x{0:x4} ?", od.index), "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show(string.Format("Really delete index 0x{0:x4} ?", od.index), "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
+                eds.dirty = true;
                 eds.ods.Remove(od.index);
                 populateindexlists();
             }
@@ -765,6 +806,7 @@ namespace ODEditor
 
             ODentry od = (ODentry)item.Tag;
 
+            eds.dirty = true;
             od.Disabled = !od.Disabled;
             populateindexlists();
 
@@ -819,6 +861,7 @@ namespace ODEditor
                     }
                 }
 
+                eds.dirty = true;
                 updateselectedindexdisplay(selectedobject.index);
                 validateanddisplaydata();
 
@@ -855,6 +898,7 @@ namespace ODEditor
 
                 od.parent.subobjects = newlist;
 
+                eds.dirty = true;
                 updateselectedindexdisplay(selectedobject.index);
                 validateanddisplaydata();
             }
@@ -930,11 +974,37 @@ namespace ODEditor
             if (listViewDetails.SelectedItems.Count == 0)
                 return;
 
+            if (checkdirty())
+                return;
+
+
             ListViewItem lvi = listViewDetails.SelectedItems[0];
 
             selecteditemsub = lvi;
             selectedobject = (ODentry)lvi.Tag;
             validateanddisplaydata();
+        }
+
+        private bool checkdirty()
+        {
+
+            if (button_save_changes.BackColor == Color.Red)
+            {
+                if (button_save_changes.BackColor == Color.Red)
+                {
+                    if (MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:x4}/{1:x2}\nDo you wish to change objects and loose your changes", lastselectedobject.index, lastselectedobject.subindex), "Unsaved changes",MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        button_save_changes.BackColor = default(Color);
+                    }
+
+                }
+            }
+
+            return false;
         }
     }
 

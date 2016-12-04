@@ -291,6 +291,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ODEditor_MainForm";
             this.Text = "Object Dictionary Editor v0.5";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ODEditor_MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ODEditor_MainForm_FormClosed);
             this.Load += new System.EventHandler(this.ODEditor_MainForm_Load);
             this.menuStrip1.ResumeLayout(false);

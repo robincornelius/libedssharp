@@ -510,6 +510,7 @@
             // 
             // comboBox_memory
             // 
+            this.comboBox_memory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_memory.FormattingEnabled = true;
             this.comboBox_memory.Location = new System.Drawing.Point(320, 219);
             this.comboBox_memory.Name = "comboBox_memory";
@@ -570,6 +571,7 @@
             // 
             // comboBox_objecttype
             // 
+            this.comboBox_objecttype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_objecttype.Enabled = false;
             this.comboBox_objecttype.FormattingEnabled = true;
             this.comboBox_objecttype.Location = new System.Drawing.Point(108, 169);
@@ -588,6 +590,7 @@
             // 
             // comboBox_datatype
             // 
+            this.comboBox_datatype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_datatype.FormattingEnabled = true;
             this.comboBox_datatype.Location = new System.Drawing.Point(108, 195);
             this.comboBox_datatype.Name = "comboBox_datatype";
@@ -623,6 +626,7 @@
             // 
             // comboBox_accesstype
             // 
+            this.comboBox_accesstype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_accesstype.FormattingEnabled = true;
             this.comboBox_accesstype.Location = new System.Drawing.Point(108, 221);
             this.comboBox_accesstype.Name = "comboBox_accesstype";
@@ -656,6 +660,7 @@
             // 
             // comboBox_pdomap
             // 
+            this.comboBox_pdomap.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_pdomap.FormattingEnabled = true;
             this.comboBox_pdomap.Location = new System.Drawing.Point(108, 248);
             this.comboBox_pdomap.Name = "comboBox_pdomap";

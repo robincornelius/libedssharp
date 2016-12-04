@@ -961,6 +961,23 @@ namespace libEDSsharp
         public string edsfilename = null;
         public string xmlfilename = null;
 
+        //property to indicate unsaved data;
+        private bool _dirty;
+        public bool dirty
+        {
+            get
+            {
+                return _dirty;
+            }
+            set
+            {
+                _dirty = value;
+                if (onDataDirty != null)
+                    onDataDirty(_dirty,this);
+
+            }
+        }
+
         Dictionary<string, Dictionary<string, string>> eds;
         public SortedDictionary<UInt16, ODentry> ods;
         public SortedDictionary<UInt16, ODentry> dummy_ods;
@@ -975,10 +992,12 @@ namespace libEDSsharp
 
         public UInt16 NodeId = 0;
 
-
+        public delegate void DataDirty(bool dirty, EDSsharp sender);
+        public event DataDirty onDataDirty;
 
         public EDSsharp()
         {
+
 
             eds = new Dictionary<string, Dictionary<string, string>>();
             ods = new SortedDictionary<UInt16, ODentry>();
@@ -1020,6 +1039,11 @@ namespace libEDSsharp
             dummy_ods.Add(5, new ODentry("Dummy UInt8", 0x002, 0x00, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional));
             dummy_ods.Add(6, new ODentry("Dummy UInt16", 0x002, 0x00, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional));
             dummy_ods.Add(7, new ODentry("Dummy UInt32", 0x002, 0x00, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional));
+
+        }
+
+        public void setdirty()
+        {
 
         }
 

@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xml2CSharp;
+using System.Text.RegularExpressions;
 
 /* I know i'm going to regret this
  * 
@@ -215,7 +216,10 @@ namespace libEDSsharp
                 if (coo.AccessType != null)
                 {
                     string at = coo.AccessType;
-                    at = at.Replace("cons", "const"); // predicted regression from #23 
+
+                    Regex reg = new Regex(@"^cons$");
+                    at = reg.Replace(at,"const");
+
                     entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), at);
                 }
 
