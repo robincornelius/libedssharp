@@ -215,6 +215,7 @@ namespace libEDSsharp
                 if (coo.AccessType != null)
                 {
                     string at = coo.AccessType;
+                    at = at.Replace("cons", "const"); // predicted regression from #23 
                     entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), at);
                 }
 
