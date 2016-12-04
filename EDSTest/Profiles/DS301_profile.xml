@@ -48,13 +48,13 @@ bit    31: set to 0</description>
     <CANopenObject index="1007" name="Synchronous window length" objectType="VAR" memoryType="ROM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0" subNumber="0" disabled="false" TPDOdetectCOS="false">
       <description>bit 0-31:  window leghth after SYNC when PDOS must be transmited in µs, (0 = not used)</description>
     </CANopenObject>
-    <CANopenObject index="1008" name="Manufacturer device name" objectType="VAR" memoryType="ROM" dataType="0x09" accessType="cons" PDOmapping="no" defaultValue="CANopenNode" subNumber="0" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="1008" name="Manufacturer device name" objectType="VAR" memoryType="ROM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="CANopenNode" subNumber="0" disabled="false" TPDOdetectCOS="false">
       <description>Name of the manufacturer as string</description>
     </CANopenObject>
-    <CANopenObject index="1009" name="Manufacturer hardware version" objectType="VAR" memoryType="ROM" dataType="0x09" accessType="cons" PDOmapping="no" defaultValue="3.00" subNumber="0" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="1009" name="Manufacturer hardware version" objectType="VAR" memoryType="ROM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="3.00" subNumber="0" disabled="false" TPDOdetectCOS="false">
       <description>Name of the hardware version as string</description>
     </CANopenObject>
-    <CANopenObject index="100a" name="Manufacturer software version" objectType="VAR" memoryType="ROM" dataType="0x09" accessType="cons" PDOmapping="no" defaultValue="3.00" subNumber="0" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="100a" name="Manufacturer software version" objectType="VAR" memoryType="ROM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="3.00" subNumber="0" disabled="false" TPDOdetectCOS="false">
       <description>Name of the software version as string.</description>
     </CANopenObject>
     <CANopenObject index="100c" name="Guard Time" objectType="VAR" memoryType="ROM" dataType="0x06" accessType="ro" PDOmapping="no" defaultValue="" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">

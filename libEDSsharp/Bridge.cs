@@ -215,9 +215,6 @@ namespace libEDSsharp
                 if (coo.AccessType != null)
                 {
                     string at = coo.AccessType;
-
-                    //Nasty work around so we can use Enum types
-                    at = at.Replace("const", "cons");
                     entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), at);
                 }
 

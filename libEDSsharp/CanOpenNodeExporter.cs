@@ -674,7 +674,7 @@ const CO_OD_entry_t CO_OD[");
             //fixme rwr and rrw are not supported
             if (od.accesstype == EDSsharp.AccessType.ro
                 || od.accesstype == EDSsharp.AccessType.rw
-                || od.accesstype == EDSsharp.AccessType.cons)
+                || od.accesstype == EDSsharp.AccessType.@const)
                 flags |= 0x04;
 
             if (od.accesstype == EDSsharp.AccessType.wo

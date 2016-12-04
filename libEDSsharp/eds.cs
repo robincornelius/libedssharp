@@ -948,12 +948,12 @@ namespace libEDSsharp
             wo = 2,
             rwr = 3,
             rww = 4,
-            cons = 5,
+            @const = 5,
             UNKNOWN
         }
 
         public const AccessType AccessType_Min = AccessType.rw;
-        public const AccessType AccessType_Max = AccessType.cons;
+        public const AccessType AccessType_Max = AccessType.@const;
 
 
         //This is the last file name used for this eds/xml file and is not
@@ -1124,8 +1124,6 @@ namespace libEDSsharp
 
                     string accesstype = kvp.Value["AccessType"];
 
-                    // fudging because of enum enumeration and the const keyword
-                    accesstype = accesstype.Replace("const", "cons");
                     if (Enum.IsDefined(typeof(AccessType), accesstype))
                     {
                         od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), accesstype);
