@@ -358,6 +358,7 @@ namespace ODEditor
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     dv.eds.savefile(sfd.FileName);
+                    dv.eds.edsfilename = sfd.FileName;
                 }
 
             }
@@ -388,6 +389,7 @@ namespace ODEditor
 
                         coxml.writeXML(sfd.FileName);
 
+                        dv.eds.xmlfilename = sfd.FileName;
                         dv.eds.dirty = false;
     
                     }
