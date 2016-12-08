@@ -96,6 +96,7 @@ namespace ODEditor
                 Device dev; //one day this will be multiple devices
 
                 eds = b.convert(coxml.dev);
+             
                 dev = coxml.dev;
 
                 foreach(KeyValuePair<UInt16,ODentry> kvp in eds.ods)
@@ -104,8 +105,12 @@ namespace ODEditor
                         dv.eds.ods.Add(kvp.Key, kvp.Value);
                 }
 
-                
+             
                 dv.dispatch_updateOD();
+                dv.dispatch_updatePDOinfo();
+
+                dv.eds.updatePDOcount();
+                dv.dispatch_updatedevice();
 
             }
         }

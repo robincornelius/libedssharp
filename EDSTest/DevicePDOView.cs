@@ -481,6 +481,7 @@ namespace ODEditor
             }
             else
             {
+                eds.updatePDOcount();
                 doUpdatePDOs();
                 doUpdateOD();
 
@@ -504,6 +505,7 @@ namespace ODEditor
                     eds.ods.Remove(index);
                     eds.ods.Remove((UInt16)(index + 0x200));
 
+                    eds.updatePDOcount();
                     doUpdatePDOs();
                     doUpdateOD();
                 }
