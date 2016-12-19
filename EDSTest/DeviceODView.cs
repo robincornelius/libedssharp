@@ -819,13 +819,13 @@ namespace ODEditor
             {
                 ODentry od = (ODentry)selecteditemsub.Tag;
 
-                DataType dt = DataType.UNKNOWN;
-
                 if (od.parent.objecttype == ObjectType.ARRAY)
                 {
                     ODentry newsub = new ODentry();
                     newsub.parent = od.parent;
-                    newsub.datatype = DataType.UNKNOWN;
+                    newsub.datatype = od.parent.datatype;
+                    newsub.accesstype = od.parent.accesstype;
+                    newsub.PDOtype = od.parent.PDOtype;
                     newsub.index = od.index;
                     newsub.objecttype = ObjectType.VAR;
                     newsub.subindex = (UInt16)od.parent.subobjects.Count;
@@ -841,7 +841,7 @@ namespace ODEditor
 
                 if (od.parent.objecttype == ObjectType.REC)
                 {
-                    dt = od.datatype;
+                    DataType dt = od.datatype;
 
                     NewIndex ni = new NewIndex(eds, dt, od.parent.objecttype, od.parent);
 
@@ -850,6 +850,8 @@ namespace ODEditor
                         ODentry newsub = new ODentry();
                         newsub.parent = od.parent;
                         newsub.datatype = ni.dt;
+                        newsub.accesstype = od.parent.accesstype;
+                        newsub.PDOtype = od.parent.PDOtype;
                         newsub.index = od.index;
                         newsub.objecttype = ObjectType.VAR;
                         newsub.subindex = (UInt16)od.parent.subobjects.Count;
