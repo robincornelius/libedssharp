@@ -764,7 +764,7 @@ namespace libEDSsharp
 
             if (parent!=null)
             {
-                writer.WriteLine(string.Format("[{0:X}sub{1}]", index,subindex));
+                writer.WriteLine(string.Format("[{0:X}sub{1:X}]", index,subindex));
             }
             else
             {
