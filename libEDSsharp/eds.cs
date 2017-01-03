@@ -1402,8 +1402,15 @@ namespace libEDSsharp
         }
 
         //Split on + , replace $NODEID with concrete value and add together
-        public UInt16 GetNodeID(string input)
+        public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
+          
+
+            if(input.Contains("$NODEID"))
+                nodeidpresent = true;
+            else
+                nodeidpresent = false;
+
             try
             {
                 if (di.concreteNodeId == -1)
@@ -1411,7 +1418,7 @@ namespace libEDSsharp
                     input = input.Replace("$NODEID", "");
                     input = input.Replace("+", "");
                     input = input.Replace(" ", "");
-                    return Convert.ToUInt16(input, getbase(input));
+                    return Convert.ToUInt32(input, getbase(input));
                 }
 
                 input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
@@ -1421,7 +1428,7 @@ namespace libEDSsharp
                 if(bits.Length==1)
                 {
                     //nothing to parse here just return the value
-                    return Convert.ToUInt16(input, getbase(input));
+                    return Convert.ToUInt32(input, getbase(input));
                 }
 
                 if (bits.Length != 2)
@@ -1429,10 +1436,10 @@ namespace libEDSsharp
                     throw new FormatException("cannot parse " + input + "\nExpecting N+$NODEID or $NODEID+N");
                 }
 
-                UInt16 b1 = Convert.ToUInt16(bits[0], getbase(bits[0]));
-                UInt16 b2 = Convert.ToUInt16(bits[1], getbase(bits[1]));
+                UInt32 b1 = Convert.ToUInt32(bits[0], getbase(bits[0]));
+                UInt32 b2 = Convert.ToUInt32(bits[1], getbase(bits[1]));
 
-                return (UInt16)(b1 + b2);
+                return (UInt32)(b1 + b2);
             }
             catch(Exception e)
             {

@@ -73,14 +73,16 @@ namespace libEDSsharp
 
                             //Fix me we need some generic PDO access functions
 
-                            UInt16 TXCOB = 0;
+                            UInt32 TXCOB = 0;
                             byte syncstart = 0;
                             UInt16 timer = 0;
                             UInt16 inhibit = 0;
                             byte type = 0;
 
+                            bool nodeidpresent;
+
                             if (kvp.Value.containssubindex(1))
-                                TXCOB = eds.GetNodeID(kvp.Value.getsubobject(1).defaultvalue);
+                                TXCOB = eds.GetNodeID(kvp.Value.getsubobject(1).defaultvalue, out nodeidpresent);
 
                             if (kvp.Value.containssubindex(2))
                                 type = EDSsharp.ConvertToByte(kvp.Value.getsubobject(2).defaultvalue);
@@ -190,7 +192,8 @@ namespace libEDSsharp
                                             {
                                                 if (eds2.ods.ContainsKey((UInt16)(kvp2.Key + 0x200)))
                                                 {
-                                                    UInt16 RXCOB = eds2.GetNodeID(kvp2.Value.getsubobjectdefaultvalue(1));
+                                                    bool nodeidpresent2;
+                                                    UInt32 RXCOB = eds2.GetNodeID(kvp2.Value.getsubobjectdefaultvalue(1), out nodeidpresent2);
                                                     if (RXCOB == TXCOB)
                                                     {
 

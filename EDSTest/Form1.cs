@@ -43,7 +43,7 @@ namespace ODEditor
 
         private string networkfilename;
 
-        public static Dictionary<UInt16, EDSsharp> TXCobMap = new Dictionary<UInt16, EDSsharp>();
+        public static Dictionary<UInt32, EDSsharp> TXCobMap = new Dictionary<UInt32, EDSsharp>();
         List<EDSsharp> network = new List<EDSsharp>();
 
         public ODEditor_MainForm()

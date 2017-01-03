@@ -36,6 +36,7 @@
             this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBox_invalidpdo = new System.Windows.Forms.CheckBox();
             this.button_savepdochanges = new System.Windows.Forms.Button();
             this.button_deletePDO = new System.Windows.Forms.Button();
             this.textBox_slot = new System.Windows.Forms.TextBox();
@@ -121,6 +122,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox_invalidpdo);
             this.groupBox1.Controls.Add(this.button_savepdochanges);
             this.groupBox1.Controls.Add(this.button_deletePDO);
             this.groupBox1.Controls.Add(this.textBox_slot);
@@ -141,6 +143,17 @@
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commuincation parameters";
+            // 
+            // checkBox_invalidpdo
+            // 
+            this.checkBox_invalidpdo.AutoSize = true;
+            this.checkBox_invalidpdo.Location = new System.Drawing.Point(192, 49);
+            this.checkBox_invalidpdo.Name = "checkBox_invalidpdo";
+            this.checkBox_invalidpdo.Size = new System.Drawing.Size(57, 17);
+            this.checkBox_invalidpdo.TabIndex = 16;
+            this.checkBox_invalidpdo.Text = "Invalid";
+            this.checkBox_invalidpdo.UseVisualStyleBackColor = true;
+            this.checkBox_invalidpdo.CheckedChanged += new System.EventHandler(this.checkBox_invalidpdo_CheckedChanged);
             // 
             // button_savepdochanges
             // 
@@ -289,7 +302,7 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "COB";
-            this.columnHeader1.Width = 50;
+            this.columnHeader1.Width = 92;
             // 
             // columnHeader10
             // 
@@ -402,5 +415,6 @@
         private System.Windows.Forms.Button button_addPDO;
         private System.Windows.Forms.Button button_savepdochanges;
         private System.Windows.Forms.Button button_deletePDO;
+        private System.Windows.Forms.CheckBox checkBox_invalidpdo;
     }
 }

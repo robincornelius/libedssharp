@@ -105,8 +105,8 @@ namespace ODEditor
             listView_TXPDO.EndUpdate();
 
             // Clean out any existing TX cob entries for this device.
-            List<UInt16> removes = new List<ushort>();
-            foreach (KeyValuePair<UInt16, EDSsharp> kvp in ODEditor_MainForm.TXCobMap)
+            List<UInt32> removes = new List<UInt32>();
+            foreach (KeyValuePair<UInt32, EDSsharp> kvp in ODEditor_MainForm.TXCobMap)
             {
                 if (kvp.Value == eds)
                     removes.Add(kvp.Key);
@@ -138,10 +138,9 @@ namespace ODEditor
                     ListViewItem lvi = new ListViewItem(String.Format("0x{0:x3}", idx));
                     lvi.Tag = od;
 
-                   
-
-                    UInt16 cob = eds.GetNodeID(od.subobjects[1].defaultvalue);
-                    lvi.SubItems.Add(String.Format("0x{0:x3}",cob));
+                    bool nodeidpresent;
+                    UInt32 cob = eds.GetNodeID(od.subobjects[1].defaultvalue, out nodeidpresent);
+                    lvi.SubItems.Add(String.Format("0x{0:x8}",cob));
 
                     if (!ODEditor_MainForm.TXCobMap.ContainsKey(cob))
                         ODEditor_MainForm.TXCobMap.Add(cob, eds);
@@ -418,6 +417,7 @@ namespace ODEditor
                 return;
 
             UInt16 index = Convert.ToUInt16(listView_TXCOBmap.SelectedItems[0].SubItems[1].Text, 16);
+            UInt32 COB = Convert.ToUInt32(listView_TXCOBmap.SelectedItems[0].SubItems[0].Text, 16);
             ODentry od = eds.ods[index];
 
             textBox_slot.Text = string.Format("0x{0:x4}",od.index);
@@ -449,6 +449,11 @@ namespace ODEditor
 
             button_deletePDO.Enabled = true;
             button_savepdochanges.Enabled = true;
+
+            //Is invalid bit set
+            checkBox_invalidpdo.Checked = ((COB & 0x80000000) != 0);
+            
+
 
         }
 
@@ -544,12 +549,23 @@ namespace ODEditor
                     return;
                 }
 
-                UInt16 newnode = eds.GetNodeID(textBox_cob.Text);
+                bool nodeidpresent;
+                UInt32 newnode = eds.GetNodeID(textBox_cob.Text, out nodeidpresent);
                 if(newnode < 0x180 || newnode >0x57F)
                 {
-                    MessageBox.Show("PDO COBs should be between 0x180 and 0x57F");
-                    return;
+                    //MessageBox.Show("PDO COBs should be between 0x180 and 0x57F");
+                    //return;
                 }
+
+                if(checkBox_invalidpdo.Checked)
+                {
+                    newnode |= 0x80000000;
+                }
+                else
+                {
+                    newnode &= 0x7FFFFFFF;
+                }
+
 
                 int dummy;
                 if(!int.TryParse(textBox_type.Text,out dummy) || dummy<0 || dummy>255)
@@ -584,7 +600,17 @@ namespace ODEditor
                     eds.ods[index].subobjects[6].defaultvalue = textBox_syncstart.Text;
                 }
 
-                eds.ods[index].subobjects[1].defaultvalue = textBox_cob.Text;
+                int nodeoffset = 0;
+
+                if (eds.di.concreteNodeId != -1)
+                    nodeoffset = eds.di.concreteNodeId;
+
+                eds.ods[index].subobjects[1].defaultvalue = string.Format("0x{0:x8}", newnode-nodeoffset);
+                if (nodeidpresent)
+                    eds.ods[index].subobjects[1].defaultvalue += "+$NODEID";
+
+
+
                 eds.ods[index].subobjects[2].defaultvalue = textBox_type.Text;
 
 
@@ -597,6 +623,11 @@ namespace ODEditor
             {
 
             }
+        }
+
+        private void checkBox_invalidpdo_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
