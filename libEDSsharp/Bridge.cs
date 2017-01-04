@@ -95,6 +95,19 @@ namespace libEDSsharp
                         }
                     }
 
+                    if (od.objecttype == ObjectType.ARRAY && od.datatype == DataType.UNKNOWN)
+                    {
+                        //add the datatype field to parent objects if they don't have it already
+                        //if the 2nd subobject does not exist then we do nothing.
+                        ODentry sub = od.getsubobject(1);
+                        if (sub != null)
+                        {
+                            od.datatype = sub.datatype;
+                        }
+
+
+                    }
+
                     dev.CANopenObjectList.CANopenObject.Add(coo);
                 }
 
