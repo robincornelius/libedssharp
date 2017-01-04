@@ -327,6 +327,17 @@ namespace ODEditor
 
             }
 
+            if (od.parent.objecttype == ObjectType.REC &&
+                ((od.parent.index >=0x1600 && od.parent.index <= 0x17ff) || (od.parent.index >= 0x1A00 && od.parent.index <= 0x1Bff)) &&
+                od.subindex == 0)
+            {
+                //We are allowed to edit the no sub objects for the PDO mappings as its a requirment to support dynamic PDOs
+
+                textBox_defaultvalue.Enabled = true;
+                comboBox_accesstype.Enabled = true;
+            }
+
+
             updating = false;
 
             return;
