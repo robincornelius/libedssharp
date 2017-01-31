@@ -5,15 +5,19 @@ It is a work in progress and is rapidly changing.
 
 With many thanks to the following contributors for spotting my mistakes and 
 improving the code
-	* s-fuchs - https://github.com/s-fuchs
+	* s-fuchs 
+	* martinwag 
 
 Releases
 --------
 
 If you would like to try a pre compiled version, then head over to the [releases page!](https://github.com/robincornelius/libedssharp/releases)
 
-Current version 0.3.1 - This version is worthy of some serious testing, it may still crash or product some faulty export but I am using this in my own production now and for everthing I am testing it is so far OK.
-In the event of finding a crash or export fault, please open an issue with as much information as possible and even better if you can attach your xml or eds file that would be useful.
+Current version 0.4-beta - 
+
+* Known issues #51, #36 both fixed in git
+
+Assuming no one shouts too loudly after last set of commits 0.5 will be released some time early Feb 2017
 
 
 Current Features
