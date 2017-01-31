@@ -19,9 +19,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using Xml2CSharp;
 using System.Text.RegularExpressions;
 
@@ -191,24 +189,32 @@ namespace libEDSsharp
 
             dev.Other.DeviceIdentity = new DeviceIdentity();
             dev.Other.DeviceIdentity.ProductName = eds.di.ProductName;
-            //dev.Other.DeviceIdentity.ProductText = new ProductText();
-            //dev.Other.DeviceIdentity.ProductText.Description
+            dev.Other.DeviceIdentity.ProductNumber = eds.di.ProductNumber;
+            dev.Other.DeviceIdentity.ProductText = new ProductText();
+            dev.Other.DeviceIdentity.ProductText.Description = new Description();
+            dev.Other.DeviceIdentity.ProductText.Description.Text = eds.fi.Description;
 
+        
             if (eds.di.concreteNodeId!=-1)
                 dev.Other.DeviceIdentity.ConcreteNoideId = eds.di.concreteNodeId.ToString();
 
             dev.Other.DeviceIdentity.VendorName = eds.di.VendorName;
+            dev.Other.DeviceIdentity.VendorNumber = eds.di.VendorNumber;
 
-            //dev.Other.File = new Other.File();
             dev.Other.File = new File();
 
             dev.Other.File.FileName = eds.fi.FileName;
 
-            dev.Other.File.FileCreationDate = eds.fi.CreationDate;
-            dev.Other.File.FileCreationTime = eds.fi.CreationTime;
+            dev.Other.File.FileCreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
+            dev.Other.File.FileCreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
             dev.Other.File.FileCreator = eds.fi.CreatedBy;
 
+            dev.Other.File.FileModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
+            dev.Other.File.FileModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
+            dev.Other.File.FileModifedBy = eds.fi.ModifiedBy;
+
             dev.Other.File.FileVersion = eds.fi.FileVersion.ToString();
+            dev.Other.File.FileRevision = eds.fi.FileRevision;
 
             dev.Other.File.ExportFolder = eds.fi.exportFolder;
 
@@ -392,8 +398,13 @@ namespace libEDSsharp
             }
 
             eds.di.ProductName = dev.Other.DeviceIdentity.ProductName;
-            //dev.Other.DeviceIdentity.ProductText
+            eds.di.ProductNumber = dev.Other.DeviceIdentity.ProductNumber;
+
+            if(dev.Other.DeviceIdentity.ProductText!=null && dev.Other.DeviceIdentity.ProductText.Description!=null & dev.Other.DeviceIdentity.ProductText.Description.Text!=null)
+                eds.fi.Description = dev.Other.DeviceIdentity.ProductText.Description.Text;
+
             eds.di.VendorName = dev.Other.DeviceIdentity.VendorName;
+            eds.di.VendorNumber = dev.Other.DeviceIdentity.VendorNumber;
 
             if (dev.Other.DeviceIdentity.ConcreteNoideId != null)
             {
@@ -404,11 +415,37 @@ namespace libEDSsharp
                 eds.di.concreteNodeId = -1;
             }
 
+            string dtcombined;
+
             eds.fi.FileName = dev.Other.File.FileName;
-            eds.fi.CreationDate = dev.Other.File.FileCreationDate;
-            eds.fi.CreationTime = dev.Other.File.FileCreationTime;
+
+            dtcombined = string.Format("{0} {1}", dev.Other.File.FileCreationTime, dev.Other.File.FileCreationDate);
+            try
+            {
+                eds.fi.CreationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                eds.fi.CreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
+                eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
+
+            }
+            catch(Exception e) { }
+
             eds.fi.CreatedBy = dev.Other.File.FileCreator;
             eds.fi.exportFolder = dev.Other.File.ExportFolder;
+
+            dtcombined = string.Format("{0} {1}", dev.Other.File.FileModificationTime, dev.Other.File.FileModificationDate);
+            try
+            {
+                eds.fi.ModificationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
+                eds.fi.ModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
+                eds.fi.ModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
+            }
+            catch (Exception e) { }
+
+
+
+  
+            eds.fi.ModifiedBy = dev.Other.File.FileModifedBy;
+
 
             dev.Other.Capabilities = dev.Other.Capabilities;
 
@@ -423,6 +460,8 @@ namespace libEDSsharp
 
                 eds.fi.FileVersion = 0;
             }
+
+            eds.fi.FileRevision = dev.Other.File.FileRevision;
 
             eds.fi.EDSVersion = "4.0";
             

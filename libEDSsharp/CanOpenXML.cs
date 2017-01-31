@@ -195,8 +195,16 @@ namespace Xml2CSharp
 		public string FileCreationDate { get; set; }
 		[XmlAttribute(AttributeName="fileCreationTime")]
 		public string FileCreationTime { get; set; }
-		[XmlAttribute(AttributeName="fileVersion")]
+        [XmlAttribute(AttributeName = "fileModifedBy")]
+        public string FileModifedBy { get; set; }
+        [XmlAttribute(AttributeName = "fileMotifcationDate")]
+        public string FileModificationDate { get; set; }
+        [XmlAttribute(AttributeName = "fileModificationTime")]
+        public string FileModificationTime { get; set; }
+        [XmlAttribute(AttributeName="fileVersion")]
 		public string FileVersion { get; set; }
+        [XmlAttribute(AttributeName = "fileRevision")]
+        public byte FileRevision { get; set; }
         [XmlAttribute(AttributeName = "exportFolder")]
         public string ExportFolder { get; set; }
 
@@ -214,10 +222,14 @@ namespace Xml2CSharp
 	public class DeviceIdentity {
 		[XmlElement(ElementName="vendorName")]
 		public string VendorName { get; set; }
-		[XmlElement(ElementName="productName")]
+        [XmlElement(ElementName = "vendorNumber")]
+        public uint VendorNumber { get; set; }
+        [XmlElement(ElementName="productName")]
 		public string ProductName { get; set; }
-		[XmlElement(ElementName="productText")]
-		public ProductText ProductText { get; set; }
+		[XmlElement(ElementName="productNumber")]
+        public uint ProductNumber { get; set; }
+        [XmlElement(ElementName = "productText")]
+        public ProductText ProductText { get; set; }
         [XmlElement(ElementName = "concreteNoideId")]
         public string ConcreteNoideId { get; set; }
 	}

@@ -480,12 +480,14 @@ namespace libEDSsharp
 
         [EdsExport]
         public string CreatedBy = "";//=CANFestival //max245
-
+        
         public DateTime ModificationDateTime;//
+
         [EdsExport]
         public string ModificationTime="";
         [EdsExport]
         public string ModificationDate="";
+
         [EdsExport]
         public string ModifiedBy="";//=CANFestival //max244
 
@@ -1019,7 +1021,6 @@ namespace libEDSsharp
             fi.FileVersion = 1;
             fi.FileRevision = 1;
 
-            //FixMe too need a extra function to sort the data out;
             fi.CreationDateTime = DateTime.Now;
             fi.ModificationDateTime = DateTime.Now;
 
@@ -1208,6 +1209,7 @@ namespace libEDSsharp
                 if (eds.ContainsKey("Comments"))
                     c.parse(eds["Comments"]);
 
+
                 updatePDOcount();
             }
             // catch(Exception e)
@@ -1221,6 +1223,20 @@ namespace libEDSsharp
             this.edsfilename = filename;
 
             updatePDOcount();
+
+            //generate date times in DS306 format; h:mmtt MM-dd-yyyy
+
+            fi.CreationDate = fi.CreationDateTime.ToString("MM-dd-yyyy");
+            fi.CreationTime = fi.CreationDateTime.ToString("h:mmtt");
+
+            fi.ModificationDate = fi.ModificationDateTime.ToString("MM-dd-yyyy");
+            fi.ModificationTime = fi.ModificationDateTime.ToString("h:mmtt");
+
+            fi.FileName = filename;
+
+            fi.EDSVersion = "4.0";
+            fi.EDSVersionMajor = 4;
+            fi.EDSVersionMinor = 0;
 
             StreamWriter writer = File.CreateText(filename);
             fi.write(writer);
