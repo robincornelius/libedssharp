@@ -830,49 +830,52 @@ namespace ODEditor
             {
                 ODentry od = (ODentry)selecteditemsub.Tag;
 
-                if (od.parent.objecttype == ObjectType.ARRAY)
+                if (od.parent != null)
+                    od = od.parent;
+
+                if (od.objecttype == ObjectType.ARRAY)
                 {
                     ODentry newsub = new ODentry();
-                    newsub.parent = od.parent;
-                    newsub.datatype = od.parent.datatype;
-                    newsub.accesstype = od.parent.accesstype;
-                    newsub.PDOtype = od.parent.PDOtype;
+                    newsub.parent = od;
+                    newsub.datatype = od.datatype;
+                    newsub.accesstype = od.accesstype;
+                    newsub.PDOtype = od.PDOtype;
                     newsub.index = od.index;
                     newsub.objecttype = ObjectType.VAR;
-                    newsub.subindex = (UInt16)od.parent.subobjects.Count;
-                    od.parent.subobjects.Add((UInt16)(od.parent.subobjects.Count), newsub);
+                    newsub.subindex = (UInt16)od.subobjects.Count;
+                    od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
 
-                    UInt16 def = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
+                    UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
 
                     def++;
-                    od.parent.subobjects[0].defaultvalue = def.ToString();
+                    od.subobjects[0].defaultvalue = def.ToString();
 
 
                 }
 
-                if (od.parent.objecttype == ObjectType.REC)
+                if (od.objecttype == ObjectType.REC)
                 {
                     DataType dt = od.datatype;
 
-                    NewIndex ni = new NewIndex(eds, dt, od.parent.objecttype, od.parent);
+                    NewIndex ni = new NewIndex(eds, dt, od.objecttype, od);
 
                     if (ni.ShowDialog() == DialogResult.OK)
                     {
                         ODentry newsub = new ODentry();
-                        newsub.parent = od.parent;
+                        newsub.parent = od;
                         newsub.datatype = ni.dt;
-                        newsub.accesstype = od.parent.accesstype;
-                        newsub.PDOtype = od.parent.PDOtype;
+                        newsub.accesstype = od.accesstype;
+                        newsub.PDOtype = od.PDOtype;
                         newsub.index = od.index;
                         newsub.objecttype = ObjectType.VAR;
-                        newsub.subindex = (UInt16)od.parent.subobjects.Count;
+                        newsub.subindex = (UInt16)od.subobjects.Count;
                         newsub.parameter_name = ni.name;
 
-                        od.parent.subobjects.Add((UInt16)(od.parent.subobjects.Count), newsub);
+                        od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
 
-                        UInt16 def = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
+                        UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
                         def++;
-                        od.parent.subobjects[0].defaultvalue = def.ToString();
+                        od.subobjects[0].defaultvalue = def.ToString();
                     }
                 }
 
