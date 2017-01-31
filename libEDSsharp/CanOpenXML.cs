@@ -257,7 +257,7 @@ namespace Xml2CSharp
 	[XmlRoot(ElementName="characteristicsList")]
 	public class CharacteristicsList {
 		[XmlElement(ElementName="characteristic")]
-		public Characteristic Characteristic { get; set; }
+		public List<Characteristic> Characteristic { get; set; }
 	}
 
 	[XmlRoot(ElementName="capabilities")]

@@ -187,6 +187,20 @@ namespace libEDSsharp
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
 
+            dev.Other.Capabilities = new Capabilities();
+            dev.Other.Capabilities.CharacteristicsList = new CharacteristicsList();
+            dev.Other.Capabilities.CharacteristicsList.Characteristic = new List<Characteristic>();
+
+           
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("SimpleBootUpSlave", eds.di.SimpleBootUpSlave.ToString()));
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("SimpleBootUpMaster", eds.di.SimpleBootUpMaster.ToString()));
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("DynamicChannelsSupported", eds.di.DynamicChannelsSupported.ToString()));
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("CompactPDO", eds.di.CompactPDO.ToString()));
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("GroupMessaging", eds.di.GroupMessaging.ToString()));
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("LSS_Supported", eds.di.LSS_Supported.ToString()));
+
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("Granularity", eds.di.Granularity.ToString()));
+
             dev.Other.DeviceIdentity = new DeviceIdentity();
             dev.Other.DeviceIdentity.ProductName = eds.di.ProductName;
             dev.Other.DeviceIdentity.ProductNumber = eds.di.ProductNumber;
@@ -221,6 +235,21 @@ namespace libEDSsharp
             return dev;
         }
 
+
+        public Characteristic makecharcteristic(string name,string content)
+        {
+            Characteristic cl = new Characteristic();
+
+            cl.CharacteristicName = new CharacteristicName();
+            cl.CharacteristicContent = new CharacteristicContent();
+            cl.CharacteristicContent.Label = new Label();
+            cl.CharacteristicName.Label = new Label();
+
+            cl.CharacteristicName.Label.Text = name;
+            cl.CharacteristicContent.Label.Text = content;
+
+            return cl;
+        }
 
         public EDSsharp convert(Device dev)
         {
@@ -397,6 +426,44 @@ namespace libEDSsharp
 
             }
 
+            Dictionary<string, string> keypairs = new Dictionary<string, string>();
+
+          
+            if (dev.Other.Capabilities.CharacteristicsList != null)
+            {
+                foreach (Characteristic c in dev.Other.Capabilities.CharacteristicsList.Characteristic)
+                {
+                    try
+                    {
+                        keypairs.Add(c.CharacteristicName.Label.Text, c.CharacteristicContent.Label.Text);
+                    }     
+                    catch (Exception e)
+                    {
+                           // Warnings.warning_list.Add("Parsing characteristics failed " + e.ToString());
+                    }
+                }
+            }
+           
+
+            bool boolout;
+            if (keypairs.ContainsKey("SimpleBootUpSlave") && bool.TryParse(keypairs["SimpleBootUpSlave"], out boolout))
+                eds.di.SimpleBootUpSlave = boolout;
+            if (keypairs.ContainsKey("SimpleBootUpMaster") && bool.TryParse(keypairs["SimpleBootUpMaster"], out boolout))
+                eds.di.SimpleBootUpMaster = boolout;
+            if (keypairs.ContainsKey("DynamicChannelsSupported") && bool.TryParse(keypairs["DynamicChannelsSupported"], out boolout))
+                eds.di.DynamicChannelsSupported = boolout;
+            if (keypairs.ContainsKey("CompactPDO") && bool.TryParse(keypairs["CompactPDO"], out boolout))
+                eds.di.CompactPDO = boolout;
+            if (keypairs.ContainsKey("GroupMessaging") && bool.TryParse(keypairs["GroupMessaging"], out boolout))
+                eds.di.GroupMessaging = boolout;
+            if (keypairs.ContainsKey("LSS_Supported") && bool.TryParse(keypairs["LSS_Supported"], out boolout))
+                eds.di.LSS_Supported = boolout;
+
+            byte byteout;
+            if (keypairs.ContainsKey("Granularity") && byte.TryParse(keypairs["Granularity"], out byteout))
+                eds.di.Granularity = byteout;
+
+
             eds.di.ProductName = dev.Other.DeviceIdentity.ProductName;
             eds.di.ProductNumber = dev.Other.DeviceIdentity.ProductNumber;
 
@@ -456,7 +523,17 @@ namespace libEDSsharp
             catch (Exception e)
             {
                 if (dev.Other.File != null)
-                    Warnings.warning_list.Add(String.Format("Unable to parse FileVersion\"{0}\" {1}", dev.Other.File.FileVersion,e.ToString()));
+                {
+                    // CanOpenNode default project.xml conatins - for fileversion, its suspose to be a byte field according to DS306
+                    if (dev.Other.File.FileVersion == "-")
+                    {
+                        dev.Other.File.FileVersion = "0";
+                    }
+                    else
+                    {
+                        Warnings.warning_list.Add(String.Format("Unable to parse FileVersion\"{0}\" {1}", dev.Other.File.FileVersion, e.ToString()));
+                    }
+                }
 
                 eds.fi.FileVersion = 0;
             }
