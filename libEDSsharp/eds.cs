@@ -1062,7 +1062,7 @@ namespace libEDSsharp
 
             //extract sections
             {
-                string pat = @"\[([a-z0-9]+)\]";
+                string pat = @"^\[([a-z0-9]+)\]";
 
                 Regex r = new Regex(pat, RegexOptions.IgnoreCase);
                 Match m = r.Match(line);
@@ -1075,7 +1075,7 @@ namespace libEDSsharp
 
             //extract keyvalues
             {
-                string pat = @"([a-z0-9_]+)=(.*)";
+                string pat = @"^([a-z0-9_]+)=(.*)";
 
                 Regex r = new Regex(pat, RegexOptions.IgnoreCase);
                 Match m = r.Match(line);
@@ -1203,7 +1203,10 @@ namespace libEDSsharp
                 md = new MandatoryObjects(eds["MandatoryObjects"]);
                 oo = new OptionalObjects(eds["OptionalObjects"]);
                 mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
-                c = new Comments(eds["Comments"]);
+                c = new Comments();
+
+                if (eds.ContainsKey("Comments"))
+                    c.parse(eds["Comments"]);
 
                 updatePDOcount();
             }
