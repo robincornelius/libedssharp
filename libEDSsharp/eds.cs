@@ -1226,11 +1226,11 @@ namespace libEDSsharp
 
             //generate date times in DS306 format; h:mmtt MM-dd-yyyy
 
-            fi.CreationDate = fi.CreationDateTime.ToString("MM-dd-yyyy");
-            fi.CreationTime = fi.CreationDateTime.ToString("h:mmtt");
+            fi.CreationDate = fi.CreationDateTime.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture);
+            fi.CreationTime = fi.CreationDateTime.ToString("h:mmtt", CultureInfo.InvariantCulture);
 
-            fi.ModificationDate = fi.ModificationDateTime.ToString("MM-dd-yyyy");
-            fi.ModificationTime = fi.ModificationDateTime.ToString("h:mmtt");
+            fi.ModificationDate = fi.ModificationDateTime.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture);
+            fi.ModificationTime = fi.ModificationDateTime.ToString("h:mmtt", CultureInfo.InvariantCulture);
 
             fi.FileName = filename;
 
