@@ -52,25 +52,48 @@ namespace ODEditor
             loadprofiles();
 
             insertToolStripMenuItem.Enabled = false;
-
-
         }
 
         private void loadprofiles()
         {
-            string[] profilelist = Directory.GetFiles(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)+Path.DirectorySeparatorChar+"Profiles");
-            ToolStripMenuItem[] items = new ToolStripMenuItem[profilelist.Length];
+
+            // load default profiles from the install directory
+            // load user profiles from the My Documents\.edseditor\profiles\ folder
+            // Personal is my documents in windows and ~ in mono
+
+            List<string> profilelist = Directory.GetFiles(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Profiles").ToList();
+            string homepath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
+            homepath = Path.Combine(homepath, "profiles");
+
+            if (Directory.Exists(homepath))
+            {
+                profilelist.AddRange(Directory.GetFiles(homepath).ToList());
+            }
+
+            int count = 0;
+            //some attempt to validate files
+
+            foreach (string file in profilelist)
+            {
+                if (Path.GetExtension(file) == ".xml")
+                    count++;
+            }
+
+
+            ToolStripMenuItem[] items = new ToolStripMenuItem[count];
 
             int x = 0;
             foreach(string file in profilelist)
             {
-            
-                ToolStripMenuItem i = new ToolStripMenuItem();
-                i.Name = Path.GetFileName(file);
-                i.Text = Path.GetFileName(file);
-                i.Click += ProfileAddClick;
-                i.Image = Properties.Resources.InsertColumn_5626;
-                items[x++] = i;   
+                if (Path.GetExtension(file) == ".xml")
+                {
+                    ToolStripMenuItem i = new ToolStripMenuItem();
+                    i.Name = Path.GetFileName(file);
+                    i.Text = Path.GetFileName(file);
+                    i.Click += ProfileAddClick;
+                    i.Image = Properties.Resources.InsertColumn_5626;
+                    items[x++] = i;
+                }
             }
 
             insertToolStripMenuItem.DropDownItems.AddRange(items);

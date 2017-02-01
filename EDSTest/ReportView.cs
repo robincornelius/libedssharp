@@ -22,7 +22,22 @@ namespace ODEditor
 
         private void WebBrowser1_Navigated(object sender, WebBrowserNavigatedEventArgs e)
         {
-            string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style.css"));
+
+            //Try to load a css override from ~/.edseditor/style.css first then fallback to installed default
+
+            string csspath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
+            csspath = Path.Combine(csspath, "style.css");
+
+            if(!File.Exists(csspath))
+            {
+                csspath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style.css");
+            }
+
+            if (!File.Exists(csspath))
+                return;
+
+            string text = System.IO.File.ReadAllText(csspath);
+
             mshtml.HTMLDocument CurrentDocument = (HTMLDocument)webBrowser1.Document.DomDocument;
             mshtml.IHTMLStyleSheet styleSheet = CurrentDocument.createStyleSheet("", 0);
             styleSheet.cssText = text;
