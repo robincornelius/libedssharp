@@ -312,20 +312,85 @@ bit 16-31: index from OD</description>
     </CANopenObject>
   </CANopenObjectList>
   <other>
-    <file fileName="" fileCreator="" fileCreationDate="" fileCreationTime="" fileVersion="1" exportFolder="" />
+    <file fileName="C:\Users\Robin Local\Desktop\test.eds" fileCreator="ROBIN" fileCreationDate="01-31-2017" fileCreationTime="5:13PM" fileModifedBy="rOBIN 2" fileMotifcationDate="01-31-2017" fileModificationTime="6:13PM" fileVersion="3" fileRevision="44" exportFolder="" />
     <DeviceIdentity>
-      <vendorName />
+      <vendorName>VENDORNAME</vendorName>
+      <vendorNumber>2</vendorNumber>
       <productName>New Product</productName>
+      <productNumber>1</productNumber>
+      <productText>
+        <description>sdfsdsdf</description>
+      </productText>
     </DeviceIdentity>
+    <capabilities>
+      <characteristicsList>
+        <characteristic>
+          <characteristicName>
+            <label>SimpleBootUpSlave</label>
+          </characteristicName>
+          <characteristicContent>
+            <label>False</label>
+          </characteristicContent>
+        </characteristic>
+        <characteristic>
+          <characteristicName>
+            <label>SimpleBootUpMaster</label>
+          </characteristicName>
+          <characteristicContent>
+            <label>False</label>
+          </characteristicContent>
+        </characteristic>
+        <characteristic>
+          <characteristicName>
+            <label>DynamicChannelsSupported</label>
+          </characteristicName>
+          <characteristicContent>
+            <label>False</label>
+          </characteristicContent>
+        </characteristic>
+        <characteristic>
+          <characteristicName>
+            <label>CompactPDO</label>
+          </characteristicName>
+          <characteristicContent>
+            <label>False</label>
+          </characteristicContent>
+        </characteristic>
+        <characteristic>
+          <characteristicName>
+            <label>GroupMessaging</label>
+          </characteristicName>
+          <characteristicContent>
+            <label>False</label>
+          </characteristicContent>
+        </characteristic>
+        <characteristic>
+          <characteristicName>
+            <label>LSS_Supported</label>
+          </characteristicName>
+          <characteristicContent>
+            <label>False</label>
+          </characteristicContent>
+        </characteristic>
+        <characteristic>
+          <characteristicName>
+            <label>Granularity</label>
+          </characteristicName>
+          <characteristicContent>
+            <label>0</label>
+          </characteristicContent>
+        </characteristic>
+      </characteristicsList>
+    </capabilities>
     <baudRate />
     <dummyUsage>
       <dummy entry="False" />
-      <dummy entry="True" />
-      <dummy entry="True" />
-      <dummy entry="True" />
-      <dummy entry="True" />
-      <dummy entry="True" />
-      <dummy entry="True" />
+      <dummy entry="False" />
+      <dummy entry="False" />
+      <dummy entry="False" />
+      <dummy entry="False" />
+      <dummy entry="False" />
+      <dummy entry="False" />
     </dummyUsage>
   </other>
 </device>
