@@ -428,18 +428,20 @@ namespace libEDSsharp
 
             Dictionary<string, string> keypairs = new Dictionary<string, string>();
 
-          
-            if (dev.Other.Capabilities.CharacteristicsList != null)
+            if (dev.Other.Capabilities != null)
             {
-                foreach (Characteristic c in dev.Other.Capabilities.CharacteristicsList.Characteristic)
+                if (dev.Other.Capabilities.CharacteristicsList != null)
                 {
-                    try
+                    foreach (Characteristic c in dev.Other.Capabilities.CharacteristicsList.Characteristic)
                     {
-                        keypairs.Add(c.CharacteristicName.Label.Text, c.CharacteristicContent.Label.Text);
-                    }     
-                    catch (Exception e)
-                    {
-                           // Warnings.warning_list.Add("Parsing characteristics failed " + e.ToString());
+                        try
+                        {
+                            keypairs.Add(c.CharacteristicName.Label.Text, c.CharacteristicContent.Label.Text);
+                        }
+                        catch (Exception e)
+                        {
+                            // Warnings.warning_list.Add("Parsing characteristics failed " + e.ToString());
+                        }
                     }
                 }
             }
