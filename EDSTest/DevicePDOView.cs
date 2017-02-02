@@ -244,23 +244,23 @@ namespace ODEditor
                             PDOdatasize = 1;
                             break;
                         case 0x003:
-                            target = "0x0002/00/Dummy Int16";
+                            target = "0x0003/00/Dummy Int16";
                             PDOdatasize = 2;
                             break;
                         case 0x004:
-                            target = "0x0002/00/Dummy Int32";
+                            target = "0x0004/00/Dummy Int32";
                             PDOdatasize = 4;
                             break;
                         case 0x005:
-                            target = "0x0002/00/Dummy UInt8";
+                            target = "0x0005/00/Dummy UInt8";
                             PDOdatasize = 1;
                             break;
                         case 0x006:
-                            target = "0x0002/00/Dummy UInt16";
+                            target = "0x0006/00/Dummy UInt16";
                             PDOdatasize = 2;
                             break;
                         case 0x007:
-                            target = "0x0002/00/Dummy UInt32";
+                            target = "0x0007/00/Dummy UInt32";
                             PDOdatasize = 4;
                             break;     
                     }
