@@ -921,11 +921,12 @@ const CO_OD_entry_t CO_OD[");
             if (name == "")
                 return "";
 
-           string[] bits = Regex.Split(name,@"[\W]+");
+           Regex splitter = new Regex(@"[\W]+");
+
+           //string[] bits = Regex.Split(name,@"[\W]+");
+           var bits = splitter.Split(name).Where(s => s != String.Empty);
 
            string output = "";
-
-         
 
            char lastchar = ' ';
            foreach (string s in bits)
@@ -933,13 +934,24 @@ const CO_OD_entry_t CO_OD[");
                if(Char.IsUpper(lastchar) && Char.IsUpper(s.First()))
                     output+="_";
 
-               output +=char.ToUpper(s[0]) + s.Substring(1);
+                if (s.Length > 1)
+                {
+                    output += char.ToUpper(s[0]) + s.Substring(1);
+                }
+                else
+                {
+                    output += output.ToUpper();
+                }
 
-               lastchar = output.Last();
+                if(output.Length>0)
+                    lastchar = output.Last();
+
            }
 
-           if(Char.IsLower(output[1]))
+            if (output.Length > 1 && Char.IsLower(output[1]))
                 output = Char.ToLower(output[0]) + output.Substring(1);
+            else
+                output = output.ToLower(); //single character
 
             return output;
        }
