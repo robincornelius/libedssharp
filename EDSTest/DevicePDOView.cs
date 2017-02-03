@@ -230,6 +230,28 @@ namespace ODEditor
                 UInt16 pdoindex = (UInt16)((data >> 16) & 0x0000FFFF);
                 byte pdosub = (byte)((data >> 8) & 0x000000FF);
 
+                //sanity check the real OD against the mapping parameters section
+
+                bool mappingfail = true;
+                if(eds.ods.ContainsKey(pdoindex) && (pdosub==0 || eds.ods[pdoindex].containssubindex(pdosub)))
+                {
+                    ODentry maptarget;
+                    if (pdosub == 0)
+                        maptarget = eds.ods[pdoindex];
+                    else
+                        maptarget = eds.ods[pdoindex].getsubobject(pdosub);
+
+                    if (maptarget.Disabled == false &&  datasize == (8*maptarget.sizeofdatatype()))
+                    {
+                        mappingfail = false;
+                    }
+
+                    if (mappingfail == true)
+                    {
+                        MessageBox.Show(String.Format("PDO mapping failed for object 0x{0:x4}/{1:x2}\nplease manaully check the PDO mapping in the TX and RX PDO tabs\n as it does not agree with the mapping paramater 0x{2:x4}/{3:x2}\nThis can occur if you edit objects that are already mapped",pdoindex,pdosub, idx,sub.subindex));
+                    }
+                }
+
                 String target = "";
                 int PDOdatasize = 0;
 
