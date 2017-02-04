@@ -61,42 +61,50 @@ namespace ODEditor
             // load user profiles from the My Documents\.edseditor\profiles\ folder
             // Personal is my documents in windows and ~ in mono
 
-            List<string> profilelist = Directory.GetFiles(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Profiles").ToList();
-            string homepath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
-            homepath = Path.Combine(homepath, "profiles");
-
-            if (Directory.Exists(homepath))
+            try
             {
-                profilelist.AddRange(Directory.GetFiles(homepath).ToList());
-            }
 
-            int count = 0;
-            //some attempt to validate files
+                List<string> profilelist = Directory.GetFiles(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Profiles").ToList();
+                string homepath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
+                homepath = Path.Combine(homepath, "profiles");
 
-            foreach (string file in profilelist)
-            {
-                if (Path.GetExtension(file) == ".xml")
-                    count++;
-            }
-
-
-            ToolStripMenuItem[] items = new ToolStripMenuItem[count];
-
-            int x = 0;
-            foreach(string file in profilelist)
-            {
-                if (Path.GetExtension(file) == ".xml")
+                if (Directory.Exists(homepath))
                 {
-                    ToolStripMenuItem i = new ToolStripMenuItem();
-                    i.Name = Path.GetFileName(file);
-                    i.Text = Path.GetFileName(file);
-                    i.Click += ProfileAddClick;
-                    i.Image = Properties.Resources.InsertColumn_5626;
-                    items[x++] = i;
+                    profilelist.AddRange(Directory.GetFiles(homepath).ToList());
                 }
-            }
 
-            insertToolStripMenuItem.DropDownItems.AddRange(items);
+                int count = 0;
+                //some attempt to validate files
+
+                foreach (string file in profilelist)
+                {
+                    if (Path.GetExtension(file) == ".xml")
+                        count++;
+                }
+
+
+                ToolStripMenuItem[] items = new ToolStripMenuItem[count];
+
+                int x = 0;
+                foreach (string file in profilelist)
+                {
+                    if (Path.GetExtension(file) == ".xml")
+                    {
+                        ToolStripMenuItem i = new ToolStripMenuItem();
+                        i.Name = Path.GetFileName(file);
+                        i.Text = Path.GetFileName(file);
+                        i.Click += ProfileAddClick;
+                        i.Image = Properties.Resources.InsertColumn_5626;
+                        items[x++] = i;
+                    }
+                }
+
+                insertToolStripMenuItem.DropDownItems.AddRange(items);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Loading profiles has failed for the following reason :\n" + e.ToString());
+            }
         
         }
 

@@ -63,6 +63,9 @@ Section "OpenEdsEditor" Secopeneds ;No components page, name is not important
   File EDSTest\bin\Release\style.css
   File Index_8287_16x.ico
   File License-GPLv3.txt
+  
+  SetOutPath $INSTDIR\Profiles
+  File EDSTest\Profiles\*
    
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\OpenEDSEditor"
@@ -102,6 +105,8 @@ Section "Uninstall"
   ;ADD YOUR OWN FILES HERE...
   
   Delete "$INSTDIR\*"
+  Delete "$INSTDIR\Profiles\*"
+  RMDir "$INSTDIR\Profiles"
   RMDir "$INSTDIR"
   
   SetShellVarContext all
