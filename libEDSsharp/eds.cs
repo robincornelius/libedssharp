@@ -213,13 +213,8 @@ namespace libEDSsharp
 
             foreach (FieldInfo f in fields)
             {
-                if (f.Name == "EDSVersionMajor")
-                    continue;                 
-                if (f.Name == "EDSVersionMinor")
-                    continue;
-                if (f.Name == "CreationDateTime")
-                    continue;
-                if (f.Name == "ModificationDateTime")
+
+                if (!Attribute.IsDefined(f, typeof(EdsExport)))
                     continue;
 
                 if (f.GetValue(this) == null)
@@ -462,9 +457,9 @@ namespace libEDSsharp
         [EdsExport]
         public byte FileRevision;//=1
 
-        [EdsExport]
+        
         public byte EDSVersionMajor;//=4.0
-        [EdsExport]
+        
         public byte EDSVersionMinor;//=4.0
         [EdsExport]
         public string EDSVersion="";
