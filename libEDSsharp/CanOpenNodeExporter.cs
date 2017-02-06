@@ -913,7 +913,7 @@ const CO_OD_entry_t CO_OD[");
             return method.Invoke(null, null) as string;
         }
 
-        string make_cname(string name)
+       protected string make_cname(string name)
        {
             if (name == null)
                 return null;
@@ -940,7 +940,7 @@ const CO_OD_entry_t CO_OD[");
                 }
                 else
                 {
-                    output += output.ToUpper();
+                    output += s;
                 }
 
                 if(output.Length>0)
@@ -948,8 +948,11 @@ const CO_OD_entry_t CO_OD[");
 
            }
 
-            if (output.Length > 1 && Char.IsLower(output[1]))
-                output = Char.ToLower(output[0]) + output.Substring(1);
+            if (output.Length > 1)
+            {
+                if (Char.IsLower(output[1]))
+                    output = Char.ToLower(output[0]) + output.Substring(1);
+            }
             else
                 output = output.ToLower(); //single character
 
