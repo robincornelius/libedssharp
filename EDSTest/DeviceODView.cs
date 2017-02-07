@@ -250,7 +250,7 @@ namespace ODEditor
             if (od.Description == null)
                 textBox_description.Text = "";
             else
-                textBox_description.Text = od.Description.Replace("\n", "\r\n");
+                textBox_description.Text = od.Description.Replace("(?<!\r)\n", "\r\n");
 
             comboBox_pdomap.SelectedItem = od.PDOtype.ToString();
 
