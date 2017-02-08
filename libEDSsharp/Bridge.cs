@@ -421,7 +421,7 @@ namespace libEDSsharp
                     eds.di.BaudRate_500 = true;
                 if (baud.Value == "800 Kbps")
                     eds.di.BaudRate_800 = true;
-                if (baud.Value == "10000 Kbps")
+                if (baud.Value == "1000 Kbps")
                     eds.di.BaudRate_1000 = true;
 
             }

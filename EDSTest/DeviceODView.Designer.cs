@@ -431,7 +431,8 @@
             // 
             // textBox_precode
             // 
-            this.textBox_precode.Location = new System.Drawing.Point(120, 394);
+            this.textBox_precode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox_precode.Location = new System.Drawing.Point(120, 532);
             this.textBox_precode.Name = "textBox_precode";
             this.textBox_precode.Size = new System.Drawing.Size(278, 20);
             this.textBox_precode.TabIndex = 22;
@@ -440,9 +441,10 @@
             // 
             // button_save_changes
             // 
+            this.button_save_changes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button_save_changes.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.button_save_changes.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_save_changes.Location = new System.Drawing.Point(16, 326);
+            this.button_save_changes.Location = new System.Drawing.Point(16, 464);
             this.button_save_changes.Name = "button_save_changes";
             this.button_save_changes.Size = new System.Drawing.Size(122, 27);
             this.button_save_changes.TabIndex = 27;
@@ -452,8 +454,9 @@
             // 
             // label14
             // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(25, 397);
+            this.label14.Location = new System.Drawing.Point(25, 535);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(47, 13);
             this.label14.TabIndex = 21;
@@ -472,8 +475,9 @@
             // 
             // label13
             // 
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(25, 373);
+            this.label13.Location = new System.Drawing.Point(25, 511);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(83, 13);
             this.label13.TabIndex = 20;
@@ -483,8 +487,9 @@
             // 
             // label16
             // 
+            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(243, 224);
+            this.label16.Location = new System.Drawing.Point(243, 362);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(71, 13);
             this.label16.TabIndex = 26;
@@ -492,7 +497,8 @@
             // 
             // textBox_accessfunctionname
             // 
-            this.textBox_accessfunctionname.Location = new System.Drawing.Point(120, 370);
+            this.textBox_accessfunctionname.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox_accessfunctionname.Location = new System.Drawing.Point(120, 508);
             this.textBox_accessfunctionname.Name = "textBox_accessfunctionname";
             this.textBox_accessfunctionname.Size = new System.Drawing.Size(278, 20);
             this.textBox_accessfunctionname.TabIndex = 19;
@@ -510,9 +516,10 @@
             // 
             // comboBox_memory
             // 
+            this.comboBox_memory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox_memory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_memory.FormattingEnabled = true;
-            this.comboBox_memory.Location = new System.Drawing.Point(320, 219);
+            this.comboBox_memory.Location = new System.Drawing.Point(320, 357);
             this.comboBox_memory.Name = "comboBox_memory";
             this.comboBox_memory.Size = new System.Drawing.Size(122, 21);
             this.comboBox_memory.TabIndex = 25;
@@ -528,8 +535,9 @@
             // 
             // label15
             // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(13, 306);
+            this.label15.Location = new System.Drawing.Point(13, 444);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(46, 13);
             this.label15.TabIndex = 24;
@@ -537,8 +545,9 @@
             // 
             // checkBox_enabled
             // 
+            this.checkBox_enabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox_enabled.AutoSize = true;
-            this.checkBox_enabled.Location = new System.Drawing.Point(108, 306);
+            this.checkBox_enabled.Location = new System.Drawing.Point(108, 444);
             this.checkBox_enabled.Name = "checkBox_enabled";
             this.checkBox_enabled.Size = new System.Drawing.Size(15, 14);
             this.checkBox_enabled.TabIndex = 23;
@@ -546,24 +555,30 @@
             // 
             // textBox_name
             // 
+            this.textBox_name.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_name.Location = new System.Drawing.Point(108, 29);
             this.textBox_name.Name = "textBox_name";
-            this.textBox_name.Size = new System.Drawing.Size(278, 20);
+            this.textBox_name.Size = new System.Drawing.Size(697, 20);
             this.textBox_name.TabIndex = 5;
             // 
             // textBox_description
             // 
-            this.textBox_description.Location = new System.Drawing.Point(108, 51);
+            this.textBox_description.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_description.Location = new System.Drawing.Point(108, 53);
             this.textBox_description.Multiline = true;
             this.textBox_description.Name = "textBox_description";
             this.textBox_description.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_description.Size = new System.Drawing.Size(683, 102);
+            this.textBox_description.Size = new System.Drawing.Size(697, 237);
             this.textBox_description.TabIndex = 6;
             // 
             // label7
             // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 172);
+            this.label7.Location = new System.Drawing.Point(13, 310);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(65, 13);
             this.label7.TabIndex = 7;
@@ -571,18 +586,20 @@
             // 
             // comboBox_objecttype
             // 
+            this.comboBox_objecttype.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox_objecttype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_objecttype.Enabled = false;
             this.comboBox_objecttype.FormattingEnabled = true;
-            this.comboBox_objecttype.Location = new System.Drawing.Point(108, 169);
+            this.comboBox_objecttype.Location = new System.Drawing.Point(108, 307);
             this.comboBox_objecttype.Name = "comboBox_objecttype";
             this.comboBox_objecttype.Size = new System.Drawing.Size(122, 21);
             this.comboBox_objecttype.TabIndex = 8;
             // 
             // label8
             // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(13, 198);
+            this.label8.Location = new System.Drawing.Point(13, 336);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(57, 13);
             this.label8.TabIndex = 9;
@@ -590,17 +607,19 @@
             // 
             // comboBox_datatype
             // 
+            this.comboBox_datatype.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox_datatype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_datatype.FormattingEnabled = true;
-            this.comboBox_datatype.Location = new System.Drawing.Point(108, 195);
+            this.comboBox_datatype.Location = new System.Drawing.Point(108, 333);
             this.comboBox_datatype.Name = "comboBox_datatype";
             this.comboBox_datatype.Size = new System.Drawing.Size(122, 21);
             this.comboBox_datatype.TabIndex = 10;
             // 
             // label12
             // 
+            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(243, 251);
+            this.label12.Location = new System.Drawing.Point(243, 389);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(55, 13);
             this.label12.TabIndex = 18;
@@ -608,8 +627,9 @@
             // 
             // label9
             // 
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(13, 224);
+            this.label9.Location = new System.Drawing.Point(13, 362);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(69, 13);
             this.label9.TabIndex = 11;
@@ -617,8 +637,9 @@
             // 
             // checkBox_COS
             // 
+            this.checkBox_COS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox_COS.AutoSize = true;
-            this.checkBox_COS.Location = new System.Drawing.Point(338, 251);
+            this.checkBox_COS.Location = new System.Drawing.Point(338, 389);
             this.checkBox_COS.Name = "checkBox_COS";
             this.checkBox_COS.Size = new System.Drawing.Size(15, 14);
             this.checkBox_COS.TabIndex = 17;
@@ -626,24 +647,27 @@
             // 
             // comboBox_accesstype
             // 
+            this.comboBox_accesstype.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox_accesstype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_accesstype.FormattingEnabled = true;
-            this.comboBox_accesstype.Location = new System.Drawing.Point(108, 221);
+            this.comboBox_accesstype.Location = new System.Drawing.Point(108, 359);
             this.comboBox_accesstype.Name = "comboBox_accesstype";
             this.comboBox_accesstype.Size = new System.Drawing.Size(122, 21);
             this.comboBox_accesstype.TabIndex = 12;
             // 
             // textBox_defaultvalue
             // 
-            this.textBox_defaultvalue.Location = new System.Drawing.Point(108, 276);
+            this.textBox_defaultvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox_defaultvalue.Location = new System.Drawing.Point(108, 414);
             this.textBox_defaultvalue.Name = "textBox_defaultvalue";
             this.textBox_defaultvalue.Size = new System.Drawing.Size(278, 20);
             this.textBox_defaultvalue.TabIndex = 16;
             // 
             // label10
             // 
+            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(13, 251);
+            this.label10.Location = new System.Drawing.Point(13, 389);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(54, 13);
             this.label10.TabIndex = 13;
@@ -651,8 +675,9 @@
             // 
             // label11
             // 
+            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(13, 279);
+            this.label11.Location = new System.Drawing.Point(13, 417);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(70, 13);
             this.label11.TabIndex = 15;
@@ -660,9 +685,10 @@
             // 
             // comboBox_pdomap
             // 
+            this.comboBox_pdomap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox_pdomap.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_pdomap.FormattingEnabled = true;
-            this.comboBox_pdomap.Location = new System.Drawing.Point(108, 248);
+            this.comboBox_pdomap.Location = new System.Drawing.Point(108, 386);
             this.comboBox_pdomap.Name = "comboBox_pdomap";
             this.comboBox_pdomap.Size = new System.Drawing.Size(122, 21);
             this.comboBox_pdomap.TabIndex = 14;
