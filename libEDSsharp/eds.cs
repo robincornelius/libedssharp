@@ -1249,6 +1249,9 @@ namespace libEDSsharp
             {
                 ODentry entry = kvp.Value;
 
+				if (entry.Disabled == true)
+					continue;
+
                 if (entry.index == 0x1000 || entry.index == 0x1001 || entry.index == 0x1018)
                 {
                     md.objectlist.Add(md.objectlist.Count + 1, entry.index);

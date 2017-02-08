@@ -423,6 +423,9 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
                 ODentry od = kvp.Value;
 
+				if (od.Disabled == true)
+					continue;
+
                 string loc = getlocation(od.location);
 
                 DataType t = eds.getdatatype(od);
