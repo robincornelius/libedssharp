@@ -655,14 +655,21 @@ const CO_OD_entry_t CO_OD[");
                 if(od.objecttype==ObjectType.REC)
                 {
                    
-                    pdata = string.Format("OD_record{0:x4}",od.index);
+                    pdata = string.Format("&OD_record{0:x4}",od.index);
                 }
                 else
                 {
-                    pdata = string.Format("{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
+                    pdata = string.Format("&{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
                 }
 
-                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*)&{4}}},", od.index, nosubindexs, flags, datasize, pdata ));
+                if(od.objecttype == ObjectType.VAR && od.datatype == DataType.DOMAIN)
+                {
+                    //NB domain MUST have a data pointer of 0, can open node requires this and makes checks
+                    //against null to determine this is a DOMAIN type. 
+                    pdata = "0";
+                }
+
+                file.WriteLine(string.Format("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*){4}}},", od.index, nosubindexs, flags, datasize, pdata ));
 
                 if (arrayspecial(od.index, false))
                 {
@@ -1005,10 +1012,15 @@ const CO_OD_entry_t CO_OD[");
 
                     string subcname = make_cname(sub.parameter_name);
 
-                ;
-
-                    file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(),arrayaccess, getlocation(od.location)));
-
+                    if (sub.datatype != DataType.DOMAIN)
+                    {
+                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, getlocation(od.location)));
+                    }
+                    else
+                    {
+                        //Domain type MUST have its data pointer set to 0 for CanOpenNode
+                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, getlocation(od.location)));
+                    }
                 }
 
 
