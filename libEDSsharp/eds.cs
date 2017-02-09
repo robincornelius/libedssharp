@@ -860,7 +860,7 @@ namespace libEDSsharp
                     {
                         if (defaultvalue == null)
                             return 0;
-                        return defaultvalue.Length;
+                        return defaultvalue.Unescape().Length;                      
                     }
 
                 case DataType.OCTET_STRING:
