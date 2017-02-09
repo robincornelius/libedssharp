@@ -665,7 +665,7 @@ const CO_OD_entry_t CO_OD[");
                     pdata = string.Format("&{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
                 }
 
-                if(od.objecttype == ObjectType.VAR && od.datatype == DataType.DOMAIN)
+                if((od.objecttype == ObjectType.VAR || od.objecttype == ObjectType.ARRAY) && od.datatype == DataType.DOMAIN)
                 {
                     //NB domain MUST have a data pointer of 0, can open node requires this and makes checks
                     //against null to determine this is a DOMAIN type. 
