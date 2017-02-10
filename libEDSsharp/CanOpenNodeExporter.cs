@@ -719,9 +719,9 @@ const CO_OD_entry_t CO_OD[");
                 //Arrays really should obey the max subindex paramater not the physical number of elements
                 if (od.objecttype == ObjectType.ARRAY)
                 {
-                    if (od.getmaxsubindex() != nosubindexs)
+                    if ((od.getmaxsubindex() != nosubindexs) && od.index != 0x1003) //ignore this warning on 0x1003 it is a special case
                     {
-                        Warnings.warning_list.Add(String.Format("Subindex descripency on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex()));
+                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex()));
                     }
                     nosubindexs = od.getmaxsubindex();
                 }
@@ -738,7 +738,7 @@ const CO_OD_entry_t CO_OD[");
                     pdata = string.Format("&{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
                 }
 
-                if(od.objecttype == ObjectType.VAR && od.datatype == DataType.DOMAIN)
+                if((od.objecttype == ObjectType.VAR || od.objecttype == ObjectType.ARRAY) && od.datatype == DataType.DOMAIN)
                 {
                     //NB domain MUST have a data pointer of 0, can open node requires this and makes checks
                     //against null to determine this is a DOMAIN type. 
