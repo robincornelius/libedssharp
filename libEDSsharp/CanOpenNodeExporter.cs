@@ -360,7 +360,80 @@ namespace libEDSsharp
 
             }
 
-    
+
+
+            file.WriteLine(@"
+/*******************************************************************************
+   TYPE DEFINITIONS FOR OBJECT DICTIONARY INDEXES
+
+   some of those are redundant with CO_SDO.h CO_ObjDicId_t <Common CiA301 object 
+   dictionary entries>
+*******************************************************************************/");
+
+            //FIXME how can we get rid of that redundandency?
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
+
+                ODentry od = kvp.Value;
+
+                if (od.Disabled == true)
+                    continue;
+                
+                DataType t = eds.getdatatype(od);
+
+
+                switch (od.objecttype)
+                {
+                default:
+                    {
+                        file.WriteLine(string.Format("/*{0:x4} */", od.index));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_INDEX_{0}", make_cname(od.parameter_name)), od.index, t.ToString()));
+
+                        file.WriteLine("");
+                    }
+                    break;
+
+                case ObjectType.ARRAY:
+                case ObjectType.REC:
+                    {
+                        file.WriteLine(string.Format("/*{0:x4} */", od.index));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_INDEX_{0}", make_cname(od.parameter_name)), od.index, t.ToString()));
+
+                        file.WriteLine("");
+
+                        //sub indexes
+                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_SUBINDEX_{0}_maxSubIndex", make_cname(od.parameter_name))));         
+
+                        List<string> ODSIs = new List<string>();
+
+                        string ODSIout = "";
+
+                        foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
+                        {
+                            ODentry sub = kvp2.Value;
+
+                            if (sub.subindex == 0)
+                                continue;
+
+                            string ODSI = string.Format("{0}", string.Format("OD_SUBINDEX_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+
+                            if (ODSIs.Contains(ODSI))
+                            {
+                                continue;
+                            }
+
+                            ODSIs.Add(ODSI);
+
+                            ODSIout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("OD_SUBINDEX_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex));
+                        }
+
+                        file.Write(ODSIout);
+                        file.WriteLine("");
+                    }
+                    break;
+                }
+            }
 
             file.WriteLine(@"/*******************************************************************************
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS
