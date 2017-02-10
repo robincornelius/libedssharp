@@ -388,7 +388,7 @@ namespace libEDSsharp
                 default:
                     {
                         file.WriteLine(string.Format("/*{0:x4} */", od.index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_INDEX_{0}", make_cname(od.parameter_name)), od.index, t.ToString()));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.index, make_cname(od.parameter_name)), od.index, t.ToString()));
 
                         file.WriteLine("");
                     }
@@ -398,12 +398,12 @@ namespace libEDSsharp
                 case ObjectType.REC:
                     {
                         file.WriteLine(string.Format("/*{0:x4} */", od.index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_INDEX_{0}", make_cname(od.parameter_name)), od.index, t.ToString()));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.index, make_cname(od.parameter_name)), od.index, t.ToString()));
 
                         file.WriteLine("");
 
                         //sub indexes
-                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_SUBINDEX_{0}_maxSubIndex", make_cname(od.parameter_name))));         
+                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_{0:x4}_0_{1}_maxSubIndex", od.index, make_cname(od.parameter_name))));         
 
                         List<string> ODSIs = new List<string>();
 
@@ -416,7 +416,7 @@ namespace libEDSsharp
                             if (sub.subindex == 0)
                                 continue;
 
-                            string ODSI = string.Format("{0}", string.Format("OD_SUBINDEX_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+                            string ODSI = string.Format("{0}", string.Format("OD_{0:x4}_{1}_{2}_{3}", od.index, sub.subindex, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
 
                             if (ODSIs.Contains(ODSI))
                             {
@@ -425,7 +425,7 @@ namespace libEDSsharp
 
                             ODSIs.Add(ODSI);
 
-                            ODSIout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("OD_SUBINDEX_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex));
+                            ODSIout += (string.Format("        #define {0,-51} {1}\r\n", ODSI, sub.subindex));
                         }
 
                         file.Write(ODSIout);
