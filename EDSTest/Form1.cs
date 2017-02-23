@@ -227,11 +227,10 @@ namespace ODEditor
                         frm.ShowDialog();
                     }
 
+                    dv.dispatch_updateOD();
+
                 }
             }
-
-             
-
         }
 
         private void openCanOpenNodeXMLToolStripMenuItem_Click(object sender, EventArgs e)
@@ -395,7 +394,10 @@ namespace ODEditor
                 {
                     dv.eds.savefile(sfd.FileName);
                     dv.eds.edsfilename = sfd.FileName;
+                    dv.dispatch_updateOD();
                 }
+
+              
 
             }
         }
@@ -413,7 +415,7 @@ namespace ODEditor
                     sfd.RestoreDirectory = true;
                     sfd.FileName = Path.GetFileNameWithoutExtension(dv.eds.xmlfilename);
 
-                if (sfd.ShowDialog() == DialogResult.OK)
+                    if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         //dv.eds.savefile(sfd.FileName);
 
@@ -427,9 +429,9 @@ namespace ODEditor
 
                         dv.eds.xmlfilename = sfd.FileName;
                         dv.eds.dirty = false;
-    
-                    }
+                        dv.dispatch_updateOD();
 
+                    }
                 }
             }
 
@@ -723,6 +725,8 @@ namespace ODEditor
                 //export CO_OD.c and CO_OD.h
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
                 cone.export(dv.eds.fi.exportFolder, dv.eds);
+
+                dv.eds.dirty = false;
 
                 if (Warnings.warning_list.Count != 0)
                 {

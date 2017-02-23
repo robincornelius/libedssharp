@@ -95,6 +95,16 @@ namespace ODEditor
             }
 
 
+            if(eds.edsfilename!=null)
+                textBox_deviceedsname.Text = eds.edsfilename;
+
+            if (eds.xmlfilename != null)
+                textBox_devicefilename.Text = eds.xmlfilename;
+
+            if(eds.fi.exportFolder !=null)
+                textBox_exportfolder.Text = eds.fi.exportFolder;
+
+
 
         }
 
