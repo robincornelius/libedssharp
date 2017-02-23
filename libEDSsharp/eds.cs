@@ -715,8 +715,9 @@ namespace libEDSsharp
         }
 
         //SubIndex type
-        public ODentry(string parameter_name, UInt16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping)
+        public ODentry(string parameter_name, UInt16 index, byte subindex, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping, ODentry parent)
         {
+            this.parent = parent;
             this.parameter_name = parameter_name;
             this.index = index;
             this.subindex = subindex;
@@ -1029,12 +1030,12 @@ namespace libEDSsharp
 
             ODentry od = new ODentry();
 
-            dummy_ods.Add(2, new ODentry("Dummy Int8", 0x002, 0x00, DataType.INTEGER8, "0", AccessType.ro, PDOMappingType.optional));
-            dummy_ods.Add(3, new ODentry("Dummy Int16", 0x002, 0x00, DataType.INTEGER16, "0", AccessType.ro, PDOMappingType.optional));
-            dummy_ods.Add(4, new ODentry("Dummy Int32", 0x002, 0x00, DataType.INTEGER32, "0", AccessType.ro, PDOMappingType.optional));
-            dummy_ods.Add(5, new ODentry("Dummy UInt8", 0x002, 0x00, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional));
-            dummy_ods.Add(6, new ODentry("Dummy UInt16", 0x002, 0x00, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional));
-            dummy_ods.Add(7, new ODentry("Dummy UInt32", 0x002, 0x00, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional));
+            dummy_ods.Add(2, new ODentry("Dummy Int8", 0x002, 0x00, DataType.INTEGER8, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(3, new ODentry("Dummy Int16", 0x002, 0x00, DataType.INTEGER16, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(4, new ODentry("Dummy Int32", 0x002, 0x00, DataType.INTEGER32, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(5, new ODentry("Dummy UInt8", 0x002, 0x00, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(6, new ODentry("Dummy UInt16", 0x002, 0x00, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(7, new ODentry("Dummy UInt32", 0x002, 0x00, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional, null));
 
         }
 
@@ -1582,29 +1583,29 @@ mapped object  (subindex 1...8)
           
             if(rx)
             {
-                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "2", AccessType.ro, PDOMappingType.no);
+                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "2", AccessType.ro, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(0, sub);
-                sub = new ODentry("COB-ID used by RPDO", index, 1, DataType.UNSIGNED32, "$NODEID+0x200", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("COB-ID used by RPDO", index, 1, DataType.UNSIGNED32, "$NODEID+0x200", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(1, sub);
-                sub = new ODentry("transmission type", index, 2, DataType.UNSIGNED8, "254", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("transmission type", index, 2, DataType.UNSIGNED8, "254", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(2, sub);
 
             }
             else
             {
-                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "6", AccessType.ro, PDOMappingType.no);
+                sub = new ODentry("max sub-index", index, 0, DataType.UNSIGNED8, "6", AccessType.ro, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(0, sub);
-                sub = new ODentry("COB-ID used by TPDO", index, 1, DataType.UNSIGNED32, "$NODEID+0x180", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("COB-ID used by TPDO", index, 1, DataType.UNSIGNED32, "$NODEID+0x180", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(1, sub);
-                sub = new ODentry("transmission type", index, 2, DataType.UNSIGNED8, "254", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("transmission type", index, 2, DataType.UNSIGNED8, "254", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(2, sub);
-                sub = new ODentry("inhibit time", index, 3, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("inhibit time", index, 3, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(3, sub);
-                sub = new ODentry("compatibility entry", index, 4, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("compatibility entry", index, 4, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(4, sub);
-                sub = new ODentry("event timer", index, 5, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("event timer", index, 5, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(5, sub);
-                sub = new ODentry("SYNC start value", index, 6, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no);
+                sub = new ODentry("SYNC start value", index, 6, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(6, sub);
 
             }
@@ -1614,12 +1615,12 @@ mapped object  (subindex 1...8)
             od_mapping.accesstype = AccessType.rw; //Same as default but inconsistant with ROM above
             od_mapping.PDOtype = PDOMappingType.no;
 
-            sub = new ODentry("Number of mapped objects", index, 0, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no);
+            sub = new ODentry("Number of mapped objects", index, 0, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, od_mapping);
             od_mapping.subobjects.Add(0, sub);
 
             for (int p=1;p<=8;p++)
             {
-                sub = new ODentry(string.Format("mapped object {0}",p), (UInt16)(index+0x200), (byte)p, DataType.UNSIGNED32, "0x00000000", AccessType.ro, PDOMappingType.no);
+                sub = new ODentry(string.Format("mapped object {0}",p), (UInt16)(index+0x200), (byte)p, DataType.UNSIGNED32, "0x00000000", AccessType.ro, PDOMappingType.no, od_mapping);
                 od_mapping.subobjects.Add((byte)p, sub);
             }
 
