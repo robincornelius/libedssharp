@@ -229,7 +229,12 @@ namespace ODEditor
                 {
                     if (od.subobjects.Count >= 2)
                     {
-                        comboBox_datatype.SelectedItem = od.subobjects[1].datatype.ToString();
+                        // BUG #70 Select the first non subindex count entry, note this may not be key[1] so we are using an ordinal hack
+                        // to retrieve it.
+                        // Whilst this will likely work forever, there is nothing stopping the implementation from being
+                        // changed in the future and causing your code which uses this to break in horrible ways. You have been warned
+
+                        comboBox_datatype.SelectedItem = od.subobjects.ElementAt(1).Value.datatype.ToString();
                     }
 
                 }

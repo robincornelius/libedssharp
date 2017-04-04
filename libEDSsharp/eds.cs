@@ -1072,7 +1072,8 @@ namespace libEDSsharp
 
             //extract keyvalues
             {
-                string pat = @"^([a-z0-9_]+)=(.*)";
+                //Bug #70 Eat whitespace!
+                string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
 
                 Regex r = new Regex(pat, RegexOptions.IgnoreCase);
                 Match m = r.Match(line);
