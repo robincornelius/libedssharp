@@ -43,8 +43,10 @@
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuRecentlyUsed = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveExportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCanOpenNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.closeFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,8 +55,6 @@
             this.documentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.networkPDOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.saveExportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -181,6 +181,15 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
             // 
+            // saveExportAllToolStripMenuItem
+            // 
+            this.saveExportAllToolStripMenuItem.Enabled = false;
+            this.saveExportAllToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
+            this.saveExportAllToolStripMenuItem.Name = "saveExportAllToolStripMenuItem";
+            this.saveExportAllToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.saveExportAllToolStripMenuItem.Text = "Save eds + xml+ Export device";
+            this.saveExportAllToolStripMenuItem.Click += new System.EventHandler(this.saveExportAllToolStripMenuItem_Click);
+            // 
             // exportCanOpenNodeToolStripMenuItem
             // 
             this.exportCanOpenNodeToolStripMenuItem.Enabled = false;
@@ -194,6 +203,11 @@
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(230, 6);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(230, 6);
             // 
             // closeFileToolStripMenuItem
             // 
@@ -267,20 +281,6 @@
             this.tabControl1.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.tabControl1_ControlsChanged);
             this.tabControl1.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tabControl1_Controlsremoved);
             // 
-            // saveExportAllToolStripMenuItem
-            // 
-            this.saveExportAllToolStripMenuItem.Enabled = false;
-            this.saveExportAllToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
-            this.saveExportAllToolStripMenuItem.Name = "saveExportAllToolStripMenuItem";
-            this.saveExportAllToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.saveExportAllToolStripMenuItem.Text = "Save eds + xml+ Export device";
-            this.saveExportAllToolStripMenuItem.Click += new System.EventHandler(this.saveExportAllToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator7
-            // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(230, 6);
-            // 
             // ODEditor_MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -290,7 +290,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ODEditor_MainForm";
-            this.Text = "Object Dictionary Editor v0.5";
+            this.Text = "Object Dictionary Editor v0.5.2";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ODEditor_MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ODEditor_MainForm_FormClosed);
             this.Load += new System.EventHandler(this.ODEditor_MainForm_Load);
