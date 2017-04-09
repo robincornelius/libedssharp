@@ -444,21 +444,21 @@ namespace ODEditor
 
             textBox_slot.Text = string.Format("0x{0:x4}",od.index);
 
-            if (od.nosubindexes > 1)
-             textBox_cob.Text = od.subobjects[1].defaultvalue;
 
-            if (od.nosubindexes > 2)
-                textBox_type.Text = od.subobjects[2].defaultvalue;
+            if(od.getsubobject(1) != null)
+                textBox_cob.Text = od.getsubobject(1).defaultvalue;
 
-            if (od.nosubindexes > 3)
-                textBox_inhibit.Text = od.subobjects[3].defaultvalue;
+            if (od.getsubobject(2) != null)
+                textBox_type.Text = od.getsubobject(2).defaultvalue;
 
-            if (od.nosubindexes > 5)
-                textBox_eventtimer.Text = od.subobjects[5].defaultvalue;
+            if (od.getsubobject(3) != null)
+                textBox_inhibit.Text = od.getsubobject(3).defaultvalue;
 
-            if (od.nosubindexes > 6)
-                textBox_syncstart.Text = od.subobjects[6].defaultvalue;
+            if (od.getsubobject(5) != null)
+                textBox_eventtimer.Text = od.getsubobject(5).defaultvalue;
 
+            if (od.getsubobject(6) != null)
+                textBox_syncstart.Text = od.getsubobject(6).defaultvalue;
 
             if (isTXPDO)
             {

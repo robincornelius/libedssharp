@@ -1336,9 +1336,14 @@ namespace libEDSsharp
 
                 //FIX ME !!! INCONSISTANT setup of the datatype for arrays when loading xml and eds!!
 
-                DataType t = sub2.subobjects[1].datatype;
-                if (t == DataType.UNKNOWN)
-                    t = sub2.datatype;
+                DataType t = sub2.datatype;
+
+                if (sub2.getsubobject(1) != null)
+                {
+                    t = sub2.getsubobject(1).datatype;
+                    if (t == DataType.UNKNOWN)
+                        t = sub2.datatype;
+                }
 
                 return t;
             }
