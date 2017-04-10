@@ -570,6 +570,37 @@ namespace libEDSsharp
             {
                 ProfileBody_Device_CANopen obj = (ProfileBody_Device_CANopen)dev.ProfileBody;
                 eds.di.ProductName = obj.DeviceIdentity.productName.Value;
+                eds.di.ProductNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.productID.Value);
+                eds.di.VendorName = obj.DeviceIdentity.vendorName.Value;
+                eds.di.VendorNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.vendorID.Value);
+
+                //this is very meh 
+                if (obj.DeviceIdentity.productText.Items.Length>0)
+                    eds.fi.Description = obj.DeviceIdentity.productText.Items[0].ToString();
+
+                if(obj.fileCreationTimeSpecified)
+                {
+                        eds.fi.CreationDateTime = obj.fileCreationDate.Add(obj.fileCreationTime.TimeOfDay);
+                        eds.fi.CreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
+                        eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
+
+                }
+
+                if(obj.fileModificationDateSpecified)
+                {
+                        eds.fi.ModificationDateTime = obj.fileModificationDate.Add(obj.fileCreationTime.TimeOfDay);
+                        eds.fi.ModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
+                        eds.fi.ModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
+
+                }
+
+                eds.fi.ModifiedBy = obj.fileModifiedBy;
+                eds.fi.CreatedBy = obj.fileCreator;
+
+
+
+
+
 
             }
 
