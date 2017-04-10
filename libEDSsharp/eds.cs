@@ -1364,6 +1364,17 @@ namespace libEDSsharp
             return (Convert.ToByte(defaultvalue, getbase(defaultvalue)));
         }
 
+        static public UInt16 ConvertToUInt16(byte [] bytes)
+        {
+
+            UInt16 value = 0;
+
+            value = (UInt16) ((bytes[0] << 8) | bytes[1]);
+
+            return value;
+
+        }
+
         static public UInt16 ConvertToUInt16(string defaultvalue)
         {
             if (defaultvalue == null)
@@ -1428,9 +1439,14 @@ namespace libEDSsharp
         //Split on + , replace $NODEID with concrete value and add together
         public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
-          
 
-            if(input.Contains("$NODEID"))
+            if (input == null)
+            {
+                nodeidpresent = false;
+                return 0;
+            }
+
+            if (input.Contains("$NODEID"))
                 nodeidpresent = true;
             else
                 nodeidpresent = false;

@@ -31,7 +31,7 @@ using System.IO;
 using libEDSsharp;
 using System.Globalization;
 using Xml2CSharp;
-
+using XSDImport;
 
 namespace ODEditor
 {
@@ -237,12 +237,75 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "XML (*.xml)|*.xml";
+            odf.Filter = "XML (*.xml)|*.xml|XDD (*.xdd)|*.xdd";
             if (odf.ShowDialog() == DialogResult.OK)
             {
-                openXMLfile(odf.FileName);
+
+                switch(Path.GetExtension(odf.FileName).ToLower())
+                {
+                    case ".xdd":
+                        openXDDfile(odf.FileName);
+                        break;
+
+                    case ".xml":
+                        openXMLfile(odf.FileName);
+                        break;
+
+                }
+              
+
                 addtoMRU(odf.FileName);
             }
+
+        }
+
+        private void openXDDfile(string path)
+        {
+            try
+            {
+                EDSsharp eds;
+                ISO15745ProfileContainer devs; //one day this will be multiple devices
+
+                CanOpenXDD coxml = new CanOpenXDD();
+                coxml.readXML(path);
+
+                Bridge b = new Bridge();
+
+                eds = b.convert(coxml.dev);
+
+                if (eds == null)
+                    return;
+
+                eds.xmlfilename = path;
+
+                tabControl1.TabPages.Add(eds.di.ProductName);
+
+                DeviceView device = new DeviceView();
+
+                eds.onDataDirty += Eds_onDataDirty;
+
+                device.eds = eds;
+                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.Dock = DockStyle.Fill;
+
+                device.dispatch_updateOD();
+
+                network.Add(eds);
+    
+
+            }
+            catch (Exception ex)
+            {
+                Warnings.warning_list.Add(ex.ToString());
+            }
+
+            if (Warnings.warning_list.Count != 0)
+            {
+                WarningsFrm frm = new WarningsFrm();
+                frm.ShowDialog();
+            }
+
+
 
         }
 
@@ -490,6 +553,8 @@ namespace ODEditor
 
             if ( ext == ".xml" )
                 openXMLfile(filepath);
+            if (ext == ".xdd")
+                openXDDfile(filepath);
             if ( ext == ".eds" )
                 openEDSfile(filepath);
             if (ext == ".nxml")
