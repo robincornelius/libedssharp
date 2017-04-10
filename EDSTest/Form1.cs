@@ -31,7 +31,7 @@ using System.IO;
 using libEDSsharp;
 using System.Globalization;
 using Xml2CSharp;
-using CanOpenXDD;
+using XSDImport;
 
 namespace ODEditor
 {
@@ -261,16 +261,20 @@ namespace ODEditor
 
         private void openXDDfile(string path)
         {
-            EDSsharp eds;
-            ISO15745ProfileContainer dev;
-            CanOpenXDDclass coxdd = new CanOpenXDDclass();
-            coxdd.readXML(path);
-
-
-            foreach(ISO15745Profile p in coxdd.dev.ISO15745Profile)
+            try
             {
+                EDSsharp eds;
+                ISO15745ProfileContainer devs; //one day this will be multiple devices
+
+                CanOpenXDD coxml = new CanOpenXDD();
+                coxml.readXML(path);
+
                 Bridge b = new Bridge();
-                eds = b.convert(p);
+
+                eds = b.convert(coxml.dev);
+
+                if (eds == null)
+                    return;
 
                 eds.xmlfilename = path;
 
@@ -287,11 +291,21 @@ namespace ODEditor
                 device.dispatch_updateOD();
 
                 network.Add(eds);
+    
 
+            }
+            catch (Exception ex)
+            {
+                Warnings.warning_list.Add(ex.ToString());
+            }
+
+            if (Warnings.warning_list.Count != 0)
+            {
+                WarningsFrm frm = new WarningsFrm();
+                frm.ShowDialog();
             }
 
 
-         
 
         }
 
@@ -539,6 +553,8 @@ namespace ODEditor
 
             if ( ext == ".xml" )
                 openXMLfile(filepath);
+            if (ext == ".xdd")
+                openXDDfile(filepath);
             if ( ext == ".eds" )
                 openEDSfile(filepath);
             if (ext == ".nxml")

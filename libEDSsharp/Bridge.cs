@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xml2CSharp;
 using System.Text.RegularExpressions;
-using CanOpenXDD;
+using XSDImport;
 
 /* I know i'm going to regret this
  * 
@@ -554,34 +554,97 @@ namespace libEDSsharp
         }
 
 
-        public EDSsharp convert(ISO15745Profile dev)
+        public EDSsharp convert(ISO15745ProfileContainer container)
         {
             EDSsharp eds = new EDSsharp();
 
             //Find Objet Dictionary entries
-            foreach (CanOpenXDD.CANopenObject obj in dev.ProfileBody.ApplicationLayers.CANopenObjectList.CANopenObject)
+
+            ProfileBody_DataType dt;
+
+
+            foreach(ISO15745Profile dev in container.ISO15745Profile)
+            { 
+
+            if (dev.ProfileBody.GetType() == typeof(ProfileBody_Device_CANopen))
             {
-                ODentry entry = new ODentry();
-
-                UInt16 index;
-
-                if (obj.Index != null)
-                {
-                    index = EDSsharp.ConvertToUInt16(obj.Index);
-                }
-                else
-                    continue; //unparseable
-
-                if (obj.Name != null)
-                    entry.parameter_name = obj.Name;
-
-                
-
-                eds.ods.Add(index,entry);
-
-
+                ProfileBody_Device_CANopen obj = (ProfileBody_Device_CANopen)dev.ProfileBody;
+                eds.di.ProductName = obj.DeviceIdentity.productName.Value;
 
             }
+
+
+            if (dev.ProfileBody.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopen))
+            {
+                ProfileBody_CommunicationNetwork_CANopen obj = (ProfileBody_CommunicationNetwork_CANopen)dev.ProfileBody;
+
+                ProfileBody_CommunicationNetwork_CANopenApplicationLayers ApplicationLayers = null;
+
+                foreach (object obj2 in obj.Items)
+                {
+                    if(obj2.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayers))
+                    {
+                        ApplicationLayers = (ProfileBody_CommunicationNetwork_CANopenApplicationLayers)obj2;
+                        break;
+                    }
+
+                }
+
+                if (ApplicationLayers == null)
+                    return null;
+
+                    foreach (XSDImport.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
+                    {
+                        ODentry entry = new ODentry();
+
+                        UInt16 index;
+
+                        if (obj3.index != null)
+                        {
+                            index = (UInt16)EDSsharp.ConvertToUInt16(obj3.index);
+                            entry.index = index;
+                        }
+                        else
+                            continue; //unparseable
+
+                        if (obj3.name != null)
+                            entry.parameter_name = obj3.name;
+
+                        entry.objecttype = (ObjectType)obj3.objectType;
+
+                        if (obj3.dataType != null)
+                            entry.datatype = (DataType)EDSsharp.ConvertToUInt16(obj3.dataType);
+
+                        if (obj3.defaultValue != null)
+                            entry.defaultvalue = obj3.defaultValue;
+
+                        if (obj3.PDOmappingSpecified)
+                            entry.PDOtype = (PDOMappingType)obj3.PDOmapping;
+
+                        eds.ods.Add(index, entry);
+
+                        if (obj3.CANopenSubObject != null)
+                        {
+                            foreach (XSDImport.CANopenObjectListCANopenObjectCANopenSubObject subobj in obj3.CANopenSubObject)
+                            {
+
+
+                                //subobj.PDOmapping
+                                //(EDSsharp.AccessType)
+                                ODentry subentry = new ODentry(subobj.name, index, subobj.subIndex[0], (DataType)EDSsharp.ConvertToUInt16(subobj.dataType), subobj.defaultValue, (EDSsharp.AccessType)subobj.accessType, (PDOMappingType)subobj.PDOmapping, entry);
+                                entry.subobjects.Add(subobj.subIndex[0], subentry);
+
+                            }
+                        }
+
+
+                    }
+
+
+                }
+                
+            }
+            
 
 
 
