@@ -32,8 +32,6 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openEDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveEDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openCanOpenNodeXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,11 +72,9 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
-            this.openEDSToolStripMenuItem,
-            this.saveEDSToolStripMenuItem,
-            this.toolStripSeparator3,
             this.openCanOpenNodeXMLToolStripMenuItem,
             this.saveProjectXMLToolStripMenuItem,
+            this.toolStripSeparator3,
             this.toolStripSeparator5,
             this.loadNetworkXmlToolStripMenuItem,
             this.saveNetworkXmlToolStripMenuItem,
@@ -104,23 +100,6 @@
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
-            // openEDSToolStripMenuItem
-            // 
-            this.openEDSToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Open_6529;
-            this.openEDSToolStripMenuItem.Name = "openEDSToolStripMenuItem";
-            this.openEDSToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.openEDSToolStripMenuItem.Text = "Open EDS";
-            this.openEDSToolStripMenuItem.Click += new System.EventHandler(this.openEDSToolStripMenuItem_Click);
-            // 
-            // saveEDSToolStripMenuItem
-            // 
-            this.saveEDSToolStripMenuItem.Enabled = false;
-            this.saveEDSToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
-            this.saveEDSToolStripMenuItem.Name = "saveEDSToolStripMenuItem";
-            this.saveEDSToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.saveEDSToolStripMenuItem.Text = "Save EDS";
-            this.saveEDSToolStripMenuItem.Click += new System.EventHandler(this.saveEDSToolStripMenuItem_Click);
-            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -131,7 +110,7 @@
             this.openCanOpenNodeXMLToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Open_6529;
             this.openCanOpenNodeXMLToolStripMenuItem.Name = "openCanOpenNodeXMLToolStripMenuItem";
             this.openCanOpenNodeXMLToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.openCanOpenNodeXMLToolStripMenuItem.Text = "Open Device XML";
+            this.openCanOpenNodeXMLToolStripMenuItem.Text = "Open Device File";
             this.openCanOpenNodeXMLToolStripMenuItem.Click += new System.EventHandler(this.openCanOpenNodeXMLToolStripMenuItem_Click);
             // 
             // saveProjectXMLToolStripMenuItem
@@ -140,7 +119,7 @@
             this.saveProjectXMLToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.saveProjectXMLToolStripMenuItem.Name = "saveProjectXMLToolStripMenuItem";
             this.saveProjectXMLToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.saveProjectXMLToolStripMenuItem.Text = "Save Device XML";
+            this.saveProjectXMLToolStripMenuItem.Text = "Save Device File";
             this.saveProjectXMLToolStripMenuItem.Click += new System.EventHandler(this.saveProjectXMLToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
@@ -305,12 +284,10 @@
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openEDSToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openCanOpenNodeXMLToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem closeFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveEDSToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem saveProjectXMLToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;

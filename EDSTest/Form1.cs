@@ -237,7 +237,7 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "XML (*.xml)|*.xml|XDD (*.xdd)|*.xdd";
+            odf.Filter = "All supported files (*.eds;*.xml;*.xdd)|*.eds;*.xml;*.xdd|Electronic Data Sheets (*.eds)|*.eds|CanOpen Xml Datasheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
 
@@ -251,9 +251,15 @@ namespace ODEditor
                         openXMLfile(odf.FileName);
                         break;
 
+                    case ".eds":
+                        openEDSfile(odf.FileName);
+                        break;
+
+                    default:
+                        return;
+
                 }
               
-
                 addtoMRU(odf.FileName);
             }
 
@@ -465,37 +471,52 @@ namespace ODEditor
         }
 
         private void saveProjectXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab != null)
             {
-                if (tabControl1.SelectedTab != null)
+                DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                SaveFileDialog sfd = new SaveFileDialog();
+
+                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds";
+
+                sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
+                sfd.RestoreDirectory = true;
+                sfd.FileName = Path.GetFileNameWithoutExtension(dv.eds.xmlfilename);
+
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
-                    SaveFileDialog sfd = new SaveFileDialog();
 
-                    sfd.Filter = "Canopen Node XML (*.xml)|*.xml";
-
-                    sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
-                    sfd.RestoreDirectory = true;
-                    sfd.FileName = Path.GetFileNameWithoutExtension(dv.eds.xmlfilename);
-
-                    if (sfd.ShowDialog() == DialogResult.OK)
+                    switch(Path.GetExtension(sfd.FileName))
                     {
-                        //dv.eds.savefile(sfd.FileName);
+                        case ".eds":
+                            dv.eds.savefile(sfd.FileName);
+                            dv.eds.edsfilename = sfd.FileName;
+ 
+                            break;
 
-                        Bridge b = new Bridge();
-                        Device d = b.convert(dv.eds);
+                        case ".xml":
+                            Bridge b = new Bridge();
+                            Device d = b.convert(dv.eds);
 
-                        CanOpenXML coxml = new CanOpenXML();
-                        coxml.dev = d;
+                            CanOpenXML coxml = new CanOpenXML();
+                            coxml.dev = d;
 
-                        coxml.writeXML(sfd.FileName);
+                            coxml.writeXML(sfd.FileName);
 
-                        dv.eds.xmlfilename = sfd.FileName;
-                        dv.eds.dirty = false;
-                        dv.dispatch_updateOD();
+                            dv.eds.xmlfilename = sfd.FileName;
+                            dv.eds.dirty = false;
+                            dv.dispatch_updateOD();
+                            break;
+
+                        case ".xdd":
+                            break;
 
                     }
+
+                    dv.dispatch_updateOD();
                 }
             }
+        }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -529,7 +550,6 @@ namespace ODEditor
         private void enablesavemenus(bool enable)
         {
             insertToolStripMenuItem.Enabled = enable;
-            saveEDSToolStripMenuItem.Enabled = enable;
             saveProjectXMLToolStripMenuItem.Enabled = enable;
             exportCanOpenNodeToolStripMenuItem.Enabled = enable;
             closeFileToolStripMenuItem.Enabled = enable;
