@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xml2CSharp;
 using System.Text.RegularExpressions;
+using CanOpenXDD;
 
 /* I know i'm going to regret this
  * 
@@ -36,49 +37,50 @@ namespace libEDSsharp
     public class Bridge
     {
 
+
         public Device convert(EDSsharp eds)
         {
             eds.updatePDOcount();
 
             Device dev = new Device();
-            dev.CANopenObjectList = new CANopenObjectList();
-            dev.CANopenObjectList.CANopenObject = new List<CANopenObject>();
+            dev.CANopenObjectList = new Xml2CSharp.CANopenObjectList();
+            dev.CANopenObjectList.CANopenObject = new List<Xml2CSharp.CANopenObject>();
 
             /* OBJECT DICTIONARY */
 
-            foreach(KeyValuePair<UInt16,ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
 
-               // if(od.subindex==-1)
+                // if(od.subindex==-1)
                 {
-                    CANopenObject coo = new CANopenObject();
-                    coo.Index =string.Format("{0:x4}",od.index);
+                    Xml2CSharp.CANopenObject coo = new Xml2CSharp.CANopenObject();
+                    coo.Index = string.Format("{0:x4}", od.index);
                     coo.Name = od.parameter_name;
                     coo.ObjectType = od.objecttype.ToString();
                     coo.Disabled = od.Disabled.ToString().ToLower();
                     coo.MemoryType = od.location.ToString();
                     coo.AccessType = od.accesstype.ToString();
-                    coo.DataType = string.Format("0x{0:x2}",(int)od.datatype);
+                    coo.DataType = string.Format("0x{0:x2}", (int)od.datatype);
                     coo.DefaultValue = od.defaultvalue;
                     coo.PDOmapping = od.PDOtype.ToString();
                     coo.TPDOdetectCOS = od.TPDODetectCos.ToString().ToLower();
                     coo.AccessFunctionPreCode = od.AccessFunctionPreCode;
                     coo.AccessFunctionName = od.AccessFunctionName;
 
-                    coo.Description = new Description();
+                    coo.Description = new Xml2CSharp.Description();
                     coo.Description.Text = od.Description;
-                        
+
                     //if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
                     {
                         coo.SubNumber = od.nosubindexes.ToString(); //-1?? //check me 
-                        coo.CANopenSubObject = new List<CANopenSubObject>();
+                        coo.CANopenSubObject = new List<Xml2CSharp.CANopenSubObject>();
 
-                        foreach(KeyValuePair<UInt16,ODentry> kvp2 in od.subobjects)
+                        foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                         {
                             ODentry subod = kvp2.Value;
-                   
-                            CANopenSubObject sub = new CANopenSubObject();
+
+                            Xml2CSharp.CANopenSubObject sub = new Xml2CSharp.CANopenSubObject();
 
                             sub.Name = subod.parameter_name;
                             sub.ObjectType = subod.objecttype.ToString();
@@ -86,10 +88,10 @@ namespace libEDSsharp
                             sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
                             sub.DefaultValue = subod.defaultvalue;
                             sub.PDOmapping = subod.PDOtype.ToString();
-                            sub.SubIndex = String.Format("{0:x2}",subod.subindex);
+                            sub.SubIndex = String.Format("{0:x2}", subod.subindex);
                             sub.TPDOdetectCOS = subod.TPDODetectCos.ToString().ToLower();
                             coo.CANopenSubObject.Add(sub);
-                                                 
+
                         }
                     }
 
@@ -110,88 +112,88 @@ namespace libEDSsharp
                 }
 
             }
-  
+
 
             /* DUMMY USAGE */
-            
-            dev.Other = new Other();
-            dev.Other.DummyUsage = new DummyUsage();
-            dev.Other.DummyUsage.Dummy = new List<Dummy>();
 
-            Dummy d; 
+            dev.Other = new Xml2CSharp.Other();
+            dev.Other.DummyUsage = new Xml2CSharp.DummyUsage();
+            dev.Other.DummyUsage.Dummy = new List<Xml2CSharp.Dummy>();
 
-            d = new Dummy();
+            Xml2CSharp.Dummy d;
+
+            d = new Xml2CSharp.Dummy();
             d.Entry = eds.du.Dummy0001.ToString();
             dev.Other.DummyUsage.Dummy.Add(d);
-            d = new Dummy();
+            d = new Xml2CSharp.Dummy();
             d.Entry = eds.du.Dummy0002.ToString();
             dev.Other.DummyUsage.Dummy.Add(d);
-            d = new Dummy();
+            d = new Xml2CSharp.Dummy();
             d.Entry = eds.du.Dummy0003.ToString();
             dev.Other.DummyUsage.Dummy.Add(d);
-            d = new Dummy();
+            d = new Xml2CSharp.Dummy();
             d.Entry = eds.du.Dummy0004.ToString();
             dev.Other.DummyUsage.Dummy.Add(d);
-            d = new Dummy();
+            d = new Xml2CSharp.Dummy();
             d.Entry = eds.du.Dummy0005.ToString();
             dev.Other.DummyUsage.Dummy.Add(d);
-            d = new Dummy();
+            d = new Xml2CSharp.Dummy();
             d.Entry = eds.du.Dummy0006.ToString();
             dev.Other.DummyUsage.Dummy.Add(d);
-            d = new Dummy();
+            d = new Xml2CSharp.Dummy();
             d.Entry = eds.du.Dummy0007.ToString();
             dev.Other.DummyUsage.Dummy.Add(d);
 
 
-            SupportedBaudRate baud = new SupportedBaudRate();
-            dev.Other.BaudRate = new BaudRate();
-            dev.Other.BaudRate.SupportedBaudRate = new List<SupportedBaudRate>();
+            Xml2CSharp.SupportedBaudRate baud = new Xml2CSharp.SupportedBaudRate();
+            dev.Other.BaudRate = new Xml2CSharp.BaudRate();
+            dev.Other.BaudRate.SupportedBaudRate = new List<Xml2CSharp.SupportedBaudRate>();
 
-            baud.Value="10 Kbps";
+            baud.Value = "10 Kbps";
             if (eds.di.BaudRate_10 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
-            baud = new SupportedBaudRate();
+            baud = new Xml2CSharp.SupportedBaudRate();
             baud.Value = "20 Kbps";
             if (eds.di.BaudRate_20 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
-            baud = new SupportedBaudRate();
+            baud = new Xml2CSharp.SupportedBaudRate();
             baud.Value = "50 Kbps";
             if (eds.di.BaudRate_50 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
-            baud = new SupportedBaudRate();
+            baud = new Xml2CSharp.SupportedBaudRate();
             baud.Value = "125 Kbps";
             if (eds.di.BaudRate_125 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
-            baud = new SupportedBaudRate();
+            baud = new Xml2CSharp.SupportedBaudRate();
             baud.Value = "250 Kbps";
             if (eds.di.BaudRate_250 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
-            baud = new SupportedBaudRate();
+            baud = new Xml2CSharp.SupportedBaudRate();
             baud.Value = "500 Kbps";
             if (eds.di.BaudRate_500 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
-            baud = new SupportedBaudRate();
+            baud = new Xml2CSharp.SupportedBaudRate();
             baud.Value = "800 Kbps";
             if (eds.di.BaudRate_800 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
-            baud = new SupportedBaudRate();
+            baud = new Xml2CSharp.SupportedBaudRate();
             baud.Value = "1000 Kbps";
             if (eds.di.BaudRate_1000 == true)
                 dev.Other.BaudRate.SupportedBaudRate.Add(baud);
 
 
-            dev.Other.Capabilities = new Capabilities();
-            dev.Other.Capabilities.CharacteristicsList = new CharacteristicsList();
-            dev.Other.Capabilities.CharacteristicsList.Characteristic = new List<Characteristic>();
+            dev.Other.Capabilities = new Xml2CSharp.Capabilities();
+            dev.Other.Capabilities.CharacteristicsList = new Xml2CSharp.CharacteristicsList();
+            dev.Other.Capabilities.CharacteristicsList.Characteristic = new List<Xml2CSharp.Characteristic>();
 
-           
+
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("SimpleBootUpSlave", eds.di.SimpleBootUpSlave.ToString()));
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("SimpleBootUpMaster", eds.di.SimpleBootUpMaster.ToString()));
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("DynamicChannelsSupported", eds.di.DynamicChannelsSupported.ToString()));
@@ -201,15 +203,15 @@ namespace libEDSsharp
 
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("Granularity", eds.di.Granularity.ToString()));
 
-            dev.Other.DeviceIdentity = new DeviceIdentity();
+            dev.Other.DeviceIdentity = new Xml2CSharp.DeviceIdentity();
             dev.Other.DeviceIdentity.ProductName = eds.di.ProductName;
             dev.Other.DeviceIdentity.ProductNumber = eds.di.ProductNumber;
-            dev.Other.DeviceIdentity.ProductText = new ProductText();
-            dev.Other.DeviceIdentity.ProductText.Description = new Description();
+            dev.Other.DeviceIdentity.ProductText = new Xml2CSharp.ProductText();
+            dev.Other.DeviceIdentity.ProductText.Description = new Xml2CSharp.Description();
             dev.Other.DeviceIdentity.ProductText.Description.Text = eds.fi.Description;
 
-        
-            if (eds.di.concreteNodeId!=-1)
+
+            if (eds.di.concreteNodeId != -1)
                 dev.Other.DeviceIdentity.ConcreteNoideId = eds.di.concreteNodeId.ToString();
 
             dev.Other.DeviceIdentity.VendorName = eds.di.VendorName;
@@ -236,14 +238,14 @@ namespace libEDSsharp
         }
 
 
-        public Characteristic makecharcteristic(string name,string content)
+        public Xml2CSharp.Characteristic makecharcteristic(string name, string content)
         {
-            Characteristic cl = new Characteristic();
+            Xml2CSharp.Characteristic cl = new Xml2CSharp.Characteristic();
 
-            cl.CharacteristicName = new CharacteristicName();
-            cl.CharacteristicContent = new CharacteristicContent();
-            cl.CharacteristicContent.Label = new Label();
-            cl.CharacteristicName.Label = new Label();
+            cl.CharacteristicName = new Xml2CSharp.CharacteristicName();
+            cl.CharacteristicContent = new Xml2CSharp.CharacteristicContent();
+            cl.CharacteristicContent.Label = new Xml2CSharp.Label();
+            cl.CharacteristicName.Label = new Xml2CSharp.Label();
 
             cl.CharacteristicName.Label.Text = name;
             cl.CharacteristicContent.Label.Text = content;
@@ -254,19 +256,19 @@ namespace libEDSsharp
         public EDSsharp convert(Device dev)
         {
             EDSsharp eds = new EDSsharp();
-            
-            foreach(CANopenObject coo in dev.CANopenObjectList.CANopenObject)
+
+            foreach (Xml2CSharp.CANopenObject coo in dev.CANopenObjectList.CANopenObject)
             {
                 ODentry entry = new ODentry();
                 entry.index = Convert.ToUInt16(coo.Index, 16);
                 entry.parameter_name = coo.Name;
-             
+
                 if (coo.AccessType != null)
                 {
                     string at = coo.AccessType;
 
                     Regex reg = new Regex(@"^cons$");
-                    at = reg.Replace(at,"const");
+                    at = reg.Replace(at, "const");
 
                     entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), at);
                 }
@@ -283,7 +285,7 @@ namespace libEDSsharp
                     if (entry.index == 0x1018)
                         entry.datatype = DataType.IDENTITY;
 
-                    if (entry.index >= 0x1200 && entry.index<0x1400) //check me is this the correct range??
+                    if (entry.index >= 0x1200 && entry.index < 0x1400) //check me is this the correct range??
                         entry.datatype = DataType.SDO_PARAMETER;
 
 
@@ -305,8 +307,8 @@ namespace libEDSsharp
 
                 }
 
-               
-                entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType),coo.ObjectType);
+
+                entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType), coo.ObjectType);
 
                 entry.defaultvalue = coo.DefaultValue;
                 //entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
@@ -321,33 +323,33 @@ namespace libEDSsharp
                 entry.AccessFunctionPreCode = coo.AccessFunctionPreCode;
                 entry.Disabled = coo.Disabled == "true";
 
-                if (coo.Description!=null)
+                if (coo.Description != null)
                     entry.Description = coo.Description.Text; //FIXME URL/LANG
 
-                if(coo.Label!=null)
+                if (coo.Label != null)
                     entry.Label = coo.Label.Text; //FIXME LANG
-                
-                if(coo.MemoryType!=null)
+
+                if (coo.MemoryType != null)
                     entry.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), coo.MemoryType);
-                
+
                 eds.ods.Add(entry.index, entry);
 
-                if (entry.index == 0x1000 || entry.index==0x1001 || entry.index==0x1018)
+                if (entry.index == 0x1000 || entry.index == 0x1001 || entry.index == 0x1018)
                 {
-                    eds.md.objectlist.Add(eds.md.objectlist.Count+1,entry.index);
+                    eds.md.objectlist.Add(eds.md.objectlist.Count + 1, entry.index);
                 }
                 else
-                if (entry.index >= 0x2000 && entry.index<0x6000)
+                if (entry.index >= 0x2000 && entry.index < 0x6000)
                 {
-                    eds.mo.objectlist.Add(eds.mo.objectlist.Count+1,entry.index);
+                    eds.mo.objectlist.Add(eds.mo.objectlist.Count + 1, entry.index);
                 }
                 else
                 {
-                     eds.oo.objectlist.Add(eds.oo.objectlist.Count+1,entry.index);
+                    eds.oo.objectlist.Add(eds.oo.objectlist.Count + 1, entry.index);
                 }
 
-                
-                foreach(CANopenSubObject coosub in coo.CANopenSubObject)
+
+                foreach (Xml2CSharp.CANopenSubObject coosub in coo.CANopenSubObject)
                 {
 
                     ODentry subentry = new ODentry();
@@ -355,7 +357,7 @@ namespace libEDSsharp
                     subentry.parameter_name = coosub.Name;
                     subentry.index = entry.index;
 
-                    if(coosub.AccessType!=null)
+                    if (coosub.AccessType != null)
                         subentry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), coosub.AccessType);
 
                     if (coosub.DataType != null)
@@ -367,8 +369,8 @@ namespace libEDSsharp
                     subentry.defaultvalue = coosub.DefaultValue;
 
                     subentry.subindex = Convert.ToUInt16(coosub.SubIndex, 16);
-                    
-                    if(coosub.PDOmapping!=null)
+
+                    if (coosub.PDOmapping != null)
                         subentry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), coosub.PDOmapping);
 
                     if (entry.objecttype == ObjectType.ARRAY)
@@ -381,18 +383,18 @@ namespace libEDSsharp
 
                     subentry.objecttype = ObjectType.VAR;
 
-                    if(coosub.TPDOdetectCOS!=null)
+                    if (coosub.TPDOdetectCOS != null)
                     {
-                        subentry.TPDODetectCos = coosub.TPDOdetectCOS == "true";  
+                        subentry.TPDODetectCos = coosub.TPDOdetectCOS == "true";
                     }
                     else
                     {
-                        if(coo.TPDOdetectCOS!=null)
+                        if (coo.TPDOdetectCOS != null)
                             subentry.TPDODetectCos = coo.TPDOdetectCOS == "true";
                     }
-                       
 
-                    entry.subobjects.Add(subentry.subindex,subentry);
+
+                    entry.subobjects.Add(subentry.subindex, subentry);
 
                 }
             }
@@ -405,7 +407,7 @@ namespace libEDSsharp
             eds.du.Dummy0006 = dev.Other.DummyUsage.Dummy[5].Entry == "Dummy0006=1";
             eds.du.Dummy0007 = dev.Other.DummyUsage.Dummy[6].Entry == "Dummy0007=1";
 
-            foreach(SupportedBaudRate baud in dev.Other.BaudRate.SupportedBaudRate)
+            foreach (Xml2CSharp.SupportedBaudRate baud in dev.Other.BaudRate.SupportedBaudRate)
             {
                 if (baud.Value == "10 Kbps")
                     eds.di.BaudRate_10 = true;
@@ -432,7 +434,7 @@ namespace libEDSsharp
             {
                 if (dev.Other.Capabilities.CharacteristicsList != null)
                 {
-                    foreach (Characteristic c in dev.Other.Capabilities.CharacteristicsList.Characteristic)
+                    foreach (Xml2CSharp.Characteristic c in dev.Other.Capabilities.CharacteristicsList.Characteristic)
                     {
                         try
                         {
@@ -445,7 +447,7 @@ namespace libEDSsharp
                     }
                 }
             }
-           
+
 
             bool boolout;
             if (keypairs.ContainsKey("SimpleBootUpSlave") && bool.TryParse(keypairs["SimpleBootUpSlave"], out boolout))
@@ -469,7 +471,7 @@ namespace libEDSsharp
             eds.di.ProductName = dev.Other.DeviceIdentity.ProductName;
             eds.di.ProductNumber = dev.Other.DeviceIdentity.ProductNumber;
 
-            if(dev.Other.DeviceIdentity.ProductText!=null && dev.Other.DeviceIdentity.ProductText.Description!=null & dev.Other.DeviceIdentity.ProductText.Description.Text!=null)
+            if (dev.Other.DeviceIdentity.ProductText != null && dev.Other.DeviceIdentity.ProductText.Description != null & dev.Other.DeviceIdentity.ProductText.Description.Text != null)
                 eds.fi.Description = dev.Other.DeviceIdentity.ProductText.Description.Text;
 
             eds.di.VendorName = dev.Other.DeviceIdentity.VendorName;
@@ -496,7 +498,7 @@ namespace libEDSsharp
                 eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
 
             }
-            catch(Exception e) { }
+            catch (Exception e) { }
 
             eds.fi.CreatedBy = dev.Other.File.FileCreator;
             eds.fi.exportFolder = dev.Other.File.ExportFolder;
@@ -512,7 +514,7 @@ namespace libEDSsharp
 
 
 
-  
+
             eds.fi.ModifiedBy = dev.Other.File.FileModifedBy;
 
 
@@ -543,7 +545,7 @@ namespace libEDSsharp
             eds.fi.FileRevision = dev.Other.File.FileRevision;
 
             eds.fi.EDSVersion = "4.0";
-            
+
             //FIX me any other approprate defaults for eds here??
 
             eds.updatePDOcount();
@@ -551,5 +553,41 @@ namespace libEDSsharp
             return eds;
         }
 
+
+        public EDSsharp convert(ISO15745Profile dev)
+        {
+            EDSsharp eds = new EDSsharp();
+
+            //Find Objet Dictionary entries
+            foreach (CanOpenXDD.CANopenObject obj in dev.ProfileBody.ApplicationLayers.CANopenObjectList.CANopenObject)
+            {
+                ODentry entry = new ODentry();
+
+                UInt16 index;
+
+                if (obj.Index != null)
+                {
+                    index = EDSsharp.ConvertToUInt16(obj.Index);
+                }
+                else
+                    continue; //unparseable
+
+                if (obj.Name != null)
+                    entry.parameter_name = obj.Name;
+
+                
+
+                eds.ods.Add(index,entry);
+
+
+
+            }
+
+
+
+            return eds;
+
+        }
     }
+
 }

@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Bridge.cs" />
     <Compile Include="CanOpenNodeExporter.cs" />
+    <Compile Include="CanOpenXDD.cs" />
     <Compile Include="CanOpenXML.cs" />
     <Compile Include="DocumentationGen.cs" />
     <Compile Include="eds.cs" />

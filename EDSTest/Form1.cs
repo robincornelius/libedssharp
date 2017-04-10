@@ -31,7 +31,7 @@ using System.IO;
 using libEDSsharp;
 using System.Globalization;
 using Xml2CSharp;
-
+using CanOpenXDD;
 
 namespace ODEditor
 {
@@ -237,12 +237,61 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "XML (*.xml)|*.xml";
+            odf.Filter = "XML (*.xml)|*.xml|XDD (*.xdd)|*.xdd";
             if (odf.ShowDialog() == DialogResult.OK)
             {
-                openXMLfile(odf.FileName);
+
+                switch(Path.GetExtension(odf.FileName).ToLower())
+                {
+                    case ".xdd":
+                        openXDDfile(odf.FileName);
+                        break;
+
+                    case ".xml":
+                        openXMLfile(odf.FileName);
+                        break;
+
+                }
+              
+
                 addtoMRU(odf.FileName);
             }
+
+        }
+
+        private void openXDDfile(string path)
+        {
+            EDSsharp eds;
+            ISO15745ProfileContainer dev;
+            CanOpenXDDclass coxdd = new CanOpenXDDclass();
+            coxdd.readXML(path);
+
+
+            foreach(ISO15745Profile p in coxdd.dev.ISO15745Profile)
+            {
+                Bridge b = new Bridge();
+                eds = b.convert(p);
+
+                eds.xmlfilename = path;
+
+                tabControl1.TabPages.Add(eds.di.ProductName);
+
+                DeviceView device = new DeviceView();
+
+                eds.onDataDirty += Eds_onDataDirty;
+
+                device.eds = eds;
+                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.Dock = DockStyle.Fill;
+
+                device.dispatch_updateOD();
+
+                network.Add(eds);
+
+            }
+
+
+         
 
         }
 
