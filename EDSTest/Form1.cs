@@ -269,10 +269,9 @@ namespace ODEditor
                 CanOpenXDD coxml = new CanOpenXDD();
                 coxml.readXML(path);
 
-                Bridge b = new Bridge();
+                eds = coxml.convert(coxml.dev);
 
-                eds = b.convert(coxml.dev);
-
+ 
                 if (eds == null)
                     return;
 

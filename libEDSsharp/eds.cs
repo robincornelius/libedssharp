@@ -94,6 +94,7 @@ namespace libEDSsharp
         optional=1,
         RPDO=2,
         TPDO=3,
+        @default=4,
     }
 
   
