@@ -273,11 +273,8 @@ namespace ODEditor
                 ISO15745ProfileContainer devs; //one day this will be multiple devices
 
                 CanOpenXDD coxml = new CanOpenXDD();
-                coxml.readXML(path);
+                eds = coxml.readXML(path);
 
-                eds = coxml.convert(coxml.dev);
-
- 
                 if (eds == null)
                     return;
 
@@ -477,7 +474,7 @@ namespace ODEditor
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                 SaveFileDialog sfd = new SaveFileDialog();
 
-                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds";
+                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Canopen XDD (*.xdd)|*.xdd";
 
                 sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
                 sfd.RestoreDirectory = true;
@@ -509,6 +506,8 @@ namespace ODEditor
                             break;
 
                         case ".xdd":
+                            CanOpenXDD coxdd = new CanOpenXDD();
+                            coxdd.writeXML(sfd.FileName, dv.eds);
                             break;
 
                     }

@@ -43,12 +43,9 @@ namespace libEDSsharp
         {
             this.folderpath = folderpath;
             this.eds = eds;
-     
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
-            {
-                if (kvp.Value.Disabled == false)
-                    enabledcount++;
-            }
+
+
+            enabledcount = eds.getNoEnabledObjects();
 
             countPDOS();
 
