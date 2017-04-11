@@ -691,6 +691,10 @@ namespace libEDSsharp
 
         public bool TPDODetectCos = false;
 
+        //XDD Extensions//
+        public string uniqueID;
+
+
         public ODentry()
         {
 
@@ -1679,6 +1683,33 @@ mapped object  (subindex 1...8)
             return null;
 
         }
+
+
+        public ODentry getobject(string uniqueID)
+        {
+            foreach(KeyValuePair<UInt16,ODentry> e in ods)
+            {
+                if (e.Value.uniqueID == uniqueID)
+                    return e.Value;
+
+                if(e.Value.subobjects!=null && e.Value.subobjects.Count>0)
+                {
+                    foreach(KeyValuePair<UInt16, ODentry> sube in e.Value.subobjects)
+                    {
+                        if (sube.Value.uniqueID == uniqueID)
+                            return sube.Value;
+                    }
+
+                }
+                
+
+            }
+
+            return null;
+        }
+
+
+
     }
 
         public class ParameterException : Exception

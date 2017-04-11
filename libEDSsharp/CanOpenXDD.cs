@@ -37,63 +37,29 @@ namespace libEDSsharp
             ProfileBody_DataType dt;
 
 
+            ProfileBody_CommunicationNetwork_CANopen body_network=null;
+            ProfileBody_Device_CANopen body_device=null;
+
+
             foreach (ISO15745Profile dev in container.ISO15745Profile)
             {
+                if (dev.ProfileBody.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopen))
+                {
+                    body_network = (ProfileBody_CommunicationNetwork_CANopen)dev.ProfileBody;
+                }
 
                 if (dev.ProfileBody.GetType() == typeof(ProfileBody_Device_CANopen))
                 {
-                    ProfileBody_Device_CANopen obj = (ProfileBody_Device_CANopen)dev.ProfileBody;
-                    eds.di.ProductName = obj.DeviceIdentity.productName.Value;
-                    eds.di.ProductNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.productID.Value);
-                    eds.di.VendorName = obj.DeviceIdentity.vendorName.Value;
-                    eds.di.VendorNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.vendorID.Value);
-
-                    foreach(object o in obj.DeviceIdentity.productText.Items)
-                    {
-                        //this is another g_label affair
-
-                        if(o.GetType() == typeof(vendorTextDescription))
-                        {
-                            eds.fi.Description = ((vendorTextDescription)o).Value;
-                        }
-
-                        if (o.GetType() == typeof(vendorTextDescriptionRef))
-                        {
-                        }
-                        if (o.GetType() == typeof(vendorTextLabel))
-                        {
-                        }
-                        if (o.GetType() == typeof(vendorTextLabelRef))
-                        {
-                        }
-                    }
-
-                    if (obj.fileCreationTimeSpecified)
-                    {
-                        eds.fi.CreationDateTime = obj.fileCreationDate.Add(obj.fileCreationTime.TimeOfDay);
-                        eds.fi.CreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
-                        eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
-
-                    }
-
-                    if (obj.fileModificationDateSpecified)
-                    {
-                        eds.fi.ModificationDateTime = obj.fileModificationDate.Add(obj.fileCreationTime.TimeOfDay);
-                        eds.fi.ModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
-                        eds.fi.ModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
-
-                    }
-
-                    eds.fi.ModifiedBy = obj.fileModifiedBy;
-                    eds.fi.CreatedBy = obj.fileCreator;
+                    body_device = (ProfileBody_Device_CANopen)dev.ProfileBody;
 
                 }
 
-                //ProfileBody_CommunicationNetwork_CANopen
+            }
 
-                if (dev.ProfileBody.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopen))
+                //ProfileBody_CommunicationNetwork_CANopen
+                if (body_network!=null)
                 {
-                    ProfileBody_CommunicationNetwork_CANopen obj = (ProfileBody_CommunicationNetwork_CANopen)dev.ProfileBody;
+                    ProfileBody_CommunicationNetwork_CANopen obj = body_network;
 
                     ProfileBody_CommunicationNetwork_CANopenApplicationLayers ApplicationLayers = null;
                     ProfileBody_CommunicationNetwork_CANopenTransportLayers TransportLayers = null;
@@ -333,8 +299,8 @@ namespace libEDSsharp
                         //subobj.actualValue;
                         //subobj.denotation;
                         //subobj.objFlags;
-                        //subobj.uniqueIDRef;
 
+                        entry.uniqueID = obj3.uniqueIDRef;
 
                         eds.ods.Add(index, entry);
 
@@ -386,7 +352,8 @@ namespace libEDSsharp
                                 //subobj.actualValue;
                                 //subobj.denotation;
                                 //subobj.objFlags;
-                                //subobj.uniqueIDRef;
+ 
+                                subentry.uniqueID = subobj.uniqueIDRef;
 
                                 entry.subobjects.Add(subobj.subIndex[0], subentry);
 
@@ -395,6 +362,106 @@ namespace libEDSsharp
 
 
                     }
+
+                }
+
+                //Process Device after network so we already have the ODEntries populated then can match bu uniqueID
+
+                //ProfileBody_Device_CANopen
+                if (body_device!=null)
+                {
+                    ProfileBody_Device_CANopen obj = body_device;
+
+                    if (obj.DeviceIdentity != null)
+                    {
+                        eds.di.ProductName = obj.DeviceIdentity.productName.Value;
+                        eds.di.ProductNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.productID.Value);
+                        eds.di.VendorName = obj.DeviceIdentity.vendorName.Value;
+                        eds.di.VendorNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.vendorID.Value);
+
+                        foreach (object o in obj.DeviceIdentity.productText.Items)
+                        {
+                            //this is another g_label affair
+
+                            if (o.GetType() == typeof(vendorTextDescription))
+                            {
+                                eds.fi.Description = ((vendorTextDescription)o).Value;
+                            }
+
+                            if (o.GetType() == typeof(vendorTextDescriptionRef))
+                            {
+                            }
+                            if (o.GetType() == typeof(vendorTextLabel))
+                            {
+                            }
+                            if (o.GetType() == typeof(vendorTextLabelRef))
+                            {
+                            }
+                        }
+
+                        if (obj.fileCreationTimeSpecified)
+                        {
+                            eds.fi.CreationDateTime = obj.fileCreationDate.Add(obj.fileCreationTime.TimeOfDay);
+                            eds.fi.CreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
+                            eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
+
+                        }
+
+                        if (obj.fileModificationDateSpecified)
+                        {
+                            eds.fi.ModificationDateTime = obj.fileModificationDate.Add(obj.fileCreationTime.TimeOfDay);
+                            eds.fi.ModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
+                            eds.fi.ModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
+
+                        }
+
+                        eds.fi.ModifiedBy = obj.fileModifiedBy;
+                        eds.fi.CreatedBy = obj.fileCreator;
+                    }
+
+                    if(obj.DeviceManager!=null)
+                    {
+
+                    }
+
+                    if(obj.DeviceFunction!=null)
+                    {
+
+                    }
+
+                    if(obj.ApplicationProcess!=null)
+                    {
+
+                        if(obj.ApplicationProcess[0]!=null)
+                        {
+                            foreach (parameter param in obj.ApplicationProcess[0].parameterList)
+                            {
+
+                                //match unique ID
+
+
+                                ODentry od = eds.getobject(param.uniqueID);
+
+                                if (od == null)
+                                    continue;
+
+                                //fix me defaultValue containes other stuff we might want
+                                if(param.defaultValue!=null)
+                                    od.defaultvalue = param.defaultValue.value;
+                                
+
+
+
+
+
+
+                            }
+
+                        }
+
+                        
+
+                    
 
                 }
 
