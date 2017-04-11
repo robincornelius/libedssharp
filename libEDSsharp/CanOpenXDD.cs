@@ -217,6 +217,85 @@ namespace libEDSsharp
 
                         }
 
+                    } //application layer
+
+                    if(TransportLayers != null)
+                    {
+                        foreach(ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate baud in TransportLayers.PhysicalLayer.baudRate.supportedBaudRate)
+                        {
+
+                            if (baud.value.ToString() == "Item10Kbps")
+                                eds.di.BaudRate_10 = true;
+                            if (baud.value.ToString() == "Item20Kbps")
+                                eds.di.BaudRate_20 = true;
+                            if (baud.value.ToString() == "Item50Kbps")
+                                eds.di.BaudRate_50 = true;
+                            if (baud.value.ToString() == "Item125Kbps")
+                                eds.di.BaudRate_125 = true;
+                            if (baud.value.ToString() == "Item250Kbps")
+                                eds.di.BaudRate_250 = true;
+                            if (baud.value.ToString() == "Item500Kbps")
+                                eds.di.BaudRate_500 = true;
+                            if (baud.value.ToString() == "Item800Kbps")
+                                eds.di.BaudRate_800 = true;
+                            if (baud.value.ToString() == "Item1000Kbps")
+                                eds.di.BaudRate_1000 = true;
+
+                            //fixme "auto-baudRate" is a valid identifier here as well
+
+
+                        }
+
+
+                    } //Transport layer
+
+                    if(NetworkManagment != null)
+                    {
+                        if(NetworkManagment.CANopenGeneralFeatures!=null)
+                        {
+                            eds.di.SimpleBootUpSlave = NetworkManagment.CANopenGeneralFeatures.bootUpSlave;
+                            eds.di.DynamicChannelsSupported = NetworkManagment.CANopenGeneralFeatures.dynamicChannels > 0;
+                            //fix me count of dynamic channles not handled yet eds only has bool
+
+                            eds.di.Granularity = NetworkManagment.CANopenGeneralFeatures.granularity;
+                            eds.di.GroupMessaging = NetworkManagment.CANopenGeneralFeatures.groupMessaging;
+                            eds.di.LSS_Supported = NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave;
+                            eds.di.NrOfRXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfRxPDO;
+                            eds.di.NrOfTXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfTxPDO;
+                            
+                            //extra items
+                            //NetworkManagment.CANopenGeneralFeatures.SDORequestingDevice;
+                            //NetworkManagment.CANopenGeneralFeatures.selfStartingDevice;
+                      
+                    
+
+                        }
+
+                        if(NetworkManagment.CANopenMasterFeatures!=null)
+                        {
+                            eds.di.SimpleBootUpMaster = NetworkManagment.CANopenMasterFeatures.bootUpMaster;
+
+                            //Extra items
+                            //NetworkManagment.CANopenMasterFeatures.configurationManager;
+                            //NetworkManagment.CANopenMasterFeatures.flyingMaster;
+                            //NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster;
+                            //NetworkManagment.CANopenMasterFeatures.SDOManager;
+                        }
+
+                        if(NetworkManagment.deviceCommissioning !=null)
+                        {
+                            eds.di.concreteNodeId = NetworkManagment.deviceCommissioning.nodeID;
+
+                            //Extra items
+                            //NetworkManagment.deviceCommissioning.actualBaudRate;
+                            //NetworkManagment.deviceCommissioning.CANopenManager
+                            //NetworkManagment.deviceCommissioning.networkName
+                            //NetworkManagment.deviceCommissioning.networkNumber
+                            //NetworkManagment.deviceCommissioning.nodeName;
+                           
+                        }
+
+
                     }
 
                     foreach (XSDImport.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
