@@ -39,6 +39,74 @@ namespace libEDSsharp
             writer.Close();
         }
 
+        public void fillparamater(parameter p,ODentry od)
+        {
+
+
+            if (od.parent == null)
+            {
+                p.uniqueID = string.Format("UID_PARAM_{0:x4}", od.index);
+            }
+            else
+            {
+                p.uniqueID = string.Format("UID_PARAM_{0:x4}{1:x2}", od.parent.index,od.subindex);
+            }
+
+            switch (od.accesstype)
+            {
+                case EDSsharp.AccessType.rw:
+                    p.access = parameterTemplateAccess.readWrite;
+                    break;
+
+                case EDSsharp.AccessType.ro:
+                    p.access = parameterTemplateAccess.read;
+                    break;
+
+                case EDSsharp.AccessType.wo:
+                    p.access = parameterTemplateAccess.write;
+                    break;
+
+                case EDSsharp.AccessType.rwr:
+                    p.access = parameterTemplateAccess.readWriteInput;
+                    break;
+
+                case EDSsharp.AccessType.rww:
+                    p.access = parameterTemplateAccess.readWriteOutput;
+                    break;
+
+                case EDSsharp.AccessType.@const:
+                    p.access = parameterTemplateAccess.@const;
+                    break;
+
+                //fixme no access not handled
+                default:
+                    p.access = parameterTemplateAccess.noAccess;
+                    break;
+
+            }
+
+           
+            p.Items = new object[1];
+
+            vendorTextLabel lab = new vendorTextLabel();
+            lab.lang = "en";
+            lab.Value = od.parameter_name;
+            p.Items[0] = lab;
+
+            denotation denot = new denotation();
+            vendorTextLabel lab2 = new vendorTextLabel();
+            lab2.lang = "en";
+            denot.Items = new object[1];
+            denot.Items[0] = lab2;
+            p.denotation = denot;
+
+
+            p.defaultValue = new defaultValue();
+            p.defaultValue.value = od.defaultvalue;
+
+ 
+        }
+
 
         public ISO15745ProfileContainer convert(EDSsharp eds)
         {
@@ -46,11 +114,133 @@ namespace libEDSsharp
 
             dev.ISO15745Profile = new ISO15745Profile[2];
 
+
+            //Profile 0 ProfileBody_Device_CANopen
             dev.ISO15745Profile[0] = new ISO15745Profile();
             dev.ISO15745Profile[0].ProfileHeader = new ProfileHeader_DataType();
+         
+            dev.ISO15745Profile[0].ProfileHeader.ProfileIdentification = "CAN device profile";
+            dev.ISO15745Profile[0].ProfileHeader.ProfileRevision = "1";
+            dev.ISO15745Profile[0].ProfileHeader.ProfileClassID = ProfileClassID_DataType.Device;
+            dev.ISO15745Profile[0].ProfileHeader.ProfileName = "";
+            dev.ISO15745Profile[0].ProfileHeader.ProfileSource = "";
+
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference = new ISO15745Reference_DataType();
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ISO15745Part = "1";
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ISO15745Edition = "1";
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ProfileTechnology = "Canopen";
+
             dev.ISO15745Profile[0].ProfileBody = new ProfileBody_Device_CANopen();
 
+            ProfileBody_Device_CANopen device = (ProfileBody_Device_CANopen)dev.ISO15745Profile[0].ProfileBody;
 
+            device.DeviceIdentity = new DeviceIdentity();
+
+            device.DeviceIdentity.vendorName = new vendorName();
+            device.DeviceIdentity.vendorName.Value = eds.di.VendorName;
+            device.DeviceIdentity.vendorName.readOnly = true;
+
+            device.DeviceIdentity.vendorID = new vendorID();
+            device.DeviceIdentity.vendorID.Value = eds.di.VendorNumber.ToString();
+            device.DeviceIdentity.vendorID.readOnly = true;
+
+            //device.DeviceIdentity.vendorText
+            //device.DeviceIdentity.deviceFamily
+            //device.DeviceIdentity.productFamily;
+
+            device.DeviceIdentity.productName = new productName();
+            device.DeviceIdentity.productName.Value = eds.di.ProductName;
+            device.DeviceIdentity.productName.readOnly = true;
+
+            device.DeviceIdentity.productID = new productID();
+            device.DeviceIdentity.productID.Value = eds.di.ProductNumber.ToString();
+            device.DeviceIdentity.productID.readOnly = true;
+
+            device.DeviceIdentity.productText = new productText();
+            device.DeviceIdentity.productText.Items = new object[1];
+
+            vendorTextDescription des = new vendorTextDescription();
+            des.lang = "en";
+            des.Value = eds.fi.Description;
+
+            device.DeviceIdentity.productText.Items[0] = des;
+            device.DeviceIdentity.productText.readOnly = true;
+
+            //device.DeviceIdentity.orderNumber
+
+            device.DeviceIdentity.version = new version[3];
+
+            device.DeviceIdentity.version[0] = new version();
+            device.DeviceIdentity.version[0].readOnly = true;
+            device.DeviceIdentity.version[0].versionType = versionVersionType.SW;
+
+            device.DeviceIdentity.version[1] = new version();
+            device.DeviceIdentity.version[1].readOnly = true;
+            device.DeviceIdentity.version[1].versionType = versionVersionType.FW;
+
+            device.DeviceIdentity.version[2] = new version();
+            device.DeviceIdentity.version[2].readOnly = true;
+            device.DeviceIdentity.version[2].versionType = versionVersionType.HW;
+
+            //device.DeviceIdentity.specificationRevision.value = 
+            device.DeviceIdentity.specificationRevision = new specificationRevision();
+            device.DeviceIdentity.specificationRevision.readOnly = true;
+
+            device.DeviceIdentity.instanceName = new instanceName();
+            //device.DeviceIdentity.instanceName.Value = ;
+            device.DeviceIdentity.instanceName.readOnly = true;
+
+
+            device.DeviceManager = new DeviceManager();
+            device.DeviceManager.indicatorList = new indicatorList();
+            device.DeviceManager.indicatorList.LEDList = new LEDList();
+            device.DeviceManager.indicatorList.LEDList.LED = new LED[1]; //fixme
+            device.DeviceManager.indicatorList.LEDList.LED[0] = new LED();
+            device.DeviceManager.indicatorList.LEDList.LED[0].LEDcolors = LEDLEDcolors.monocolor;
+            device.DeviceManager.indicatorList.LEDList.LED[0].LEDtype = LEDLEDtype.device;
+            device.DeviceManager.indicatorList.LEDList.LED[0].Items = new object[1];
+
+           // LEDstate ls = new LEDstate();
+           // ls.uniqueID = "LED_State_1";
+           // ls.state = LEDstateState.off;
+           // ls.LEDcolor = LEDstateLEDcolor.green;
+
+           // device.DeviceManager.indicatorList.LEDList.LED[0].Items[0] = ls;
+
+            device.DeviceFunction = new DeviceFunction[1];
+            //fix me fll this in
+
+
+            device.ApplicationProcess = new ApplicationProcess[1];
+            device.ApplicationProcess[0] = new ApplicationProcess();
+
+            device.ApplicationProcess[0].parameterList = new parameter[eds.getNoEnabledObjects(true)];
+
+            int ordinal = 0;
+
+            foreach(ODentry od in eds.ods.Values)
+            {
+                parameter p = new parameter();
+
+                fillparamater(p, od);
+
+                device.ApplicationProcess[0].parameterList[ordinal] = p;
+                ordinal++;
+
+                foreach (ODentry sub in od.subobjects.Values)
+                {
+                    p = new parameter();
+
+                    fillparamater(p, sub);
+
+                    device.ApplicationProcess[0].parameterList[ordinal] = p;
+                    ordinal++;
+                }
+
+            }
+
+
+            //Profile 1 ProfileClassID_DataType.CommunicationNetwork
             dev.ISO15745Profile[1] = new ISO15745Profile();
 
             dev.ISO15745Profile[1].ProfileHeader = new ProfileHeader_DataType();
@@ -95,13 +285,23 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].index = BitConverter.GetBytes((UInt16)od.index);
                 AppLayer.CANopenObjectList.CANopenObject[count].name = od.parameter_name;
                 AppLayer.CANopenObjectList.CANopenObject[count].objectType = (byte)od.objecttype;
-                AppLayer.CANopenObjectList.CANopenObject[count].dataType = BitConverter.GetBytes((UInt16)od.datatype);
+
+                byte[] bytes = BitConverter.GetBytes((UInt16)od.datatype);
+                Array.Reverse(bytes);
+
+                AppLayer.CANopenObjectList.CANopenObject[count].dataType = bytes;
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)od.PDOtype;
+                AppLayer.CANopenObjectList.CANopenObject[count].PDOmappingSpecified = true;
+
                 AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.index);
+                AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType),od.accesstype.ToString());
+                AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
 
-
-                if(od.subobjects!=null && od.subobjects.Count>0)
+                if (od.subobjects!=null && od.subobjects.Count>0)
                 {
+                    AppLayer.CANopenObjectList.CANopenObject[count].subNumber = (byte)od.subobjects.Count;
+                    AppLayer.CANopenObjectList.CANopenObject[count].subNumberSpecified = true;
+
                     AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject = new CANopenObjectListCANopenObjectCANopenSubObject[od.subobjects.Count];
                    
                     int subcount = 0;
@@ -114,11 +314,18 @@ namespace libEDSsharp
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].subIndex = BitConverter.GetBytes((UInt16)subod.subindex);
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].name = subod.parameter_name;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].objectType = (byte)subod.objecttype;
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = BitConverter.GetBytes((UInt16)subod.datatype);
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)subod.PDOtype;
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index,subod.subindex);
 
-                        subcount++;
+                        bytes = BitConverter.GetBytes((UInt16)subod.datatype);
+                        Array.Reverse(bytes);
+
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)subod.PDOtype;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmappingSpecified = true;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index,subod.subindex);
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), od.accesstype.ToString());
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessTypeSpecified = true;
+
+                       subcount++;
                     }
                 }
 

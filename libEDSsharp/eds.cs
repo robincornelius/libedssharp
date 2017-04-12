@@ -1708,13 +1708,27 @@ mapped object  (subindex 1...8)
             return null;
         }
 
-        public int getNoEnabledObjects()
+        public int getNoEnabledObjects(bool includesub=false)
         {
             int enabledcount = 0;
             foreach (ODentry od in ods.Values)
             {
                 if (od.Disabled == false)
+                {
                     enabledcount++;
+
+                    if(includesub)
+                    {
+                        foreach(ODentry sub in od.subobjects.Values)
+                        {
+                            if (od.Disabled == false)
+                            {
+                                enabledcount++;
+                            }
+                        }
+
+                    }
+                }
             }
 
             return enabledcount;
