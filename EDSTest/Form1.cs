@@ -325,7 +325,7 @@ namespace ODEditor
                 Bridge b = new Bridge();
 
                 eds = b.convert(coxml.dev);
-                eds.xmlfilename = path;
+                eds.xmlfilename = path;  
 
                 dev = coxml.dev;
 
@@ -457,7 +457,12 @@ namespace ODEditor
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
+
+                    if (dv.eds.edsfilename != sfd.FileName)
+                        dv.eds.dirty = true;
+
                     dv.eds.savefile(sfd.FileName);
+
                     dv.eds.edsfilename = sfd.FileName;
                     dv.dispatch_updateOD();
                 }
@@ -807,7 +812,25 @@ namespace ODEditor
 
                 //export CO_OD.c and CO_OD.h
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                cone.export(dv.eds.fi.exportFolder, dv.eds);
+
+                //check path still exists
+                if(!Directory.Exists(dv.eds.fi.exportFolder))
+                {
+
+                    MessageBox.Show("Error export directory \n\"" + dv.eds.fi.exportFolder + "\"\nno longer exists please export manually to reset");
+
+                    return;
+                }
+
+                try
+                {
+                    cone.export(dv.eds.fi.exportFolder, dv.eds);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Export failed, error message:\n" + ex.ToString());
+                    return;
+                }
 
                 dv.eds.dirty = false;
 
