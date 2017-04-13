@@ -748,15 +748,6 @@ namespace ODEditor
                 //export CO_OD.c and CO_OD.h
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
 
-                //check path still exists
-                if(!Directory.Exists(dv.eds.fi.exportFolder))
-                {
-
-                    MessageBox.Show("Error export directory \n\"" + dv.eds.fi.exportFolder + "\"\nno longer exists please export manually to reset");
-
-                    return;
-                }
-
                 try
                 {
                     cone.export(dv.eds.fi.exportFolder, dv.eds);
