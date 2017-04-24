@@ -186,9 +186,9 @@ namespace libEDSsharp
                 if (od.nosubindexes == 0)
                 {
                     string specialarraylength = ""; 
-                    if(od.datatype==DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING)
+                    if(od.datatype==DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
                     {
-                        specialarraylength = string.Format("[{0}]", od.sizeofdatatype());
+                        specialarraylength = string.Format("[{0}]", od.lengthofstring());
                     }
 
                     file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}{3};", od.index, od.datatype.ToString(), make_cname(od.parameter_name), specialarraylength));                 
@@ -435,7 +435,7 @@ namespace libEDSsharp
 
                     if(subod.datatype==DataType.VISIBLE_STRING || subod.datatype==DataType.OCTET_STRING)
                     {
-                        paramaterarrlen = String.Format("[{0}]", subod.sizeofdatatype());
+                        paramaterarrlen = String.Format("[{0}]", subod.lengthofstring());
                     }
 
                     file.WriteLine(string.Format("               {0,-15}{1}{2};", subod.datatype.ToString(), make_cname(subod.parameter_name),paramaterarrlen));
@@ -601,7 +601,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
                             if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                             {
-                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.sizeofdatatype()));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.lengthofstring()));
                             }
                             file.WriteLine("");
                         }
@@ -762,7 +762,11 @@ const CO_OD_entry_t CO_OD[");
                 byte flags = getflags(od);
 
                 DataType t = eds.getdatatype(od);
-                int datasize = od.sizeofdatatype();
+                int datasize;
+                if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
+                    datasize = od.lengthofstring();
+                else
+                    datasize = od.sizeofdatatype();
 
                 string odf;
 

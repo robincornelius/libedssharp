@@ -822,10 +822,13 @@ namespace libEDSsharp
                 case DataType.BOOLEAN:
                 case DataType.UNSIGNED8:
                 case DataType.INTEGER8:
+                case DataType.VISIBLE_STRING:
+                case DataType.OCTET_STRING:
                     return 1;
 
                 case DataType.INTEGER16:
                 case DataType.UNSIGNED16:
+                case DataType.UNICODE_STRING:
                     return 2;
 
                 case DataType.UNSIGNED24:
@@ -855,28 +858,6 @@ namespace libEDSsharp
                 case DataType.UNSIGNED64:
                 case DataType.REAL64:
                     return 8;
-
-
-                case DataType.VISIBLE_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return defaultvalue.Unescape().Length;                      
-                    }
-
-                case DataType.OCTET_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
-                    }
-
-                case DataType.UNICODE_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
-                    }
 
                 case DataType.DOMAIN:
                     return 0;
@@ -933,6 +914,35 @@ namespace libEDSsharp
                 }
 
             return 0;
+        }
+
+        public int lengthofstring()
+        {
+            string defaultvalue = this.defaultvalue;
+            if (defaultvalue == null)
+                return 0;
+
+            switch (this.datatype)
+            {
+                case DataType.VISIBLE_STRING:
+                    {
+                        return defaultvalue.Unescape().Length;
+                    }
+
+                case DataType.OCTET_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
+                    }
+
+                case DataType.UNICODE_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
+                    }
+                default:
+                    {
+                        return 0;
+                    }
+            }
         }
     }
 
