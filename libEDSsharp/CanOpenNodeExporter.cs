@@ -37,7 +37,13 @@ namespace libEDSsharp
 
         private int enabledcount = 0;
 
-    //    Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
+        //    Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
+
+        //Used for array tracking
+        Dictionary<string, int> au = new Dictionary<string, int>();
+        List<UInt16> openings = new List<UInt16>();
+        List<UInt16> closings = new List<UInt16>();
+
 
         public void export(string folderpath, EDSsharp eds)
         {
@@ -52,18 +58,42 @@ namespace libEDSsharp
 
             countPDOS();
 
+            prewalkArrays();
+
             export_h();
             export_c();
 
         }
 
-        private void print_h_bylocation(StreamWriter file, StorageLocation location)
+        private void specialarraysearch(UInt16 start, UInt16 end)
         {
+            UInt16 lowest = 0xffff;
+            UInt16 highest = 0x0000;
 
-            string lastname = "";
-            //pre walk the list to find groups for arrays
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
 
-            Dictionary<string, int> au = new Dictionary<string, int>();
+                if (kvp.Key >= start && kvp.Key <= end)
+                {
+                    if (kvp.Key > highest)
+                        highest = kvp.Key;
+
+                    if (kvp.Key < lowest)
+                        lowest = kvp.Key;
+                }
+            }
+
+            if(lowest!=0xffff && highest!=0x0000)
+            {
+                openings.Add(lowest);
+                closings.Add(highest);
+
+                Console.WriteLine(string.Format("New special array detected start 0x{0:x4} end 0x{1:x4}", lowest, highest));
+            }
+        }
+
+        private void prewalkArrays()
+        {
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -80,8 +110,64 @@ namespace libEDSsharp
                 {
                     au[name] = 1;
                 }
+                
+            }
+
+
+            //Handle special arrays
+
+            //SDO Client paramters
+            specialarraysearch(0x1200, 0x127F);
+            //SDO Server Paramaters
+            specialarraysearch(0x1280, 0x12FF);
+
+            //PDO Mappings and configs
+            specialarraysearch(0x1400, 0x15FF);
+            specialarraysearch(0x1600, 0x17FF);
+            specialarraysearch(0x1800, 0x19FF);
+            specialarraysearch(0x1A00, 0x1BFF);
+
+            //now find opening and closing points for these arrays
+            foreach (KeyValuePair<string, int> kvp in au)
+            {
+                if ( kvp.Value > 1)
+                {
+                    string targetname = kvp.Key;
+                    UInt16 lowest=0xffff;
+                    UInt16 highest=0x0000;
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in eds.ods)
+                    {
+
+                        string name = make_cname(kvp2.Value.parameter_name);
+                        if(name==targetname)
+                        {
+                            if (kvp2.Key > highest)
+                                highest = kvp2.Key;
+
+                            if (kvp2.Key < lowest)
+                                lowest = kvp2.Key;
+                        
+                        }
+
+                    }
+
+                    if (!openings.Contains(lowest))
+                    {
+                        openings.Add(lowest);
+                        closings.Add(highest);
+                        Console.WriteLine(string.Format("New array detected start 0x{0:x4} end 0x{1:x4}", lowest, highest));
+                    }
+
+                }
 
             }
+        }
+
+
+        private void print_h_bylocation(StreamWriter file, StorageLocation location)
+        {
+
+            string lastname = "";
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -1169,42 +1255,14 @@ const CO_OD_entry_t CO_OD[");
 
             if (open)
             {
-                if (index == 0x1200) //SDO Server
-                    return true;
 
-                if (index == 0x1280) //SDO Client
-                    return true;
-
-                if (index == 0x1400) //RX PDO Config
-                    return true;
-
-                if (index == 0x1600) //RX PDO Map
-                    return true;
-
-                if (index == 0x1800) //TX PDO Config
-                    return true;
-
-                if (index == 0x1a00) //TX PDO Map
+                if (openings.Contains(index))
                     return true;
             }
             else
             {
-                if (index == 0x1200 + noSDOservers - 1)
-                    return true;
 
-                if (index == 0x1280 + noSDOclients - 1) 
-                    return true;
-
-                if (index == 0x1400 + distRXpdo )
-                    return true;
-
-                if (index == 0x1600 + distRXpdo )
-                    return true;
-
-                if (index == 0x1800 + distTXpdo )
-                    return true;
-
-                if (index == 0x1a00 + distTXpdo )
+                if (closings.Contains(index))
                     return true;
             }
 
