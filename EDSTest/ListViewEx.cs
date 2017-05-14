@@ -14,7 +14,6 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Collections.Specialized;
-using System.Runtime.InteropServices;
 #endregion
 
 namespace CustomListView
@@ -29,53 +28,6 @@ namespace CustomListView
 
         public delegate void ComboBoxIndexChanged(int row, int col,String Text);
         public event ComboBoxIndexChanged onComboBoxIndexChanged;
-
-        #region The RECT structure
-        /// <summary>
-        /// This struct type will be used as the oupput 
-        /// param of the SendMessage( GetSubItemRect ). 
-        /// Actually it is a representation for the strucure 
-        /// RECT in Win32
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct RECT
-        {
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
-        }
-        #endregion
-
-        #region Win32 Class
-        /// <summary>
-        /// Summary description for Win32.
-        /// </summary>
-        internal class Win32
-        {
-            /// <summary>
-            /// This is the number of the message for getting the sub item rect.
-            /// </summary>
-            public const int LVM_GETSUBITEMRECT = (0x1000) + 56;
-
-            /// <summary>
-            /// As we are using the detailed view for the list,
-            /// LVIR_BOUNDS is the best parameters for RECT's 'left' member.
-            /// </summary>
-            public const int LVIR_BOUNDS = 0;
-
-            /// <summary>
-            /// Sending message to Win32
-            /// </summary>
-            /// <param name="hWnd">Handle to the control</param>
-            /// <param name="messageID">ID of the message</param>
-            /// <param name="wParam"></param>
-            /// <param name="lParam"></param>
-            /// <returns></returns>
-            [DllImport("user32.dll", SetLastError = true)]
-            public static extern int SendMessage(IntPtr hWnd, int messageID, int wParam, ref RECT lParam);
-        }
-        #endregion
 
         #region SubItem Class
         /// <summary>
@@ -184,11 +136,13 @@ namespace CustomListView
         private void InitializeComponent()
         {
             // Text box
+            this.textBox = new TextBox();
             this.textBox.Visible = false;
             textBox.BorderStyle = BorderStyle.FixedSingle;
             this.textBox.Leave += new EventHandler(textBox_Leave);
 
             // Combo box
+            this.combo = new ComboBox();
             this.combo.Visible = false;
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.combo);
@@ -202,10 +156,10 @@ namespace CustomListView
         /// </summary>
         /// <param name="clickPoint"></param>
         /// <returns></returns>
-        private RECT GetSubItemRect(Point clickPoint)
+        private Rectangle GetSubItemRect(Point clickPoint)
         {
             // Create output param
-            RECT subItemRect = new RECT();
+            Rectangle subItemRect = new Rectangle();
 
             // Reset the indices
             this.row = this.col = -1;
@@ -215,49 +169,36 @@ namespace CustomListView
 
             if (item != null)
             {
-                for (int index = 0; index < this.Columns.Count; index++)
+                for (int index = 1; index < this.Columns.Count; index++)
                 {
-                    // We need to pass the 1 based index of the subitem.
-                    subItemRect.top = index + 1;
 
-                    // To get the boudning rectangle, as we are using the report view
-                    subItemRect.left = Win32.LVIR_BOUNDS;
-                    try
+                    subItemRect = item.SubItems[index].Bounds;
+ 
+                    this.row = item.Index;
+                    // Add 1 because of the presence of above condition
+                    this.col = index + 1;
                     {
-                        // Send Win32 message for getting the subitem rect. 
-                        // result = 0 means error occuured
-                        int result = Win32.SendMessage(this.Handle, Win32.LVM_GETSUBITEMRECT, item.Index, ref subItemRect);
-                        if (result != 0)
+                        // This case happens when items in the first columnis selected.
+                        // So we need to set the column number explicitly
+                        if (clickPoint.X < subItemRect.Left)
                         {
-                            // This case happens when items in the first columnis selected.
-                            // So we need to set the column number explicitly
-                            if (clickPoint.X < subItemRect.left)
-                            {
-                                this.row = item.Index;
-                                this.col = 0;
-                                break;
-                            }
-                            if (clickPoint.X >= subItemRect.left & clickPoint.X <=
-                                subItemRect.right)
-                            {
-                                this.row = item.Index;
-                                // Add 1 because of the presence of above condition
-                                this.col = index + 1;
-                                break;
-                            }
+                            this.row = item.Index;
+                            this.col = 0;
+                            break;
                         }
-                        else
+                        if (clickPoint.X >= subItemRect.Left & clickPoint.X <=
+                            subItemRect.Right)
                         {
-                            // This call will create a new Win32Exception with the last Win32 Error.
-                            throw new Win32Exception();
-                        }
+                            this.row = item.Index;
+                            // Add 1 because of the presence of above condition
+                            this.col = index + 0;
+                            break;
+                        }    
                     }
-                    catch (Win32Exception ex)
-                    {
-                        Trace.WriteLine(string.Format("Exception while getting subitem rect, {0}", ex.Message));
-                    }
+                    
                 }
             }
+
             return subItemRect;
         }
 
@@ -339,6 +280,9 @@ namespace CustomListView
                 // Initialize the combobox
                 combo.Size = sz;
                 combo.Location = location;
+
+                Console.WriteLine(String.Format("Showing combo at {0} size {1}", sz.ToString(), location.ToString()));
+
                 // Add items
                 combo.Items.Clear();
                 foreach (string text in data)
@@ -353,9 +297,16 @@ namespace CustomListView
                 combo.DropDownWidth = this.GetDropDownWidth(data);
                 // Show the combo
                 combo.Show();
+
+                combo.Invalidate();
+                this.Invalidate();
+                this.Parent.Invalidate();
+                this.Parent.Parent.Invalidate();
+
             }
             catch (ArgumentOutOfRangeException)
             {
+                Console.WriteLine("COMBO EXCEPTION :-(");
                 // Sink
             }
         }
@@ -416,12 +367,14 @@ namespace CustomListView
                 // Get the subitem rect at the mouse point.
                 // Remeber that the current row index and column index will also be
                 // Modified within the same method
-                RECT rect = this.GetSubItemRect(new Point(e.X, e.Y));
+                Rectangle rect = this.GetSubItemRect(new Point(e.X, e.Y));
 
                 // If the above method is executed with any error,
                 // The row index and column index will be -1;
                 if (this.row != -1 && this.col != -1)
                 {
+
+ 
                     // Check whether combobox or text box is set for the current cell
                     SubItem cell = GetKey(new SubItem(this.row, this.col));
 
@@ -433,7 +386,7 @@ namespace CustomListView
                         Size sz = new Size(this.Columns[col].Width, Items[row].Bounds.Height);
 
                         // Determine the location where the control(combobox/editbox) to be placed
-                        Point location = col == 0 ? new Point(0, rect.top) : new Point(rect.left, rect.top);
+                        Point location = col == 0 ? new Point(0, rect.Top) : new Point(rect.Left, rect.Top);
 
                         ValidateAndAddSubItems();
 
@@ -451,6 +404,7 @@ namespace CustomListView
             }
             catch (Exception ex)
             {
+                Console.WriteLine("EXCEPTION !!"+ex.ToString());
                 Trace.WriteLine(ex.ToString());
             }
         }
