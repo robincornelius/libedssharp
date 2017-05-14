@@ -20,16 +20,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using libEDSsharp;
-using System.Globalization;
 using Xml2CSharp;
 
 
@@ -639,13 +634,56 @@ namespace ODEditor
 
         private void networkPDOToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string temp = Path.GetTempFileName();
+
+
+            string dir = GetTemporaryDirectory();
+
+            string csspath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
+            csspath = Path.Combine(csspath, "style.css");
+
+            if (!System.IO.File.Exists(csspath))
+            {
+                csspath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style.css");
+            }
+
+            if (System.IO.File.Exists(csspath))
+            {
+                System.IO.File.Copy(csspath, dir + Path.DirectorySeparatorChar + "style.css");
+            }
+
+            string temp = dir + Path.DirectorySeparatorChar + "network.html";
+
             NetworkPDOreport npr = new NetworkPDOreport();
             npr.gennetpdodoc(temp, network);
 
-            ReportView rv = new ReportView(temp);
+            if (IsRunningOnMono())
+            {
+                System.Diagnostics.Process.Start("xdg-open " + temp);
+            }
+            else
+            {
+                ReportView rv = new ReportView(temp);
+                rv.Show();
+            }
+        }
 
-            rv.Show();
+        public string GetTemporaryDirectory()
+        {
+            string tempDirectory;
+
+            do
+            {
+                tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            } while (Directory.Exists(tempDirectory));
+
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
+        }
+
+        public static bool IsRunningOnMono()
+        {
+            return Type.GetType("Mono.Runtime") != null;
         }
 
         private void documentationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -660,14 +698,38 @@ namespace ODEditor
                     DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                     SaveFileDialog sfd = new SaveFileDialog();
 
-                    string temp = Path.GetTempFileName();
+                    string dir = GetTemporaryDirectory();
+
+
+                    string csspath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
+                    csspath = Path.Combine(csspath, "style.css");
+
+                    if (!System.IO.File.Exists(csspath))
+                    {
+                        csspath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style.css");
+                    }
+
+                    if (System.IO.File.Exists(csspath))
+                    {
+                        System.IO.File.Copy(csspath, dir + Path.DirectorySeparatorChar + "style.css");
+                    }
+
+                    string temp = dir + Path.DirectorySeparatorChar + "documentation.html";
 
                     this.UseWaitCursor = true;
 
                     DocumentationGen docgen = new DocumentationGen();
                     docgen.genhtmldoc(temp, dv.eds);
-                    ReportView rv = new ReportView(temp);
-                    rv.Show();
+
+                    if (IsRunningOnMono())
+                    {
+                        System.Diagnostics.Process.Start("xdg-open " + temp);
+                    }
+                    else
+                    {
+                        ReportView rv = new ReportView(temp);
+                        rv.Show();
+                    }
 
                     this.UseWaitCursor = false;
 
