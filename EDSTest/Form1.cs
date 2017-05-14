@@ -658,7 +658,7 @@ namespace ODEditor
 
             if (IsRunningOnMono())
             {
-                System.Diagnostics.Process.Start("xdg-open " + temp);
+                System.Diagnostics.Process.Start("file://"+temp);
             }
             else
             {
@@ -723,7 +723,7 @@ namespace ODEditor
 
                     if (IsRunningOnMono())
                     {
-                        System.Diagnostics.Process.Start("xdg-open " + temp);
+                        System.Diagnostics.Process.Start("file://" + temp);
                     }
                     else
                     {
