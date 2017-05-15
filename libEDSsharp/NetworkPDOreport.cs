@@ -17,10 +17,6 @@
     Copyright(c) 2016 Robin Cornelius <robin.cornelius@gmail.com>
 */
 
-#if __MonoCS__
-    // we don't want to compile this class for mono as the WebBrowser control really does not work
-#else
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -339,4 +335,3 @@ namespace libEDSsharp
     }
 }
 
-#endif
