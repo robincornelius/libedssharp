@@ -1239,7 +1239,7 @@ namespace libEDSsharp
             fi.ModificationDate = fi.ModificationDateTime.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture);
             fi.ModificationTime = fi.ModificationDateTime.ToString("h:mmtt", CultureInfo.InvariantCulture);
 
-            fi.FileName = filename;
+            fi.FileName = Path.GetFileName(filename);
 
             fi.EDSVersion = "4.0";
             fi.EDSVersionMajor = 4;
