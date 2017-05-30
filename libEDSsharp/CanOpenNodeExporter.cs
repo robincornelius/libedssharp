@@ -855,6 +855,7 @@ const CO_OD_entry_t CO_OD[");
         byte getflags(ODentry od)
         {
             byte flags = 0;
+            byte mapping = 0; //mapping flags, if pdo is enabled
 
             //aways return 0 for REC objects as CO_OD_getDataPointer() uses this to pickup the details
             if (od.objecttype == ObjectType.REC)
@@ -862,32 +863,56 @@ const CO_OD_entry_t CO_OD[");
 
             flags = (byte)od.location;
 
-            //fixme rwr and rrw are not supported
+            /* some exceptions for rwr/rww. Those are entries that are always r/w via SDO transfer, 
+             * but can only be read -or- written via PDO */
             if (od.accesstype == EDSsharp.AccessType.ro
                 || od.accesstype == EDSsharp.AccessType.rw
-                || od.accesstype == EDSsharp.AccessType.@const)
+                || od.accesstype == EDSsharp.AccessType.rwr
+                || od.accesstype == EDSsharp.AccessType.rww
+                || od.accesstype == EDSsharp.AccessType.@const) 
+            {
+                /* SDO server may read from the variable */
                 flags |= 0x04;
 
+                if (od.accesstype != EDSsharp.AccessType.rww)
+                {
+                    /* Variable is mappable for TPDO  */
+                    mapping |= 0x20;
+                }
+            }
             if (od.accesstype == EDSsharp.AccessType.wo
-                || od.accesstype == EDSsharp.AccessType.rw)
+                || od.accesstype == EDSsharp.AccessType.rw
+                || od.accesstype == EDSsharp.AccessType.rwr
+                || od.accesstype == EDSsharp.AccessType.rww) 
+            {
+                /* SDO server may write to the variable */
                 flags |= 0x08;
 
-            if (od.PDOMapping)
-                flags |= 0x10;
+                if (od.accesstype != EDSsharp.AccessType.rwr) 
+                {
+                    /* Variable is mappable for RPDO */
+                    mapping |= 0x10;
+                }
+            }
 
-            if (od.PDOMapping)
-                flags |= 0x20;
-
-            if (od.PDOMapping)
-                flags |= 0x30; //fix me no control over rx and tx mapping, its both or none
+            if (od.PDOMapping) 
+            {
+                flags |= mapping;
+            }
 
             if(od.TPDODetectCos)
+            {
+              /* If variable is mapped to any PDO, then  is automatically send, if variable its value */
               flags |=0x40;
-   
+            }
+
             int datasize = od.sizeofdatatype();
 
             if (datasize > 1)
+            {
+                /* variable is a multibyte value */
                 flags |= 0x80;
+            }
 
             return flags;
 
