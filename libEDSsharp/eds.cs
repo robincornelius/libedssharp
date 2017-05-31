@@ -792,7 +792,14 @@ namespace libEDSsharp
                 writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)dt));
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
-                writer.WriteLine(string.Format("DefaultValue={0}", defaultvalue));
+                string local_defaultvalue = defaultvalue;              
+                if (dt == DataType.OCTET_STRING)
+                {
+                    //remove spaces from octet string when writing eds Issue #85
+                    local_defaultvalue = defaultvalue.Replace(" ", "");
+                }               
+                writer.WriteLine(string.Format("DefaultValue={0}", local_defaultvalue));
+
                 writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
             }
 
