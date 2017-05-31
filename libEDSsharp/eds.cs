@@ -350,7 +350,7 @@ namespace libEDSsharp
     public class Comments
     {
 
-        public List<string> comments;
+        public List<string> comments = new List<string>();
         public string infoheader = "Comments";
         public string edssection = "Comments";
 
@@ -396,9 +396,10 @@ namespace libEDSsharp
 
         public void write(StreamWriter writer)
         {
-            //Comments block is optional so if there are no comments do not include it
-            if(comments==null || comments.Count==0)
-                return;
+            if(comments == null)
+            {
+                comments = new List<string>();
+            }
 
             writer.WriteLine("[" + edssection + "]");
 
