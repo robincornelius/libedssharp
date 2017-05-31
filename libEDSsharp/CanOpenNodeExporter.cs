@@ -987,7 +987,7 @@ const CO_OD_entry_t CO_OD[");
 
             if (nodeidreplace)
             {
-                UInt16 data = Convert.ToUInt16(defaultvalue, nobase);
+                UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
                 data += eds.NodeId;
                 defaultvalue = string.Format("0x{0:x}", data);
                 nobase = 16;
