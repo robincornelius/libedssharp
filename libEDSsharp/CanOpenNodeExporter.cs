@@ -37,7 +37,13 @@ namespace libEDSsharp
 
         private int enabledcount = 0;
 
-    //    Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
+        //    Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
+
+        //Used for array tracking
+        Dictionary<string, int> au = new Dictionary<string, int>();
+        List<UInt16> openings = new List<UInt16>();
+        List<UInt16> closings = new List<UInt16>();
+
 
         public void export(string folderpath, EDSsharp eds)
         {
@@ -49,18 +55,42 @@ namespace libEDSsharp
 
             countPDOS();
 
+            prewalkArrays();
+
             export_h();
             export_c();
 
         }
 
-        private void print_h_bylocation(StreamWriter file, StorageLocation location)
+        private void specialarraysearch(UInt16 start, UInt16 end)
         {
+            UInt16 lowest = 0xffff;
+            UInt16 highest = 0x0000;
 
-            string lastname = "";
-            //pre walk the list to find groups for arrays
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
 
-            Dictionary<string, int> au = new Dictionary<string, int>();
+                if (kvp.Key >= start && kvp.Key <= end)
+                {
+                    if (kvp.Key > highest)
+                        highest = kvp.Key;
+
+                    if (kvp.Key < lowest)
+                        lowest = kvp.Key;
+                }
+            }
+
+            if(lowest!=0xffff && highest!=0x0000)
+            {
+                openings.Add(lowest);
+                closings.Add(highest);
+
+                Console.WriteLine(string.Format("New special array detected start 0x{0:x4} end 0x{1:x4}", lowest, highest));
+            }
+        }
+
+        private void prewalkArrays()
+        {
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -77,8 +107,64 @@ namespace libEDSsharp
                 {
                     au[name] = 1;
                 }
+                
+            }
+
+
+            //Handle special arrays
+
+            //SDO Client paramters
+            specialarraysearch(0x1200, 0x127F);
+            //SDO Server Paramaters
+            specialarraysearch(0x1280, 0x12FF);
+
+            //PDO Mappings and configs
+            specialarraysearch(0x1400, 0x15FF);
+            specialarraysearch(0x1600, 0x17FF);
+            specialarraysearch(0x1800, 0x19FF);
+            specialarraysearch(0x1A00, 0x1BFF);
+
+            //now find opening and closing points for these arrays
+            foreach (KeyValuePair<string, int> kvp in au)
+            {
+                if ( kvp.Value > 1)
+                {
+                    string targetname = kvp.Key;
+                    UInt16 lowest=0xffff;
+                    UInt16 highest=0x0000;
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in eds.ods)
+                    {
+
+                        string name = make_cname(kvp2.Value.parameter_name);
+                        if(name==targetname)
+                        {
+                            if (kvp2.Key > highest)
+                                highest = kvp2.Key;
+
+                            if (kvp2.Key < lowest)
+                                lowest = kvp2.Key;
+                        
+                        }
+
+                    }
+
+                    if (!openings.Contains(lowest))
+                    {
+                        openings.Add(lowest);
+                        closings.Add(highest);
+                        Console.WriteLine(string.Format("New array detected start 0x{0:x4} end 0x{1:x4}", lowest, highest));
+                    }
+
+                }
 
             }
+        }
+
+
+        private void print_h_bylocation(StreamWriter file, StorageLocation location)
+        {
+
+            string lastname = "";
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -97,9 +183,9 @@ namespace libEDSsharp
                 if (od.nosubindexes == 0)
                 {
                     string specialarraylength = ""; 
-                    if(od.datatype==DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING)
+                    if(od.datatype==DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
                     {
-                        specialarraylength = string.Format("[{0}]", od.sizeofdatatype());
+                        specialarraylength = string.Format("[{0}]", od.lengthofstring());
                     }
 
                     file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}{3};", od.index, od.datatype.ToString(), make_cname(od.parameter_name), specialarraylength));                 
@@ -346,7 +432,7 @@ namespace libEDSsharp
 
                     if(subod.datatype==DataType.VISIBLE_STRING || subod.datatype==DataType.OCTET_STRING)
                     {
-                        paramaterarrlen = String.Format("[{0}]", subod.sizeofdatatype());
+                        paramaterarrlen = String.Format("[{0}]", subod.lengthofstring());
                     }
 
                     file.WriteLine(string.Format("               {0,-15}{1}{2};", subod.datatype.ToString(), make_cname(subod.parameter_name),paramaterarrlen));
@@ -512,7 +598,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
                             if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                             {
-                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.sizeofdatatype()));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.lengthofstring()));
                             }
                             file.WriteLine("");
                         }
@@ -673,7 +759,11 @@ const CO_OD_entry_t CO_OD[");
                 byte flags = getflags(od);
 
                 DataType t = eds.getdatatype(od);
-                int datasize = od.sizeofdatatype();
+                int datasize;
+                if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
+                    datasize = od.lengthofstring();
+                else
+                    datasize = od.sizeofdatatype();
 
                 string odf;
 
@@ -716,11 +806,11 @@ const CO_OD_entry_t CO_OD[");
                 //Arrays really should obey the max subindex paramater not the physical number of elements
                 if (od.objecttype == ObjectType.ARRAY)
                 {
-                    if ((od.getmaxsubindex() != nosubindexs) && od.index != 0x1003) //ignore this warning on 0x1003 it is a special case
+                    if ((od.getmaxsubindex() != nosubindexs) && od.index != 0x1003) //ignore 0x1003, it is a special case
                     {
                         Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex()));
+                        nosubindexs = od.getmaxsubindex();
                     }
-                    nosubindexs = od.getmaxsubindex();
                 }
 
                 string pdata; //CO_OD_entry_t pData generator
@@ -762,6 +852,7 @@ const CO_OD_entry_t CO_OD[");
         byte getflags(ODentry od)
         {
             byte flags = 0;
+            byte mapping = 0; //mapping flags, if pdo is enabled
 
             //aways return 0 for REC objects as CO_OD_getDataPointer() uses this to pickup the details
             if (od.objecttype == ObjectType.REC)
@@ -769,32 +860,56 @@ const CO_OD_entry_t CO_OD[");
 
             flags = (byte)od.location;
 
-            //fixme rwr and rrw are not supported
+            /* some exceptions for rwr/rww. Those are entries that are always r/w via SDO transfer, 
+             * but can only be read -or- written via PDO */
             if (od.accesstype == EDSsharp.AccessType.ro
                 || od.accesstype == EDSsharp.AccessType.rw
-                || od.accesstype == EDSsharp.AccessType.@const)
+                || od.accesstype == EDSsharp.AccessType.rwr
+                || od.accesstype == EDSsharp.AccessType.rww
+                || od.accesstype == EDSsharp.AccessType.@const) 
+            {
+                /* SDO server may read from the variable */
                 flags |= 0x04;
 
+                if (od.accesstype != EDSsharp.AccessType.rww)
+                {
+                    /* Variable is mappable for TPDO  */
+                    mapping |= 0x20;
+                }
+            }
             if (od.accesstype == EDSsharp.AccessType.wo
-                || od.accesstype == EDSsharp.AccessType.rw)
+                || od.accesstype == EDSsharp.AccessType.rw
+                || od.accesstype == EDSsharp.AccessType.rwr
+                || od.accesstype == EDSsharp.AccessType.rww) 
+            {
+                /* SDO server may write to the variable */
                 flags |= 0x08;
 
-            if (od.PDOMapping)
-                flags |= 0x10;
+                if (od.accesstype != EDSsharp.AccessType.rwr) 
+                {
+                    /* Variable is mappable for RPDO */
+                    mapping |= 0x10;
+                }
+            }
 
-            if (od.PDOMapping)
-                flags |= 0x20;
-
-            if (od.PDOMapping)
-                flags |= 0x30; //fix me no control over rx and tx mapping, its both or none
+            if (od.PDOMapping) 
+            {
+                flags |= mapping;
+            }
 
             if(od.TPDODetectCos)
+            {
+              /* If variable is mapped to any PDO, then  is automatically send, if variable its value */
               flags |=0x40;
-   
+            }
+
             int datasize = od.sizeofdatatype();
 
             if (datasize > 1)
+            {
+                /* variable is a multibyte value */
                 flags |= 0x80;
+            }
 
             return flags;
 
@@ -869,7 +984,7 @@ const CO_OD_entry_t CO_OD[");
 
             if (nodeidreplace)
             {
-                UInt16 data = Convert.ToUInt16(defaultvalue, nobase);
+                UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
                 data += eds.NodeId;
                 defaultvalue = string.Format("0x{0:x}", data);
                 nobase = 16;
@@ -1166,42 +1281,14 @@ const CO_OD_entry_t CO_OD[");
 
             if (open)
             {
-                if (index == 0x1200) //SDO Server
-                    return true;
 
-                if (index == 0x1280) //SDO Client
-                    return true;
-
-                if (index == 0x1400) //RX PDO Config
-                    return true;
-
-                if (index == 0x1600) //RX PDO Map
-                    return true;
-
-                if (index == 0x1800) //TX PDO Config
-                    return true;
-
-                if (index == 0x1a00) //TX PDO Map
+                if (openings.Contains(index))
                     return true;
             }
             else
             {
-                if (index == 0x1200 + noSDOservers - 1)
-                    return true;
 
-                if (index == 0x1280 + noSDOclients - 1) 
-                    return true;
-
-                if (index == 0x1400 + distRXpdo )
-                    return true;
-
-                if (index == 0x1600 + distRXpdo )
-                    return true;
-
-                if (index == 0x1800 + distTXpdo )
-                    return true;
-
-                if (index == 0x1a00 + distTXpdo )
+                if (closings.Contains(index))
                     return true;
             }
 

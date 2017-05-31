@@ -29,6 +29,13 @@ namespace ODEditor
             listView_TXPDO.DoubleBuffering(true);
             listView_TXCOBmap.DoubleBuffering(true);
 
+            Invalidated += DevicePDOView_Invalidated;
+
+        }
+
+        private void DevicePDOView_Invalidated(object sender, InvalidateEventArgs e)
+        {
+            updatePDOinfo();
         }
 
         public void init(bool isTXPDO)

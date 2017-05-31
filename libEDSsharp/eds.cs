@@ -351,7 +351,7 @@ namespace libEDSsharp
     public class Comments
     {
 
-        public List<string> comments;
+        public List<string> comments = new List<string>();
         public string infoheader = "Comments";
         public string edssection = "Comments";
 
@@ -397,9 +397,10 @@ namespace libEDSsharp
 
         public void write(StreamWriter writer)
         {
-            //Comments block is optional so if there are no comments do not include it
-            if(comments==null || comments.Count==0)
-                return;
+            if(comments == null)
+            {
+                comments = new List<string>();
+            }
 
             writer.WriteLine("[" + edssection + "]");
 
@@ -796,7 +797,14 @@ namespace libEDSsharp
                 writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)dt));
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
-                writer.WriteLine(string.Format("DefaultValue={0}", defaultvalue));
+                string local_defaultvalue = defaultvalue;              
+                if (dt == DataType.OCTET_STRING)
+                {
+                    //remove spaces from octet string when writing eds Issue #85
+                    local_defaultvalue = defaultvalue.Replace(" ", "");
+                }               
+                writer.WriteLine(string.Format("DefaultValue={0}", local_defaultvalue));
+
                 writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
             }
 
@@ -827,10 +835,13 @@ namespace libEDSsharp
                 case DataType.BOOLEAN:
                 case DataType.UNSIGNED8:
                 case DataType.INTEGER8:
+                case DataType.VISIBLE_STRING:
+                case DataType.OCTET_STRING:
                     return 1;
 
                 case DataType.INTEGER16:
                 case DataType.UNSIGNED16:
+                case DataType.UNICODE_STRING:
                     return 2;
 
                 case DataType.UNSIGNED24:
@@ -860,28 +871,6 @@ namespace libEDSsharp
                 case DataType.UNSIGNED64:
                 case DataType.REAL64:
                     return 8;
-
-
-                case DataType.VISIBLE_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return defaultvalue.Unescape().Length;                      
-                    }
-
-                case DataType.OCTET_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
-                    }
-
-                case DataType.UNICODE_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
-                    }
 
                 case DataType.DOMAIN:
                     return 0;
@@ -938,6 +927,35 @@ namespace libEDSsharp
                 }
 
             return 0;
+        }
+
+        public int lengthofstring()
+        {
+            string defaultvalue = this.defaultvalue;
+            if (defaultvalue == null)
+                return 0;
+
+            switch (this.datatype)
+            {
+                case DataType.VISIBLE_STRING:
+                    {
+                        return defaultvalue.Unescape().Length;
+                    }
+
+                case DataType.OCTET_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
+                    }
+
+                case DataType.UNICODE_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
+                    }
+                default:
+                    {
+                        return 0;
+                    }
+            }
         }
     }
 
@@ -1250,7 +1268,7 @@ namespace libEDSsharp
             fi.ModificationDate = fi.ModificationDateTime.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture);
             fi.ModificationTime = fi.ModificationDateTime.ToString("h:mmtt", CultureInfo.InvariantCulture);
 
-            fi.FileName = filename;
+            fi.FileName = Path.GetFileName(filename);
 
             fi.EDSVersion = "4.0";
             fi.EDSVersionMajor = 4;

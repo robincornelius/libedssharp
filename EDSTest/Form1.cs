@@ -20,16 +20,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using libEDSsharp;
-using System.Globalization;
 using Xml2CSharp;
 using XSDImport;
 
@@ -722,13 +717,56 @@ namespace ODEditor
 
         private void networkPDOToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string temp = Path.GetTempFileName();
+
+
+            string dir = GetTemporaryDirectory();
+
+            string csspath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
+            csspath = Path.Combine(csspath, "style.css");
+
+            if (!System.IO.File.Exists(csspath))
+            {
+                csspath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style.css");
+            }
+
+            if (System.IO.File.Exists(csspath))
+            {
+                System.IO.File.Copy(csspath, dir + Path.DirectorySeparatorChar + "style.css");
+            }
+
+            string temp = dir + Path.DirectorySeparatorChar + "network.html";
+
             NetworkPDOreport npr = new NetworkPDOreport();
             npr.gennetpdodoc(temp, network);
 
-            ReportView rv = new ReportView(temp);
+            if (IsRunningOnMono())
+            {
+                System.Diagnostics.Process.Start("file://"+temp);
+            }
+            else
+            {
+                ReportView rv = new ReportView(temp);
+                rv.Show();
+            }
+        }
 
-            rv.Show();
+        public string GetTemporaryDirectory()
+        {
+            string tempDirectory;
+
+            do
+            {
+                tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            } while (Directory.Exists(tempDirectory));
+
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
+        }
+
+        public static bool IsRunningOnMono()
+        {
+            return Type.GetType("Mono.Runtime") != null;
         }
 
         private void documentationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -743,14 +781,38 @@ namespace ODEditor
                     DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                     SaveFileDialog sfd = new SaveFileDialog();
 
-                    string temp = Path.GetTempFileName();
+                    string dir = GetTemporaryDirectory();
+
+
+                    string csspath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".edseditor");
+                    csspath = Path.Combine(csspath, "style.css");
+
+                    if (!System.IO.File.Exists(csspath))
+                    {
+                        csspath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "style.css");
+                    }
+
+                    if (System.IO.File.Exists(csspath))
+                    {
+                        System.IO.File.Copy(csspath, dir + Path.DirectorySeparatorChar + "style.css");
+                    }
+
+                    string temp = dir + Path.DirectorySeparatorChar + "documentation.html";
 
                     this.UseWaitCursor = true;
 
                     DocumentationGen docgen = new DocumentationGen();
                     docgen.genhtmldoc(temp, dv.eds);
-                    ReportView rv = new ReportView(temp);
-                    rv.Show();
+
+                    if (IsRunningOnMono())
+                    {
+                        System.Diagnostics.Process.Start("file://" + temp);
+                    }
+                    else
+                    {
+                        ReportView rv = new ReportView(temp);
+                        rv.Show();
+                    }
 
                     this.UseWaitCursor = false;
 
@@ -770,6 +832,7 @@ namespace ODEditor
 
         private void saveExportAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string temp;
             //Attempt to save EDS,XML and export the CanOpen dictionary
 
             if (tabControl1.SelectedTab != null)
@@ -784,16 +847,33 @@ namespace ODEditor
                     MessageBox.Show("Please manually save as EDS at least once");
                     return;
                 }
+                temp = Path.GetDirectoryName(dv.eds.edsfilename);
+                if (Directory.Exists (temp) != true) 
+                {
+                    MessageBox.Show("File path was removed. Please manually save as EDS once");
+                    return;
+                }
 
                 if (dv.eds.xmlfilename == null || dv.eds.xmlfilename == "")
                 {
                     MessageBox.Show("Please manually save as XML at least once");
                     return;
                 }
+                temp = Path.GetDirectoryName(dv.eds.xmlfilename);
+                if (Directory.Exists (temp) != true) 
+                {
+                    MessageBox.Show("File path was removed. Please manually save as XML once");
+                    return;
+                }
 
                 if (dv.eds.fi.exportFolder == null || dv.eds.fi.exportFolder == "")
                 {
-                    MessageBox.Show("Please expot CO_OD.c/h at least once");
+                    MessageBox.Show("Please export CO_OD.c/h at least once");
+                    return;
+                }
+                if (Directory.Exists (dv.eds.fi.exportFolder) != true) 
+                {
+                    MessageBox.Show("File path was removed. Please export CO_OD.c/h once");
                     return;
                 }
 
@@ -812,15 +892,6 @@ namespace ODEditor
 
                 //export CO_OD.c and CO_OD.h
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
-
-                //check path still exists
-                if(!Directory.Exists(dv.eds.fi.exportFolder))
-                {
-
-                    MessageBox.Show("Error export directory \n\"" + dv.eds.fi.exportFolder + "\"\nno longer exists please export manually to reset");
-
-                    return;
-                }
 
                 try
                 {
