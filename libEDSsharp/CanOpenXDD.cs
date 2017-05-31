@@ -9,23 +9,453 @@ namespace libEDSsharp
     public class CanOpenXDD
     {
         public ISO15745ProfileContainer dev;
-        public void readXML(string file)
+        public EDSsharp readXML(string file)
         {
 
-            XmlSerializer serializer = new XmlSerializer(typeof(ISO15745ProfileContainer));
-            StreamReader reader = new StreamReader(file);
-            dev = (ISO15745ProfileContainer)serializer.Deserialize(reader);
-            reader.Close();
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(ISO15745ProfileContainer));
+                StreamReader reader = new StreamReader(file);
+                dev = (ISO15745ProfileContainer)serializer.Deserialize(reader);
+                reader.Close();
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
+
+            return convert(dev);
+
         }
 
-        public void writeXML(string file)
+        public void writeXML(string file,EDSsharp eds)
         {
+
+            dev = convert(eds);
 
             XmlSerializer serializer = new XmlSerializer(typeof(ISO15745ProfileContainer));
             StreamWriter writer = new StreamWriter(file);
             serializer.Serialize(writer, dev);
             writer.Close();
         }
+
+        public void fillparamater(parameter p,ODentry od)
+        {
+
+
+            if (od.parent == null)
+            {
+                p.uniqueID = string.Format("UID_PARAM_{0:x4}", od.index);
+            }
+            else
+            {
+                p.uniqueID = string.Format("UID_PARAM_{0:x4}{1:x2}", od.parent.index,od.subindex);
+            }
+
+            switch (od.accesstype)
+            {
+                case EDSsharp.AccessType.rw:
+                    p.access = parameterTemplateAccess.readWrite;
+                    break;
+
+                case EDSsharp.AccessType.ro:
+                    p.access = parameterTemplateAccess.read;
+                    break;
+
+                case EDSsharp.AccessType.wo:
+                    p.access = parameterTemplateAccess.write;
+                    break;
+
+                case EDSsharp.AccessType.rwr:
+                    p.access = parameterTemplateAccess.readWriteInput;
+                    break;
+
+                case EDSsharp.AccessType.rww:
+                    p.access = parameterTemplateAccess.readWriteOutput;
+                    break;
+
+                case EDSsharp.AccessType.@const:
+                    p.access = parameterTemplateAccess.@const;
+                    break;
+
+                //fixme no access not handled
+                default:
+                    p.access = parameterTemplateAccess.noAccess;
+                    break;
+
+            }
+
+           
+            p.Items = new object[1];
+
+            vendorTextLabel lab = new vendorTextLabel();
+            lab.lang = "en";
+            lab.Value = od.parameter_name;
+            p.Items[0] = lab;
+
+            denotation denot = new denotation();
+            vendorTextLabel lab2 = new vendorTextLabel();
+            lab2.lang = "en";
+            denot.Items = new object[1];
+            denot.Items[0] = lab2;
+            p.denotation = denot;
+
+
+            p.defaultValue = new defaultValue();
+            p.defaultValue.value = od.defaultvalue;
+
+ 
+        }
+
+
+        public ISO15745ProfileContainer convert(EDSsharp eds)
+        {
+            dev = new ISO15745ProfileContainer();
+
+            dev.ISO15745Profile = new ISO15745Profile[2];
+
+
+            //Profile 0 ProfileBody_Device_CANopen
+            dev.ISO15745Profile[0] = new ISO15745Profile();
+            dev.ISO15745Profile[0].ProfileHeader = new ProfileHeader_DataType();
+         
+            dev.ISO15745Profile[0].ProfileHeader.ProfileIdentification = "CAN device profile";
+            dev.ISO15745Profile[0].ProfileHeader.ProfileRevision = "1";
+            dev.ISO15745Profile[0].ProfileHeader.ProfileClassID = ProfileClassID_DataType.Device;
+            dev.ISO15745Profile[0].ProfileHeader.ProfileName = "";
+            dev.ISO15745Profile[0].ProfileHeader.ProfileSource = "";
+
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference = new ISO15745Reference_DataType();
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ISO15745Part = "1";
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ISO15745Edition = "1";
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ProfileTechnology = "Canopen";
+
+            dev.ISO15745Profile[0].ProfileBody = new ProfileBody_Device_CANopen();
+
+            ProfileBody_Device_CANopen device = (ProfileBody_Device_CANopen)dev.ISO15745Profile[0].ProfileBody;
+
+            device.DeviceIdentity = new DeviceIdentity();
+
+            device.DeviceIdentity.vendorName = new vendorName();
+            device.DeviceIdentity.vendorName.Value = eds.di.VendorName;
+            device.DeviceIdentity.vendorName.readOnly = true;
+
+            device.DeviceIdentity.vendorID = new vendorID();
+            device.DeviceIdentity.vendorID.Value = eds.di.VendorNumber.ToString();
+            device.DeviceIdentity.vendorID.readOnly = true;
+
+            //device.DeviceIdentity.vendorText
+            //device.DeviceIdentity.deviceFamily
+            //device.DeviceIdentity.productFamily;
+
+            device.DeviceIdentity.productName = new productName();
+            device.DeviceIdentity.productName.Value = eds.di.ProductName;
+            device.DeviceIdentity.productName.readOnly = true;
+
+            device.DeviceIdentity.productID = new productID();
+            device.DeviceIdentity.productID.Value = eds.di.ProductNumber.ToString();
+            device.DeviceIdentity.productID.readOnly = true;
+
+            device.DeviceIdentity.productText = new productText();
+            device.DeviceIdentity.productText.Items = new object[1];
+
+            vendorTextDescription des = new vendorTextDescription();
+            des.lang = "en";
+            des.Value = eds.fi.Description;
+
+            device.DeviceIdentity.productText.Items[0] = des;
+            device.DeviceIdentity.productText.readOnly = true;
+
+            //device.DeviceIdentity.orderNumber
+
+            device.DeviceIdentity.version = new version[3];
+
+            device.DeviceIdentity.version[0] = new version();
+            device.DeviceIdentity.version[0].readOnly = true;
+            device.DeviceIdentity.version[0].versionType = versionVersionType.SW;
+
+            device.DeviceIdentity.version[1] = new version();
+            device.DeviceIdentity.version[1].readOnly = true;
+            device.DeviceIdentity.version[1].versionType = versionVersionType.FW;
+
+            device.DeviceIdentity.version[2] = new version();
+            device.DeviceIdentity.version[2].readOnly = true;
+            device.DeviceIdentity.version[2].versionType = versionVersionType.HW;
+
+            //device.DeviceIdentity.specificationRevision.value = 
+            device.DeviceIdentity.specificationRevision = new specificationRevision();
+            device.DeviceIdentity.specificationRevision.readOnly = true;
+
+            device.DeviceIdentity.instanceName = new instanceName();
+            //device.DeviceIdentity.instanceName.Value = ;
+            device.DeviceIdentity.instanceName.readOnly = true;
+
+
+            device.DeviceManager = new DeviceManager();
+            device.DeviceManager.indicatorList = new indicatorList();
+            device.DeviceManager.indicatorList.LEDList = new LEDList();
+            device.DeviceManager.indicatorList.LEDList.LED = new LED[1]; //fixme
+            device.DeviceManager.indicatorList.LEDList.LED[0] = new LED();
+            device.DeviceManager.indicatorList.LEDList.LED[0].LEDcolors = LEDLEDcolors.monocolor;
+            device.DeviceManager.indicatorList.LEDList.LED[0].LEDtype = LEDLEDtype.device;
+            device.DeviceManager.indicatorList.LEDList.LED[0].Items = new object[1];
+
+           // LEDstate ls = new LEDstate();
+           // ls.uniqueID = "LED_State_1";
+           // ls.state = LEDstateState.off;
+           // ls.LEDcolor = LEDstateLEDcolor.green;
+
+           // device.DeviceManager.indicatorList.LEDList.LED[0].Items[0] = ls;
+
+            device.DeviceFunction = new DeviceFunction[1];
+            //fix me fll this in
+
+
+            device.ApplicationProcess = new ApplicationProcess[1];
+            device.ApplicationProcess[0] = new ApplicationProcess();
+
+            device.ApplicationProcess[0].parameterList = new parameter[eds.getNoEnabledObjects(true)];
+
+            int ordinal = 0;
+
+            foreach(ODentry od in eds.ods.Values)
+            {
+                parameter p = new parameter();
+
+                fillparamater(p, od);
+
+                device.ApplicationProcess[0].parameterList[ordinal] = p;
+                ordinal++;
+
+                foreach (ODentry sub in od.subobjects.Values)
+                {
+                    p = new parameter();
+
+                    fillparamater(p, sub);
+
+                    device.ApplicationProcess[0].parameterList[ordinal] = p;
+                    ordinal++;
+                }
+
+            }
+
+
+            //Profile 1 ProfileClassID_DataType.CommunicationNetwork
+            dev.ISO15745Profile[1] = new ISO15745Profile();
+
+            dev.ISO15745Profile[1].ProfileHeader = new ProfileHeader_DataType();
+            
+            dev.ISO15745Profile[1].ProfileHeader.ProfileIdentification = "CAN comm net profile";
+            dev.ISO15745Profile[1].ProfileHeader.ProfileRevision = "1";
+            dev.ISO15745Profile[1].ProfileHeader.ProfileClassID = ProfileClassID_DataType.CommunicationNetwork;
+            dev.ISO15745Profile[1].ProfileHeader.ProfileName = "";
+            dev.ISO15745Profile[1].ProfileHeader.ProfileSource = "";
+
+            dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference = new ISO15745Reference_DataType();
+            dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference.ISO15745Part = "1";
+            dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference.ISO15745Edition = "1";
+            dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference.ProfileTechnology = "Canopen";
+
+            dev.ISO15745Profile[1].ProfileBody = new ProfileBody_CommunicationNetwork_CANopen();
+            ProfileBody_CommunicationNetwork_CANopen comnet = (ProfileBody_CommunicationNetwork_CANopen)dev.ISO15745Profile[1].ProfileBody;
+            comnet.Items = new object[3];
+
+            //todo fill in ProfileBody properties here
+            comnet.fileCreator = eds.fi.CreatedBy; //etc
+
+            comnet.Items[0] = new ProfileBody_CommunicationNetwork_CANopenApplicationLayers();
+            ProfileBody_CommunicationNetwork_CANopenApplicationLayers AppLayer = (ProfileBody_CommunicationNetwork_CANopenApplicationLayers)comnet.Items[0];
+
+            comnet.Items[1] = new ProfileBody_CommunicationNetwork_CANopenTransportLayers();
+            ProfileBody_CommunicationNetwork_CANopenTransportLayers TransportLayer = (ProfileBody_CommunicationNetwork_CANopenTransportLayers)comnet.Items[1];
+
+            comnet.Items[2] = new ProfileBody_CommunicationNetwork_CANopenNetworkManagement();
+            ProfileBody_CommunicationNetwork_CANopenNetworkManagement NetworkManagement = (ProfileBody_CommunicationNetwork_CANopenNetworkManagement)comnet.Items[2];
+
+            AppLayer.CANopenObjectList = new CANopenObjectList();
+
+
+            AppLayer.CANopenObjectList.CANopenObject = new CANopenObjectListCANopenObject[eds.getNoEnabledObjects()];
+
+            int count = 0;
+            foreach(ODentry od in eds.ods.Values)
+            {
+                AppLayer.CANopenObjectList.CANopenObject[count] = new CANopenObjectListCANopenObject();
+
+                AppLayer.CANopenObjectList.CANopenObject[count].index = BitConverter.GetBytes((UInt16)od.index);
+                AppLayer.CANopenObjectList.CANopenObject[count].name = od.parameter_name;
+                AppLayer.CANopenObjectList.CANopenObject[count].objectType = (byte)od.objecttype;
+
+                byte[] bytes = BitConverter.GetBytes((UInt16)od.datatype);
+                Array.Reverse(bytes);
+
+                AppLayer.CANopenObjectList.CANopenObject[count].dataType = bytes;
+                AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)od.PDOtype;
+                AppLayer.CANopenObjectList.CANopenObject[count].PDOmappingSpecified = true;
+
+                AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.index);
+                AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType),od.accesstype.ToString());
+                AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
+
+                if (od.subobjects!=null && od.subobjects.Count>0)
+                {
+                    AppLayer.CANopenObjectList.CANopenObject[count].subNumber = (byte)od.subobjects.Count;
+                    AppLayer.CANopenObjectList.CANopenObject[count].subNumberSpecified = true;
+
+                    AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject = new CANopenObjectListCANopenObjectCANopenSubObject[od.subobjects.Count];
+                   
+                    int subcount = 0;
+
+                    foreach(ODentry subod in od.subobjects.Values)
+                    {
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount] = new CANopenObjectListCANopenObjectCANopenSubObject();
+
+
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].subIndex = BitConverter.GetBytes((UInt16)subod.subindex);
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].name = subod.parameter_name;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].objectType = (byte)subod.objecttype;
+
+                        bytes = BitConverter.GetBytes((UInt16)subod.datatype);
+                        Array.Reverse(bytes);
+
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)subod.PDOtype;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmappingSpecified = true;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index,subod.subindex);
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), od.accesstype.ToString());
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessTypeSpecified = true;
+
+                       subcount++;
+                    }
+                }
+
+
+                count++;
+            }
+
+            AppLayer.dummyUsage = new ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy[7];
+
+            for(int x=0;x<7;x++)
+            {
+                AppLayer.dummyUsage[x] = new ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy();
+            }
+
+            //FIX ME this is terrible
+            AppLayer.dummyUsage[0].entry = (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry)Enum.Parse(typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry), string.Format("Dummy0001{0}", eds.du.Dummy0001 == true ? "1" : "0"));
+            AppLayer.dummyUsage[1].entry = (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry)Enum.Parse(typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry), string.Format("Dummy0002{0}", eds.du.Dummy0002 == true ? "1" : "0"));
+            AppLayer.dummyUsage[2].entry = (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry)Enum.Parse(typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry), string.Format("Dummy0003{0}", eds.du.Dummy0003 == true ? "1" : "0"));
+            AppLayer.dummyUsage[3].entry = (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry)Enum.Parse(typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry), string.Format("Dummy0004{0}", eds.du.Dummy0004 == true ? "1" : "0"));
+            AppLayer.dummyUsage[4].entry = (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry)Enum.Parse(typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry), string.Format("Dummy0005{0}", eds.du.Dummy0005 == true ? "1" : "0"));
+            AppLayer.dummyUsage[5].entry = (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry)Enum.Parse(typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry), string.Format("Dummy0006{0}", eds.du.Dummy0006 == true ? "1" : "0"));
+            AppLayer.dummyUsage[6].entry = (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry)Enum.Parse(typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry), string.Format("Dummy0007{0}", eds.du.Dummy0007 == true ? "1" : "0"));
+
+            TransportLayer.PhysicalLayer = new ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayer();
+
+            //FIX me this is worse than above
+
+            int bauds = 0;
+
+            if (eds.di.BaudRate_10 == true)
+                bauds++;
+            if (eds.di.BaudRate_20 == true)
+                bauds++;
+            if (eds.di.BaudRate_50 == true)
+                bauds++;
+            if (eds.di.BaudRate_125 == true)
+                bauds++;
+            if (eds.di.BaudRate_250 == true)
+                bauds++;
+            if (eds.di.BaudRate_500 == true)
+                bauds++;
+            if (eds.di.BaudRate_800 == true)
+                bauds++;
+            if (eds.di.BaudRate_1000 == true)
+                bauds++;
+
+            //Fixme auto baudrate needs adding to system
+            TransportLayer.PhysicalLayer.baudRate = new ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRate();
+            TransportLayer.PhysicalLayer.baudRate.supportedBaudRate = new ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate[bauds];
+
+            for (int x = 0; x < bauds; x++)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[x] = new ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate();
+            }
+
+            bauds = 0;
+
+            if (eds.di.BaudRate_10 == true)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item10Kbps;
+                bauds++;
+            }
+            if (eds.di.BaudRate_20 == true)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item20Kbps;
+                bauds++;
+            }
+            if (eds.di.BaudRate_50 == true)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item50Kbps;
+                bauds++;
+            }
+            if (eds.di.BaudRate_125 == true)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item125Kbps;
+                bauds++;
+            }
+            if (eds.di.BaudRate_250 == true)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item250Kbps;
+                bauds++;
+            }
+            if (eds.di.BaudRate_500 == true)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item500Kbps;
+                bauds++;
+            }
+            if (eds.di.BaudRate_800 == true)
+            {
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item800Kbps;
+                bauds++;
+            }
+            if (eds.di.BaudRate_1000 == true)
+            {
+                 TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item1000Kbps;
+                bauds++;
+            }
+
+
+            NetworkManagement.CANopenGeneralFeatures = new ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures();
+
+            NetworkManagement.CANopenGeneralFeatures.bootUpSlave = eds.di.SimpleBootUpSlave;
+            //NetworkManagment.CANopenGeneralFeatures.dynamicChannels = eds.di.DynamicChannelsSupported;   //fix me count of dynamic channles not handled yet eds only has bool
+            NetworkManagement.CANopenGeneralFeatures.granularity = eds.di.Granularity;
+            NetworkManagement.CANopenGeneralFeatures.groupMessaging = eds.di.GroupMessaging;
+            NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported;
+            NetworkManagement.CANopenGeneralFeatures.nrOfRxPDO = eds.di.NrOfRXPDO;
+            NetworkManagement.CANopenGeneralFeatures.nrOfTxPDO = eds.di.NrOfTXPDO;
+            //extra items
+            //NetworkManagment.CANopenGeneralFeatures.SDORequestingDevice;
+            //NetworkManagment.CANopenGeneralFeatures.selfStartingDevice;
+
+            NetworkManagement.CANopenMasterFeatures = new ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures();
+
+            NetworkManagement.CANopenMasterFeatures.bootUpMaster = eds.di.SimpleBootUpMaster;
+            //Extra items
+            //NetworkManagment.CANopenMasterFeatures.configurationManager;
+            //NetworkManagment.CANopenMasterFeatures.flyingMaster;
+            //NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster;
+            //NetworkManagment.CANopenMasterFeatures.SDOManager;
+
+
+            //Fixme implement this
+            //NetworkManagement.deviceCommissioning = new ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning();
+
+
+
+            return dev;
+        }
+
 
 
         public EDSsharp convert(ISO15745ProfileContainer container)

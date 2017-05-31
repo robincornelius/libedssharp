@@ -1058,7 +1058,18 @@ namespace libEDSsharp
 
             //Special Handling of custom fields
             if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != 0)
+            {
+                if(sectionname!=null)
+                {
+                   if( eds.ContainsKey(sectionname))
+                    {
+                        //could be more generic
+                        eds[sectionname].Add("StorageLocation", value);
+                    }
+                }
+
                 return;
+            }
 
             string line = linex.TrimStart(';');
 
@@ -1128,6 +1139,11 @@ namespace libEDSsharp
 
                 //Indexes in the EDS are always in hex format without the pre 0x
                 od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
+
+                if(kvp.Value.ContainsKey("StorageLocation"))
+                {
+                    Enum.TryParse(kvp.Value["StorageLocation"], out od.location);
+                }
 
                 if (od.objecttype == ObjectType.VAR)
                 {
@@ -1706,6 +1722,33 @@ mapped object  (subindex 1...8)
             }
 
             return null;
+        }
+
+        public int getNoEnabledObjects(bool includesub=false)
+        {
+            int enabledcount = 0;
+            foreach (ODentry od in ods.Values)
+            {
+                if (od.Disabled == false)
+                {
+                    enabledcount++;
+
+                    if(includesub)
+                    {
+                        foreach(ODentry sub in od.subobjects.Values)
+                        {
+                            if (od.Disabled == false)
+                            {
+                                enabledcount++;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return enabledcount;
+
         }
 
 

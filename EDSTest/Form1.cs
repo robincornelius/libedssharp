@@ -273,11 +273,8 @@ namespace ODEditor
                 ISO15745ProfileContainer devs; //one day this will be multiple devices
 
                 CanOpenXDD coxml = new CanOpenXDD();
-                coxml.readXML(path);
+                eds = coxml.readXML(path);
 
-                eds = coxml.convert(coxml.dev);
-
- 
                 if (eds == null)
                     return;
 
@@ -328,7 +325,7 @@ namespace ODEditor
                 Bridge b = new Bridge();
 
                 eds = b.convert(coxml.dev);
-                eds.xmlfilename = path;
+                eds.xmlfilename = path;  
 
                 dev = coxml.dev;
 
@@ -460,7 +457,12 @@ namespace ODEditor
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
+
+                    if (dv.eds.edsfilename != sfd.FileName)
+                        dv.eds.dirty = true;
+
                     dv.eds.savefile(sfd.FileName);
+
                     dv.eds.edsfilename = sfd.FileName;
                     dv.dispatch_updateOD();
                 }
@@ -477,7 +479,7 @@ namespace ODEditor
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                 SaveFileDialog sfd = new SaveFileDialog();
 
-                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds";
+                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Canopen XDD (*.xdd)|*.xdd";
 
                 sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
                 sfd.RestoreDirectory = true;
@@ -509,6 +511,8 @@ namespace ODEditor
                             break;
 
                         case ".xdd":
+                            CanOpenXDD coxdd = new CanOpenXDD();
+                            coxdd.writeXML(sfd.FileName, dv.eds);
                             break;
 
                     }
@@ -808,7 +812,25 @@ namespace ODEditor
 
                 //export CO_OD.c and CO_OD.h
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                cone.export(dv.eds.fi.exportFolder, dv.eds);
+
+                //check path still exists
+                if(!Directory.Exists(dv.eds.fi.exportFolder))
+                {
+
+                    MessageBox.Show("Error export directory \n\"" + dv.eds.fi.exportFolder + "\"\nno longer exists please export manually to reset");
+
+                    return;
+                }
+
+                try
+                {
+                    cone.export(dv.eds.fi.exportFolder, dv.eds);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Export failed, error message:\n" + ex.ToString());
+                    return;
+                }
 
                 dv.eds.dirty = false;
 
