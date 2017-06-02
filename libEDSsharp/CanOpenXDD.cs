@@ -683,13 +683,13 @@ namespace libEDSsharp
                             eds.dc.NodeId = NetworkManagment.deviceCommissioning.nodeID;
 
                             //Extra items
-                            //NetworkManagment.deviceCommissioning.actualBaudRate;
-                            //NetworkManagment.deviceCommissioning.CANopenManager
-                            //NetworkManagment.deviceCommissioning.networkName
-                            //NetworkManagment.deviceCommissioning.networkNumber
-                            //NetworkManagment.deviceCommissioning.nodeName;
-                           
-                        }
+                            eds.dc.BaudRate = Convert.ToUInt16(NetworkManagment.deviceCommissioning.actualBaudRate);
+                            eds.dc.CANopenManager = NetworkManagment.deviceCommissioning.CANopenManager;
+                            eds.dc.NetNumber = Convert.ToUInt32(NetworkManagment.deviceCommissioning.networkName);
+                            eds.dc.NetNumber = Convert.ToUInt16(NetworkManagment.deviceCommissioning.networkNumber);
+                            eds.dc.NodeName = NetworkManagment.deviceCommissioning.nodeName;
+
+                    }
 
 
                     }
@@ -722,13 +722,21 @@ namespace libEDSsharp
                         if (obj3.PDOmappingSpecified)
                             entry.PDOtype = (PDOMappingType)obj3.PDOmapping;
 
-                        //extra items need adding in
+                        if(obj3.highLimit != null)
+                            entry.HighLimit = obj3.highLimit;
 
-                        //subobj.lowLimit;
-                        //subobj.highLimit;
-                        //subobj.actualValue;
-                        //subobj.denotation;
-                        //subobj.objFlags;
+                        if (obj3.lowLimit != null)
+                            entry.LowLimit = obj3.lowLimit;
+
+                        if(obj3.actualValue !=null)
+                            entry.currentvalue = obj3.actualValue;
+
+                        if(obj3.denotation !=null)
+                            entry.denotation = obj3.denotation;
+
+                        //FIXME im not sure this is correct
+                        if (obj3.objFlags != null)
+                            entry.ObjFlags = obj3.objFlags[0];
 
                         entry.uniqueID = obj3.uniqueIDRef;
 
@@ -775,14 +783,15 @@ namespace libEDSsharp
                                 ODentry subentry = new ODentry(subobj.name, index, subobj.subIndex[0], datatype, subobj.defaultValue, accesstype , pdotype, entry);
 
 
-                                //extra items
+                            //extra items
 
-                                //subobj.lowLimit;
-                                //subobj.highLimit;
-                                //subobj.actualValue;
-                                //subobj.denotation;
-                                //subobj.objFlags;
- 
+                                subentry.LowLimit = subobj.lowLimit;
+                                subentry.HighLimit = subobj.highLimit;
+                                subentry.currentvalue = subobj.actualValue;
+                                subentry.denotation = subobj.denotation;
+                                subentry.ObjFlags = subobj.objFlags[0];
+
+                  
                                 subentry.uniqueID = subobj.uniqueIDRef;
 
                                 entry.subobjects.Add(subobj.subIndex[0], subentry);

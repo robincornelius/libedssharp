@@ -631,8 +631,8 @@ namespace ODEditor
 
                 int nodeoffset = 0;
 
-                if (nodeidpresent && eds.di.concreteNodeId != -1)
-                    nodeoffset = eds.di.concreteNodeId;
+                if (nodeidpresent && eds.dc.NodeId != 0)
+                    nodeoffset = eds.dc.NodeId;
 
                 eds.ods[index].subobjects[1].defaultvalue = string.Format("0x{0:x8}", newnode-nodeoffset);
                 if (nodeidpresent)

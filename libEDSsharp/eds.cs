@@ -729,6 +729,8 @@ namespace libEDSsharp
         [DcfExport]
         public string currentvalue = "";
 
+        [EdsExport]
+        public Byte ObjFlags = 0;
 
         [EdsExport]
         public bool PDOMapping
@@ -914,6 +916,13 @@ namespace libEDSsharp
                 }
 
                 writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
+            }
+
+            //ObjectFlags is always optional (Page 15, DSP306) and used for DCF writing to nodes
+            //also recommended not to write if it is already 0
+            if(ObjFlags != 0)
+            {
+                writer.WriteLine(string.Format("ObjFlags={0}", ObjFlags));
             }
 
             writer.WriteLine("");
