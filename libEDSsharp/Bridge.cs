@@ -451,20 +451,22 @@ namespace libEDSsharp
 
 
             bool boolout;
+            byte byteout;
+
             if (keypairs.ContainsKey("SimpleBootUpSlave") && bool.TryParse(keypairs["SimpleBootUpSlave"], out boolout))
                 eds.di.SimpleBootUpSlave = boolout;
             if (keypairs.ContainsKey("SimpleBootUpMaster") && bool.TryParse(keypairs["SimpleBootUpMaster"], out boolout))
                 eds.di.SimpleBootUpMaster = boolout;
             if (keypairs.ContainsKey("DynamicChannelsSupported") && bool.TryParse(keypairs["DynamicChannelsSupported"], out boolout))
                 eds.di.DynamicChannelsSupported = boolout;
-            if (keypairs.ContainsKey("CompactPDO") && bool.TryParse(keypairs["CompactPDO"], out boolout))
-                eds.di.CompactPDO = boolout;
+            if (keypairs.ContainsKey("CompactPDO") && byte.TryParse(keypairs["CompactPDO"], out byteout))
+                eds.di.CompactPDO = byteout;
             if (keypairs.ContainsKey("GroupMessaging") && bool.TryParse(keypairs["GroupMessaging"], out boolout))
                 eds.di.GroupMessaging = boolout;
             if (keypairs.ContainsKey("LSS_Supported") && bool.TryParse(keypairs["LSS_Supported"], out boolout))
                 eds.di.LSS_Supported = boolout;
 
-            byte byteout;
+           
             if (keypairs.ContainsKey("Granularity") && byte.TryParse(keypairs["Granularity"], out byteout))
                 eds.di.Granularity = byteout;
 

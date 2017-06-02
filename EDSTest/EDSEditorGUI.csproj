@@ -132,6 +132,9 @@
     <EmbeddedResource Include="MaxSubIndexFrm.resx">
       <DependentUpon>MaxSubIndexFrm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MyTabUserControl.resx">
+      <DependentUpon>MyTabUserControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="NewIndex.resx">
       <DependentUpon>NewIndex.cs</DependentUpon>
     </EmbeddedResource>

@@ -76,7 +76,7 @@ namespace ODEditor
 
             checkBox_boot_master.Checked = eds.di.SimpleBootUpMaster;
             checkBox_bootslave.Checked = eds.di.SimpleBootUpSlave;
-            checkBox_compactPDO.Checked = eds.di.CompactPDO;
+            textBox_compactPDO.Text = eds.di.CompactPDO.ToString();
             checkBox_group_msg.Checked = eds.di.GroupMessaging;
             checkBox_dynamicchan.Checked = eds.di.DynamicChannelsSupported;
             checkBox_lss.Checked = eds.di.LSS_Supported;
@@ -151,7 +151,6 @@ namespace ODEditor
 
                 eds.di.SimpleBootUpMaster = checkBox_boot_master.Checked;
                 eds.di.SimpleBootUpSlave = checkBox_bootslave.Checked;
-                eds.di.CompactPDO = checkBox_compactPDO.Checked;
 
                 eds.di.GroupMessaging = checkBox_group_msg.Checked;
                 eds.di.DynamicChannelsSupported = checkBox_dynamicchan.Checked;

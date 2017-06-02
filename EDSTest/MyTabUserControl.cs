@@ -64,5 +64,16 @@ namespace ODEditor
 
         #endregion
 
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // MyTabUserControl
+            // 
+            this.Name = "MyTabUserControl";
+            this.Size = new System.Drawing.Size(357, 262);
+            this.ResumeLayout(false);
+
+        }
     }
 }

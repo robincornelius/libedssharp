@@ -638,7 +638,7 @@ namespace libEDSsharp
         public bool DynamicChannelsSupported;
 
         [EdsExport]
-        public bool CompactPDO;
+        public byte CompactPDO;
 
         [EdsExport]
         public bool GroupMessaging;
@@ -1308,8 +1308,16 @@ namespace libEDSsharp
                     od.CompactSubObj = Convert.ToByte(kvp.Value["CompactSubObj"]);
                 }
 
-                //Access Type
+                if(kvp.Value.ContainsKey("ObjFlags"))
+                {
+                    od.ObjFlags = Convert.ToByte(kvp.Value["ObjFlags"]);
+                }
+                else
+                {
+                    od.ObjFlags = 0;
+                }
 
+                //Access Type
                 if(kvp.Value.ContainsKey("StorageLocation"))
                 {
                     Enum.TryParse(kvp.Value["StorageLocation"], out od.location);
@@ -1375,12 +1383,11 @@ namespace libEDSsharp
                         if (pdo == true)
                             od.PDOtype = PDOMappingType.optional;
                     }
-                       
 
                 }
 
               
-                if(od.objecttype==ObjectType.DOMAIN || od.objecttype==ObjectType.ARRAY || od.objecttype==ObjectType.DEFSTRUCT)
+                if(od.objecttype==ObjectType.REC|| od.objecttype==ObjectType.ARRAY || od.objecttype==ObjectType.DEFSTRUCT)
                 {
 
                     if (od.CompactSubObj != 0)
@@ -1415,6 +1422,13 @@ namespace libEDSsharp
                         {
                             string parameter_name = string.Format("{0}{1:x2}", od.parameter_name, x );
                             ODentry sub = new ODentry(parameter_name, od.index, (byte)x, od.datatype, od.defaultvalue, od.accesstype, od.PDOtype, od);
+
+                            if (kvp.Value.ContainsKey("HighLimit"))
+                                sub.HighLimit = kvp.Value["HighLimit"];
+
+                            if (kvp.Value.ContainsKey("LowLimit"))
+                                sub.HighLimit = kvp.Value["LowLimit"];
+
                             od.subobjects.Add((ushort)(x ), sub);
                         }
 
@@ -1427,8 +1441,15 @@ namespace libEDSsharp
                     }
                 }
 
+                if(od.objecttype == ObjectType.DOMAIN)
+                {
+                    od.datatype = DataType.DOMAIN;
+                    od.accesstype = AccessType.rw;
 
+                    if (kvp.Value.ContainsKey("DefaultValue"))
+                        od.defaultvalue = kvp.Value["DefaultValue"];
 
+                }
 
                 //Only add top level to this list
                 if (m.Groups[3].Length == 0)
@@ -1450,13 +1471,15 @@ namespace libEDSsharp
                     parseline(linex);
                 }
 
+
+                di = new DeviceInfo(eds["DeviceInfo"]);
+
                 foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
                 {
                     parseEDSentry(kvp);
                 }
 
                 fi = new FileInfo(eds["FileInfo"]);
-                di = new DeviceInfo(eds["DeviceInfo"]);
                 du = new Dummyusage(eds["DummyUsage"]);
                 md = new MandatoryObjects(eds["MandatoryObjects"]);
                 oo = new OptionalObjects(eds["OptionalObjects"]);
@@ -1475,12 +1498,83 @@ namespace libEDSsharp
                     c.parse(eds["Comments"]);
 
 
+                //COMPACT PDO
+
+                if (di.CompactPDO != 0)
+                {
+
+                    for (UInt16 index = 0x1400; index < 0x1600; index++)
+                    {
+                        applycompactPDO(index);
+                    }
+
+                    for (UInt16 index = 0x1800; index < 0x2000;index ++)
+                    {
+                        applycompactPDO(index);
+                    }
+
+                    
+                }
+
+
                 updatePDOcount();
             }
             // catch(Exception e)
             //{
             //  Console.WriteLine("** ALL GONE WRONG **" + e.ToString());
             // }
+        }
+
+        public void applycompactPDO(UInt16 index)
+        {
+            if (ods.ContainsKey(index))
+            {
+                if ((!ods[index].containssubindex(1)) && ((this.di.CompactPDO & 0x01) == 0))
+                {
+                    //Fill in cob ID
+                    //FIX ME i'm really sure this is not correct, what default values should be used???
+                    string cob = string.Format("0x180+$NODEID");
+                    ODentry subod = new ODentry("COB-ID", index, 0x05, DataType.UNSIGNED32, cob, AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x05, subod);
+
+                }
+
+                if ((!ods[index].containssubindex(2)) && ((this.di.CompactPDO & 0x02) == 0))
+                {
+                    //Fill in type
+
+                    ODentry subod = new ODentry("Type", index, 0x05, DataType.UNSIGNED8, "0xff", AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x02, subod);
+                }
+
+                if ((!ods[index].containssubindex(3)) && ((this.di.CompactPDO & 0x04) == 0))
+                {
+                    //Fill in inhibit
+
+                    ODentry subod = new ODentry("Inhibit time", index, 0x03, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x03, subod);
+                }
+
+                //NOT FOR RX PDO
+                if (index < 0x1800)
+                    return;
+
+                if ((!ods[index].containssubindex(4)) && ((this.di.CompactPDO & 0x08) == 0))
+                {
+                    //Fill in compatability entry
+
+                    ODentry subod = new ODentry("Compatability entry", index, 0x04, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x04, subod);
+                }
+
+                if ((!ods[index].containssubindex(5)) && ((this.di.CompactPDO & 0x10) == 0))
+                {
+                    //Fill in ebent timer
+
+                    ODentry subod = new ODentry("Event Timer", index, 0x05, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x05, subod);
+                }
+            }
         }
 
         public void savefile(string filename, InfoSection.filetype ft)
@@ -1718,6 +1812,8 @@ namespace libEDSsharp
                 nodeidpresent = false;
                 return 0;
             }
+
+            input = input.ToUpper(); //catch all types of nodeid
 
             if (input.Contains("$NODEID"))
                 nodeidpresent = true;
