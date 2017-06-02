@@ -102,12 +102,22 @@ namespace libEDSsharp
     {
     }
 
+    public class DcfExport : EdsExport
+    {
+    }
+
     public class InfoSection
     {
         protected Dictionary<string, string> section;
 
         protected string infoheader;
         protected string edssection;
+
+        public enum filetype
+        {
+            File_EDS,
+            File_DCF
+        }
 
         public virtual void parse(Dictionary<string, string> section)
         {
@@ -206,7 +216,7 @@ namespace libEDSsharp
             return msg;
         }
 
-        public void write(StreamWriter writer)
+        public void write(StreamWriter writer, filetype ft)
         {
             writer.WriteLine("[" + edssection + "]");
             Type tx = this.GetType();
@@ -215,7 +225,10 @@ namespace libEDSsharp
             foreach (FieldInfo f in fields)
             {
 
-                if (!Attribute.IsDefined(f, typeof(EdsExport)))
+                if ((ft==filetype.File_EDS) && (!Attribute.IsDefined(f, typeof(EdsExport))))
+                    continue;
+
+                if ((ft == filetype.File_DCF) && (!Attribute.IsDefined(f, typeof(DcfExport))))
                     continue;
 
                 if (f.GetValue(this) == null)
@@ -459,7 +472,9 @@ namespace libEDSsharp
         [EdsExport]
         public byte FileRevision;//=1
 
-        
+        [DcfExport]
+        public string LastEDS = "";
+
         public byte EDSVersionMajor;//=4.0
         
         public byte EDSVersionMinor;//=4.0
@@ -641,6 +656,31 @@ namespace libEDSsharp
     }
 
 
+    public class DeviceCommissioning : InfoSection
+    {
+        [DcfExport]
+        byte NodeId;
+
+        [DcfExport]
+        string NodeName; //Max 246 characters
+
+        [DcfExport]
+        UInt16 BaudRate;
+
+        [DcfExport]
+        UInt32 NetNumber;
+
+        [DcfExport]
+        string NetworkName; //Max 243 characters
+
+        [DcfExport]
+        bool CANopenManager;  //1 = CANopen manager, 0 or missing = not the manager
+
+        [DcfExport]
+        UInt32 LSS_SerialNumber;
+
+    }
+
     public class ODentry
     {
         [EdsExport]
@@ -658,14 +698,30 @@ namespace libEDSsharp
 
         [EdsExport]
         public string parameter_name = "";
+
+        [DcfExport]
+        public string denotation = "";
+
         [EdsExport]
         public ObjectType objecttype;
         [EdsExport]
         public DataType datatype;
         [EdsExport]
         public EDSsharp.AccessType accesstype;
+
         [EdsExport]
         public string defaultvalue = "";
+
+        [EdsExport]
+        public string LowLimit = "";
+
+        [EdsExport]
+        public string HighLimit = "";
+
+        [DcfExport]
+        public string currentvalue = "";
+
+
         [EdsExport]
         public bool PDOMapping
         {
@@ -763,7 +819,33 @@ namespace libEDSsharp
             }
         }
 
-        public void write(StreamWriter writer)
+        /// <summary>
+        /// If data type is an octect string we must remove all spaces when writing out to a EDS/DCF file
+        /// </summary>
+        /// <param name="value">Value to be processed</param>
+        /// <returns>value if not octet string or value with spaces removed if octet string</returns>
+        public string formatoctetstring(string value)
+        {
+            DataType dt = datatype;
+            if (dt == DataType.UNKNOWN && this.parent != null)
+                dt = parent.datatype;
+
+            string ret = value;
+
+            if (dt == DataType.OCTET_STRING)
+            {
+                ret = value.Replace(" ", "");
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Write out this Object dictionary entry to an EDS/DCF file using correct formatting
+        /// </summary>
+        /// <param name="writer">Handle to the stream writer to write to</param>
+        /// <param name="ft">File type being written</param>
+        public void write(StreamWriter writer, InfoSection.filetype ft)
         {
 
             if (parent!=null)
@@ -776,6 +858,12 @@ namespace libEDSsharp
             }
 
             writer.WriteLine(string.Format("ParameterName={0}", parameter_name));
+
+            if(ft == InfoSection.filetype.File_DCF)
+            {
+                writer.WriteLine(string.Format("Denotation={0}", denotation));
+            }
+
             writer.WriteLine(string.Format("ObjectType=0x{0:X}", (int)objecttype));
             writer.WriteLine(string.Format(";StorageLocation={0}",location.ToString()));
 
@@ -797,13 +885,25 @@ namespace libEDSsharp
                 writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)dt));
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
-                string local_defaultvalue = defaultvalue;              
-                if (dt == DataType.OCTET_STRING)
+
+                if(HighLimit != "")
                 {
-                    //remove spaces from octet string when writing eds Issue #85
-                    local_defaultvalue = defaultvalue.Replace(" ", "");
-                }               
-                writer.WriteLine(string.Format("DefaultValue={0}", local_defaultvalue));
+                    writer.WriteLine(string.Format("HighLimit={0}", formatoctetstring(HighLimit)));
+                }
+
+                if (LowLimit != "")
+                {
+                    writer.WriteLine(string.Format("LowLimit={0}", formatoctetstring(LowLimit)));
+                }
+    
+                writer.WriteLine(string.Format("DefaultValue={0}", formatoctetstring(defaultvalue)));
+
+
+                //TODO If the ObjectType is domain (0x2) the value of the object may be stored in a file,UploadFile and DownloadFile
+                if (ft == InfoSection.filetype.File_DCF)
+                {
+                    writer.WriteLine(string.Format("ParameterValue={0}", formatoctetstring(currentvalue)));
+                }
 
                 writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
             }
@@ -1010,6 +1110,7 @@ namespace libEDSsharp
         public ManufacturerObjects mo;
         public Comments c;
         public Dummyusage du;
+        public DeviceCommissioning dc;
 
         public UInt16 NodeId = 0;
 
@@ -1240,6 +1341,14 @@ namespace libEDSsharp
                 md = new MandatoryObjects(eds["MandatoryObjects"]);
                 oo = new OptionalObjects(eds["OptionalObjects"]);
                 mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
+
+                //Only DCF not EDS files
+                dc = new DeviceCommissioning();
+                if(eds.ContainsKey("DeviceCommissioning"))
+                {
+                    dc.parse(eds["DeviceCommissioning"]);
+                }
+                
                 c = new Comments();
 
                 if (eds.ContainsKey("Comments"))
@@ -1254,7 +1363,7 @@ namespace libEDSsharp
             // }
         }
 
-        public void savefile(string filename)
+        public void savefile(string filename, InfoSection.filetype ft)
         {
             this.edsfilename = filename;
 
@@ -1275,11 +1384,15 @@ namespace libEDSsharp
             fi.EDSVersionMinor = 0;
 
             StreamWriter writer = File.CreateText(filename);
-            fi.write(writer);
-            di.write(writer);
-            du.write(writer);
+            fi.write(writer,ft);
+            di.write(writer,ft);
+            du.write(writer,ft);
             c.write(writer);
 
+            if(ft == InfoSection.filetype.File_DCF)
+            {
+                dc.write(writer,ft);
+            }
 
             //regenerate the object lists
             md.objectlist.Clear();
@@ -1315,11 +1428,11 @@ namespace libEDSsharp
                 ODentry od = kvp.Value;
                 if (md.objectlist.ContainsValue(od.index))
                 {
-                    od.write(writer);
+                    od.write(writer,ft);
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                     {
                         ODentry od2 = kvp2.Value;
-                        od2.write(writer);
+                        od2.write(writer,ft);
                     }                    
                 }
             }
@@ -1331,11 +1444,11 @@ namespace libEDSsharp
                 ODentry od = kvp.Value;
                 if (oo.objectlist.ContainsValue(od.index))
                 {
-                    od.write(writer);
+                    od.write(writer,ft);
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                     {
                         ODentry od2 = kvp2.Value;
-                        od2.write(writer);
+                        od2.write(writer,ft);
                     }                    
                 }
             }
@@ -1347,11 +1460,11 @@ namespace libEDSsharp
                 ODentry od = kvp.Value;
                 if (mo.objectlist.ContainsValue(od.index))
                 {
-                    od.write(writer);
+                    od.write(writer,ft);
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                     {
                         ODentry od2 = kvp2.Value;
-                        od2.write(writer);
+                        od2.write(writer,ft);
                     }                    
                 }
             }

@@ -232,7 +232,7 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.eds;*.xml;*.xdd)|*.eds;*.xml;*.xdd|Electronic Data Sheets (*.eds)|*.eds|CanOpen Xml Datasheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
+            odf.Filter = "All supported files (*.eds;*.xml;*.xdd)|*.eds;*.xml;*.xdd|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Datasheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
 
@@ -456,7 +456,7 @@ namespace ODEditor
                     if (dv.eds.edsfilename != sfd.FileName)
                         dv.eds.dirty = true;
 
-                    dv.eds.savefile(sfd.FileName);
+                    dv.eds.savefile(sfd.FileName,InfoSection.filetype.File_EDS);
 
                     dv.eds.edsfilename = sfd.FileName;
                     dv.dispatch_updateOD();
@@ -474,7 +474,7 @@ namespace ODEditor
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                 SaveFileDialog sfd = new SaveFileDialog();
 
-                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Canopen XDD (*.xdd)|*.xdd";
+                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|Canopen XDD (*.xdd)|*.xdd";
 
                 sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
                 sfd.RestoreDirectory = true;
@@ -486,9 +486,13 @@ namespace ODEditor
                     switch(Path.GetExtension(sfd.FileName))
                     {
                         case ".eds":
-                            dv.eds.savefile(sfd.FileName);
+                            dv.eds.savefile(sfd.FileName, InfoSection.filetype.File_EDS);
                             dv.eds.edsfilename = sfd.FileName;
- 
+                            break;
+
+                        case ".dcf":
+                            dv.eds.savefile(sfd.FileName, InfoSection.filetype.File_DCF);
+                            dv.eds.edsfilename = sfd.FileName;
                             break;
 
                         case ".xml":
@@ -888,7 +892,7 @@ namespace ODEditor
 
 
                 //export EDS
-                dv.eds.savefile(dv.eds.edsfilename);
+                dv.eds.savefile(dv.eds.edsfilename, InfoSection.filetype.File_EDS);
 
                 //export CO_OD.c and CO_OD.h
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
