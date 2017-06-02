@@ -688,7 +688,7 @@ namespace libEDSsharp
                         eds.dc.NodeId = NetworkManagment.deviceCommissioning.nodeID;
                         eds.dc.BaudRate = Convert.ToUInt16(NetworkManagment.deviceCommissioning.actualBaudRate);
                         eds.dc.CANopenManager = NetworkManagment.deviceCommissioning.CANopenManager;
-                        eds.dc.NetNumber = Convert.ToUInt32(NetworkManagment.deviceCommissioning.networkName);
+                        eds.dc.NetworkName = NetworkManagment.deviceCommissioning.networkName;
                         eds.dc.NetNumber = Convert.ToUInt16(NetworkManagment.deviceCommissioning.networkNumber);
                         eds.dc.NodeName = NetworkManagment.deviceCommissioning.nodeName;
 
@@ -732,7 +732,7 @@ namespace libEDSsharp
                         entry.LowLimit = obj3.lowLimit;
 
                     if (obj3.actualValue != null)
-                        entry.currentvalue = obj3.actualValue;
+                        entry.actualvalue = obj3.actualValue;
 
                     if (obj3.denotation != null)
                         entry.denotation = obj3.denotation;
@@ -788,11 +788,20 @@ namespace libEDSsharp
 
                             //extra items
 
-                            subentry.LowLimit = subobj.lowLimit;
-                            subentry.HighLimit = subobj.highLimit;
-                            subentry.currentvalue = subobj.actualValue;
-                            subentry.denotation = subobj.denotation;
-                            subentry.ObjFlags = subobj.objFlags[0];
+                            if(subobj.lowLimit!=null)
+                                subentry.LowLimit = subobj.lowLimit;
+
+                            if(subobj.highLimit!=null)
+                                subentry.HighLimit = subobj.highLimit;
+
+                            if(subobj.actualValue!=null)
+                                subentry.actualvalue = subobj.actualValue;
+
+                            if(subobj.denotation!=null)
+                                subentry.denotation = subobj.denotation;
+
+                            if(subobj.objFlags!=null)
+                                subentry.ObjFlags = subobj.objFlags[0];
 
 
                             subentry.uniqueID = subobj.uniqueIDRef;

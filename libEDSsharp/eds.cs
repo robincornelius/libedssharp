@@ -141,6 +141,9 @@ namespace libEDSsharp
             {
                 if(Attribute.IsDefined(f, typeof(EdsExport)))
                     getField(f.Name, f.Name);
+
+                if (Attribute.IsDefined(f, typeof(DcfExport)))
+                    getField(f.Name, f.Name);
             }
 
         }
@@ -239,7 +242,7 @@ namespace libEDSsharp
                 if ((ft==filetype.File_EDS) && (!Attribute.IsDefined(f, typeof(EdsExport))))
                     continue;
 
-                if ((ft == filetype.File_DCF) && (!Attribute.IsDefined(f, typeof(DcfExport))))
+                if ((ft == filetype.File_DCF) && (!(Attribute.IsDefined(f, typeof(DcfExport)) || Attribute.IsDefined(f, typeof(EdsExport)))))
                     continue;
 
                 if (f.GetValue(this) == null)
@@ -666,6 +669,20 @@ namespace libEDSsharp
 
     public class DeviceCommissioning : InfoSection
     {
+
+        public DeviceCommissioning()
+        {
+            infoheader = "CAN OPEN DeviceCommissioning";
+            edssection = "DeviceCommissioning";
+        }
+
+        public DeviceCommissioning(Dictionary<string, string> section)
+        {
+            infoheader = "CAN OPEN DeviceCommissioning";
+            edssection = "DeviceCommissioning";
+            parse(section);
+        }
+
         [DcfExport]
         public byte NodeId = 0;
 
@@ -727,10 +744,13 @@ namespace libEDSsharp
         public string HighLimit = "";
 
         [DcfExport]
-        public string currentvalue = "";
+        public string actualvalue = "";
 
         [EdsExport]
         public Byte ObjFlags = 0;
+
+        [EdsExport]
+        public byte CompactSubObj = 0;
 
         [EdsExport]
         public bool PDOMapping
@@ -912,7 +932,7 @@ namespace libEDSsharp
                 //TODO If the ObjectType is domain (0x2) the value of the object may be stored in a file,UploadFile and DownloadFile
                 if (ft == InfoSection.filetype.File_DCF)
                 {
-                    writer.WriteLine(string.Format("ParameterValue={0}", formatoctetstring(currentvalue)));
+                    writer.WriteLine(string.Format("ParameterValue={0}", formatoctetstring(actualvalue)));
                 }
 
                 writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
@@ -1190,61 +1210,65 @@ namespace libEDSsharp
 
         public void parseline(string linex)
         {
-            string key = "";
-            string value = "";
 
-            //Special Handling of custom fields
-            if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != 0)
-            {
-                if(sectionname!=null)
+                string key = "";
+                string value = "";
+
+                //Special Handling of custom fields
+                if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != -1)
                 {
-                   if( eds.ContainsKey(sectionname))
+                    if (sectionname != null)
                     {
-                        //could be more generic
-                        eds[sectionname].Add("StorageLocation", value);
+                        if (!eds.ContainsKey(sectionname))
+                        {
+                            //could be more generic
+                            eds[sectionname].Add("StorageLocation", value);
+                        }
+                    }
+
+                    return;
+                }
+
+                string line = linex.TrimStart(';');
+
+                //extract sections
+                {
+                    string pat = @"^\[([a-z0-9]+)\]";
+
+                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                    Match m = r.Match(line);
+                    if (m.Success)
+                    {
+                        Group g = m.Groups[1];
+                        sectionname = g.ToString();
                     }
                 }
 
-                return;
-            }
-
-            string line = linex.TrimStart(';');
-
-            //extract sections
-            {
-                string pat = @"^\[([a-z0-9]+)\]";
-
-                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                Match m = r.Match(line);
-                if (m.Success)
+                //extract keyvalues
                 {
-                    Group g = m.Groups[1];
-                    sectionname = g.ToString();
-                }
-            }
+                    //Bug #70 Eat whitespace!
+                    string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
 
-            //extract keyvalues
-            {
-                //Bug #70 Eat whitespace!
-                string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
-
-                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                Match m = r.Match(line);
-                if (m.Success)
-                {
-
-                    key = m.Groups[1].ToString();
-                    value = m.Groups[2].ToString();
-
-                    if (!eds.ContainsKey(sectionname))
+                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                    Match m = r.Match(line);
+                    if (m.Success)
                     {
-                        eds.Add(sectionname, new Dictionary<string, string>());
+
+                        key = m.Groups[1].ToString();
+                        value = m.Groups[2].ToString();
+                        value = value.TrimEnd(' ');
+
+                        if (!eds.ContainsKey(sectionname))
+                        {
+                            eds.Add(sectionname, new Dictionary<string, string>());
+                        }
+
+                        eds[sectionname].Add(key, value);
+
                     }
-
-                    eds[sectionname].Add(key, value);
-
                 }
-            }
+            
+           
         }
 
         public void parseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
@@ -1260,10 +1284,15 @@ namespace libEDSsharp
 
                 ODentry od = new ODentry();
 
+                //Indexes in the EDS are always in hex format without the pre 0x
+                od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
+
+                //Parameter name, mandatory always
                 if (!kvp.Value.ContainsKey("ParameterName"))
                     throw new ParameterException("Missing required field ParameterName on" + section);
                 od.parameter_name = kvp.Value["ParameterName"];
 
+                //Object type, assumed to be VAR unless specified
                 if (kvp.Value.ContainsKey("ObjectType"))
                 {
                     int type = Convert.ToInt16(kvp.Value["ObjectType"], getbase(kvp.Value["ObjectType"]));
@@ -1274,8 +1303,12 @@ namespace libEDSsharp
                     od.objecttype = ObjectType.VAR;
                 }
 
-                //Indexes in the EDS are always in hex format without the pre 0x
-                od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
+                if(kvp.Value.ContainsKey("CompactSubObj"))
+                {
+                    od.CompactSubObj = Convert.ToByte(kvp.Value["CompactSubObj"]);
+                }
+
+                //Access Type
 
                 if(kvp.Value.ContainsKey("StorageLocation"))
                 {
@@ -1285,6 +1318,26 @@ namespace libEDSsharp
                 if (od.objecttype == ObjectType.VAR)
                 {
 
+                    if (kvp.Value.ContainsKey("ParameterValue"))
+                    {
+                        od.actualvalue = kvp.Value["ParameterValue"];
+                    }
+
+                    if (kvp.Value.ContainsKey("HighLimit"))
+                    {
+                        od.HighLimit = kvp.Value["HighLimit"];
+                    }
+
+                    if (kvp.Value.ContainsKey("LowLimit"))
+                    {
+                        od.LowLimit = kvp.Value["LowLimit"];
+                    }
+
+                    if (kvp.Value.ContainsKey("Denotation"))
+                    {
+                        od.denotation = kvp.Value["Denotation"];
+                    }
+
                     if (m.Groups[3].Length != 0)
                     {
                         //FIXME are subindexes in hex always?
@@ -1293,16 +1346,14 @@ namespace libEDSsharp
                         ods[od.index].subobjects.Add(od.subindex, od);
                     }
 
-
                     if (!kvp.Value.ContainsKey("DataType"))
-                        throw new ParameterException("Missing required field DataType on" + section);
-
-                    od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], getbase(kvp.Value["DataType"]));
-
+                            throw new ParameterException("Missing required field DataType on" + section);
+                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], getbase(kvp.Value["DataType"]));
+                    
                     if (!kvp.Value.ContainsKey("AccessType"))
                         throw new ParameterException("Missing required AccessType on" + section);
 
-                    string accesstype = kvp.Value["AccessType"];
+                    string accesstype = kvp.Value["AccessType"].ToLower();
 
                     if (Enum.IsDefined(typeof(AccessType), accesstype))
                     {
@@ -1327,6 +1378,57 @@ namespace libEDSsharp
                        
 
                 }
+
+              
+                if(od.objecttype==ObjectType.DOMAIN || od.objecttype==ObjectType.ARRAY || od.objecttype==ObjectType.DEFSTRUCT)
+                {
+
+                    if (od.CompactSubObj != 0)
+                    {
+                        if (!kvp.Value.ContainsKey("DataType"))
+                            throw new ParameterException("Missing required field DataType on" + section);
+                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], getbase(kvp.Value["DataType"]));
+
+                        if (!kvp.Value.ContainsKey("AccessType"))
+                            throw new ParameterException("Missing required AccessType on" + section);
+                        string accesstype = kvp.Value["AccessType"];
+                        if (Enum.IsDefined(typeof(AccessType), accesstype))
+                        {
+                            od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), accesstype);
+                        }
+                        else
+                        {
+                            throw new ParameterException("Unknown AccessType on" + section);
+                        }
+
+                        //now we generate CompactSubObj number of var objects below this parent
+
+                        if(od.CompactSubObj>=0xfe)
+                        {
+                            od.CompactSubObj = 0xfe;
+                        }
+
+                        ODentry subi = new ODentry("NrOfObjects", od.index, 0x00, od.datatype, String.Format("{0:x2}",od.CompactSubObj), AccessType.ro, PDOMappingType.no, od);      
+                        od.subobjects.Add(0x00, subi);
+
+                        for (int x=1; x<= od.CompactSubObj; x++)
+                        {
+                            string parameter_name = string.Format("{0}{1:x2}", od.parameter_name, x );
+                            ODentry sub = new ODentry(parameter_name, od.index, (byte)x, od.datatype, od.defaultvalue, od.accesstype, od.PDOtype, od);
+                            od.subobjects.Add((ushort)(x ), sub);
+                        }
+
+                    }
+                    else
+                    {
+
+                    
+
+                    }
+                }
+
+
+
 
                 //Only add top level to this list
                 if (m.Groups[3].Length == 0)
@@ -1585,6 +1687,7 @@ namespace libEDSsharp
             {
                 nobase = 8;
             }
+
 
             return nobase;
         }

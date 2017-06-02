@@ -148,12 +148,12 @@ namespace ODEditor
             odf.Filter = "Electronic Data Sheets (*.eds)|*.eds";
             if (odf.ShowDialog() == DialogResult.OK)
             {
-                openEDSfile(odf.FileName);
+                openEDSfile(odf.FileName,InfoSection.filetype.File_EDS);
                 addtoMRU(odf.FileName);
             }
         }
 
-        private void openEDSfile(string path)
+        private void openEDSfile(string path,InfoSection.filetype ft)
         {
             Warnings.warning_list.Clear();
 
@@ -247,7 +247,11 @@ namespace ODEditor
                         break;
 
                     case ".eds":
-                        openEDSfile(odf.FileName);
+                        openEDSfile(odf.FileName, InfoSection.filetype.File_EDS);
+                        break;
+
+                    case ".dcf":
+                        openEDSfile(odf.FileName, InfoSection.filetype.File_DCF);
                         break;
 
                     default:
@@ -578,7 +582,9 @@ namespace ODEditor
             if (ext == ".xdd")
                 openXDDfile(filepath);
             if ( ext == ".eds" )
-                openEDSfile(filepath);
+                openEDSfile(filepath, InfoSection.filetype.File_EDS);
+            if (ext == ".dcf")
+                openEDSfile(filepath, InfoSection.filetype.File_DCF);
             if (ext == ".nxml")
                 openNetworkfile(filepath);
 
