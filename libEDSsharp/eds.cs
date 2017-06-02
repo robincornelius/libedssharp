@@ -97,9 +97,20 @@ namespace libEDSsharp
         @default=4,
     }
 
-  
+
     public class EdsExport : Attribute
     {
+        public UInt16 maxlength;
+
+        public EdsExport()
+        {
+        }
+
+        public EdsExport(UInt16 maxlength)
+        {
+            this.maxlength = maxlength;
+        }
+
     }
 
     public class DcfExport : EdsExport
@@ -481,7 +492,7 @@ namespace libEDSsharp
         [EdsExport]
         public string EDSVersion="";
 
-        [EdsExport]
+        [EdsExport(maxlength=243)]
         public string Description="";//= //max 243 characters
 
         public DateTime CreationDateTime;//
@@ -490,7 +501,7 @@ namespace libEDSsharp
         [EdsExport]
         public string CreationDate="";
 
-        [EdsExport]
+        [EdsExport(maxlength = 245)]
         public string CreatedBy = "";//=CANFestival //max245
         
         public DateTime ModificationDateTime;//
@@ -500,7 +511,7 @@ namespace libEDSsharp
         [EdsExport]
         public string ModificationDate="";
 
-        [EdsExport]
+        [EdsExport(maxlength = 244)]
         public string ModifiedBy="";//=CANFestival //max244
 
         //Folder CO_OD.c and CO_OD.h will be exported into
@@ -650,34 +661,31 @@ namespace libEDSsharp
             infoheader = "CAN OPEN DeviceInfo";
             edssection = "DeviceInfo";
         }
-
-        public int concreteNodeId = -1;
-
     }
 
 
     public class DeviceCommissioning : InfoSection
     {
         [DcfExport]
-        byte NodeId;
+        public byte NodeId = 0;
+
+        [DcfExport(maxlength = 246)]
+        public string NodeName; //Max 246 characters
 
         [DcfExport]
-        string NodeName; //Max 246 characters
+        public UInt16 BaudRate;
 
         [DcfExport]
-        UInt16 BaudRate;
+        public UInt32 NetNumber;
+
+        [DcfExport(maxlength = 243)]
+        public string NetworkName; //Max 243 characters
 
         [DcfExport]
-        UInt32 NetNumber;
+        public bool CANopenManager;  //1 = CANopen manager, 0 or missing = not the manager
 
         [DcfExport]
-        string NetworkName; //Max 243 characters
-
-        [DcfExport]
-        bool CANopenManager;  //1 = CANopen manager, 0 or missing = not the manager
-
-        [DcfExport]
-        UInt32 LSS_SerialNumber;
+        public UInt32 LSS_SerialNumber;
 
     }
 
@@ -1131,6 +1139,7 @@ namespace libEDSsharp
             md = new MandatoryObjects();
             oo = new OptionalObjects();
             mo = new ManufacturerObjects();
+            dc = new DeviceCommissioning();
             c = new Comments();
 
 
@@ -1605,7 +1614,7 @@ namespace libEDSsharp
 
             try
             {
-                if (di.concreteNodeId == -1)
+                if (dc.NodeId == 0)
                 {
                     input = input.Replace("$NODEID", "");
                     input = input.Replace("+", "");
@@ -1613,7 +1622,7 @@ namespace libEDSsharp
                     return Convert.ToUInt32(input, getbase(input));
                 }
 
-                input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
+                input = input.Replace("$NODEID", String.Format("0x{0}", dc.NodeId));
 
                 string[] bits = input.Split('+');
 

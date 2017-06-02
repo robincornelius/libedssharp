@@ -680,7 +680,7 @@ namespace libEDSsharp
 
                         if(NetworkManagment.deviceCommissioning !=null)
                         {
-                            eds.di.concreteNodeId = NetworkManagment.deviceCommissioning.nodeID;
+                            eds.dc.NodeId = NetworkManagment.deviceCommissioning.nodeID;
 
                             //Extra items
                             //NetworkManagment.deviceCommissioning.actualBaudRate;

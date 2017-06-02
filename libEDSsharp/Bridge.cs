@@ -211,8 +211,8 @@ namespace libEDSsharp
             dev.Other.DeviceIdentity.ProductText.Description.Text = eds.fi.Description;
 
 
-            if (eds.di.concreteNodeId != -1)
-                dev.Other.DeviceIdentity.ConcreteNoideId = eds.di.concreteNodeId.ToString();
+            if (eds.dc.NodeId != 0)
+                dev.Other.DeviceIdentity.ConcreteNoideId = eds.dc.NodeId.ToString();
 
             dev.Other.DeviceIdentity.VendorName = eds.di.VendorName;
             dev.Other.DeviceIdentity.VendorNumber = eds.di.VendorNumber;
@@ -480,11 +480,11 @@ namespace libEDSsharp
 
             if (dev.Other.DeviceIdentity.ConcreteNoideId != null)
             {
-                eds.di.concreteNodeId = Convert.ToByte(dev.Other.DeviceIdentity.ConcreteNoideId);
+                eds.dc.NodeId = Convert.ToByte(dev.Other.DeviceIdentity.ConcreteNoideId);
             }
             else
             {
-                eds.di.concreteNodeId = -1;
+                eds.dc.NodeId = 0;
             }
 
             string dtcombined;
