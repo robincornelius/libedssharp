@@ -981,7 +981,7 @@ namespace libEDSsharp
             }
         }
 
-        Dictionary<string, Dictionary<string, string>> eds;
+        protected Dictionary<string, Dictionary<string, string>> eds;
         public SortedDictionary<UInt16, ODentry> ods;
         public SortedDictionary<UInt16, ODentry> dummy_ods;
 
@@ -1049,7 +1049,7 @@ namespace libEDSsharp
 
         }
 
-        string sectionname = "";
+        protected string sectionname = "";
 
         public void parseline(string linex)
         {
@@ -1098,6 +1098,8 @@ namespace libEDSsharp
 
                     key = m.Groups[1].ToString();
                     value = m.Groups[2].ToString();
+
+                    value = value.Trim(' ','\t');
 
                     if (!eds.ContainsKey(sectionname))
                     {
