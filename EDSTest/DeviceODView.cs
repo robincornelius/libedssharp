@@ -115,12 +115,17 @@ namespace ODEditor
             selectedobject.parameter_name = textBox_name.Text;
             selectedobject.Description = textBox_description.Text;
             selectedobject.defaultvalue = textBox_defaultvalue.Text;
+            selectedobject.denotation = textBox_denotation.Text;
 
             if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
             {
 
                 selectedobject.defaultvalue = textBox_defaultvalue.Text;
                 selectedobject.TPDODetectCos = checkBox_COS.Checked;
+                selectedobject.HighLimit = textBox_highvalue.Text;
+                selectedobject.LowLimit = textBox_lowvalue.Text;
+                selectedobject.actualvalue = textBox_actualvalue.Text;
+               
 
                 DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
                 selectedobject.datatype = dt;
@@ -144,8 +149,6 @@ namespace ODEditor
 
                 selectedobject.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_pdomap.SelectedItem.ToString());
 
-                selectedobject.AccessFunctionName = textBox_accessfunctionname.Text;
-                selectedobject.AccessFunctionPreCode = textBox_precode.Text;
                 selectedobject.Disabled = !checkBox_enabled.Checked;
 
                 selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
@@ -216,6 +219,7 @@ namespace ODEditor
 
             label_index.Text = string.Format("0x{0:x4}", od.index);
             textBox_name.Text = od.parameter_name;
+            textBox_denotation.Text = od.denotation;
 
             comboBox_accesstype.SelectedItem = od.accesstype.ToString();
 
@@ -260,18 +264,19 @@ namespace ODEditor
             comboBox_pdomap.SelectedItem = od.PDOtype.ToString();
 
             checkBox_COS.Checked = od.TPDODetectCos;
-            textBox_accessfunctionname.Text = od.AccessFunctionName;
-            textBox_precode.Text = od.AccessFunctionPreCode;
+          
             checkBox_enabled.Checked = !od.Disabled;
 
             comboBox_memory.SelectedItem = od.location.ToString();
 
-            textBox_accessfunctionname.Enabled = true;
-            textBox_precode.Enabled = true;
             checkBox_enabled.Enabled = true;
             comboBox_memory.Enabled = true;
 
             textBox_defaultvalue.Enabled = true;
+            textBox_actualvalue.Enabled = true;
+            textBox_highvalue.Enabled = true;
+            textBox_lowvalue.Enabled = true;
+
 
             comboBox_accesstype.Enabled = true;
             comboBox_datatype.Enabled = true;
@@ -279,6 +284,10 @@ namespace ODEditor
             comboBox_pdomap.Enabled = true;
 
             textBox_defaultvalue.Text = od.defaultvalue;
+
+            textBox_actualvalue.Text = od.actualvalue;
+            textBox_highvalue.Text = od.HighLimit;
+            textBox_lowvalue.Text = od.LowLimit;
 
             checkBox_COS.Enabled = true;
             checkBox_enabled.Enabled = true;
@@ -293,6 +302,9 @@ namespace ODEditor
                     checkBox_COS.Enabled = false;
                     comboBox_datatype.Enabled = false;
                     textBox_defaultvalue.Enabled = false;
+                    textBox_actualvalue.Enabled = false;
+                    textBox_highvalue.Enabled = false;
+                    textBox_lowvalue.Enabled = false;
                 }
 
                 updating = false;
@@ -306,8 +318,6 @@ namespace ODEditor
             comboBox_objecttype.Enabled = false;
             comboBox_pdomap.Enabled = false;
             checkBox_enabled.Checked = false;
-            textBox_accessfunctionname.Enabled = false;
-            textBox_precode.Enabled = false;
             comboBox_memory.Enabled = false;
             checkBox_COS.Enabled = false;
             checkBox_enabled.Enabled = false;

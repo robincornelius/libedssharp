@@ -211,8 +211,8 @@ namespace libEDSsharp
             dev.Other.DeviceIdentity.ProductText.Description.Text = eds.fi.Description;
 
 
-            if (eds.di.concreteNodeId != -1)
-                dev.Other.DeviceIdentity.ConcreteNoideId = eds.di.concreteNodeId.ToString();
+            if (eds.dc.NodeId != 0)
+                dev.Other.DeviceIdentity.ConcreteNoideId = eds.dc.NodeId.ToString();
 
             dev.Other.DeviceIdentity.VendorName = eds.di.VendorName;
             dev.Other.DeviceIdentity.VendorNumber = eds.di.VendorNumber;
@@ -451,20 +451,22 @@ namespace libEDSsharp
 
 
             bool boolout;
+            byte byteout;
+
             if (keypairs.ContainsKey("SimpleBootUpSlave") && bool.TryParse(keypairs["SimpleBootUpSlave"], out boolout))
                 eds.di.SimpleBootUpSlave = boolout;
             if (keypairs.ContainsKey("SimpleBootUpMaster") && bool.TryParse(keypairs["SimpleBootUpMaster"], out boolout))
                 eds.di.SimpleBootUpMaster = boolout;
             if (keypairs.ContainsKey("DynamicChannelsSupported") && bool.TryParse(keypairs["DynamicChannelsSupported"], out boolout))
                 eds.di.DynamicChannelsSupported = boolout;
-            if (keypairs.ContainsKey("CompactPDO") && bool.TryParse(keypairs["CompactPDO"], out boolout))
-                eds.di.CompactPDO = boolout;
+            if (keypairs.ContainsKey("CompactPDO") && byte.TryParse(keypairs["CompactPDO"], out byteout))
+                eds.di.CompactPDO = byteout;
             if (keypairs.ContainsKey("GroupMessaging") && bool.TryParse(keypairs["GroupMessaging"], out boolout))
                 eds.di.GroupMessaging = boolout;
             if (keypairs.ContainsKey("LSS_Supported") && bool.TryParse(keypairs["LSS_Supported"], out boolout))
                 eds.di.LSS_Supported = boolout;
 
-            byte byteout;
+           
             if (keypairs.ContainsKey("Granularity") && byte.TryParse(keypairs["Granularity"], out byteout))
                 eds.di.Granularity = byteout;
 
@@ -480,11 +482,11 @@ namespace libEDSsharp
 
             if (dev.Other.DeviceIdentity.ConcreteNoideId != null)
             {
-                eds.di.concreteNodeId = Convert.ToByte(dev.Other.DeviceIdentity.ConcreteNoideId);
+                eds.dc.NodeId = Convert.ToByte(dev.Other.DeviceIdentity.ConcreteNoideId);
             }
             else
             {
-                eds.di.concreteNodeId = -1;
+                eds.dc.NodeId = 0;
             }
 
             string dtcombined;

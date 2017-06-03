@@ -19,6 +19,7 @@ With many thanks to the following contributors for spotting my mistakes and
 improving the code
 	* s-fuchs 
 	* martinwag 
+	* trojanobelix
 
 Releases
 --------

@@ -69,7 +69,6 @@
             this.checkBox_boot_master = new System.Windows.Forms.CheckBox();
             this.checkBox_group_msg = new System.Windows.Forms.CheckBox();
             this.checkBox_bootslave = new System.Windows.Forms.CheckBox();
-            this.checkBox_compactPDO = new System.Windows.Forms.CheckBox();
             this.checkBox_dynamicchan = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.heckBox_baud_125 = new System.Windows.Forms.CheckBox();
@@ -86,6 +85,8 @@
             this.textBox_deviceedsname = new System.Windows.Forms.TextBox();
             this.textBox_exportfolder = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox_compactPDO = new System.Windows.Forms.TextBox();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -402,13 +403,14 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.textBox_compactPDO);
+            this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.textBox_Gran);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Controls.Add(this.checkBox_lss);
             this.groupBox2.Controls.Add(this.checkBox_boot_master);
             this.groupBox2.Controls.Add(this.checkBox_group_msg);
             this.groupBox2.Controls.Add(this.checkBox_bootslave);
-            this.groupBox2.Controls.Add(this.checkBox_compactPDO);
             this.groupBox2.Controls.Add(this.checkBox_dynamicchan);
             this.groupBox2.Location = new System.Drawing.Point(522, 6);
             this.groupBox2.Name = "groupBox2";
@@ -419,7 +421,7 @@
             // 
             // textBox_Gran
             // 
-            this.textBox_Gran.Location = new System.Drawing.Point(68, 166);
+            this.textBox_Gran.Location = new System.Drawing.Point(121, 166);
             this.textBox_Gran.Name = "textBox_Gran";
             this.textBox_Gran.Size = new System.Drawing.Size(59, 20);
             this.textBox_Gran.TabIndex = 44;
@@ -472,16 +474,6 @@
             this.checkBox_bootslave.TabIndex = 35;
             this.checkBox_bootslave.Text = "Simple bootup slave";
             this.checkBox_bootslave.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_compactPDO
-            // 
-            this.checkBox_compactPDO.AutoSize = true;
-            this.checkBox_compactPDO.Location = new System.Drawing.Point(6, 94);
-            this.checkBox_compactPDO.Name = "checkBox_compactPDO";
-            this.checkBox_compactPDO.Size = new System.Drawing.Size(94, 17);
-            this.checkBox_compactPDO.TabIndex = 38;
-            this.checkBox_compactPDO.Text = "Compact PDO";
-            this.checkBox_compactPDO.UseVisualStyleBackColor = true;
             // 
             // checkBox_dynamicchan
             // 
@@ -641,6 +633,23 @@
             this.label3.TabIndex = 59;
             this.label3.Text = "Export location";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 95);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(72, 13);
+            this.label4.TabIndex = 45;
+            this.label4.Text = "CompactPDO";
+            // 
+            // textBox_compactPDO
+            // 
+            this.textBox_compactPDO.Location = new System.Drawing.Point(121, 88);
+            this.textBox_compactPDO.Name = "textBox_compactPDO";
+            this.textBox_compactPDO.ReadOnly = true;
+            this.textBox_compactPDO.Size = new System.Drawing.Size(59, 20);
+            this.textBox_compactPDO.TabIndex = 46;
+            // 
             // DeviceInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -719,7 +728,6 @@
         private System.Windows.Forms.CheckBox checkBox_boot_master;
         private System.Windows.Forms.CheckBox checkBox_group_msg;
         private System.Windows.Forms.CheckBox checkBox_bootslave;
-        private System.Windows.Forms.CheckBox checkBox_compactPDO;
         private System.Windows.Forms.CheckBox checkBox_dynamicchan;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox heckBox_baud_125;
@@ -736,5 +744,7 @@
         private System.Windows.Forms.TextBox textBox_deviceedsname;
         private System.Windows.Forms.TextBox textBox_exportfolder;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox_compactPDO;
+        private System.Windows.Forms.Label label4;
     }
 }

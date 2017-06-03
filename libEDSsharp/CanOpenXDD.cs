@@ -19,7 +19,7 @@ namespace libEDSsharp
                 dev = (ISO15745ProfileContainer)serializer.Deserialize(reader);
                 reader.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return null;
             }
@@ -28,7 +28,7 @@ namespace libEDSsharp
 
         }
 
-        public void writeXML(string file,EDSsharp eds)
+        public void writeXML(string file, EDSsharp eds)
         {
 
             dev = convert(eds);
@@ -39,7 +39,7 @@ namespace libEDSsharp
             writer.Close();
         }
 
-        public void fillparamater(parameter p,ODentry od)
+        public void fillparamater(parameter p, ODentry od)
         {
 
 
@@ -49,7 +49,7 @@ namespace libEDSsharp
             }
             else
             {
-                p.uniqueID = string.Format("UID_PARAM_{0:x4}{1:x2}", od.parent.index,od.subindex);
+                p.uniqueID = string.Format("UID_PARAM_{0:x4}{1:x2}", od.parent.index, od.subindex);
             }
 
             switch (od.accesstype)
@@ -85,7 +85,7 @@ namespace libEDSsharp
 
             }
 
-           
+
             p.Items = new object[1];
 
             vendorTextLabel lab = new vendorTextLabel();
@@ -104,7 +104,7 @@ namespace libEDSsharp
             p.defaultValue = new defaultValue();
             p.defaultValue.value = od.defaultvalue;
 
- 
+
         }
 
 
@@ -118,7 +118,7 @@ namespace libEDSsharp
             //Profile 0 ProfileBody_Device_CANopen
             dev.ISO15745Profile[0] = new ISO15745Profile();
             dev.ISO15745Profile[0].ProfileHeader = new ProfileHeader_DataType();
-         
+
             dev.ISO15745Profile[0].ProfileHeader.ProfileIdentification = "CAN device profile";
             dev.ISO15745Profile[0].ProfileHeader.ProfileRevision = "1";
             dev.ISO15745Profile[0].ProfileHeader.ProfileClassID = ProfileClassID_DataType.Device;
@@ -200,12 +200,12 @@ namespace libEDSsharp
             device.DeviceManager.indicatorList.LEDList.LED[0].LEDtype = LEDLEDtype.device;
             device.DeviceManager.indicatorList.LEDList.LED[0].Items = new object[1];
 
-           // LEDstate ls = new LEDstate();
-           // ls.uniqueID = "LED_State_1";
-           // ls.state = LEDstateState.off;
-           // ls.LEDcolor = LEDstateLEDcolor.green;
+            // LEDstate ls = new LEDstate();
+            // ls.uniqueID = "LED_State_1";
+            // ls.state = LEDstateState.off;
+            // ls.LEDcolor = LEDstateLEDcolor.green;
 
-           // device.DeviceManager.indicatorList.LEDList.LED[0].Items[0] = ls;
+            // device.DeviceManager.indicatorList.LEDList.LED[0].Items[0] = ls;
 
             device.DeviceFunction = new DeviceFunction[1];
             //fix me fll this in
@@ -218,7 +218,7 @@ namespace libEDSsharp
 
             int ordinal = 0;
 
-            foreach(ODentry od in eds.ods.Values)
+            foreach (ODentry od in eds.ods.Values)
             {
                 parameter p = new parameter();
 
@@ -244,7 +244,7 @@ namespace libEDSsharp
             dev.ISO15745Profile[1] = new ISO15745Profile();
 
             dev.ISO15745Profile[1].ProfileHeader = new ProfileHeader_DataType();
-            
+
             dev.ISO15745Profile[1].ProfileHeader.ProfileIdentification = "CAN comm net profile";
             dev.ISO15745Profile[1].ProfileHeader.ProfileRevision = "1";
             dev.ISO15745Profile[1].ProfileHeader.ProfileClassID = ProfileClassID_DataType.CommunicationNetwork;
@@ -278,7 +278,7 @@ namespace libEDSsharp
             AppLayer.CANopenObjectList.CANopenObject = new CANopenObjectListCANopenObject[eds.getNoEnabledObjects()];
 
             int count = 0;
-            foreach(ODentry od in eds.ods.Values)
+            foreach (ODentry od in eds.ods.Values)
             {
                 AppLayer.CANopenObjectList.CANopenObject[count] = new CANopenObjectListCANopenObject();
 
@@ -294,19 +294,19 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmappingSpecified = true;
 
                 AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.index);
-                AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType),od.accesstype.ToString());
+                AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType), od.accesstype.ToString());
                 AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
 
-                if (od.subobjects!=null && od.subobjects.Count>0)
+                if (od.subobjects != null && od.subobjects.Count > 0)
                 {
                     AppLayer.CANopenObjectList.CANopenObject[count].subNumber = (byte)od.subobjects.Count;
                     AppLayer.CANopenObjectList.CANopenObject[count].subNumberSpecified = true;
 
                     AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject = new CANopenObjectListCANopenObjectCANopenSubObject[od.subobjects.Count];
-                   
+
                     int subcount = 0;
 
-                    foreach(ODentry subod in od.subobjects.Values)
+                    foreach (ODentry subod in od.subobjects.Values)
                     {
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount] = new CANopenObjectListCANopenObjectCANopenSubObject();
 
@@ -321,11 +321,11 @@ namespace libEDSsharp
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)subod.PDOtype;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmappingSpecified = true;
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index,subod.subindex);
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index, subod.subindex);
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), od.accesstype.ToString());
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessTypeSpecified = true;
 
-                       subcount++;
+                        subcount++;
                     }
                 }
 
@@ -335,7 +335,7 @@ namespace libEDSsharp
 
             AppLayer.dummyUsage = new ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy[7];
 
-            for(int x=0;x<7;x++)
+            for (int x = 0; x < 7; x++)
             {
                 AppLayer.dummyUsage[x] = new ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy();
             }
@@ -420,7 +420,7 @@ namespace libEDSsharp
             }
             if (eds.di.BaudRate_1000 == true)
             {
-                 TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item1000Kbps;
+                TransportLayer.PhysicalLayer.baudRate.supportedBaudRate[bauds].value = ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item1000Kbps;
                 bauds++;
             }
 
@@ -448,8 +448,15 @@ namespace libEDSsharp
             //NetworkManagment.CANopenMasterFeatures.SDOManager;
 
 
-            //Fixme implement this
-            //NetworkManagement.deviceCommissioning = new ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning();
+            NetworkManagement.deviceCommissioning = new ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning();
+            NetworkManagement.deviceCommissioning.actualBaudRate = eds.dc.BaudRate.ToString();
+            NetworkManagement.deviceCommissioning.nodeID = eds.dc.NodeId;
+            NetworkManagement.deviceCommissioning.networkName = eds.dc.NetworkName;
+            NetworkManagement.deviceCommissioning.networkNumber = eds.dc.NetNumber;
+            NetworkManagement.deviceCommissioning.CANopenManager = eds.dc.CANopenManager;
+
+            //fixme unconnected
+            //eds.dc.LSS_SerialNumber;
 
 
 
@@ -467,8 +474,8 @@ namespace libEDSsharp
             ProfileBody_DataType dt;
 
 
-            ProfileBody_CommunicationNetwork_CANopen body_network=null;
-            ProfileBody_Device_CANopen body_device=null;
+            ProfileBody_CommunicationNetwork_CANopen body_network = null;
+            ProfileBody_Device_CANopen body_device = null;
 
 
             foreach (ISO15745Profile dev in container.ISO15745Profile)
@@ -486,412 +493,426 @@ namespace libEDSsharp
 
             }
 
-                //ProfileBody_CommunicationNetwork_CANopen
-                if (body_network!=null)
+            //ProfileBody_CommunicationNetwork_CANopen
+            if (body_network != null)
+            {
+                ProfileBody_CommunicationNetwork_CANopen obj = body_network;
+
+                ProfileBody_CommunicationNetwork_CANopenApplicationLayers ApplicationLayers = null;
+                ProfileBody_CommunicationNetwork_CANopenTransportLayers TransportLayers = null;
+                ProfileBody_CommunicationNetwork_CANopenNetworkManagement NetworkManagment = null;
+
+                foreach (object obj2 in obj.Items)
                 {
-                    ProfileBody_CommunicationNetwork_CANopen obj = body_network;
 
-                    ProfileBody_CommunicationNetwork_CANopenApplicationLayers ApplicationLayers = null;
-                    ProfileBody_CommunicationNetwork_CANopenTransportLayers TransportLayers = null;
-                    ProfileBody_CommunicationNetwork_CANopenNetworkManagement NetworkManagment = null;
+                    if (obj2.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayers))
+                        ApplicationLayers = (ProfileBody_CommunicationNetwork_CANopenApplicationLayers)obj2;
 
-                    foreach (object obj2 in obj.Items)
-                    {
-           
-                        if(obj2.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopenApplicationLayers))
-                            ApplicationLayers = (ProfileBody_CommunicationNetwork_CANopenApplicationLayers)obj2;
+                    if (obj2.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopenTransportLayers))
+                        TransportLayers = (ProfileBody_CommunicationNetwork_CANopenTransportLayers)obj2;
 
-                        if (obj2.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopenTransportLayers))
-                            TransportLayers = (ProfileBody_CommunicationNetwork_CANopenTransportLayers)obj2;
-
-                        if (obj2.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopenNetworkManagement))
-                            NetworkManagment = (ProfileBody_CommunicationNetwork_CANopenNetworkManagement)obj2;
-
-                    }
-
-                    if (ApplicationLayers != null)
-                    {
-
-                        string vendorID = "";
-                        string deviceFamily = "";
-                        string productID = "";
-                        string version = "";
-                        DateTime buildDate;
-                        string specificationRevision = "";
-
-                        if (ApplicationLayers.identity != null)
-                        {
-                            if (ApplicationLayers.identity.vendorID != null)
-                            {
-                                vendorID = ApplicationLayers.identity.vendorID.Value;
-                            }
-
-                            if (ApplicationLayers.identity.deviceFamily != null)
-                            {
-                                //deviceFamily = ApplicationLayers.identity.deviceFamily.Items[]
-                                //not really sure how to handle this. its a list of g_labels
-                                //these contain label, description, language, URi etc could do with a simple class
-                                //to wrap these in as they are used in a number of places
-                            }
-
-                            if (ApplicationLayers.identity.productID != null)
-                            {
-                                productID = ApplicationLayers.identity.productID.Value;
-                            }
-
-                            if (ApplicationLayers.identity.buildDate != null)
-                            {
-                                buildDate = ApplicationLayers.identity.buildDate;
-                            }
-
-                            if (ApplicationLayers.identity.specificationRevision != null)
-                            {
-                                specificationRevision = ApplicationLayers.identity.specificationRevision.Value;
-                            }
-
-                        }
-
-                        if(ApplicationLayers.dummyUsage!=null)
-                        {
-                           foreach( ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy dummy in ApplicationLayers.dummyUsage)
-                           {
-                                string pat = @"Dummy([0-9]{4})([0-1])";
-                                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                                Match m = r.Match(dummy.entry.ToString());
-
-
-                                if(m.Success)
-                                {
-
-
-                                    int index = int.Parse(m.Groups[1].Value);
-                                   
-                                    switch(index)
-                                    {
-                                        case 1:
-                                            eds.du.Dummy0001 = int.Parse(m.Groups[2].Value)==1;
-                                            break;
-                                        case 2:
-                                            eds.du.Dummy0002 = int.Parse(m.Groups[2].Value) == 1;
-                                            break;
-                                        case 3:
-                                            eds.du.Dummy0003 = int.Parse(m.Groups[2].Value) == 1;
-                                            break;
-                                        case 4:
-                                            eds.du.Dummy0004 = int.Parse(m.Groups[2].Value) == 1;
-                                            break;
-                                        case 5:
-                                            eds.du.Dummy0005 = int.Parse(m.Groups[2].Value) == 1;
-                                            break;
-                                        case 6:
-                                            eds.du.Dummy0006 = int.Parse(m.Groups[2].Value) == 1;
-                                            break;
-                                        case 7:
-                                            eds.du.Dummy0007 = int.Parse(m.Groups[2].Value) == 1;
-                                            break;
-
-                                    }
-
-                                }
-
-                            }
-
-                        } //dummyusage != null
-
-                        if(ApplicationLayers.dynamicChannels!=null)
-                        {
-
-                        }
-
-                        if(ApplicationLayers.conformanceClass!=null)
-                        {
-
-                        }
-
-                        if(ApplicationLayers.communicationEntityType!=null)
-                        {
-
-                        }
-
-                    } //application layer
-
-                    if(TransportLayers != null)
-                    {
-                        foreach(ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate baud in TransportLayers.PhysicalLayer.baudRate.supportedBaudRate)
-                        {
-
-                            if (baud.value.ToString() == "Item10Kbps")
-                                eds.di.BaudRate_10 = true;
-                            if (baud.value.ToString() == "Item20Kbps")
-                                eds.di.BaudRate_20 = true;
-                            if (baud.value.ToString() == "Item50Kbps")
-                                eds.di.BaudRate_50 = true;
-                            if (baud.value.ToString() == "Item125Kbps")
-                                eds.di.BaudRate_125 = true;
-                            if (baud.value.ToString() == "Item250Kbps")
-                                eds.di.BaudRate_250 = true;
-                            if (baud.value.ToString() == "Item500Kbps")
-                                eds.di.BaudRate_500 = true;
-                            if (baud.value.ToString() == "Item800Kbps")
-                                eds.di.BaudRate_800 = true;
-                            if (baud.value.ToString() == "Item1000Kbps")
-                                eds.di.BaudRate_1000 = true;
-
-                            //fixme "auto-baudRate" is a valid identifier here as well
-
-
-                        }
-
-
-                    } //Transport layer
-
-                    if(NetworkManagment != null)
-                    {
-                        if(NetworkManagment.CANopenGeneralFeatures!=null)
-                        {
-                            eds.di.SimpleBootUpSlave = NetworkManagment.CANopenGeneralFeatures.bootUpSlave;
-                            eds.di.DynamicChannelsSupported = NetworkManagment.CANopenGeneralFeatures.dynamicChannels > 0;
-                            //fix me count of dynamic channles not handled yet eds only has bool
-
-                            eds.di.Granularity = NetworkManagment.CANopenGeneralFeatures.granularity;
-                            eds.di.GroupMessaging = NetworkManagment.CANopenGeneralFeatures.groupMessaging;
-                            eds.di.LSS_Supported = NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave;
-                            eds.di.NrOfRXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfRxPDO;
-                            eds.di.NrOfTXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfTxPDO;
-                            
-                            //extra items
-                            //NetworkManagment.CANopenGeneralFeatures.SDORequestingDevice;
-                            //NetworkManagment.CANopenGeneralFeatures.selfStartingDevice;
-                      
-                    
-
-                        }
-
-                        if(NetworkManagment.CANopenMasterFeatures!=null)
-                        {
-                            eds.di.SimpleBootUpMaster = NetworkManagment.CANopenMasterFeatures.bootUpMaster;
-
-                            //Extra items
-                            //NetworkManagment.CANopenMasterFeatures.configurationManager;
-                            //NetworkManagment.CANopenMasterFeatures.flyingMaster;
-                            //NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster;
-                            //NetworkManagment.CANopenMasterFeatures.SDOManager;
-                        }
-
-                        if(NetworkManagment.deviceCommissioning !=null)
-                        {
-                            eds.di.concreteNodeId = NetworkManagment.deviceCommissioning.nodeID;
-
-                            //Extra items
-                            //NetworkManagment.deviceCommissioning.actualBaudRate;
-                            //NetworkManagment.deviceCommissioning.CANopenManager
-                            //NetworkManagment.deviceCommissioning.networkName
-                            //NetworkManagment.deviceCommissioning.networkNumber
-                            //NetworkManagment.deviceCommissioning.nodeName;
-                           
-                        }
-
-
-                    }
-
-                    foreach (XSDImport.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
-                    {
-                        ODentry entry = new ODentry();
-
-                        UInt16 index;
-
-                        if (obj3.index != null)
-                        {
-                            index = (UInt16)EDSsharp.ConvertToUInt16(obj3.index);
-                            entry.index = index;
-                        }
-                        else
-                            continue; //unparseable
-
-                        if (obj3.name != null)
-                            entry.parameter_name = obj3.name;
-
-                        entry.objecttype = (ObjectType)obj3.objectType;
-
-                        if (obj3.dataType != null)
-                            entry.datatype = (DataType)EDSsharp.ConvertToUInt16(obj3.dataType);
-
-                        if (obj3.defaultValue != null)
-                            entry.defaultvalue = obj3.defaultValue;
-
-                        if (obj3.PDOmappingSpecified)
-                            entry.PDOtype = (PDOMappingType)obj3.PDOmapping;
-
-                        //extra items need adding in
-
-                        //subobj.lowLimit;
-                        //subobj.highLimit;
-                        //subobj.actualValue;
-                        //subobj.denotation;
-                        //subobj.objFlags;
-
-                        entry.uniqueID = obj3.uniqueIDRef;
-
-                        eds.ods.Add(index, entry);
-
-                        if (obj3.CANopenSubObject != null)
-                        {
-                            foreach (XSDImport.CANopenObjectListCANopenObjectCANopenSubObject subobj in obj3.CANopenSubObject)
-                            {
-
-                                DataType datatype;
-                                EDSsharp.AccessType accesstype;
-                                PDOMappingType pdotype;
-
-                                if(subobj.dataType!=null)
-                                {
-                                    datatype = (DataType)EDSsharp.ConvertToUInt16(subobj.dataType);
-                                }
-                                else
-                                {
-                                    datatype = entry.datatype;
-                                }
-
-                                if (subobj.accessTypeSpecified == true)
-                                {
-                                    accesstype = (EDSsharp.AccessType)subobj.accessType;
-                                }
-                                else
-                                {
-                                    accesstype = entry.accesstype;
-                                }
-                                 
-
-                                if(subobj.PDOmappingSpecified==true)
-                                {
-                                    pdotype = (PDOMappingType)subobj.PDOmapping;
-                                }
-                                else
-                                {
-                                    pdotype = entry.PDOtype;
-                                }
-
-
-                                ODentry subentry = new ODentry(subobj.name, index, subobj.subIndex[0], datatype, subobj.defaultValue, accesstype , pdotype, entry);
-
-
-                                //extra items
-
-                                //subobj.lowLimit;
-                                //subobj.highLimit;
-                                //subobj.actualValue;
-                                //subobj.denotation;
-                                //subobj.objFlags;
- 
-                                subentry.uniqueID = subobj.uniqueIDRef;
-
-                                entry.subobjects.Add(subobj.subIndex[0], subentry);
-
-                            }
-                        }
-
-
-                    }
+                    if (obj2.GetType() == typeof(ProfileBody_CommunicationNetwork_CANopenNetworkManagement))
+                        NetworkManagment = (ProfileBody_CommunicationNetwork_CANopenNetworkManagement)obj2;
 
                 }
 
-                //Process Device after network so we already have the ODEntries populated then can match bu uniqueID
-
-                //ProfileBody_Device_CANopen
-                if (body_device!=null)
+                if (ApplicationLayers != null)
                 {
-                    ProfileBody_Device_CANopen obj = body_device;
 
-                    if (obj.DeviceIdentity != null)
+                    string vendorID = "";
+                    string deviceFamily = "";
+                    string productID = "";
+                    string version = "";
+                    DateTime buildDate;
+                    string specificationRevision = "";
+
+                    if (ApplicationLayers.identity != null)
                     {
-                        eds.di.ProductName = obj.DeviceIdentity.productName.Value;
-                        eds.di.ProductNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.productID.Value);
-                        eds.di.VendorName = obj.DeviceIdentity.vendorName.Value;
-                        eds.di.VendorNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.vendorID.Value);
-
-                        foreach (object o in obj.DeviceIdentity.productText.Items)
+                        if (ApplicationLayers.identity.vendorID != null)
                         {
-                            //this is another g_label affair
-
-                            if (o.GetType() == typeof(vendorTextDescription))
-                            {
-                                eds.fi.Description = ((vendorTextDescription)o).Value;
-                            }
-
-                            if (o.GetType() == typeof(vendorTextDescriptionRef))
-                            {
-                            }
-                            if (o.GetType() == typeof(vendorTextLabel))
-                            {
-                            }
-                            if (o.GetType() == typeof(vendorTextLabelRef))
-                            {
-                            }
+                            vendorID = ApplicationLayers.identity.vendorID.Value;
                         }
 
-                        if (obj.fileCreationTimeSpecified)
+                        if (ApplicationLayers.identity.deviceFamily != null)
                         {
-                            eds.fi.CreationDateTime = obj.fileCreationDate.Add(obj.fileCreationTime.TimeOfDay);
-                            eds.fi.CreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
-                            eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
-
+                            //deviceFamily = ApplicationLayers.identity.deviceFamily.Items[]
+                            //not really sure how to handle this. its a list of g_labels
+                            //these contain label, description, language, URi etc could do with a simple class
+                            //to wrap these in as they are used in a number of places
                         }
 
-                        if (obj.fileModificationDateSpecified)
+                        if (ApplicationLayers.identity.productID != null)
                         {
-                            eds.fi.ModificationDateTime = obj.fileModificationDate.Add(obj.fileCreationTime.TimeOfDay);
-                            eds.fi.ModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
-                            eds.fi.ModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
-
+                            productID = ApplicationLayers.identity.productID.Value;
                         }
 
-                        eds.fi.ModifiedBy = obj.fileModifiedBy;
-                        eds.fi.CreatedBy = obj.fileCreator;
-                    }
+                        if (ApplicationLayers.identity.buildDate != null)
+                        {
+                            buildDate = ApplicationLayers.identity.buildDate;
+                        }
 
-                    if(obj.DeviceManager!=null)
-                    {
+                        if (ApplicationLayers.identity.specificationRevision != null)
+                        {
+                            specificationRevision = ApplicationLayers.identity.specificationRevision.Value;
+                        }
 
                     }
 
-                    if(obj.DeviceFunction!=null)
+                    if (ApplicationLayers.dummyUsage != null)
                     {
-
-                    }
-
-                    if(obj.ApplicationProcess!=null)
-                    {
-
-                        if(obj.ApplicationProcess[0]!=null)
+                        foreach (ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy dummy in ApplicationLayers.dummyUsage)
                         {
-                            foreach (parameter param in obj.ApplicationProcess[0].parameterList)
+                            string pat = @"Dummy([0-9]{4})([0-1])";
+                            Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                            Match m = r.Match(dummy.entry.ToString());
+
+
+                            if (m.Success)
                             {
 
-                                //match unique ID
 
+                                int index = int.Parse(m.Groups[1].Value);
 
-                                ODentry od = eds.getobject(param.uniqueID);
+                                switch (index)
+                                {
+                                    case 1:
+                                        eds.du.Dummy0001 = int.Parse(m.Groups[2].Value) == 1;
+                                        break;
+                                    case 2:
+                                        eds.du.Dummy0002 = int.Parse(m.Groups[2].Value) == 1;
+                                        break;
+                                    case 3:
+                                        eds.du.Dummy0003 = int.Parse(m.Groups[2].Value) == 1;
+                                        break;
+                                    case 4:
+                                        eds.du.Dummy0004 = int.Parse(m.Groups[2].Value) == 1;
+                                        break;
+                                    case 5:
+                                        eds.du.Dummy0005 = int.Parse(m.Groups[2].Value) == 1;
+                                        break;
+                                    case 6:
+                                        eds.du.Dummy0006 = int.Parse(m.Groups[2].Value) == 1;
+                                        break;
+                                    case 7:
+                                        eds.du.Dummy0007 = int.Parse(m.Groups[2].Value) == 1;
+                                        break;
 
-                                if (od == null)
-                                    continue;
-
-                                //fix me defaultValue containes other stuff we might want
-                                if(param.defaultValue!=null)
-                                    od.defaultvalue = param.defaultValue.value;
-                                
-
-
-
-
-
+                                }
 
                             }
 
                         }
 
-                        
+                    } //dummyusage != null
 
-                    
+                    if (ApplicationLayers.dynamicChannels != null)
+                    {
+
+                    }
+
+                    if (ApplicationLayers.conformanceClass != null)
+                    {
+
+                    }
+
+                    if (ApplicationLayers.communicationEntityType != null)
+                    {
+
+                    }
+
+                } //application layer
+
+                if (TransportLayers != null)
+                {
+                    foreach (ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate baud in TransportLayers.PhysicalLayer.baudRate.supportedBaudRate)
+                    {
+
+                        if (baud.value.ToString() == "Item10Kbps")
+                            eds.di.BaudRate_10 = true;
+                        if (baud.value.ToString() == "Item20Kbps")
+                            eds.di.BaudRate_20 = true;
+                        if (baud.value.ToString() == "Item50Kbps")
+                            eds.di.BaudRate_50 = true;
+                        if (baud.value.ToString() == "Item125Kbps")
+                            eds.di.BaudRate_125 = true;
+                        if (baud.value.ToString() == "Item250Kbps")
+                            eds.di.BaudRate_250 = true;
+                        if (baud.value.ToString() == "Item500Kbps")
+                            eds.di.BaudRate_500 = true;
+                        if (baud.value.ToString() == "Item800Kbps")
+                            eds.di.BaudRate_800 = true;
+                        if (baud.value.ToString() == "Item1000Kbps")
+                            eds.di.BaudRate_1000 = true;
+
+                        //fixme "auto-baudRate" is a valid identifier here as well
+
+
+                    }
+
+
+                } //Transport layer
+
+                if (NetworkManagment != null)
+                {
+                    if (NetworkManagment.CANopenGeneralFeatures != null)
+                    {
+                        eds.di.SimpleBootUpSlave = NetworkManagment.CANopenGeneralFeatures.bootUpSlave;
+                        eds.di.DynamicChannelsSupported = NetworkManagment.CANopenGeneralFeatures.dynamicChannels > 0;
+                        //fix me count of dynamic channles not handled yet eds only has bool
+
+                        eds.di.Granularity = NetworkManagment.CANopenGeneralFeatures.granularity;
+                        eds.di.GroupMessaging = NetworkManagment.CANopenGeneralFeatures.groupMessaging;
+                        eds.di.LSS_Supported = NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave;
+                        eds.di.NrOfRXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfRxPDO;
+                        eds.di.NrOfTXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfTxPDO;
+
+                        //fixme extra items
+                        //NetworkManagment.CANopenGeneralFeatures.SDORequestingDevice;
+                        //NetworkManagment.CANopenGeneralFeatures.selfStartingDevice;
+
+                    }
+
+                    if (NetworkManagment.CANopenMasterFeatures != null)
+                    {
+                        eds.di.SimpleBootUpMaster = NetworkManagment.CANopenMasterFeatures.bootUpMaster;
+
+                        //fixme Extra items
+                        //NetworkManagment.CANopenMasterFeatures.configurationManager;
+                        //NetworkManagment.CANopenMasterFeatures.flyingMaster;
+                        //NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster;
+                        //NetworkManagment.CANopenMasterFeatures.SDOManager;
+                    }
+
+                    if (NetworkManagment.deviceCommissioning != null)
+                    {
+                        eds.dc.NodeId = NetworkManagment.deviceCommissioning.nodeID;
+                        eds.dc.BaudRate = Convert.ToUInt16(NetworkManagment.deviceCommissioning.actualBaudRate);
+                        eds.dc.CANopenManager = NetworkManagment.deviceCommissioning.CANopenManager;
+                        eds.dc.NetworkName = NetworkManagment.deviceCommissioning.networkName;
+                        eds.dc.NetNumber = Convert.ToUInt16(NetworkManagment.deviceCommissioning.networkNumber);
+                        eds.dc.NodeName = NetworkManagment.deviceCommissioning.nodeName;
+
+                    }
+
+
+                }
+
+                foreach (XSDImport.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
+                {
+                    ODentry entry = new ODentry();
+
+                    UInt16 index;
+
+                    if (obj3.index != null)
+                    {
+                        index = (UInt16)EDSsharp.ConvertToUInt16(obj3.index);
+                        entry.index = index;
+                    }
+                    else
+                        continue; //unparseable
+
+                    if (obj3.name != null)
+                        entry.parameter_name = obj3.name;
+
+                    entry.objecttype = (ObjectType)obj3.objectType;
+
+                    if (obj3.dataType != null)
+                        entry.datatype = (DataType)EDSsharp.ConvertToUInt16(obj3.dataType);
+
+                    if (obj3.defaultValue != null)
+                        entry.defaultvalue = obj3.defaultValue;
+
+                    if (obj3.PDOmappingSpecified)
+                        entry.PDOtype = (PDOMappingType)obj3.PDOmapping;
+
+                    if (obj3.highLimit != null)
+                        entry.HighLimit = obj3.highLimit;
+
+                    if (obj3.lowLimit != null)
+                        entry.LowLimit = obj3.lowLimit;
+
+                    if (obj3.actualValue != null)
+                        entry.actualvalue = obj3.actualValue;
+
+                    if (obj3.denotation != null)
+                        entry.denotation = obj3.denotation;
+
+                    //FIXME im not sure this is correct
+                    if (obj3.objFlags != null)
+                        entry.ObjFlags = obj3.objFlags[0];
+
+                    entry.uniqueID = obj3.uniqueIDRef;
+
+                    eds.ods.Add(index, entry);
+
+                    if (obj3.CANopenSubObject != null)
+                    {
+                        foreach (XSDImport.CANopenObjectListCANopenObjectCANopenSubObject subobj in obj3.CANopenSubObject)
+                        {
+
+                            DataType datatype;
+                            EDSsharp.AccessType accesstype;
+                            PDOMappingType pdotype;
+
+                            if (subobj.dataType != null)
+                            {
+                                datatype = (DataType)EDSsharp.ConvertToUInt16(subobj.dataType);
+                            }
+                            else
+                            {
+                                datatype = entry.datatype;
+                            }
+
+                            if (subobj.accessTypeSpecified == true)
+                            {
+                                accesstype = (EDSsharp.AccessType)subobj.accessType;
+                            }
+                            else
+                            {
+                                accesstype = entry.accesstype;
+                            }
+
+
+                            if (subobj.PDOmappingSpecified == true)
+                            {
+                                pdotype = (PDOMappingType)subobj.PDOmapping;
+                            }
+                            else
+                            {
+                                pdotype = entry.PDOtype;
+                            }
+
+
+                            ODentry subentry = new ODentry(subobj.name, index, subobj.subIndex[0], datatype, subobj.defaultValue, accesstype, pdotype, entry);
+
+
+                            //extra items
+
+                            if(subobj.lowLimit!=null)
+                                subentry.LowLimit = subobj.lowLimit;
+
+                            if(subobj.highLimit!=null)
+                                subentry.HighLimit = subobj.highLimit;
+
+                            if(subobj.actualValue!=null)
+                                subentry.actualvalue = subobj.actualValue;
+
+                            if(subobj.denotation!=null)
+                                subentry.denotation = subobj.denotation;
+
+                            if(subobj.objFlags!=null)
+                                subentry.ObjFlags = subobj.objFlags[0];
+
+
+                            subentry.uniqueID = subobj.uniqueIDRef;
+
+                            entry.subobjects.Add(subobj.subIndex[0], subentry);
+
+                        }
+                    }
+
+
+                }
+
+            }
+
+            //Process Device after network so we already have the ODEntries populated then can match bu uniqueID
+
+            //ProfileBody_Device_CANopen
+            if (body_device != null)
+            {
+                ProfileBody_Device_CANopen obj = body_device;
+
+                if (obj.DeviceIdentity != null)
+                {
+                    eds.di.ProductName = obj.DeviceIdentity.productName.Value;
+                    eds.di.ProductNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.productID.Value);
+                    eds.di.VendorName = obj.DeviceIdentity.vendorName.Value;
+                    eds.di.VendorNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.vendorID.Value);
+
+                    foreach (object o in obj.DeviceIdentity.productText.Items)
+                    {
+                        //this is another g_label affair
+
+                        if (o.GetType() == typeof(vendorTextDescription))
+                        {
+                            eds.fi.Description = ((vendorTextDescription)o).Value;
+                        }
+
+                        if (o.GetType() == typeof(vendorTextDescriptionRef))
+                        {
+                        }
+                        if (o.GetType() == typeof(vendorTextLabel))
+                        {
+                        }
+                        if (o.GetType() == typeof(vendorTextLabelRef))
+                        {
+                        }
+                    }
+
+                    if (obj.fileCreationTimeSpecified)
+                    {
+                        eds.fi.CreationDateTime = obj.fileCreationDate.Add(obj.fileCreationTime.TimeOfDay);
+                        eds.fi.CreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
+                        eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
+
+                    }
+
+                    if (obj.fileModificationDateSpecified)
+                    {
+                        eds.fi.ModificationDateTime = obj.fileModificationDate.Add(obj.fileCreationTime.TimeOfDay);
+                        eds.fi.ModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
+                        eds.fi.ModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
+
+                    }
+
+                    eds.fi.ModifiedBy = obj.fileModifiedBy;
+                    eds.fi.CreatedBy = obj.fileCreator;
+                }
+
+                if (obj.DeviceManager != null)
+                {
+
+                }
+
+                if (obj.DeviceFunction != null)
+                {
+
+                }
+
+                if (obj.ApplicationProcess != null)
+                {
+
+                    if (obj.ApplicationProcess[0] != null)
+                    {
+                        foreach (parameter param in obj.ApplicationProcess[0].parameterList)
+                        {
+
+                            //match unique ID
+
+
+                            ODentry od = eds.getobject(param.uniqueID);
+
+                            if (od == null)
+                                continue;
+
+                            //fix me defaultValue containes other stuff we might want
+                            if (param.defaultValue != null)
+                                od.defaultvalue = param.defaultValue.value;
+
+
+
+
+
+
+
+                        }
+
+                    }
+
+
+
+
 
                 }
 

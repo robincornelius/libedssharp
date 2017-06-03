@@ -19,9 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace libEDSsharp
@@ -36,7 +33,7 @@ namespace libEDSsharp
 
             file = new StreamWriter(filepath, false);
 
-            file.Write("<!DOCTYPE html><html><head><title>Network PDO report</title></head><body>");
+            file.Write("<!DOCTYPE html><html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /> <title>Network PDO report</title></head><body>");
 
             file.Write(string.Format("<h1>PDO Network Documementation </h1>"));
 
@@ -46,7 +43,7 @@ namespace libEDSsharp
 
             foreach (EDSsharp eds in network)
             {
-                write2linetablerow(eds.di.concreteNodeId.ToString(), eds.di.ProductName);
+                write2linetablerow(eds.dc.NodeId.ToString(), eds.di.ProductName);
             }
 
             file.Write("</table>");
@@ -167,7 +164,7 @@ namespace libEDSsharp
                                 }
 
 
-                                file.Write(string.Format("<tr> <td>0x{0:x2}</td> <td>{1}</td> <td>0x{2:x4}/0x{3:x2}</td><td>{4}</td> <td>{5}</td><td>", eds.di.concreteNodeId, eds.di.ProductName, index, subindex, name, size));
+                                file.Write(string.Format("<tr> <td>0x{0:x2}</td> <td>{1}</td> <td>0x{2:x4}/0x{3:x2}</td><td>{4}</td> <td>{5}</td><td>", eds.dc.NodeId, eds.di.ProductName, index, subindex, name, size));
 
 
                                 //find all recievers here
@@ -281,7 +278,7 @@ namespace libEDSsharp
                                                             }
 
 
-                                                            file.Write(string.Format("<tr> <td>0x{0:x2}</td> <td>{1}</td> <td>0x{2:x4}/0x{3:x2}</td> <td>{4}</td><td>{5}{6}</td></tr>", eds2.di.concreteNodeId, eds2.di.ProductName, index2, subindex2, name2, size2, sizemsg));
+                                                            file.Write(string.Format("<tr> <td>0x{0:x2}</td> <td>{1}</td> <td>0x{2:x4}/0x{3:x2}</td> <td>{4}</td><td>{5}{6}</td></tr>", eds2.dc.NodeId, eds2.di.ProductName, index2, subindex2, name2, size2, sizemsg));
 
                                                         }
 
@@ -337,3 +334,4 @@ namespace libEDSsharp
 
     }
 }
+

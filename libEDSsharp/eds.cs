@@ -97,8 +97,23 @@ namespace libEDSsharp
         @default=4,
     }
 
-  
+
     public class EdsExport : Attribute
+    {
+        public UInt16 maxlength;
+
+        public EdsExport()
+        {
+        }
+
+        public EdsExport(UInt16 maxlength)
+        {
+            this.maxlength = maxlength;
+        }
+
+    }
+
+    public class DcfExport : EdsExport
     {
     }
 
@@ -108,6 +123,12 @@ namespace libEDSsharp
 
         protected string infoheader;
         protected string edssection;
+
+        public enum filetype
+        {
+            File_EDS,
+            File_DCF
+        }
 
         public virtual void parse(Dictionary<string, string> section)
         {
@@ -119,6 +140,9 @@ namespace libEDSsharp
             foreach (FieldInfo f in fields)
             {
                 if(Attribute.IsDefined(f, typeof(EdsExport)))
+                    getField(f.Name, f.Name);
+
+                if (Attribute.IsDefined(f, typeof(DcfExport)))
                     getField(f.Name, f.Name);
             }
 
@@ -206,7 +230,7 @@ namespace libEDSsharp
             return msg;
         }
 
-        public void write(StreamWriter writer)
+        public void write(StreamWriter writer, filetype ft)
         {
             writer.WriteLine("[" + edssection + "]");
             Type tx = this.GetType();
@@ -215,7 +239,10 @@ namespace libEDSsharp
             foreach (FieldInfo f in fields)
             {
 
-                if (!Attribute.IsDefined(f, typeof(EdsExport)))
+                if ((ft==filetype.File_EDS) && (!Attribute.IsDefined(f, typeof(EdsExport))))
+                    continue;
+
+                if ((ft == filetype.File_DCF) && (!(Attribute.IsDefined(f, typeof(DcfExport)) || Attribute.IsDefined(f, typeof(EdsExport)))))
                     continue;
 
                 if (f.GetValue(this) == null)
@@ -351,7 +378,7 @@ namespace libEDSsharp
     public class Comments
     {
 
-        public List<string> comments;
+        public List<string> comments = new List<string>();
         public string infoheader = "Comments";
         public string edssection = "Comments";
 
@@ -397,9 +424,10 @@ namespace libEDSsharp
 
         public void write(StreamWriter writer)
         {
-            //Comments block is optional so if there are no comments do not include it
-            if(comments==null || comments.Count==0)
-                return;
+            if(comments == null)
+            {
+                comments = new List<string>();
+            }
 
             writer.WriteLine("[" + edssection + "]");
 
@@ -458,14 +486,16 @@ namespace libEDSsharp
         [EdsExport]
         public byte FileRevision;//=1
 
-        
+        [DcfExport]
+        public string LastEDS = "";
+
         public byte EDSVersionMajor;//=4.0
         
         public byte EDSVersionMinor;//=4.0
         [EdsExport]
         public string EDSVersion="";
 
-        [EdsExport]
+        [EdsExport(maxlength=243)]
         public string Description="";//= //max 243 characters
 
         public DateTime CreationDateTime;//
@@ -474,7 +504,7 @@ namespace libEDSsharp
         [EdsExport]
         public string CreationDate="";
 
-        [EdsExport]
+        [EdsExport(maxlength = 245)]
         public string CreatedBy = "";//=CANFestival //max245
         
         public DateTime ModificationDateTime;//
@@ -484,7 +514,7 @@ namespace libEDSsharp
         [EdsExport]
         public string ModificationDate="";
 
-        [EdsExport]
+        [EdsExport(maxlength = 244)]
         public string ModifiedBy="";//=CANFestival //max244
 
         //Folder CO_OD.c and CO_OD.h will be exported into
@@ -608,7 +638,7 @@ namespace libEDSsharp
         public bool DynamicChannelsSupported;
 
         [EdsExport]
-        public bool CompactPDO;
+        public byte CompactPDO;
 
         [EdsExport]
         public bool GroupMessaging;
@@ -634,11 +664,47 @@ namespace libEDSsharp
             infoheader = "CAN OPEN DeviceInfo";
             edssection = "DeviceInfo";
         }
-
-        public int concreteNodeId = -1;
-
     }
 
+
+    public class DeviceCommissioning : InfoSection
+    {
+
+        public DeviceCommissioning()
+        {
+            infoheader = "CAN OPEN DeviceCommissioning";
+            edssection = "DeviceCommissioning";
+        }
+
+        public DeviceCommissioning(Dictionary<string, string> section)
+        {
+            infoheader = "CAN OPEN DeviceCommissioning";
+            edssection = "DeviceCommissioning";
+            parse(section);
+        }
+
+        [DcfExport]
+        public byte NodeId = 0;
+
+        [DcfExport(maxlength = 246)]
+        public string NodeName; //Max 246 characters
+
+        [DcfExport]
+        public UInt16 BaudRate;
+
+        [DcfExport]
+        public UInt32 NetNumber;
+
+        [DcfExport(maxlength = 243)]
+        public string NetworkName; //Max 243 characters
+
+        [DcfExport]
+        public bool CANopenManager;  //1 = CANopen manager, 0 or missing = not the manager
+
+        [DcfExport]
+        public UInt32 LSS_SerialNumber;
+
+    }
 
     public class ODentry
     {
@@ -657,14 +723,35 @@ namespace libEDSsharp
 
         [EdsExport]
         public string parameter_name = "";
+
+        [DcfExport]
+        public string denotation = "";
+
         [EdsExport]
         public ObjectType objecttype;
         [EdsExport]
         public DataType datatype;
         [EdsExport]
         public EDSsharp.AccessType accesstype;
+
         [EdsExport]
         public string defaultvalue = "";
+
+        [EdsExport]
+        public string LowLimit = "";
+
+        [EdsExport]
+        public string HighLimit = "";
+
+        [DcfExport]
+        public string actualvalue = "";
+
+        [EdsExport]
+        public Byte ObjFlags = 0;
+
+        [EdsExport]
+        public byte CompactSubObj = 0;
+
         [EdsExport]
         public bool PDOMapping
         {
@@ -762,7 +849,33 @@ namespace libEDSsharp
             }
         }
 
-        public void write(StreamWriter writer)
+        /// <summary>
+        /// If data type is an octect string we must remove all spaces when writing out to a EDS/DCF file
+        /// </summary>
+        /// <param name="value">Value to be processed</param>
+        /// <returns>value if not octet string or value with spaces removed if octet string</returns>
+        public string formatoctetstring(string value)
+        {
+            DataType dt = datatype;
+            if (dt == DataType.UNKNOWN && this.parent != null)
+                dt = parent.datatype;
+
+            string ret = value;
+
+            if (dt == DataType.OCTET_STRING)
+            {
+                ret = value.Replace(" ", "");
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Write out this Object dictionary entry to an EDS/DCF file using correct formatting
+        /// </summary>
+        /// <param name="writer">Handle to the stream writer to write to</param>
+        /// <param name="ft">File type being written</param>
+        public void write(StreamWriter writer, InfoSection.filetype ft)
         {
 
             if (parent!=null)
@@ -775,6 +888,12 @@ namespace libEDSsharp
             }
 
             writer.WriteLine(string.Format("ParameterName={0}", parameter_name));
+
+            if(ft == InfoSection.filetype.File_DCF)
+            {
+                writer.WriteLine(string.Format("Denotation={0}", denotation));
+            }
+
             writer.WriteLine(string.Format("ObjectType=0x{0:X}", (int)objecttype));
             writer.WriteLine(string.Format(";StorageLocation={0}",location.ToString()));
 
@@ -796,8 +915,34 @@ namespace libEDSsharp
                 writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)dt));
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
-                writer.WriteLine(string.Format("DefaultValue={0}", defaultvalue));
+
+                if(HighLimit != "")
+                {
+                    writer.WriteLine(string.Format("HighLimit={0}", formatoctetstring(HighLimit)));
+                }
+
+                if (LowLimit != "")
+                {
+                    writer.WriteLine(string.Format("LowLimit={0}", formatoctetstring(LowLimit)));
+                }
+    
+                writer.WriteLine(string.Format("DefaultValue={0}", formatoctetstring(defaultvalue)));
+
+
+                //TODO If the ObjectType is domain (0x2) the value of the object may be stored in a file,UploadFile and DownloadFile
+                if (ft == InfoSection.filetype.File_DCF)
+                {
+                    writer.WriteLine(string.Format("ParameterValue={0}", formatoctetstring(actualvalue)));
+                }
+
                 writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
+            }
+
+            //ObjectFlags is always optional (Page 15, DSP306) and used for DCF writing to nodes
+            //also recommended not to write if it is already 0
+            if(ObjFlags != 0)
+            {
+                writer.WriteLine(string.Format("ObjFlags={0}", ObjFlags));
             }
 
             writer.WriteLine("");
@@ -827,10 +972,13 @@ namespace libEDSsharp
                 case DataType.BOOLEAN:
                 case DataType.UNSIGNED8:
                 case DataType.INTEGER8:
+                case DataType.VISIBLE_STRING:
+                case DataType.OCTET_STRING:
                     return 1;
 
                 case DataType.INTEGER16:
                 case DataType.UNSIGNED16:
+                case DataType.UNICODE_STRING:
                     return 2;
 
                 case DataType.UNSIGNED24:
@@ -860,28 +1008,6 @@ namespace libEDSsharp
                 case DataType.UNSIGNED64:
                 case DataType.REAL64:
                     return 8;
-
-
-                case DataType.VISIBLE_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return defaultvalue.Unescape().Length;                      
-                    }
-
-                case DataType.OCTET_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
-                    }
-
-                case DataType.UNICODE_STRING:
-                    {
-                        if (defaultvalue == null)
-                            return 0;
-                        return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
-                    }
 
                 case DataType.DOMAIN:
                     return 0;
@@ -939,6 +1065,35 @@ namespace libEDSsharp
 
             return 0;
         }
+
+        public int lengthofstring()
+        {
+            string defaultvalue = this.defaultvalue;
+            if (defaultvalue == null)
+                return 0;
+
+            switch (this.datatype)
+            {
+                case DataType.VISIBLE_STRING:
+                    {
+                        return defaultvalue.Unescape().Length;
+                    }
+
+                case DataType.OCTET_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 2;
+                    }
+
+                case DataType.UNICODE_STRING:
+                    {
+                        return Regex.Replace(defaultvalue, @"\s", "").Length / 4;
+                    }
+                default:
+                    {
+                        return 0;
+                    }
+            }
+        }
     }
 
     public class EDSsharp
@@ -992,6 +1147,7 @@ namespace libEDSsharp
         public ManufacturerObjects mo;
         public Comments c;
         public Dummyusage du;
+        public DeviceCommissioning dc;
 
         public UInt16 NodeId = 0;
 
@@ -1012,6 +1168,7 @@ namespace libEDSsharp
             md = new MandatoryObjects();
             oo = new OptionalObjects();
             mo = new ManufacturerObjects();
+            dc = new DeviceCommissioning();
             c = new Comments();
 
 
@@ -1053,63 +1210,65 @@ namespace libEDSsharp
 
         public void parseline(string linex)
         {
-            string key = "";
-            string value = "";
 
-            //Special Handling of custom fields
-            if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != 0)
-            {
-                if(sectionname!=null)
+                string key = "";
+                string value = "";
+
+                //Special Handling of custom fields
+                if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != -1)
                 {
-                   if( eds.ContainsKey(sectionname))
+                    if (sectionname != null)
                     {
-                        //could be more generic
-                        eds[sectionname].Add("StorageLocation", value);
+                        if (!eds.ContainsKey(sectionname))
+                        {
+                            //could be more generic
+                            eds[sectionname].Add("StorageLocation", value);
+                        }
+                    }
+
+                    return;
+                }
+
+                string line = linex.TrimStart(';');
+
+                //extract sections
+                {
+                    string pat = @"^\[([a-z0-9]+)\]";
+
+                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                    Match m = r.Match(line);
+                    if (m.Success)
+                    {
+                        Group g = m.Groups[1];
+                        sectionname = g.ToString();
                     }
                 }
 
-                return;
-            }
-
-            string line = linex.TrimStart(';');
-
-            //extract sections
-            {
-                string pat = @"^\[([a-z0-9]+)\]";
-
-                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                Match m = r.Match(line);
-                if (m.Success)
+                //extract keyvalues
                 {
-                    Group g = m.Groups[1];
-                    sectionname = g.ToString();
-                }
-            }
+                    //Bug #70 Eat whitespace!
+                    string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
 
-            //extract keyvalues
-            {
-                //Bug #70 Eat whitespace!
-                string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
-
-                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                Match m = r.Match(line);
-                if (m.Success)
-                {
-
-                    key = m.Groups[1].ToString();
-                    value = m.Groups[2].ToString();
-
-                    value = value.Trim(' ','\t');
-
-                    if (!eds.ContainsKey(sectionname))
+                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                    Match m = r.Match(line);
+                    if (m.Success)
                     {
-                        eds.Add(sectionname, new Dictionary<string, string>());
+
+                        key = m.Groups[1].ToString();
+                        value = m.Groups[2].ToString();
+                        value = value.TrimEnd(' ','\t','\n','\r');
+
+                        if (!eds.ContainsKey(sectionname))
+                        {
+                            eds.Add(sectionname, new Dictionary<string, string>());
+                        }
+
+                        eds[sectionname].Add(key, value);
+
                     }
-
-                    eds[sectionname].Add(key, value);
-
                 }
-            }
+            
+           
         }
 
         public void parseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
@@ -1125,10 +1284,15 @@ namespace libEDSsharp
 
                 ODentry od = new ODentry();
 
+                //Indexes in the EDS are always in hex format without the pre 0x
+                od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
+
+                //Parameter name, mandatory always
                 if (!kvp.Value.ContainsKey("ParameterName"))
                     throw new ParameterException("Missing required field ParameterName on" + section);
                 od.parameter_name = kvp.Value["ParameterName"];
 
+                //Object type, assumed to be VAR unless specified
                 if (kvp.Value.ContainsKey("ObjectType"))
                 {
                     int type = Convert.ToInt16(kvp.Value["ObjectType"], getbase(kvp.Value["ObjectType"]));
@@ -1139,9 +1303,21 @@ namespace libEDSsharp
                     od.objecttype = ObjectType.VAR;
                 }
 
-                //Indexes in the EDS are always in hex format without the pre 0x
-                od.index = Convert.ToUInt16(m.Groups[1].ToString(), 16);
+                if(kvp.Value.ContainsKey("CompactSubObj"))
+                {
+                    od.CompactSubObj = Convert.ToByte(kvp.Value["CompactSubObj"]);
+                }
 
+                if(kvp.Value.ContainsKey("ObjFlags"))
+                {
+                    od.ObjFlags = Convert.ToByte(kvp.Value["ObjFlags"]);
+                }
+                else
+                {
+                    od.ObjFlags = 0;
+                }
+
+                //Access Type
                 if(kvp.Value.ContainsKey("StorageLocation"))
                 {
                     Enum.TryParse(kvp.Value["StorageLocation"], out od.location);
@@ -1149,6 +1325,26 @@ namespace libEDSsharp
 
                 if (od.objecttype == ObjectType.VAR)
                 {
+
+                    if (kvp.Value.ContainsKey("ParameterValue"))
+                    {
+                        od.actualvalue = kvp.Value["ParameterValue"];
+                    }
+
+                    if (kvp.Value.ContainsKey("HighLimit"))
+                    {
+                        od.HighLimit = kvp.Value["HighLimit"];
+                    }
+
+                    if (kvp.Value.ContainsKey("LowLimit"))
+                    {
+                        od.LowLimit = kvp.Value["LowLimit"];
+                    }
+
+                    if (kvp.Value.ContainsKey("Denotation"))
+                    {
+                        od.denotation = kvp.Value["Denotation"];
+                    }
 
                     if (m.Groups[3].Length != 0)
                     {
@@ -1158,16 +1354,14 @@ namespace libEDSsharp
                         ods[od.index].subobjects.Add(od.subindex, od);
                     }
 
-
                     if (!kvp.Value.ContainsKey("DataType"))
-                        throw new ParameterException("Missing required field DataType on" + section);
-
-                    od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], getbase(kvp.Value["DataType"]));
-
+                            throw new ParameterException("Missing required field DataType on" + section);
+                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], getbase(kvp.Value["DataType"]));
+                    
                     if (!kvp.Value.ContainsKey("AccessType"))
                         throw new ParameterException("Missing required AccessType on" + section);
 
-                    string accesstype = kvp.Value["AccessType"];
+                    string accesstype = kvp.Value["AccessType"].ToLower();
 
                     if (Enum.IsDefined(typeof(AccessType), accesstype))
                     {
@@ -1189,7 +1383,71 @@ namespace libEDSsharp
                         if (pdo == true)
                             od.PDOtype = PDOMappingType.optional;
                     }
-                       
+
+                }
+
+              
+                if(od.objecttype==ObjectType.REC|| od.objecttype==ObjectType.ARRAY || od.objecttype==ObjectType.DEFSTRUCT)
+                {
+
+                    if (od.CompactSubObj != 0)
+                    {
+                        if (!kvp.Value.ContainsKey("DataType"))
+                            throw new ParameterException("Missing required field DataType on" + section);
+                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], getbase(kvp.Value["DataType"]));
+
+                        if (!kvp.Value.ContainsKey("AccessType"))
+                            throw new ParameterException("Missing required AccessType on" + section);
+                        string accesstype = kvp.Value["AccessType"];
+                        if (Enum.IsDefined(typeof(AccessType), accesstype))
+                        {
+                            od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), accesstype);
+                        }
+                        else
+                        {
+                            throw new ParameterException("Unknown AccessType on" + section);
+                        }
+
+                        //now we generate CompactSubObj number of var objects below this parent
+
+                        if(od.CompactSubObj>=0xfe)
+                        {
+                            od.CompactSubObj = 0xfe;
+                        }
+
+                        ODentry subi = new ODentry("NrOfObjects", od.index, 0x00, DataType.UNSIGNED8, String.Format("0x{0:x2}",od.CompactSubObj), AccessType.ro, PDOMappingType.no, od);      
+                        od.subobjects.Add(0x00, subi);
+
+                        for (int x=1; x<= od.CompactSubObj; x++)
+                        {
+                            string parameter_name = string.Format("{0}{1:x2}", od.parameter_name, x );
+                            ODentry sub = new ODentry(parameter_name, od.index, (byte)x, od.datatype, od.defaultvalue, od.accesstype, od.PDOtype, od);
+
+                            if (kvp.Value.ContainsKey("HighLimit"))
+                                sub.HighLimit = kvp.Value["HighLimit"];
+
+                            if (kvp.Value.ContainsKey("LowLimit"))
+                                sub.HighLimit = kvp.Value["LowLimit"];
+
+                            od.subobjects.Add((ushort)(x ), sub);
+                        }
+
+                    }
+                    else
+                    {
+
+                    
+
+                    }
+                }
+
+                if(od.objecttype == ObjectType.DOMAIN)
+                {
+                    od.datatype = DataType.DOMAIN;
+                    od.accesstype = AccessType.rw;
+
+                    if (kvp.Value.ContainsKey("DefaultValue"))
+                        od.defaultvalue = kvp.Value["DefaultValue"];
 
                 }
 
@@ -1213,21 +1471,50 @@ namespace libEDSsharp
                     parseline(linex);
                 }
 
+
+                di = new DeviceInfo(eds["DeviceInfo"]);
+
                 foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
                 {
                     parseEDSentry(kvp);
                 }
 
                 fi = new FileInfo(eds["FileInfo"]);
-                di = new DeviceInfo(eds["DeviceInfo"]);
                 du = new Dummyusage(eds["DummyUsage"]);
                 md = new MandatoryObjects(eds["MandatoryObjects"]);
                 oo = new OptionalObjects(eds["OptionalObjects"]);
                 mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
+
+                //Only DCF not EDS files
+                dc = new DeviceCommissioning();
+                if(eds.ContainsKey("DeviceCommissioning"))
+                {
+                    dc.parse(eds["DeviceCommissioning"]);
+                }
+                
                 c = new Comments();
 
                 if (eds.ContainsKey("Comments"))
                     c.parse(eds["Comments"]);
+
+
+                //COMPACT PDO
+
+                if (di.CompactPDO != 0)
+                {
+
+                    for (UInt16 index = 0x1400; index < 0x1600; index++)
+                    {
+                        applycompactPDO(index);
+                    }
+
+                    for (UInt16 index = 0x1800; index < 0x2000;index ++)
+                    {
+                        applycompactPDO(index);
+                    }
+
+                    
+                }
 
 
                 updatePDOcount();
@@ -1238,7 +1525,59 @@ namespace libEDSsharp
             // }
         }
 
-        public void savefile(string filename)
+        public void applycompactPDO(UInt16 index)
+        {
+            if (ods.ContainsKey(index))
+            {
+                if ((!ods[index].containssubindex(1)) && ((this.di.CompactPDO & 0x01) == 0))
+                {
+                    //Fill in cob ID
+                    //FIX ME i'm really sure this is not correct, what default values should be used???
+                    string cob = string.Format("0x180+$NODEID");
+                    ODentry subod = new ODentry("COB-ID", index, 0x05, DataType.UNSIGNED32, cob, AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x05, subod);
+
+                }
+
+                if ((!ods[index].containssubindex(2)) && ((this.di.CompactPDO & 0x02) == 0))
+                {
+                    //Fill in type
+
+                    ODentry subod = new ODentry("Type", index, 0x05, DataType.UNSIGNED8, "0xff", AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x02, subod);
+                }
+
+                if ((!ods[index].containssubindex(3)) && ((this.di.CompactPDO & 0x04) == 0))
+                {
+                    //Fill in inhibit
+
+                    ODentry subod = new ODentry("Inhibit time", index, 0x03, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x03, subod);
+                }
+
+                //NOT FOR RX PDO
+                if (index < 0x1800)
+                    return;
+
+                if ((!ods[index].containssubindex(4)) && ((this.di.CompactPDO & 0x08) == 0))
+                {
+                    //Fill in compatability entry
+
+                    ODentry subod = new ODentry("Compatability entry", index, 0x04, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x04, subod);
+                }
+
+                if ((!ods[index].containssubindex(5)) && ((this.di.CompactPDO & 0x10) == 0))
+                {
+                    //Fill in ebent timer
+
+                    ODentry subod = new ODentry("Event Timer", index, 0x05, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, ods[index]);
+                    ods[index].subobjects.Add(0x05, subod);
+                }
+            }
+        }
+
+        public void savefile(string filename, InfoSection.filetype ft)
         {
             this.edsfilename = filename;
 
@@ -1252,18 +1591,22 @@ namespace libEDSsharp
             fi.ModificationDate = fi.ModificationDateTime.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture);
             fi.ModificationTime = fi.ModificationDateTime.ToString("h:mmtt", CultureInfo.InvariantCulture);
 
-            fi.FileName = filename;
+            fi.FileName = Path.GetFileName(filename);
 
             fi.EDSVersion = "4.0";
             fi.EDSVersionMajor = 4;
             fi.EDSVersionMinor = 0;
 
             StreamWriter writer = File.CreateText(filename);
-            fi.write(writer);
-            di.write(writer);
-            du.write(writer);
+            fi.write(writer,ft);
+            di.write(writer,ft);
+            du.write(writer,ft);
             c.write(writer);
 
+            if(ft == InfoSection.filetype.File_DCF)
+            {
+                dc.write(writer,ft);
+            }
 
             //regenerate the object lists
             md.objectlist.Clear();
@@ -1299,11 +1642,11 @@ namespace libEDSsharp
                 ODentry od = kvp.Value;
                 if (md.objectlist.ContainsValue(od.index))
                 {
-                    od.write(writer);
+                    od.write(writer,ft);
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                     {
                         ODentry od2 = kvp2.Value;
-                        od2.write(writer);
+                        od2.write(writer,ft);
                     }                    
                 }
             }
@@ -1315,11 +1658,11 @@ namespace libEDSsharp
                 ODentry od = kvp.Value;
                 if (oo.objectlist.ContainsValue(od.index))
                 {
-                    od.write(writer);
+                    od.write(writer,ft);
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                     {
                         ODentry od2 = kvp2.Value;
-                        od2.write(writer);
+                        od2.write(writer,ft);
                     }                    
                 }
             }
@@ -1331,11 +1674,11 @@ namespace libEDSsharp
                 ODentry od = kvp.Value;
                 if (mo.objectlist.ContainsValue(od.index))
                 {
-                    od.write(writer);
+                    od.write(writer,ft);
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                     {
                         ODentry od2 = kvp2.Value;
-                        od2.write(writer);
+                        od2.write(writer,ft);
                     }                    
                 }
             }
@@ -1439,6 +1782,7 @@ namespace libEDSsharp
                 nobase = 8;
             }
 
+
             return nobase;
         }
 
@@ -1469,6 +1813,8 @@ namespace libEDSsharp
                 return 0;
             }
 
+            input = input.ToUpper(); //catch all types of nodeid
+
             if (input.Contains("$NODEID"))
                 nodeidpresent = true;
             else
@@ -1476,7 +1822,7 @@ namespace libEDSsharp
 
             try
             {
-                if (di.concreteNodeId == -1)
+                if (dc.NodeId == 0)
                 {
                     input = input.Replace("$NODEID", "");
                     input = input.Replace("+", "");
@@ -1484,7 +1830,7 @@ namespace libEDSsharp
                     return Convert.ToUInt32(input, getbase(input));
                 }
 
-                input = input.Replace("$NODEID", String.Format("0x{0}", di.concreteNodeId));
+                input = input.Replace("$NODEID", String.Format("0x{0}", dc.NodeId));
 
                 string[] bits = input.Split('+');
 

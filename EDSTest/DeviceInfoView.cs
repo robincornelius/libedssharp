@@ -76,7 +76,7 @@ namespace ODEditor
 
             checkBox_boot_master.Checked = eds.di.SimpleBootUpMaster;
             checkBox_bootslave.Checked = eds.di.SimpleBootUpSlave;
-            checkBox_compactPDO.Checked = eds.di.CompactPDO;
+            textBox_compactPDO.Text = eds.di.CompactPDO.ToString();
             checkBox_group_msg.Checked = eds.di.GroupMessaging;
             checkBox_dynamicchan.Checked = eds.di.DynamicChannelsSupported;
             checkBox_lss.Checked = eds.di.LSS_Supported;
@@ -85,13 +85,13 @@ namespace ODEditor
             textBox_rxpdos.Text = eds.di.NrOfRXPDO.ToString();
             textBox_txpdos.Text = eds.di.NrOfTXPDO.ToString();
 
-            if (eds.di.concreteNodeId == -1)
+            if (eds.dc.NodeId == 0)
             {
                 textBox_concretenodeid.Text = "";
             }
             else
             {
-                textBox_concretenodeid.Text = eds.di.concreteNodeId.ToString();
+                textBox_concretenodeid.Text = eds.dc.NodeId.ToString();
             }
 
 
@@ -151,17 +151,16 @@ namespace ODEditor
 
                 eds.di.SimpleBootUpMaster = checkBox_boot_master.Checked;
                 eds.di.SimpleBootUpSlave = checkBox_bootslave.Checked;
-                eds.di.CompactPDO = checkBox_compactPDO.Checked;
 
                 eds.di.GroupMessaging = checkBox_group_msg.Checked;
                 eds.di.DynamicChannelsSupported = checkBox_dynamicchan.Checked;
                 eds.di.LSS_Supported = checkBox_lss.Checked;
                 eds.di.Granularity = Convert.ToByte(textBox_Gran.Text);
 
-                eds.di.concreteNodeId = -1;
+                eds.dc.NodeId = 0;
                 if (textBox_concretenodeid.Text != "")
                 {
-                    eds.di.concreteNodeId = Convert.ToByte(textBox_concretenodeid.Text);
+                    eds.dc.NodeId = Convert.ToByte(textBox_concretenodeid.Text);
                 }
 
 

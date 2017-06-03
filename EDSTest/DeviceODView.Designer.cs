@@ -56,14 +56,18 @@
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBox_precode = new System.Windows.Forms.TextBox();
-            this.button_save_changes = new System.Windows.Forms.Button();
+            this.textBox_actualvalue = new System.Windows.Forms.TextBox();
+            this.textBox_lowvalue = new System.Windows.Forms.TextBox();
+            this.textBox_highvalue = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.textBox_denotation = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.button_save_changes = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
-            this.textBox_accessfunctionname = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.comboBox_memory = new System.Windows.Forms.ComboBox();
             this.label_index = new System.Windows.Forms.Label();
@@ -334,14 +338,18 @@
             // 
             // splitContainer4.Panel2
             // 
-            this.splitContainer4.Panel2.Controls.Add(this.label4);
-            this.splitContainer4.Panel2.Controls.Add(this.textBox_precode);
-            this.splitContainer4.Panel2.Controls.Add(this.button_save_changes);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_actualvalue);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_lowvalue);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_highvalue);
+            this.splitContainer4.Panel2.Controls.Add(this.label18);
+            this.splitContainer4.Panel2.Controls.Add(this.label17);
             this.splitContainer4.Panel2.Controls.Add(this.label14);
-            this.splitContainer4.Panel2.Controls.Add(this.label5);
+            this.splitContainer4.Panel2.Controls.Add(this.textBox_denotation);
             this.splitContainer4.Panel2.Controls.Add(this.label13);
+            this.splitContainer4.Panel2.Controls.Add(this.label4);
+            this.splitContainer4.Panel2.Controls.Add(this.button_save_changes);
+            this.splitContainer4.Panel2.Controls.Add(this.label5);
             this.splitContainer4.Panel2.Controls.Add(this.label16);
-            this.splitContainer4.Panel2.Controls.Add(this.textBox_accessfunctionname);
             this.splitContainer4.Panel2.Controls.Add(this.label6);
             this.splitContainer4.Panel2.Controls.Add(this.comboBox_memory);
             this.splitContainer4.Panel2.Controls.Add(this.label_index);
@@ -420,6 +428,78 @@
             // 
             this.columnHeader14.Text = "PDO Map";
             // 
+            // textBox_actualvalue
+            // 
+            this.textBox_actualvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox_actualvalue.Location = new System.Drawing.Point(527, 360);
+            this.textBox_actualvalue.Name = "textBox_actualvalue";
+            this.textBox_actualvalue.Size = new System.Drawing.Size(278, 20);
+            this.textBox_actualvalue.TabIndex = 35;
+            // 
+            // textBox_lowvalue
+            // 
+            this.textBox_lowvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox_lowvalue.Location = new System.Drawing.Point(527, 334);
+            this.textBox_lowvalue.Name = "textBox_lowvalue";
+            this.textBox_lowvalue.Size = new System.Drawing.Size(278, 20);
+            this.textBox_lowvalue.TabIndex = 34;
+            // 
+            // textBox_highvalue
+            // 
+            this.textBox_highvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox_highvalue.Location = new System.Drawing.Point(527, 307);
+            this.textBox_highvalue.Name = "textBox_highvalue";
+            this.textBox_highvalue.Size = new System.Drawing.Size(278, 20);
+            this.textBox_highvalue.TabIndex = 33;
+            // 
+            // label18
+            // 
+            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(454, 364);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(67, 13);
+            this.label18.TabIndex = 32;
+            this.label18.Text = "Actual Value";
+            // 
+            // label17
+            // 
+            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(454, 337);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(57, 13);
+            this.label17.TabIndex = 31;
+            this.label17.Text = "Low Value";
+            // 
+            // label14
+            // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(454, 310);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(59, 13);
+            this.label14.TabIndex = 30;
+            this.label14.Text = "High Value";
+            // 
+            // textBox_denotation
+            // 
+            this.textBox_denotation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_denotation.Location = new System.Drawing.Point(108, 54);
+            this.textBox_denotation.Name = "textBox_denotation";
+            this.textBox_denotation.Size = new System.Drawing.Size(697, 20);
+            this.textBox_denotation.TabIndex = 29;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(13, 56);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(59, 13);
+            this.label13.TabIndex = 28;
+            this.label13.Text = "Denotation";
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -428,16 +508,6 @@
             this.label4.Size = new System.Drawing.Size(33, 13);
             this.label4.TabIndex = 1;
             this.label4.Text = "Index";
-            // 
-            // textBox_precode
-            // 
-            this.textBox_precode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox_precode.Location = new System.Drawing.Point(120, 532);
-            this.textBox_precode.Name = "textBox_precode";
-            this.textBox_precode.Size = new System.Drawing.Size(278, 20);
-            this.textBox_precode.TabIndex = 22;
-            this.textBox_precode.Visible = false;
-            this.textBox_precode.TextChanged += new System.EventHandler(this.textBox_precode_TextChanged);
             // 
             // button_save_changes
             // 
@@ -452,18 +522,6 @@
             this.button_save_changes.UseVisualStyleBackColor = true;
             this.button_save_changes.Click += new System.EventHandler(this.button_save_changes_Click);
             // 
-            // label14
-            // 
-            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(25, 535);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(47, 13);
-            this.label14.TabIndex = 21;
-            this.label14.Text = "Precode";
-            this.label14.Visible = false;
-            this.label14.Click += new System.EventHandler(this.label14_Click);
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -472,18 +530,6 @@
             this.label5.Size = new System.Drawing.Size(35, 13);
             this.label5.TabIndex = 2;
             this.label5.Text = "Name";
-            // 
-            // label13
-            // 
-            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(25, 511);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(83, 13);
-            this.label13.TabIndex = 20;
-            this.label13.Text = "Access function";
-            this.label13.Visible = false;
-            this.label13.Click += new System.EventHandler(this.label13_Click);
             // 
             // label16
             // 
@@ -495,20 +541,10 @@
             this.label16.TabIndex = 26;
             this.label16.Text = "Memory Type";
             // 
-            // textBox_accessfunctionname
-            // 
-            this.textBox_accessfunctionname.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox_accessfunctionname.Location = new System.Drawing.Point(120, 508);
-            this.textBox_accessfunctionname.Name = "textBox_accessfunctionname";
-            this.textBox_accessfunctionname.Size = new System.Drawing.Size(278, 20);
-            this.textBox_accessfunctionname.TabIndex = 19;
-            this.textBox_accessfunctionname.Visible = false;
-            this.textBox_accessfunctionname.TextChanged += new System.EventHandler(this.textBox_accessfunctionname_TextChanged);
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 54);
+            this.label6.Location = new System.Drawing.Point(13, 83);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(60, 13);
             this.label6.TabIndex = 3;
@@ -567,11 +603,12 @@
             this.textBox_description.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_description.Location = new System.Drawing.Point(108, 53);
+            this.textBox_description.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox_description.Location = new System.Drawing.Point(108, 80);
             this.textBox_description.Multiline = true;
             this.textBox_description.Name = "textBox_description";
             this.textBox_description.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_description.Size = new System.Drawing.Size(697, 237);
+            this.textBox_description.Size = new System.Drawing.Size(697, 210);
             this.textBox_description.TabIndex = 6;
             // 
             // label7
@@ -814,10 +851,6 @@
         private System.Windows.Forms.ComboBox comboBox_memory;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.CheckBox checkBox_enabled;
-        private System.Windows.Forms.TextBox textBox_precode;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox textBox_accessfunctionname;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox checkBox_COS;
         private System.Windows.Forms.TextBox textBox_defaultvalue;
@@ -858,5 +891,13 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.SplitContainer splitContainer4;
+        private System.Windows.Forms.TextBox textBox_actualvalue;
+        private System.Windows.Forms.TextBox textBox_lowvalue;
+        private System.Windows.Forms.TextBox textBox_highvalue;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBox_denotation;
+        private System.Windows.Forms.Label label13;
     }
 }
