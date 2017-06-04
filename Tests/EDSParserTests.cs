@@ -121,7 +121,7 @@ CompactSubObj=9
 
         }
 
-        public void test_object_coverage(List<string> MandatorySet, List<string> OptionalSet)
+        public void test_object_coverage(List<string> AlwaysSet, List<string> MandatorySet, List<string> OptionalSet)
         {
             int MandatoryBitMask = (int)Math.Pow(2, MandatorySet.Count);
 
@@ -130,6 +130,11 @@ CompactSubObj=9
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("[2000]");
+
+                foreach(String always in AlwaysSet)
+                {
+                    sb.AppendLine(always);
+                }
 
                 for (int y = 0; y < MandatorySet.Count; y++)
                 {
@@ -171,6 +176,7 @@ CompactSubObj=9
         public void Test_var_object_loader()
         {
 
+            List<string> AlwaysSet = new List<string>();
             List<string> MandatorySet = new List<string>();
             List<string> OptionalSet = new List<string>();
 
@@ -178,105 +184,23 @@ CompactSubObj=9
             MandatorySet.Add("DataType=0x0007");
             MandatorySet.Add("AccessType=rw");
 
-            test_object_coverage(MandatorySet, OptionalSet);
+            test_object_coverage(AlwaysSet, MandatorySet, OptionalSet);
 
 
-            return;
-
-            /*
-
-
-            //minimum mandatory var data set
-            string testobject = @"[2000]
-ParameterName=My Test Object
-DataType=0x0007
-AccessType=rw
-";
-
-            injectobject(testobject);
+            if (!ods.ContainsKey(0x2000))
+                throw (new Exception("parseEDSentry() failed no object"));
 
             ODentry od = ods[0x2000];
 
-            if (od.objecttype != ObjectType.VAR)
-                throw (new Exception("Test_object_loader() 1 failed"));
-
-            if (od.defaultvalue != "")
-                throw (new Exception("Test_object_loader() 2 failed"));
+            if(od.objecttype!=ObjectType.VAR)
+                throw (new Exception("Default object not VAR"));
 
             if (od.PDOMapping != false)
-                throw (new Exception("Test_object_loader() 3 failed"));
-
-            if (od.LowLimit != "")
-                throw (new Exception("Test_object_loader() 4 failed"));
-
-            if (od.HighLimit != "")
-                throw (new Exception("Test_object_loader() 5 failed"));
+                throw (new Exception("Default PDO not false"));
 
             if (od.ObjFlags != 0)
-                throw (new Exception("Test_object_loader() 6 failed"));
+                throw (new Exception("Default objectflags not 0"));
 
-
-            //Fail tests
-
-            testobject = @"[2000]
-ParameterName=My Test Object
-DataType=0x0007
-";
-
-            bool ok = false;
-            try
-            {
-                injectobject(testobject);
-            }
-            catch(ParameterException pe)
-            {
-                ok = true;
-            }
-
-            if (ok = false)
-                throw new Exception("Test_object_loader() 7 failed");
-
-            // Missing parameter
-
-            ok = false;
-            testobject = @"[2000]
-ParameterName=My Test Object
-AccessType=rw
-";
-
-            try
-            {
-                injectobject(testobject);
-            }
-            catch (ParameterException pe)
-            {
-                ok = true;
-            }
-
-            if (ok = false)
-                throw new Exception("Test_object_loader() 8 failed");
-
-
-            // Missing paramater 
-
-            ok = false;
-            testobject = @"[2000]
-DataType=0x0007
-AccessType=rw
-";
-
-            try
-            {
-                injectobject(testobject);
-            }
-            catch (ParameterException pe)
-            {
-                ok = true;
-            }
-
-            if (ok = false)
-                throw new Exception("Test_object_loader() 9 failed");
-                */
 
         }
 
@@ -284,6 +208,7 @@ AccessType=rw
         public void Test_array_object_loader()
         {
 
+            List<string> AlwaysSet = new List<string>();
             List<string> MandatorySet = new List<string>();
             List<string> OptionalSet = new List<string>();
 
@@ -291,25 +216,45 @@ AccessType=rw
             MandatorySet.Add("ObjectType=0x0008");
             MandatorySet.Add("SubNumber=5");
 
-            test_object_coverage(MandatorySet, OptionalSet);
+            test_object_coverage(AlwaysSet, MandatorySet, OptionalSet);
 
-         
+            if (!ods.ContainsKey(0x2000))
+                throw (new Exception("parseEDSentry() failed no object"));
+
+            ODentry od = ods[0x2000];
+
+            if (od.ObjFlags != 0)
+                throw (new Exception("Default objectflags not 0"));
+
         }
 
         [TestMethod]
         public void Test_compact_array_object_loader()
         {
 
+            List<string> AlwaysSet = new List<string>();
             List<string> MandatorySet = new List<string>();
             List<string> OptionalSet = new List<string>();
 
+            AlwaysSet.Add("CompactSubObj=5");
+
             MandatorySet.Add("ParameterName=My Test Object");
-            MandatorySet.Add("ObjectType=0x0008");
-            MandatorySet.Add("CompactSubObj=5");
+            MandatorySet.Add("ObjectType=0x0008");  
             MandatorySet.Add("DataType=0x0007");
             MandatorySet.Add("AccessType=rw");
 
-            test_object_coverage(MandatorySet, OptionalSet);
+            test_object_coverage(AlwaysSet, MandatorySet, OptionalSet);
+
+            if (!ods.ContainsKey(0x2000))
+                throw (new Exception("parseEDSentry() failed no object"));
+
+            ODentry od = ods[0x2000];
+
+            if (od.PDOMapping != false)
+                throw (new Exception("Default PDO not false"));
+
+            if (od.ObjFlags != 0)
+                throw (new Exception("Default objectflags not 0"));
 
 
         }

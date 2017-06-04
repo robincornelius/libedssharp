@@ -1326,6 +1326,9 @@ namespace libEDSsharp
                 if (od.objecttype == ObjectType.VAR)
                 {
 
+                    if (kvp.Value.ContainsKey("CompactSubObj"))
+                        throw new ParameterException("CompactSubObj not valid for a VAR Object, section: " + section);
+
                     if (kvp.Value.ContainsKey("ParameterValue"))
                     {
                         od.actualvalue = kvp.Value["ParameterValue"];
@@ -1387,7 +1390,7 @@ namespace libEDSsharp
                 }
 
               
-                if(od.objecttype==ObjectType.REC|| od.objecttype==ObjectType.ARRAY || od.objecttype==ObjectType.DEFSTRUCT)
+                if(od.objecttype == ObjectType.REC|| od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.DEFSTRUCT)
                 {
 
                     if (od.CompactSubObj != 0)
@@ -1435,8 +1438,10 @@ namespace libEDSsharp
                     }
                     else
                     {
+                        if (!kvp.Value.ContainsKey("SubNumber"))
+                            throw new ParameterException("Missing SubNumber on Array for" + section);
 
-                    
+
 
                     }
                 }
