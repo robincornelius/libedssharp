@@ -154,8 +154,11 @@ namespace libEDSsharp
 
             try 
             {
-                if (section.ContainsKey(name))
-                {
+
+                foreach (var element in section)
+                if (String.Equals(element.Key, name, StringComparison.OrdinalIgnoreCase))
+                //if (section.ContainsKey(name))
+                   {
 
                     Type tx = this.GetType();
 
@@ -1520,8 +1523,6 @@ namespace libEDSsharp
                 }
 
                 applyimplicitPDO();
-
-                updatePDOcount();
             }
             // catch(Exception e)
             //{

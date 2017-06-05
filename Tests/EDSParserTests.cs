@@ -292,5 +292,29 @@ NrOfTXPDO=7
 
         }
 
+
+        [TestMethod]
+        public void Test_keyname_case()
+        {
+
+            string testobject = @"[DeviceInfo]
+VendorName=test1
+productname=test2
+VENDORNUMBER=test3
+ProDucTNumbeR=test4
+";
+
+            eds.Clear();
+
+            string[] lines = testobject.Split('\n');
+
+            foreach(string line in lines)
+                parseline(line);
+            DeviceInfo di = new DeviceInfo(eds["DeviceInfo"]);
+
+        }
+
+
+
     }
 }
