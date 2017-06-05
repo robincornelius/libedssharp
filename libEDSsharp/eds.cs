@@ -1517,10 +1517,9 @@ namespace libEDSsharp
                     {
                         applycompactPDO(index);
                     }
-
-                    
                 }
 
+                applyimplicitPDO();
 
                 updatePDOcount();
             }
@@ -1580,6 +1579,47 @@ namespace libEDSsharp
                     ods[index].subobjects.Add(0x05, subod);
                 }
             }
+        }
+
+        /// <summary>
+        /// This function scans the PDO list and comparese it to NrOfRXPDO and NrOfTXPDO
+        /// if these do not match in count then implict PDOs are present and they are
+        /// filled in with default values from the lowest possible index
+        /// </summary>
+        public void applyimplicitPDO()
+        {
+            UInt16 totalnorxpdos = di.NrOfRXPDO;
+            UInt16 totalnotxpdos = di.NrOfTXPDO;
+
+            updatePDOcount();
+
+            UInt16 noexplicitrxpdos = di.NrOfRXPDO;
+            UInt16 noexplicittxpdos = di.NrOfTXPDO;
+
+            //this is how many PDOS need generating on the fly
+            UInt16 noimplictrxpdos = (UInt16) (totalnorxpdos - noexplicitrxpdos);
+            UInt16 noimplicttxpdos = (UInt16) (totalnotxpdos - noexplicittxpdos);
+
+            for(UInt16 index = 0x1400; (index < 0x1600) && (noimplictrxpdos > 0) ;index++)
+            {
+                if(!ods.ContainsKey(index))
+                {
+                    createRXPDO(index);
+                    noimplictrxpdos--;
+                }
+            }
+
+            for (UInt16 index = 0x1800; (index < 0x1A00) && (noimplicttxpdos > 0); index++)
+            {
+                if (!ods.ContainsKey(index))
+                {
+                    createTXPDO(index);
+                    noimplicttxpdos--;
+                }
+            }
+
+            updatePDOcount();
+
         }
 
         public void savefile(string filename, InfoSection.filetype ft)

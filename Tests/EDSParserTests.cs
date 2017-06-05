@@ -131,7 +131,7 @@ CompactSubObj=9
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("[2000]");
 
-                foreach(String always in AlwaysSet)
+                foreach (String always in AlwaysSet)
                 {
                     sb.AppendLine(always);
                 }
@@ -192,7 +192,7 @@ CompactSubObj=9
 
             ODentry od = ods[0x2000];
 
-            if(od.objecttype!=ObjectType.VAR)
+            if (od.objecttype != ObjectType.VAR)
                 throw (new Exception("Default object not VAR"));
 
             if (od.PDOMapping != false)
@@ -239,7 +239,7 @@ CompactSubObj=9
             AlwaysSet.Add("CompactSubObj=5");
 
             MandatorySet.Add("ParameterName=My Test Object");
-            MandatorySet.Add("ObjectType=0x0008");  
+            MandatorySet.Add("ObjectType=0x0008");
             MandatorySet.Add("DataType=0x0007");
             MandatorySet.Add("AccessType=rw");
 
@@ -258,6 +258,39 @@ CompactSubObj=9
 
 
         }
-    }
 
+
+        [TestMethod]
+        public void Test_implicit_PDOS()
+        {
+
+
+            string testobject = @"[DeviceInfo]
+NrOfRXPDO=5
+NrOfTXPDO=7
+";
+
+            injectobject(testobject);
+
+            di = new DeviceInfo(eds["DeviceInfo"]);
+
+            //Grab explicit PDOs
+
+            UInt16 noexplicitrxpdos = di.NrOfRXPDO;
+            UInt16 noexplicittxpdos = di.NrOfTXPDO;
+
+            applyimplicitPDO();
+
+            updatePDOcount();
+
+            if(noexplicitrxpdos != di.NrOfRXPDO)
+                throw (new Exception("Implict RX PDO incorrect"));
+
+            if (noexplicittxpdos != di.NrOfTXPDO)
+                throw (new Exception("Implict RT PDO incorrect"));
+
+
+        }
+
+    }
 }
