@@ -1598,46 +1598,49 @@ namespace libEDSsharp
 
                 //Modules
 
-                sm = new SupportedModules(eds["SupportedModules"]);
-
-                //find MxModuleInfo
-
-                foreach (string s in eds.Keys)
+                if (eds.ContainsKey("SupportedModules"))
                 {
-                    String pat = @"^M([0-9]+)ModuleInfo";
-                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                    Match m = r.Match(s);
+                    sm = new SupportedModules(eds["SupportedModules"]);
 
-                    if(m.Success)
+                    //find MxModuleInfo
+
+                    foreach (string s in eds.Keys)
                     {
-                        UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                        ModuleInfo mi = new ModuleInfo(eds[s], modindex);
-                        this.mi.Add(modindex, mi);
-                    }
+                        String pat = @"^M([0-9]+)ModuleInfo";
+                        Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                        Match m = r.Match(s);
+
+                        if (m.Success)
+                        {
+                            UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
+                            ModuleInfo mi = new ModuleInfo(eds[s], modindex);
+                            this.mi.Add(modindex, mi);
+                        }
 
 
-                    pat = @"^M([0-9]+)Comments";
-                    r = new Regex(pat, RegexOptions.IgnoreCase);
-                    m = r.Match(s);
+                        pat = @"^M([0-9]+)Comments";
+                        r = new Regex(pat, RegexOptions.IgnoreCase);
+                        m = r.Match(s);
 
-                    if (m.Success)
-                    {
-                        UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                        ModuleComments mc = new ModuleComments(eds[s], modindex);
-                        this.mc.Add(modindex,mc);
-                    }
+                        if (m.Success)
+                        {
+                            UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
+                            ModuleComments mc = new ModuleComments(eds[s], modindex);
+                            this.mc.Add(modindex, mc);
+                        }
 
-                    pat = @"^M([0-9]+)SubExtends";
-                    r = new Regex(pat, RegexOptions.IgnoreCase);
-                    m = r.Match(s);
+                        pat = @"^M([0-9]+)SubExtends";
+                        r = new Regex(pat, RegexOptions.IgnoreCase);
+                        m = r.Match(s);
 
-                    if (m.Success)
-                    {
-                        int x = 0;
+                        if (m.Success)
+                        {
+                            int x = 0;
 
-                        UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                        ModuleSubExtends mse = new ModuleSubExtends(eds[s], modindex);
-                        this.mse.Add(modindex, mse);
+                            UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
+                            ModuleSubExtends mse = new ModuleSubExtends(eds[s], modindex);
+                            this.mse.Add(modindex, mse);
+                        }
                     }
                 }
 
