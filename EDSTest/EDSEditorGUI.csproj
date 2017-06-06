@@ -91,6 +91,12 @@
     <Compile Include="MaxSubIndexFrm.Designer.cs">
       <DependentUpon>MaxSubIndexFrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModuleInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ModuleInfo.Designer.cs">
+      <DependentUpon>ModuleInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="MyTabUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -131,6 +137,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MaxSubIndexFrm.resx">
       <DependentUpon>MaxSubIndexFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModuleInfo.resx">
+      <DependentUpon>ModuleInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MyTabUserControl.resx">
       <DependentUpon>MyTabUserControl.cs</DependentUpon>

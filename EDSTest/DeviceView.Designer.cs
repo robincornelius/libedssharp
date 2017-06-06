@@ -40,11 +40,14 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.devicePDOView2 = new ODEditor.DevicePDOView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.moduleInfo1 = new ODEditor.ModuleInfo();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -53,6 +56,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.ImageList = this.imageList1;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
@@ -148,6 +152,25 @@
             this.imageList1.Images.SetKeyName(2, "Output_16xLG.png");
             this.imageList1.Images.SetKeyName(3, "SingleInput_8170_16x.png");
             // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.moduleInfo1);
+            this.tabPage5.Location = new System.Drawing.Point(4, 23);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(1114, 746);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Modules";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // moduleInfo1
+            // 
+            this.moduleInfo1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.moduleInfo1.Location = new System.Drawing.Point(3, 3);
+            this.moduleInfo1.Name = "moduleInfo1";
+            this.moduleInfo1.Size = new System.Drawing.Size(1108, 740);
+            this.moduleInfo1.TabIndex = 0;
+            // 
             // DeviceView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -160,6 +183,7 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -175,5 +199,7 @@
         private DevicePDOView devicePDOView2;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage5;
+        private ModuleInfo moduleInfo1;
     }
 }

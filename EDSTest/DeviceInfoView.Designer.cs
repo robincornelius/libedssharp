@@ -63,6 +63,8 @@
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox_compactPDO = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.textBox_Gran = new System.Windows.Forms.TextBox();
             this.label31 = new System.Windows.Forms.Label();
             this.checkBox_lss = new System.Windows.Forms.CheckBox();
@@ -85,18 +87,18 @@
             this.textBox_deviceedsname = new System.Windows.Forms.TextBox();
             this.textBox_exportfolder = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBox_compactPDO = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBox_concretenodeid
             // 
-            this.textBox_concretenodeid.Location = new System.Drawing.Point(502, 246);
+            this.textBox_concretenodeid.Location = new System.Drawing.Point(501, 254);
             this.textBox_concretenodeid.Name = "textBox_concretenodeid";
             this.textBox_concretenodeid.Size = new System.Drawing.Size(80, 20);
             this.textBox_concretenodeid.TabIndex = 54;
@@ -104,7 +106,7 @@
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(405, 253);
+            this.label32.Location = new System.Drawing.Point(404, 261);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(91, 13);
             this.label32.TabIndex = 53;
@@ -112,7 +114,7 @@
             // 
             // button_update_devfile_info
             // 
-            this.button_update_devfile_info.Location = new System.Drawing.Point(513, 312);
+            this.button_update_devfile_info.Location = new System.Drawing.Point(512, 320);
             this.button_update_devfile_info.Name = "button_update_devfile_info";
             this.button_update_devfile_info.Size = new System.Drawing.Size(113, 35);
             this.button_update_devfile_info.TabIndex = 52;
@@ -126,7 +128,7 @@
             this.groupBox5.Controls.Add(this.textBox_rxpdos);
             this.groupBox5.Controls.Add(this.label30);
             this.groupBox5.Controls.Add(this.label17);
-            this.groupBox5.Location = new System.Drawing.Point(13, 395);
+            this.groupBox5.Location = new System.Drawing.Point(12, 403);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(377, 118);
             this.groupBox5.TabIndex = 51;
@@ -177,7 +179,7 @@
             this.groupBox4.Controls.Add(this.label28);
             this.groupBox4.Controls.Add(this.label27);
             this.groupBox4.Controls.Add(this.label26);
-            this.groupBox4.Location = new System.Drawing.Point(13, 7);
+            this.groupBox4.Location = new System.Drawing.Point(12, 15);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(377, 134);
             this.groupBox4.TabIndex = 50;
@@ -266,7 +268,7 @@
             this.groupBox3.Controls.Add(this.label20);
             this.groupBox3.Controls.Add(this.label19);
             this.groupBox3.Controls.Add(this.label18);
-            this.groupBox3.Location = new System.Drawing.Point(13, 156);
+            this.groupBox3.Location = new System.Drawing.Point(12, 164);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(377, 220);
             this.groupBox3.TabIndex = 49;
@@ -412,12 +414,29 @@
             this.groupBox2.Controls.Add(this.checkBox_group_msg);
             this.groupBox2.Controls.Add(this.checkBox_bootslave);
             this.groupBox2.Controls.Add(this.checkBox_dynamicchan);
-            this.groupBox2.Location = new System.Drawing.Point(522, 6);
+            this.groupBox2.Location = new System.Drawing.Point(521, 14);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(213, 224);
             this.groupBox2.TabIndex = 48;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Device settings";
+            // 
+            // textBox_compactPDO
+            // 
+            this.textBox_compactPDO.Location = new System.Drawing.Point(121, 88);
+            this.textBox_compactPDO.Name = "textBox_compactPDO";
+            this.textBox_compactPDO.ReadOnly = true;
+            this.textBox_compactPDO.Size = new System.Drawing.Size(59, 20);
+            this.textBox_compactPDO.TabIndex = 46;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 95);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(72, 13);
+            this.label4.TabIndex = 45;
+            this.label4.Text = "CompactPDO";
             // 
             // textBox_Gran
             // 
@@ -495,7 +514,7 @@
             this.groupBox1.Controls.Add(this.heckBox_baud_1000);
             this.groupBox1.Controls.Add(this.heckBox_baud_500);
             this.groupBox1.Controls.Add(this.heckBox_baud_800);
-            this.groupBox1.Location = new System.Drawing.Point(396, 6);
+            this.groupBox1.Location = new System.Drawing.Point(395, 14);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(120, 224);
             this.groupBox1.TabIndex = 47;
@@ -585,7 +604,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(398, 379);
+            this.label1.Location = new System.Drawing.Point(397, 387);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(111, 13);
             this.label1.TabIndex = 55;
@@ -593,7 +612,7 @@
             // 
             // textBox_devicefilename
             // 
-            this.textBox_devicefilename.Location = new System.Drawing.Point(400, 395);
+            this.textBox_devicefilename.Location = new System.Drawing.Point(399, 403);
             this.textBox_devicefilename.Name = "textBox_devicefilename";
             this.textBox_devicefilename.ReadOnly = true;
             this.textBox_devicefilename.Size = new System.Drawing.Size(335, 20);
@@ -602,7 +621,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(398, 426);
+            this.label2.Location = new System.Drawing.Point(397, 434);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(111, 13);
             this.label2.TabIndex = 56;
@@ -610,7 +629,7 @@
             // 
             // textBox_deviceedsname
             // 
-            this.textBox_deviceedsname.Location = new System.Drawing.Point(400, 440);
+            this.textBox_deviceedsname.Location = new System.Drawing.Point(399, 448);
             this.textBox_deviceedsname.Name = "textBox_deviceedsname";
             this.textBox_deviceedsname.ReadOnly = true;
             this.textBox_deviceedsname.Size = new System.Drawing.Size(335, 20);
@@ -618,7 +637,7 @@
             // 
             // textBox_exportfolder
             // 
-            this.textBox_exportfolder.Location = new System.Drawing.Point(400, 483);
+            this.textBox_exportfolder.Location = new System.Drawing.Point(399, 491);
             this.textBox_exportfolder.Name = "textBox_exportfolder";
             this.textBox_exportfolder.ReadOnly = true;
             this.textBox_exportfolder.Size = new System.Drawing.Size(335, 20);
@@ -627,49 +646,41 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(398, 467);
+            this.label3.Location = new System.Drawing.Point(397, 475);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(77, 13);
             this.label3.TabIndex = 59;
             this.label3.Text = "Export location";
             // 
-            // label4
+            // panel1
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 95);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(72, 13);
-            this.label4.TabIndex = 45;
-            this.label4.Text = "CompactPDO";
-            // 
-            // textBox_compactPDO
-            // 
-            this.textBox_compactPDO.Location = new System.Drawing.Point(121, 88);
-            this.textBox_compactPDO.Name = "textBox_compactPDO";
-            this.textBox_compactPDO.ReadOnly = true;
-            this.textBox_compactPDO.Size = new System.Drawing.Size(59, 20);
-            this.textBox_compactPDO.TabIndex = 46;
+            this.panel1.Controls.Add(this.groupBox4);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.textBox_exportfolder);
+            this.panel1.Controls.Add(this.groupBox2);
+            this.panel1.Controls.Add(this.textBox_deviceedsname);
+            this.panel1.Controls.Add(this.groupBox3);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.groupBox5);
+            this.panel1.Controls.Add(this.textBox_devicefilename);
+            this.panel1.Controls.Add(this.button_update_devfile_info);
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.label32);
+            this.panel1.Controls.Add(this.textBox_concretenodeid);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(773, 543);
+            this.panel1.TabIndex = 60;
             // 
             // DeviceInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox_exportfolder);
-            this.Controls.Add(this.textBox_deviceedsname);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox_devicefilename);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox_concretenodeid);
-            this.Controls.Add(this.label32);
-            this.Controls.Add(this.button_update_devfile_info);
-            this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.panel1);
             this.Name = "DeviceInfoView";
-            this.Size = new System.Drawing.Size(754, 525);
+            this.Size = new System.Drawing.Size(773, 543);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -680,8 +691,9 @@
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -746,5 +758,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox_compactPDO;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Panel panel1;
     }
 }

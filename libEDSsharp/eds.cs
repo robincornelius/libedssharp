@@ -154,52 +154,53 @@ namespace libEDSsharp
 
             try 
             {
-
                 foreach (var element in section)
-                if (String.Equals(element.Key, name, StringComparison.OrdinalIgnoreCase))
-                //if (section.ContainsKey(name))
-                   {
-
-                    Type tx = this.GetType();
-
-                    f = tx.GetField(varname);
-                    object var = null;
-
-                    switch (f.FieldType.Name)
+                {
+                    if (String.Equals(element.Key, name, StringComparison.OrdinalIgnoreCase))
                     {
-                        case "String":
-                            var = section[name];
-                            break;
 
-                        case "UInt32":
-                            var = Convert.ToUInt32(section[name], EDSsharp.getbase(section[name]));
-                            break;
+                        name = element.Key;
+                        Type tx = this.GetType();
 
-                        case "Int16":
-                            var = Convert.ToInt16(section[name], EDSsharp.getbase(section[name]));
-                            break;
+                        f = tx.GetField(varname);
+                        object var = null;
 
-                        case "UInt16":
-                            var = Convert.ToUInt16(section[name], EDSsharp.getbase(section[name]));
-                            break;
+                        switch (f.FieldType.Name)
+                        {
+                            case "String":
+                                var = section[name];
+                                break;
 
-                        case "Byte":
-                            var = Convert.ToByte(section[name], EDSsharp.getbase(section[name]));
-                            break;
+                            case "UInt32":
+                                var = Convert.ToUInt32(section[name], EDSsharp.getbase(section[name]));
+                                break;
 
-                        case "Boolean":
-                            var = section[name] == "1"; //beacuse Convert is Awesome
-                            break;
+                            case "Int16":
+                                var = Convert.ToInt16(section[name], EDSsharp.getbase(section[name]));
+                                break;
 
-                        default:
-                            Console.WriteLine(String.Format("Unhanded variable {0} for {1}", f.FieldType.Name, varname));
-                            break;
-                    }
+                            case "UInt16":
+                                var = Convert.ToUInt16(section[name], EDSsharp.getbase(section[name]));
+                                break;
 
-                    if (var != null)
-                    {
-                        tx.GetField(varname).SetValue(this, var);
-                        return true;
+                            case "Byte":
+                                var = Convert.ToByte(section[name], EDSsharp.getbase(section[name]));
+                                break;
+
+                            case "Boolean":
+                                var = section[name] == "1"; //beacuse Convert is Awesome
+                                break;
+
+                            default:
+                                Console.WriteLine(String.Format("Unhanded variable {0} for {1}", f.FieldType.Name, varname));
+                                break;
+                        }
+
+                        if (var != null)
+                        {
+                            tx.GetField(varname).SetValue(this, var);
+                            return true;
+                        }
                     }
                 }
             }
@@ -278,10 +279,8 @@ namespace libEDSsharp
          }
 
          public MandatoryObjects(Dictionary<string, string> section)
-             : base()
+             : this()
          {
-             infoheader = "Mandatory Objects";
-             edssection = "MandatoryObjects";
              parse(section);
          }
     }
@@ -296,10 +295,8 @@ namespace libEDSsharp
         }
 
         public OptionalObjects(Dictionary<string, string> section)
-            : base()
+            : this()
         {
-            infoheader = "Optional Objects";
-            edssection = "OptionalObjects";
             parse(section);
         }
     }
@@ -313,10 +310,8 @@ namespace libEDSsharp
         }
 
         public ManufacturerObjects(Dictionary<string, string> section)
-            : base()
+            : this()
         {
-            infoheader = "Manufacturer Objects";
-            edssection = "ManufacturerObjects";
             parse(section);
         }
     }
@@ -338,7 +333,10 @@ namespace libEDSsharp
             objectlist = new Dictionary<int, int>();
             foreach(KeyValuePair<string,string> kvp in section)
             {
-                if(kvp.Key=="SupportedObjects")
+                if(kvp.Key.ToLower()=="supportedobjects")
+                    continue;
+
+                if (kvp.Key.ToLower() == "nrofentries")
                     continue;
 
                 int count = Convert.ToInt16(kvp.Key, EDSsharp.getbase(kvp.Key));
@@ -390,7 +388,7 @@ namespace libEDSsharp
            
         }
 
-        public Comments(Dictionary<string, string> section)
+        public Comments(Dictionary<string, string> section) 
         {
             parse(section);
         }
@@ -472,10 +470,8 @@ namespace libEDSsharp
              edssection = "DummyUsage";
         }
 
-        public Dummyusage(Dictionary<string, string> section)
+        public Dummyusage(Dictionary<string, string> section) : this()
         {
-            infoheader = "CAN OPEN Dummy Usage";
-            edssection = "DummyUsage";
             parse(section);
         }
     }
@@ -524,10 +520,8 @@ namespace libEDSsharp
         public string exportFolder = "";
 
 
-        public FileInfo(Dictionary<string, string> section)
+        public FileInfo(Dictionary<string, string> section) : this()
         {
-            infoheader = "CAN OPEN FileInfo";
-            edssection = "FileInfo";
             parse(section);
         }
 
@@ -655,17 +649,15 @@ namespace libEDSsharp
         [EdsExport]
         public bool LSS_Supported;
 
-        public DeviceInfo(Dictionary<string, string> section)
-        {
-            infoheader = "CAN OPEN DeviceInfo";
-            edssection = "DeviceInfo";
-            parse(section);
-        }
-
         public DeviceInfo()
         {
             infoheader = "CAN OPEN DeviceInfo";
             edssection = "DeviceInfo";
+        }
+
+        public DeviceInfo(Dictionary<string, string> section) : this()
+        {
+            parse(section);
         }
     }
 
@@ -679,10 +671,8 @@ namespace libEDSsharp
             edssection = "DeviceCommissioning";
         }
 
-        public DeviceCommissioning(Dictionary<string, string> section)
+        public DeviceCommissioning(Dictionary<string, string> section) : this()
         {
-            infoheader = "CAN OPEN DeviceCommissioning";
-            edssection = "DeviceCommissioning";
             parse(section);
         }
 
@@ -708,6 +698,96 @@ namespace libEDSsharp
         public UInt32 LSS_SerialNumber;
 
     }
+
+    public class SupportedModules : InfoSection
+    {
+        [EdsExport]
+        public UInt16 NrOfEntries;
+
+        public SupportedModules()
+        {
+            infoheader = "CAN OPEN Supported Modules";
+            edssection = "SupportedModules";
+        }
+
+        public SupportedModules(Dictionary<string, string> section) : this()
+        {
+            parse(section);
+        }
+    }
+
+
+    public class ModuleInfo : InfoSection
+    {
+        [EdsExport(maxlength = 248)]
+        public string ProductName;
+
+        [EdsExport]
+        public byte ProductVersion;
+
+        [EdsExport]
+        public byte ProductRevision;
+
+        [EdsExport]
+        public string OrderCode;
+
+        UInt16 moduleindex = 0;
+
+        public ModuleInfo(UInt16 moduleindex)
+        {
+            this.moduleindex = moduleindex;
+            infoheader = "CAN OPEN Module Info " + moduleindex.ToString();
+            edssection = string.Format("M{0}{1}", moduleindex, "ModuleInfo");
+        }
+
+        public ModuleInfo(Dictionary<string, string> section, UInt16 moduleindex) : this (moduleindex)
+        {
+            parse(section);
+        }
+    }
+
+
+    public class ModuleComments : Comments
+    {
+
+        UInt16 moduleindex;
+
+        public ModuleComments(UInt16 moduleindex)
+        {
+            this.moduleindex = moduleindex;
+            infoheader = "CAN OPEN Module Comments " + moduleindex.ToString();
+            edssection = string.Format("M{0}{1}", moduleindex, "Comments");
+        }
+
+        public ModuleComments(Dictionary<string, string> section,UInt16 moduleindex) : this (moduleindex)
+        {
+            parse(section);
+        }
+
+
+    }
+
+    public class ModuleSubExtends : SupportedObjects
+    {
+
+        UInt16 moduleindex;
+
+        public ModuleSubExtends(UInt16 moduleindex)
+              : base()
+        {
+            this.moduleindex = moduleindex;
+            infoheader = "CAN OPEN ModuleSubExtends "+moduleindex.ToString();
+            edssection = string.Format("M{0}{1}", moduleindex, "SubExtends");
+        }
+
+        public ModuleSubExtends(Dictionary<string, string> section, UInt16 moduleindex)
+              : this(moduleindex)
+        {
+            parse(section);
+        }
+
+    }
+
 
     public class ODentry
     {
@@ -1152,6 +1232,13 @@ namespace libEDSsharp
         public Dummyusage du;
         public DeviceCommissioning dc;
 
+        public SupportedModules sm;
+        public Dictionary<UInt16, ModuleInfo> mi;
+        public Dictionary<UInt16, ModuleComments> mc;
+        public Dictionary<UInt16, ModuleSubExtends> mse;
+     
+
+
         public UInt16 NodeId = 0;
 
         public delegate void DataDirty(bool dirty, EDSsharp sender);
@@ -1173,6 +1260,10 @@ namespace libEDSsharp
             mo = new ManufacturerObjects();
             dc = new DeviceCommissioning();
             c = new Comments();
+            sm = new SupportedModules();
+            mi = new Dictionary<ushort, ModuleInfo>();
+            mc = new Dictionary<ushort, ModuleComments>();
+            mse = new Dictionary<ushort, ModuleSubExtends>();
 
 
             //FIXME no way for the Major/Minor to make it to EDSVersion
@@ -1505,6 +1596,53 @@ namespace libEDSsharp
                 if (eds.ContainsKey("Comments"))
                     c.parse(eds["Comments"]);
 
+                //Modules
+
+                sm = new SupportedModules(eds["SupportedModules"]);
+
+                //find MxModuleInfo
+
+                foreach (string s in eds.Keys)
+                {
+                    String pat = @"^M([0-9]+)ModuleInfo";
+                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                    Match m = r.Match(s);
+
+                    if(m.Success)
+                    {
+                        UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
+                        ModuleInfo mi = new ModuleInfo(eds[s], modindex);
+                        this.mi.Add(modindex, mi);
+                    }
+
+
+                    pat = @"^M([0-9]+)Comments";
+                    r = new Regex(pat, RegexOptions.IgnoreCase);
+                    m = r.Match(s);
+
+                    if (m.Success)
+                    {
+                        UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
+                        ModuleComments mc = new ModuleComments(eds[s], modindex);
+                        this.mc.Add(modindex,mc);
+                    }
+
+                    pat = @"^M([0-9]+)SubExtends";
+                    r = new Regex(pat, RegexOptions.IgnoreCase);
+                    m = r.Match(s);
+
+                    if (m.Success)
+                    {
+                        int x = 0;
+
+                        UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
+                        ModuleSubExtends mse = new ModuleSubExtends(eds[s], modindex);
+                        this.mse.Add(modindex, mse);
+                    }
+                }
+
+
+                //find MxModuleComments
 
                 //COMPACT PDO
 
@@ -1726,6 +1864,20 @@ namespace libEDSsharp
                         ODentry od2 = kvp2.Value;
                         od2.write(writer,ft);
                     }                    
+                }
+            }
+
+            //modules
+
+            if (sm.NrOfEntries > 0)
+            {
+                sm.write(writer, ft);
+
+                for (UInt16 moduleid = 1; moduleid < sm.NrOfEntries; moduleid++)
+                {
+                    mi[moduleid].write(writer, ft);
+                    mc[moduleid].write(writer);
+                    mse[moduleid].write(writer);
                 }
             }
 

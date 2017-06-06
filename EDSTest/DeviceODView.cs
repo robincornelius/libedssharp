@@ -46,6 +46,8 @@ namespace ODEditor
         {
             InitializeComponent();
 
+ 
+
             foreach (DataType foo in Enum.GetValues(typeof(DataType)))
             {
                 comboBox_datatype.Items.Add(foo.ToString());

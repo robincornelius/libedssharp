@@ -24,6 +24,13 @@ namespace ODEditor
         {
           
             InitializeComponent();
+
+            if (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime)
+            {
+                // Design time logic
+                return;
+            }
+
             listView_TXCOBmap.onComboBoxIndexChanged += listView_TXCOBmap_onComboBoxIndexChanged;
 
             listView_TXPDO.DoubleBuffering(true);

@@ -66,6 +66,8 @@ namespace ODEditor
 
         private void InitializeComponent()
         {
+
+
             this.SuspendLayout();
             // 
             // MyTabUserControl
