@@ -78,14 +78,22 @@ namespace ODEditor
             foreach(UInt16 sindex in mse.objectlist.Values)
             {
 
-               
-
                 ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}",sindex));
                 lvi.SubItems.Add(eds.ods[sindex].parameter_name);
 
                 listView_extends.Items.Add(lvi);
 
 
+            }
+
+
+            textBox_modulecomments.Clear();
+
+            ModuleComments mc = eds.mc[index];
+
+            foreach (string s in mc.comments)
+            {
+                textBox_modulecomments.AppendText(s + "\r\n");
             }
 
         }

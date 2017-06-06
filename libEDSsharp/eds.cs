@@ -1644,9 +1644,6 @@ namespace libEDSsharp
                     }
                 }
 
-
-                //find MxModuleComments
-
                 //COMPACT PDO
 
                 if (di.CompactPDO != 0)
