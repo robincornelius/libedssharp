@@ -1392,7 +1392,7 @@ namespace libEDSsharp
 
         static public byte ConvertToByte(string defaultvalue)
         {
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "")
                 return 0;
 
             return (Convert.ToByte(defaultvalue, getbase(defaultvalue)));
@@ -1400,7 +1400,7 @@ namespace libEDSsharp
 
         static public UInt16 ConvertToUInt16(string defaultvalue)
         {
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "" )
                 return 0;
 
             return (Convert.ToUInt16(defaultvalue, getbase(defaultvalue)));
@@ -1408,7 +1408,7 @@ namespace libEDSsharp
 
         static public UInt32 ConvertToUInt32(string defaultvalue)
         {
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "" )
                 return 0;
 
             return (Convert.ToUInt32(defaultvalue, getbase(defaultvalue)));
@@ -1417,7 +1417,7 @@ namespace libEDSsharp
         static public int getbase(string defaultvalue)
         {
 
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "")
                 return 10;
 
             int nobase = 10;
@@ -1463,6 +1463,12 @@ namespace libEDSsharp
         public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
           
+
+            if(input==null || input=="")
+            {
+                nodeidpresent = false;
+                return 0;
+            }
 
             if(input.Contains("$NODEID"))
                 nodeidpresent = true;
