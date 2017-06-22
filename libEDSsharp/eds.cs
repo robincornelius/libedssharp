@@ -1399,12 +1399,12 @@ namespace libEDSsharp
 
                 if(kvp.Value.ContainsKey("CompactSubObj"))
                 {
-                    od.CompactSubObj = Convert.ToByte(kvp.Value["CompactSubObj"]);
+                    od.CompactSubObj = Convert.ToByte(kvp.Value["CompactSubObj"],getbase(kvp.Value["CompactSubObj"]));
                 }
 
                 if(kvp.Value.ContainsKey("ObjFlags"))
                 {
-                    od.ObjFlags = Convert.ToByte(kvp.Value["ObjFlags"]);
+                    od.ObjFlags = Convert.ToByte(kvp.Value["ObjFlags"], getbase(kvp.Value["ObjFlags"]));
                 }
                 else
                 {
@@ -1922,7 +1922,7 @@ namespace libEDSsharp
 
         static public byte ConvertToByte(string defaultvalue)
         {
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "")
                 return 0;
 
             return (Convert.ToByte(defaultvalue, getbase(defaultvalue)));
@@ -1941,7 +1941,7 @@ namespace libEDSsharp
 
         static public UInt16 ConvertToUInt16(string defaultvalue)
         {
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "")
                 return 0;
 
             return (Convert.ToUInt16(defaultvalue, getbase(defaultvalue)));
@@ -1949,7 +1949,7 @@ namespace libEDSsharp
 
         static public UInt32 ConvertToUInt32(string defaultvalue)
         {
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "")
                 return 0;
 
             return (Convert.ToUInt32(defaultvalue, getbase(defaultvalue)));
@@ -1958,7 +1958,7 @@ namespace libEDSsharp
         static public int getbase(string defaultvalue)
         {
 
-            if (defaultvalue == null)
+            if (defaultvalue == null || defaultvalue == "")
                 return 10;
 
             int nobase = 10;
@@ -2005,7 +2005,7 @@ namespace libEDSsharp
         public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
 
-            if (input == null)
+            if (input == null || input == "")
             {
                 nodeidpresent = false;
                 return 0;
