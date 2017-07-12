@@ -505,6 +505,14 @@ namespace ODEditor
 
         private void ODEditor_MainForm_Load(object sender, EventArgs e)
         {
+            //read git version string, show in title bar (https://stackoverflow.com/a/15145121)
+            string file = Application.StartupPath + Path.DirectorySeparatorChar + "version.txt";
+            if (System.IO.File.Exists(file))
+            {
+                string gitVersion = System.IO.File.ReadAllText(file);
+                this.Text += "v" + gitVersion;
+            }
+
             //First lets create an appdata folder
 
             // The folder for the roaming current user 
