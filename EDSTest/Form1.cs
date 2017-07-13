@@ -505,13 +505,16 @@ namespace ODEditor
 
         private void ODEditor_MainForm_Load(object sender, EventArgs e)
         {
-            //read git version string, show in title bar (https://stackoverflow.com/a/15145121)
-            string file = Application.StartupPath + Path.DirectorySeparatorChar + "version.txt";
-            if (System.IO.File.Exists(file))
+            //read git version string, show in title bar 
+            //(https://stackoverflow.com/a/15145121)
+            string gitVersion = String.Empty;
+            using (Stream stream = System.Reflection.Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream("ODEditor." + "version.txt"))
+            using (StreamReader reader = new StreamReader(stream))
             {
-                string gitVersion = System.IO.File.ReadAllText(file);
-                this.Text += "v" + gitVersion;
+                gitVersion = reader.ReadToEnd();
             }
+            this.Text += "v" + gitVersion;
 
             //First lets create an appdata folder
 
