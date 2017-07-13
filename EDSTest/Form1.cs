@@ -38,6 +38,8 @@ namespace ODEditor
 
         private string networkfilename;
 
+        private string gitVersion;
+
         public static Dictionary<UInt32, EDSsharp> TXCobMap = new Dictionary<UInt32, EDSsharp>();
         List<EDSsharp> network = new List<EDSsharp>();
 
@@ -214,7 +216,7 @@ namespace ODEditor
                     Warnings.warning_list.Clear();
 
                     CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                    cone.export(savePath, dv.eds);
+                    cone.export(savePath, this.gitVersion, dv.eds);
 
                     if (Warnings.warning_list.Count != 0)
                     {
@@ -515,6 +517,7 @@ namespace ODEditor
                 gitVersion = reader.ReadToEnd();
             }
             this.Text += "v" + gitVersion;
+            this.gitVersion = gitVersion;
 
             //First lets create an appdata folder
 
@@ -823,7 +826,7 @@ namespace ODEditor
 
                 try
                 {
-                    cone.export(dv.eds.fi.exportFolder, dv.eds);
+                    cone.export(dv.eds.fi.exportFolder, this.gitVersion, dv.eds);
                 }
                 catch(Exception ex)
                 {
