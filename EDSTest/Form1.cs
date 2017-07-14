@@ -516,6 +516,10 @@ namespace ODEditor
             {
                 gitVersion = reader.ReadToEnd();
             }
+            if (gitVersion == "")
+            {
+                gitVersion = "Unknown";
+            }
             this.Text += "v" + gitVersion;
             this.gitVersion = gitVersion;
 
