@@ -375,6 +375,19 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
             file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
 
+            int lssServer = 0;
+            if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Server")
+            {
+                lssServer = 1;
+            }
+            file.WriteLine(string.Format("  #define CO_NO_LSS_SERVER               {0}   //LSS Slave", lssServer));
+            int lssClient = 0;
+            if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Client")
+            {
+                lssClient = 1;
+            }
+            file.WriteLine(string.Format("  #define CO_NO_LSS_CLIENT               {0}   //LSS Master", lssClient));
+
             file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 

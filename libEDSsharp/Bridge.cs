@@ -198,6 +198,7 @@ namespace libEDSsharp
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("CompactPDO", eds.di.CompactPDO.ToString()));
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("GroupMessaging", eds.di.GroupMessaging.ToString()));
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("LSS_Supported", eds.di.LSS_Supported.ToString()));
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("LSS_Type", eds.di.LSS_Type));
 
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("Granularity", eds.di.Granularity.ToString()));
 
@@ -461,6 +462,9 @@ namespace libEDSsharp
                 eds.di.GroupMessaging = boolout;
             if (keypairs.ContainsKey("LSS_Supported") && bool.TryParse(keypairs["LSS_Supported"], out boolout))
                 eds.di.LSS_Supported = boolout;
+
+            if (keypairs.ContainsKey("LSS_Type"))
+                eds.di.LSS_Type = keypairs["LSS_Type"].ToString();
 
             byte byteout;
             if (keypairs.ContainsKey("Granularity") && byte.TryParse(keypairs["Granularity"], out byteout))

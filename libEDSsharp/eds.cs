@@ -622,6 +622,9 @@ namespace libEDSsharp
         [EdsExport]
         public bool LSS_Supported;
 
+        //[EdsExport] @fixme place this in EDS as comment
+        public string LSS_Type = "";
+
         public DeviceInfo(Dictionary<string, string> section)
         {
             infoheader = "CAN OPEN DeviceInfo";
