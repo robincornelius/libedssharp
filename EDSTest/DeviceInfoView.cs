@@ -80,6 +80,14 @@ namespace ODEditor
             checkBox_group_msg.Checked = eds.di.GroupMessaging;
             checkBox_dynamicchan.Checked = eds.di.DynamicChannelsSupported;
             checkBox_lss.Checked = eds.di.LSS_Supported;
+            if (eds.di.LSS_Type == "Client")
+            {
+                comboBox_lss.SelectedItem = "Client";
+            }
+            else
+            {
+                comboBox_lss.SelectedItem = "Server";
+            }
             textBox_Gran.Text = eds.di.Granularity.ToString();
 
             textBox_rxpdos.Text = eds.di.NrOfRXPDO.ToString();
@@ -155,6 +163,7 @@ namespace ODEditor
                 eds.di.GroupMessaging = checkBox_group_msg.Checked;
                 eds.di.DynamicChannelsSupported = checkBox_dynamicchan.Checked;
                 eds.di.LSS_Supported = checkBox_lss.Checked;
+                eds.di.LSS_Type = comboBox_lss.SelectedItem.ToString();
                 eds.di.Granularity = Convert.ToByte(textBox_Gran.Text);
 
                 eds.dc.NodeId = 0;
@@ -178,6 +187,17 @@ namespace ODEditor
             }
 
         }
-    
+
+        private void checkBox_lss_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_lss.Checked)
+            {
+                comboBox_lss.Enabled = true;
+            }
+            else
+            {
+                comboBox_lss.Enabled = false;
+            }
+        }
     }
 }

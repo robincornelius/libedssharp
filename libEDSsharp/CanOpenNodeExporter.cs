@@ -33,6 +33,7 @@ namespace libEDSsharp
     {
 
         private string folderpath;
+        private string gitVersion;
         private EDSsharp eds;
 
         private int enabledcount = 0;
@@ -45,9 +46,10 @@ namespace libEDSsharp
         List<UInt16> closings = new List<UInt16>();
 
 
-        public void export(string folderpath, EDSsharp eds)
+        public void export(string folderpath, string gitVersion, EDSsharp eds)
         {
             this.folderpath = folderpath;
+            this.gitVersion = gitVersion;
             this.eds = eds;
 
 
@@ -299,9 +301,11 @@ namespace libEDSsharp
    library, but you are not obliged to do so. If you do not wish
    to do so, delete this exception statement from your version.
  
-   This file was automatically generated with libedssharp Object
-   Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
+   This file was automatically generated with libedssharp Object");
+            
+            file.Write("   Dictionary Editor v" + this.gitVersion);
 
+            file.WriteLine(@"   DON'T EDIT THIS FILE MANUALLY !!!!
 *******************************************************************************/
 
 ");
@@ -322,6 +326,7 @@ namespace libEDSsharp
             file.WriteLine(@"/*******************************************************************************
    CANopen DATA DYPES
 *******************************************************************************/
+   typedef bool_t       BOOLEAN;
    typedef uint8_t      UNSIGNED8;
    typedef uint16_t     UNSIGNED16;
    typedef uint32_t     UNSIGNED32;
@@ -370,6 +375,19 @@ namespace libEDSsharp
 
             file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
             file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
+
+            int lssServer = 0;
+            if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Server")
+            {
+                lssServer = 1;
+            }
+            file.WriteLine(string.Format("  #define CO_NO_LSS_SERVER               {0}   //LSS Slave", lssServer));
+            int lssClient = 0;
+            if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Client")
+            {
+                lssClient = 1;
+            }
+            file.WriteLine(string.Format("  #define CO_NO_LSS_CLIENT               {0}   //LSS Master", lssClient));
 
             file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));

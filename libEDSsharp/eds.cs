@@ -649,6 +649,9 @@ namespace libEDSsharp
         [EdsExport]
         public bool LSS_Supported;
 
+        //[EdsExport] @fixme place this in EDS as comment
+        public string LSS_Type = "";
+
         public DeviceInfo()
         {
             infoheader = "CAN OPEN DeviceInfo";
@@ -1941,7 +1944,7 @@ namespace libEDSsharp
 
         static public UInt16 ConvertToUInt16(string defaultvalue)
         {
-            if (defaultvalue == null || defaultvalue == "")
+            if (defaultvalue == null || defaultvalue == "" )
                 return 0;
 
             return (Convert.ToUInt16(defaultvalue, getbase(defaultvalue)));
@@ -1949,7 +1952,7 @@ namespace libEDSsharp
 
         static public UInt32 ConvertToUInt32(string defaultvalue)
         {
-            if (defaultvalue == null || defaultvalue == "")
+            if (defaultvalue == null || defaultvalue == "" )
                 return 0;
 
             return (Convert.ToUInt32(defaultvalue, getbase(defaultvalue)));
