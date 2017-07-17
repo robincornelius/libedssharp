@@ -38,6 +38,8 @@ namespace ODEditor
 
         private string networkfilename;
 
+        private string gitVersion;
+
         public static Dictionary<UInt32, EDSsharp> TXCobMap = new Dictionary<UInt32, EDSsharp>();
         List<EDSsharp> network = new List<EDSsharp>();
 
@@ -214,7 +216,7 @@ namespace ODEditor
                     Warnings.warning_list.Clear();
 
                     CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                    cone.export(savePath, dv.eds);
+                    cone.export(savePath, this.gitVersion, dv.eds);
 
                     if (Warnings.warning_list.Count != 0)
                     {
@@ -505,6 +507,22 @@ namespace ODEditor
 
         private void ODEditor_MainForm_Load(object sender, EventArgs e)
         {
+            //read git version string, show in title bar 
+            //(https://stackoverflow.com/a/15145121)
+            string gitVersion = String.Empty;
+            using (Stream stream = System.Reflection.Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream("ODEditor." + "version.txt"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                gitVersion = reader.ReadToEnd();
+            }
+            if (gitVersion == "")
+            {
+                gitVersion = "Unknown";
+            }
+            this.Text += "v" + gitVersion;
+            this.gitVersion = gitVersion;
+
             //First lets create an appdata folder
 
             // The folder for the roaming current user 
@@ -812,7 +830,7 @@ namespace ODEditor
 
                 try
                 {
-                    cone.export(dv.eds.fi.exportFolder, dv.eds);
+                    cone.export(dv.eds.fi.exportFolder, this.gitVersion, dv.eds);
                 }
                 catch(Exception ex)
                 {
