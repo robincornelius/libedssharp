@@ -431,7 +431,8 @@ namespace libEDSsharp
             //NetworkManagment.CANopenGeneralFeatures.dynamicChannels = eds.di.DynamicChannelsSupported;   //fix me count of dynamic channles not handled yet eds only has bool
             NetworkManagement.CANopenGeneralFeatures.granularity = eds.di.Granularity;
             NetworkManagement.CANopenGeneralFeatures.groupMessaging = eds.di.GroupMessaging;
-            NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported;
+
+            NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported && eds.di.LSS_Type == "Client";
             NetworkManagement.CANopenGeneralFeatures.nrOfRxPDO = eds.di.NrOfRXPDO;
             NetworkManagement.CANopenGeneralFeatures.nrOfTxPDO = eds.di.NrOfTXPDO;
             //extra items
@@ -441,10 +442,11 @@ namespace libEDSsharp
             NetworkManagement.CANopenMasterFeatures = new ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures();
 
             NetworkManagement.CANopenMasterFeatures.bootUpMaster = eds.di.SimpleBootUpMaster;
+
             //Extra items
             //NetworkManagment.CANopenMasterFeatures.configurationManager;
             //NetworkManagment.CANopenMasterFeatures.flyingMaster;
-            //NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster;
+            NetworkManagement.CANopenMasterFeatures.layerSettingServiceMaster = eds.di.LSS_Supported && eds.di.LSS_Type == "Server";
             //NetworkManagment.CANopenMasterFeatures.SDOManager;
 
 
@@ -652,6 +654,8 @@ namespace libEDSsharp
 
                 } //Transport layer
 
+                eds.di.LSS_Supported = false;
+
                 if (NetworkManagment != null)
                 {
                     if (NetworkManagment.CANopenGeneralFeatures != null)
@@ -662,7 +666,14 @@ namespace libEDSsharp
 
                         eds.di.Granularity = NetworkManagment.CANopenGeneralFeatures.granularity;
                         eds.di.GroupMessaging = NetworkManagment.CANopenGeneralFeatures.groupMessaging;
-                        eds.di.LSS_Supported = NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave;
+
+                        //Fix me if Client and Server are set in XDD i can't deal with this and will default to Server
+                        if (NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave)
+                        {
+                            eds.di.LSS_Type = "Client";
+                            eds.di.LSS_Supported = true;
+                        }
+
                         eds.di.NrOfRXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfRxPDO;
                         eds.di.NrOfTXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfTxPDO;
 
@@ -679,7 +690,14 @@ namespace libEDSsharp
                         //fixme Extra items
                         //NetworkManagment.CANopenMasterFeatures.configurationManager;
                         //NetworkManagment.CANopenMasterFeatures.flyingMaster;
-                        //NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster;
+
+                        //Fix me if Client and Server are set in XDD i can't deal with this and will default to Server
+                        if (NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster)
+                        {
+                            eds.di.LSS_Supported = true;
+                            eds.di.LSS_Type = "Server";
+                        }
+
                         //NetworkManagment.CANopenMasterFeatures.SDOManager;
                     }
 
