@@ -220,7 +220,7 @@ namespace libEDSsharp
 
             dev.Other.File = new File();
 
-            dev.Other.File.FileName = eds.fi.FileName;
+            dev.Other.File.FileName = System.IO.Path.GetFileName(eds.xmlfilename); 
             
             dev.Other.File.FileCreationDate = eds.fi.CreationDateTime.ToString("MM-dd-yyyy");
             dev.Other.File.FileCreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
@@ -234,6 +234,7 @@ namespace libEDSsharp
             dev.Other.File.FileRevision = eds.fi.FileRevision;
 
             dev.Other.File.ExportFolder = eds.fi.exportFolder;
+            dev.Other.File.EdsFile = eds.edsfilename;
           
 
             return dev;
@@ -494,7 +495,7 @@ namespace libEDSsharp
             string dtcombined;
 
             eds.fi.FileName = dev.Other.File.FileName;
-            eds.edsfilename = dev.Other.File.FileName;
+            eds.edsfilename = dev.Other.File.EdsFile;
 
             dtcombined = string.Format("{0} {1}", dev.Other.File.FileCreationTime, dev.Other.File.FileCreationDate);
             try

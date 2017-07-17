@@ -101,6 +101,7 @@ namespace libEDSsharp
     public class EdsExport : Attribute
     {
         public UInt16 maxlength;
+        bool commentonly=false;
 
         public EdsExport()
         {
@@ -111,6 +112,17 @@ namespace libEDSsharp
             this.maxlength = maxlength;
         }
 
+       
+
+        public EdsExport(bool commentonly)
+        {
+            this.commentonly = commentonly;
+        }
+
+        public bool isReadOnly()
+        {
+            return commentonly;
+        }
     }
 
     public class DcfExport : EdsExport
@@ -252,13 +264,17 @@ namespace libEDSsharp
                 if (f.GetValue(this) == null)
                     continue;
 
+                EdsExport ex = (EdsExport)f.GetCustomAttribute(typeof(EdsExport));
+
+                bool comment = ex.isReadOnly();
+                
                 if (f.FieldType.Name == "Boolean")
                 {
-                    writer.WriteLine(string.Format("{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0));
+                    writer.WriteLine(string.Format("{2}{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0,comment==true?";":""));
                 }
                 else
                 {
-                    writer.WriteLine(string.Format("{0}={1}", f.Name, f.GetValue(this).ToString()));
+                    writer.WriteLine(string.Format("{2}{0}={1}", f.Name, f.GetValue(this).ToString(), comment == true ? ";" : ""));
                 }
             }
 
@@ -649,7 +665,7 @@ namespace libEDSsharp
         [EdsExport]
         public bool LSS_Supported;
 
-        //[EdsExport] @fixme place this in EDS as comment
+        [EdsExport(true)] //comment only, not supported by eds
         public string LSS_Type = "";
 
         public DeviceInfo()
@@ -1327,6 +1343,20 @@ namespace libEDSsharp
                 }
 
                 string line = linex.TrimStart(';');
+
+                if (linex.IndexOf(';') == 0 && linex.IndexOf(";LSS_Type") != -1)
+                {
+                    if (sectionname != null)
+                    {
+                        if (eds.ContainsKey(sectionname))
+                        {
+                            //could be more generic
+                            eds[sectionname].Add("LSS_Type", value);
+                        }
+                    }
+
+                    return;
+                }
 
                 //extract sections
                 {
