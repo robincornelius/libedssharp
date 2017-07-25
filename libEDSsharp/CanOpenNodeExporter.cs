@@ -33,6 +33,7 @@ namespace libEDSsharp
     {
 
         private string folderpath;
+        private string gitVersion;
         private EDSsharp eds;
 
         private int enabledcount = 0;
@@ -45,9 +46,10 @@ namespace libEDSsharp
         List<UInt16> closings = new List<UInt16>();
 
 
-        public void export(string folderpath, EDSsharp eds)
+        public void export(string folderpath, string gitVersion, EDSsharp eds)
         {
             this.folderpath = folderpath;
+            this.gitVersion = gitVersion;
             this.eds = eds;
      
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
@@ -302,9 +304,11 @@ namespace libEDSsharp
    library, but you are not obliged to do so. If you do not wish
    to do so, delete this exception statement from your version.
  
-   This file was automatically generated with libedssharp Object
-   Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
+   This file was automatically generated with libedssharp Object");
+            
+            file.Write("   Dictionary Editor v" + this.gitVersion);
 
+            file.WriteLine(@"   DON'T EDIT THIS FILE MANUALLY !!!!
 *******************************************************************************/
 
 ");

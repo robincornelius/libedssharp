@@ -99,6 +99,17 @@ namespace libEDSsharp
   
     public class EdsExport : Attribute
     {
+        bool commentonly;
+
+        public EdsExport(bool commentonly=false)
+        {
+            this.commentonly = commentonly;
+        }
+
+        public bool isReadOnly()
+        {
+            return commentonly;
+        }
     }
 
     public class InfoSection
@@ -220,13 +231,17 @@ namespace libEDSsharp
                 if (f.GetValue(this) == null)
                     continue;
 
+                EdsExport ex = (EdsExport)f.GetCustomAttribute(typeof(EdsExport));
+
+                bool comment = ex.isReadOnly();
+                
                 if (f.FieldType.Name == "Boolean")
                 {
-                    writer.WriteLine(string.Format("{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0));
+                    writer.WriteLine(string.Format("{2}{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0,comment==true?";":""));
                 }
                 else
                 {
-                    writer.WriteLine(string.Format("{0}={1}", f.Name, f.GetValue(this).ToString()));
+                    writer.WriteLine(string.Format("{2}{0}={1}", f.Name, f.GetValue(this).ToString(), comment == true ? ";" : ""));
                 }
             }
 
@@ -622,7 +637,7 @@ namespace libEDSsharp
         [EdsExport]
         public bool LSS_Supported;
 
-        //[EdsExport] @fixme place this in EDS as comment
+        [EdsExport(true)] //comment only, not supported by eds
         public string LSS_Type = "Server";
 
         public DeviceInfo(Dictionary<string, string> section)
@@ -1073,7 +1088,7 @@ namespace libEDSsharp
             string value = "";
 
             //Special Handling of custom fields
-            if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != 0)
+            if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") == 1)
             {
                 if(sectionname!=null)
                 {
@@ -1086,6 +1101,22 @@ namespace libEDSsharp
 
                 return;
             }
+
+            if (linex.IndexOf(';') == 0 && linex.IndexOf(";LSS_Type") == 1)
+            {
+                if (sectionname != null)
+                {
+                    if (eds.ContainsKey(sectionname))
+                    {
+                        //could be more generic
+                        eds[sectionname].Add("LSS_Type", value);
+                    }
+                }
+
+                return;
+            }
+
+
 
             string line = linex.TrimStart(';');
 

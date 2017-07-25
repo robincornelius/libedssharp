@@ -207,6 +207,8 @@ namespace Xml2CSharp
         public byte FileRevision { get; set; }
         [XmlAttribute(AttributeName = "exportFolder")]
         public string ExportFolder { get; set; }
+        [XmlAttribute(AttributeName = "EdsFile")]
+        public string EdsFile { get; set; }
 
     }
 
