@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of libEDSsharp.
 
     libEDSsharp is free software: you can redistribute it and/or modify
@@ -126,7 +126,7 @@ namespace libEDSsharp
             write2linetablerow("Data Type", dt.ToString());
             write2linetablerow("Default Value", od.defaultvalue);
 
-            write2linetablerow("Location", od.location.ToString());
+            write2linetablerow("Location", od.StorageLocation);
             write2linetablerow("Access type", od.accesstype.ToString());
             write2linetablerow("PDO mapping", od.PDOMapping);
             write2linetablerow("No Sub index", od.nosubindexes);

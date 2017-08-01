@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of libEDSsharp.
 
     libEDSsharp is free software: you can redistribute it and/or modify
@@ -81,11 +81,26 @@ namespace libEDSsharp
     }
 
     //Additional Info for CANOpenNode c and h generation
-    public enum StorageLocation
+    public class StorageLocation : List<string>
     {
-        ROM=1,
-        RAM=2,
-        EEPROM=3,
+        public StorageLocation()
+        {
+            /* those are the values used in CANopenNode, starting at index "1".
+             * Don't change the indexes, they are also used as binary flags */
+            Add("Unused");
+            Add("ROM");
+            Add("RAM");
+            Add("EEPROM");
+        }
+
+        new public void Add(string item)
+        {
+            /* we check if the storage location already exists */
+            if ( ! Contains(item))
+            {
+                base.Add(item);
+            }
+        }
     }
 
     public enum PDOMappingType
@@ -698,7 +713,7 @@ namespace libEDSsharp
         public string Label = "";
         public string Description = "";
 
-        public StorageLocation location = StorageLocation.RAM;
+        public string StorageLocation = "RAM";
         public SortedDictionary<UInt16, ODentry> subobjects = new SortedDictionary<UInt16, ODentry>();
         public ODentry parent = null;
 
@@ -790,7 +805,7 @@ namespace libEDSsharp
 
             writer.WriteLine(string.Format("ParameterName={0}", parameter_name));
             writer.WriteLine(string.Format("ObjectType=0x{0:X}", (int)objecttype));
-            writer.WriteLine(string.Format(";StorageLocation={0}",location.ToString()));
+            writer.WriteLine(string.Format(";StorageLocation={0}",StorageLocation));
 
             if (objecttype == ObjectType.ARRAY)
             {
@@ -1016,6 +1031,8 @@ namespace libEDSsharp
         public SortedDictionary<UInt16, ODentry> ods;
         public SortedDictionary<UInt16, ODentry> dummy_ods;
 
+        public StorageLocation storageLocation = new StorageLocation();
+
         public FileInfo fi;
         public DeviceInfo di;
         public MandatoryObjects md;
@@ -1189,7 +1206,7 @@ namespace libEDSsharp
 
                 if(kvp.Value.ContainsKey("StorageLocation"))
                 {
-                    Enum.TryParse(kvp.Value["StorageLocation"], out od.location);
+                    od.StorageLocation = kvp.Value["StorageLocation"];
                 }
 
                 if (od.objecttype == ObjectType.VAR)
@@ -1654,7 +1671,7 @@ mapped object  (subindex 1...8)
             }
 
             od_comparam.objecttype = ObjectType.REC;
-            od_comparam.location = StorageLocation.ROM;
+            od_comparam.StorageLocation = "ROM";
             od_comparam.accesstype = AccessType.ro;
             od_comparam.PDOtype = PDOMappingType.no;
 
@@ -1691,7 +1708,7 @@ mapped object  (subindex 1...8)
             }
 
             od_mapping.objecttype = ObjectType.REC;
-            od_mapping.location = StorageLocation.ROM;
+            od_mapping.StorageLocation = "ROM";
             od_mapping.accesstype = AccessType.rw; //Same as default but inconsistant with ROM above
             od_mapping.PDOtype = PDOMappingType.no;
 

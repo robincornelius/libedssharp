@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of libEDSsharp.
 
     libEDSsharp is free software: you can redistribute it and/or modify
@@ -57,7 +57,8 @@ namespace libEDSsharp
                     coo.Name = od.parameter_name;
                     coo.ObjectType = od.objecttype.ToString();
                     coo.Disabled = od.Disabled.ToString().ToLower();
-                    coo.MemoryType = od.location.ToString();
+                    coo.MemoryType = od.StorageLocation;
+                    eds.storageLocation.Add(od.StorageLocation);
                     coo.AccessType = od.accesstype.ToString();
                     coo.DataType = string.Format("0x{0:x2}",(int)od.datatype);
                     coo.DefaultValue = od.defaultvalue;
@@ -329,10 +330,13 @@ namespace libEDSsharp
 
                 if(coo.Label!=null)
                     entry.Label = coo.Label.Text; //FIXME LANG
-                
-                if(coo.MemoryType!=null)
-                    entry.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), coo.MemoryType);
-                
+
+                if (coo.MemoryType != null)
+                {
+                    entry.StorageLocation = coo.MemoryType;
+                    eds.storageLocation.Add(coo.MemoryType);
+                }
+
                 eds.ods.Add(entry.index, entry);
 
                 if (entry.index == 0x1000 || entry.index==0x1001 || entry.index==0x1018)
@@ -379,7 +383,7 @@ namespace libEDSsharp
                         subentry.PDOtype = entry.PDOtype;
                     }
 
-                    subentry.location = entry.location;
+                    subentry.StorageLocation = entry.StorageLocation;
                     subentry.parent = entry;
 
                     subentry.objecttype = ObjectType.VAR;
