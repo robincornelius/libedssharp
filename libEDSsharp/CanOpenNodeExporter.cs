@@ -1230,12 +1230,12 @@ const CO_OD_entry_t CO_OD[");
 
                     if (sub.datatype != DataType.DOMAIN)
                     {
-                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), datasize, arrayaccess, getlocation(od.location)));
+                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, {3} }},", cname, subcname, getflags(sub), datasize, arrayaccess, getlocation(od.location)));
                     }
                     else
                     {
                         //Domain type MUST have its data pointer set to 0 for CanOpenNode
-                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), datasize, arrayaccess, getlocation(od.location)));
+                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, {3} }},", cname, subcname, getflags(sub), datasize, arrayaccess, getlocation(od.location)));
                     }
                 }
 
