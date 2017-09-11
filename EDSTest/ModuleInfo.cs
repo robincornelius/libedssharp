@@ -57,6 +57,19 @@ namespace ODEditor
                 lvi2.SubItems.Add(string.Format("{0}", mi.OrderCode));
 
 
+                if (eds.cm.connectedmodulelist.Count > 0)
+                {
+                    if (eds.cm.connectedmodulelist.ContainsKey(kvp.Key))
+                    {
+                        lvi2.BackColor = Color.Green;
+                    }
+                    else
+                    {
+                        lvi2.BackColor = Color.Red;
+                    }
+                }
+
+
                 listView_modules.Items.Add(lvi2);
 
 
@@ -77,9 +90,18 @@ namespace ODEditor
 
             foreach(UInt16 sindex in mse.objectlist.Values)
             {
+                ListViewItem lvi = null;
 
-                ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}",sindex));
-                lvi.SubItems.Add(eds.ods[sindex].parameter_name);
+                if (eds.ods.ContainsKey(sindex))
+                {
+                    lvi = new ListViewItem(string.Format("0x{0:x4}",sindex));
+                    lvi.SubItems.Add(eds.ods[sindex].parameter_name);
+                }
+                else
+                {
+                    lvi = new ListViewItem(string.Format("0x{0:x4}", sindex));
+                    lvi.SubItems.Add("** FAULT OD NOT FOUND **");
+                }
 
                 listView_extends.Items.Add(lvi);
 
@@ -89,11 +111,14 @@ namespace ODEditor
 
             textBox_modulecomments.Clear();
 
-            ModuleComments mc = eds.mc[index];
-
-            foreach (string s in mc.comments)
+            if (eds.mc.ContainsKey(index))
             {
-                textBox_modulecomments.AppendText(s + "\r\n");
+                ModuleComments mc = eds.mc[index];
+
+                foreach (string s in mc.comments)
+                {
+                    textBox_modulecomments.AppendText(s + "\r\n");
+                }
             }
 
         }
