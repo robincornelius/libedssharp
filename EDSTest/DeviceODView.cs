@@ -186,7 +186,7 @@ namespace ODEditor
             }
 
 
-            updateselectedindexdisplay(selectedobject.index);
+            updateselectedindexdisplay(selectedobject.index, currentmodule);
             validateanddisplaydata();
 
             populateindexlists(); 
@@ -198,7 +198,7 @@ namespace ODEditor
             if (selectedobject == null)
                 return;
 
-            updateselectedindexdisplay(selectedobject.index);
+            updateselectedindexdisplay(selectedobject.index, currentmodule);
         }
 
         public void validateanddisplaydata()
@@ -216,7 +216,15 @@ namespace ODEditor
             ODentry od = (ODentry)selectedobject;
 
 
-            label_index.Text = string.Format("0x{0:x4}", od.index);
+            if (currentmodule == 0)
+            {
+                label_index.Text = string.Format("0x{0:x4}", od.index);
+            }
+            else
+            {
+                label_index.Text = string.Format("0x{0:x4} in module {1} -- {2}", od.index,currentmodule,eds.modules[currentmodule].mi.ProductName);
+            }
+
             textBox_name.Text = od.parameter_name;
             textBox_denotation.Text = od.denotation;
 
@@ -360,9 +368,15 @@ namespace ODEditor
 
 
         ODentry selectedindexod = null;
-        private void updateselectedindexdisplay(UInt16 index)
+        UInt16 currentmodule = 0;
+
+        private void updateselectedindexdisplay(UInt16 index,UInt16 mod)
         {
-            selectedindexod = eds.ods[index];
+
+         
+            selectedindexod = getOD(index,mod);
+            currentmodule = mod;
+
             updateselectedindexdisplay();
         }
 
@@ -469,7 +483,7 @@ namespace ODEditor
                 return;
 
             UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
-            updateselectedindexdisplay(idx);
+            updateselectedindexdisplay(idx, currentmodule);
 
             selectedobject = eds.ods[idx];
             validateanddisplaydata();
@@ -488,10 +502,30 @@ namespace ODEditor
                 return;
 
             ListViewItem lvi = listview.SelectedItems[0];
-            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
+
+            currentmodule = 0;
+
+            UInt16 idx;
+            if (lvi.Text.Contains('('))
+            {
+                int i = 1+lvi.Text.IndexOf(' ');
+                string id = lvi.Text.Substring(i, lvi.Text.Length - i);
+                idx = Convert.ToUInt16(id, 16);
+
+                string mods = lvi.Text.Substring(1, i - 3);
+
+                currentmodule = Convert.ToUInt16(mods, 10);
+
+            }
+            else
+            {
+                idx = Convert.ToUInt16(lvi.Text, 16);
+            }
 
             if (e.Button == MouseButtons.Right)
             {
+                if (currentmodule != 0)
+                    return;
 
                 if (listview.FocusedItem.Bounds.Contains(e.Location) == true)
                 {
@@ -513,10 +547,10 @@ namespace ODEditor
                 return;
             }
 
-            updateselectedindexdisplay(idx);
+            updateselectedindexdisplay(idx, currentmodule);
 
+            selectedobject = getOD(idx, currentmodule);
 
-            selectedobject = eds.ods[idx];
             validateanddisplaydata();
 
             listView_mandatory_objects.HideSelection = true;
@@ -701,6 +735,39 @@ namespace ODEditor
 
             }
 
+
+          
+            foreach (libEDSsharp.Module m in eds.modules.Values)
+            {
+                foreach (KeyValuePair<UInt16, ODentry> kvp in m.modulesubext)
+                {
+
+                
+                    UInt16 index = kvp.Value.index;
+                    ListViewItem lvi = new ListViewItem(string.Format("({0}) 0x{1:x4}", m.moduleindex,kvp.Value.index));
+                    lvi.SubItems.Add(kvp.Value.parameter_name);
+                    lvi.Tag = kvp.Value;
+                    if (selectedobject != null)
+                        if (index == selectedobject.index)
+                            lvi.Selected = true;
+
+                    lvi.ForeColor = Color.Blue;
+
+                    if (index >= 0x2000 && index < 0x6000)
+                    {
+                        listView_manufacture_objects.Items.Add(lvi);
+                    }
+                    else
+                    {
+                        listView_optional_objects.Items.Add(lvi);
+                    }
+
+                }
+            }
+
+
+
+
             listView_mandatory_objects.EndUpdate();
             listView_manufacture_objects.EndUpdate();
             listView_optional_objects.EndUpdate();
@@ -778,7 +845,7 @@ namespace ODEditor
 
                 //Now switch to it as well Bug #26
 
-                updateselectedindexdisplay(od.index);
+                updateselectedindexdisplay(od.index, currentmodule);
                 selectedobject = eds.ods[od.index];
                 validateanddisplaydata();
 
@@ -834,7 +901,11 @@ namespace ODEditor
             if (MessageBox.Show(string.Format("Really delete index 0x{0:x4} ?", od.index), "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 eds.dirty = true;
-                eds.ods.Remove(od.index);
+                if (currentmodule == 0)
+                {
+                    eds.ods.Remove(od.index);
+                }
+                
                 populateindexlists();
             }
 
@@ -910,7 +981,7 @@ namespace ODEditor
                 }
 
                 eds.dirty = true;
-                updateselectedindexdisplay(selectedobject.index);
+                updateselectedindexdisplay(selectedobject.index, currentmodule);
                 validateanddisplaydata();
 
             }
@@ -947,7 +1018,7 @@ namespace ODEditor
                 od.parent.subobjects = newlist;
 
                 eds.dirty = true;
-                updateselectedindexdisplay(selectedobject.index);
+                updateselectedindexdisplay(selectedobject.index, currentmodule);
                 validateanddisplaydata();
             }
 
@@ -986,7 +1057,7 @@ namespace ODEditor
                     if(frm.ShowDialog()==DialogResult.OK)
                     {
                         od.defaultvalue = string.Format("0x{0:x2}",frm.maxsubindex);
-                        updateselectedindexdisplay(selectedobject.index);
+                        updateselectedindexdisplay(selectedobject.index, currentmodule);
                         validateanddisplaydata();
                     }
                 }
@@ -1072,6 +1143,31 @@ namespace ODEditor
                 }
             }
         }
+
+        private ODentry getOD(UInt16 index, UInt16 selectedmodule)
+        {
+            ODentry ret = null;
+
+            if (selectedmodule == 0)
+            {
+                if (eds.ods.ContainsKey(index))
+                {
+                    return eds.ods[index];
+                }
+            }
+            else
+            {
+
+                if (eds.modules.ContainsKey(selectedmodule))
+                {
+                    return eds.modules[selectedmodule].modulesubext[index];
+                }
+  
+            }
+
+            return null; ;
+
+        }
     }
 
     public static class ControlExtensions
@@ -1082,5 +1178,7 @@ namespace ODEditor
             method.Invoke(control, new object[] { ControlStyles.OptimizedDoubleBuffer, enable });
         }
     }
+
+  
 
 }

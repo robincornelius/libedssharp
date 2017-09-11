@@ -100,8 +100,17 @@ namespace ODEditor
                 }
                 else
                 {
-                    lvi = new ListViewItem(string.Format("0x{0:x4}", sindex));
-                    lvi.SubItems.Add("** FAULT OD NOT FOUND **");
+                    if (eds.modules[index].modulesubext.ContainsKey(sindex))
+                    {
+                        lvi = new ListViewItem(string.Format("0x{0:x4}", sindex));
+                        lvi.SubItems.Add(eds.modules[index].modulesubext[sindex].parameter_name);
+
+                    }
+                    else
+                    {
+                        lvi = new ListViewItem(string.Format("0x{0:x4}", sindex));
+                        lvi.SubItems.Add("** FAULT OD NOT FOUND **");
+                    }
                 }
 
                 listView_extends.Items.Add(lvi);

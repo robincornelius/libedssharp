@@ -955,6 +955,11 @@ namespace libEDSsharp
             }
         }
 
+        //FIXME Count "If several modules are gathered to form a new Sub-Index,
+        //then the number is 0, followed by semicolon and the
+        //number of bits that are created per module to build a new
+        //Sub-Index"
+
         [EdsExport]
         public byte count = 0;
 
