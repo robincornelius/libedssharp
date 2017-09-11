@@ -638,7 +638,7 @@ namespace libEDSsharp
         public bool LSS_Supported;
 
         [EdsExport(true)] //comment only, not supported by eds
-        public string LSS_Type = "";
+        public string LSS_Type = "Server";
 
         public DeviceInfo(Dictionary<string, string> section)
         {
