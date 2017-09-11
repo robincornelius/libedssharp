@@ -812,10 +812,15 @@ const CO_OD_entry_t CO_OD[");
                 //Arrays really should obey the max subindex paramater not the physical number of elements
                 if (od.objecttype == ObjectType.ARRAY)
                 {
-                    if ((od.getmaxsubindex() != nosubindexs) && od.index != 0x1003) //ignore 0x1003, it is a special case
+                    if ((od.getmaxsubindex() != nosubindexs)) 
                     {
-                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex()));
-                        nosubindexs = od.getmaxsubindex();
+
+                        if (od.index != 0x1003 && od.index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
+                        {
+
+                            Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex()));
+                            nosubindexs = od.getmaxsubindex();
+                        }
                     }
                 }
 

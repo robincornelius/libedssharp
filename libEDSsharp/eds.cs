@@ -353,6 +353,7 @@ namespace libEDSsharp
         public Dictionary<int, int> objectlist;
         public string infoheader;
         public string edssection;
+        public string countmsg = "Supported Objects";
 
         public SupportedObjects()
         {
@@ -383,7 +384,7 @@ namespace libEDSsharp
             msg = "*****************************************************\n";
             msg += String.Format("*{0,-51}*\n", String.Format("{0," + ((51 + infoheader.Length) / 2).ToString() +  "}", infoheader));
             msg += "*****************************************************\n";
-            msg += string.Format("\nSupported Objects = {0}\n", objectlist.Count);
+            msg += string.Format("\n{0} = {1}\n", countmsg, objectlist.Count);
             foreach(KeyValuePair<int,int> kvp in objectlist)
             {
                 msg += string.Format("{0,-5}: {1:x4}\n", kvp.Key, kvp.Value);
@@ -396,7 +397,7 @@ namespace libEDSsharp
         public void write(StreamWriter writer)
         {
             writer.WriteLine("[" + edssection + "]");
-            writer.WriteLine(string.Format("SupportedObjects={0}", objectlist.Count));
+            writer.WriteLine(string.Format("{0}={1}", countmsg,objectlist.Count));
             foreach (KeyValuePair<int, int> kvp in objectlist)
             {
                 writer.WriteLine(string.Format("{0}=0x{1:X4}", kvp.Key, kvp.Value));
@@ -747,6 +748,49 @@ namespace libEDSsharp
         {
             parse(section);
         }
+
+       
+    }
+
+    public class ConnectedModules : SupportedObjects
+    {
+        [EdsExport]
+        public UInt16 NrOfEntries
+        {
+            get {  return (UInt16)connectedmodulelist.Count;  }
+        }
+
+        public Dictionary<int, int> connectedmodulelist;
+
+        public ConnectedModules()
+        {
+            infoheader = "CAN OPEN Connected Modules";
+            edssection = "ConnectedModules";
+            countmsg = "NrOfEntries";
+            connectedmodulelist = new Dictionary<int, int>();
+        }
+
+        public ConnectedModules(Dictionary<string, string> section) : this()
+        {
+            parse(section);
+
+            
+            foreach(KeyValuePair<int,int> kvp in this.objectlist)
+            {
+
+
+                UInt16 K = (UInt16)kvp.Value;
+                UInt16 V = (UInt16)kvp.Key;
+
+                connectedmodulelist.Add(K, V);
+
+
+            }
+
+
+        }
+
+       
     }
 
 
@@ -1269,6 +1313,7 @@ namespace libEDSsharp
         public DeviceCommissioning dc;
 
         public SupportedModules sm;
+        public ConnectedModules cm;
         public Dictionary<UInt16, ModuleInfo> mi;
         public Dictionary<UInt16, ModuleComments> mc;
         public Dictionary<UInt16, ModuleSubExtends> mse;
@@ -1297,6 +1342,7 @@ namespace libEDSsharp
             dc = new DeviceCommissioning();
             c = new Comments();
             sm = new SupportedModules();
+            cm = new ConnectedModules();
             mi = new Dictionary<ushort, ModuleInfo>();
             mc = new Dictionary<ushort, ModuleComments>();
             mse = new Dictionary<ushort, ModuleSubExtends>();
@@ -1641,10 +1687,16 @@ namespace libEDSsharp
                 }
 
                 fi = new FileInfo(eds["FileInfo"]);
-                du = new Dummyusage(eds["DummyUsage"]);
+                if(eds.ContainsKey("DummyUsage"))
+                    du = new Dummyusage(eds["DummyUsage"]);
+
                 md = new MandatoryObjects(eds["MandatoryObjects"]);
-                oo = new OptionalObjects(eds["OptionalObjects"]);
-                mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
+
+                if(eds.ContainsKey("OptionalObjects"))
+                    oo = new OptionalObjects(eds["OptionalObjects"]);
+
+                if(eds.ContainsKey("ManufacturerObjects"))
+                    mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
 
                 //Only DCF not EDS files
                 dc = new DeviceCommissioning();
@@ -1707,7 +1759,13 @@ namespace libEDSsharp
                     }
                 }
 
-                //COMPACT PDO
+
+                if (eds.ContainsKey("ConnectedModules"))
+                {
+                    cm = new ConnectedModules(eds["ConnectedModules"]);              
+                }
+
+                 //COMPACT PDO
 
                 if (di.CompactPDO != 0)
                 {
@@ -1943,12 +2001,21 @@ namespace libEDSsharp
             {
                 sm.write(writer, ft);
 
-                for (UInt16 moduleid = 1; moduleid < sm.NrOfEntries; moduleid++)
+                for (UInt16 moduleid = 1; moduleid <= sm.NrOfEntries; moduleid++)
                 {
                     mi[moduleid].write(writer, ft);
-                    mc[moduleid].write(writer);
-                    mse[moduleid].write(writer);
+
+                    if(mc.ContainsKey(moduleid))
+                        mc[moduleid].write(writer);
+
+                    if(mse.ContainsKey(moduleid))
+                        mse[moduleid].write(writer);
                 }
+            }
+
+            if(cm.NrOfEntries > 0 && ft == InfoSection.filetype.File_DCF)
+            {
+                cm.write(writer);
             }
 
 
