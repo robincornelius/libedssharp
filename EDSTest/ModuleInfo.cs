@@ -46,10 +46,12 @@ namespace ODEditor
             this.listView_modules.Items.Clear();
 
 
-            foreach(KeyValuePair<UInt16,libEDSsharp.ModuleInfo> kvp in eds.mi)
+            foreach(KeyValuePair<UInt16,Module> kvp  in eds.modules)
             {
+                Module m = kvp.Value;
+                UInt16 modindex = kvp.Key;
 
-                libEDSsharp.ModuleInfo mi = kvp.Value;
+                libEDSsharp.ModuleInfo mi = m.mi;
                 ListViewItem lvi2 = new ListViewItem(String.Format("{0}", kvp.Key));
                 lvi2.SubItems.Add(string.Format("{0}", mi.ProductName));
                 lvi2.SubItems.Add(string.Format("{0}", mi.ProductVersion));
@@ -71,9 +73,8 @@ namespace ODEditor
 
 
                 listView_modules.Items.Add(lvi2);
-
-
-            }
+            
+            }         
 
         }
 
@@ -86,9 +87,9 @@ namespace ODEditor
 
             UInt16 index = Convert.ToUInt16(listView_modules.SelectedItems[0].Text, 10);
 
-            ModuleSubExtends mse = eds.mse[index];
+            ModuleSubExtends mse = eds.modules[index].mse;
 
-            foreach(UInt16 sindex in mse.objectlist.Values)
+            foreach (UInt16 sindex in mse.objectlist.Values)
             {
                 ListViewItem lvi = null;
 
@@ -111,9 +112,9 @@ namespace ODEditor
 
             textBox_modulecomments.Clear();
 
-            if (eds.mc.ContainsKey(index))
+            if (eds.modules.ContainsKey(index))
             {
-                ModuleComments mc = eds.mc[index];
+                ModuleComments mc = eds.modules[index].mc;
 
                 foreach (string s in mc.comments)
                 {

@@ -806,15 +806,15 @@ namespace libEDSsharp
             set { _moduleindex = value; edssection = String.Format("M{0}FixedObjects",value); }
         }
 
-        public MxFixedObjects()
+        public MxFixedObjects(UInt16 modindex)
         {
             infoheader = "CAN OPEN Module Fixed Objects";
-            edssection = "MxFixedObjects";
+            this.moduleindex = modindex;
             countmsg = "NrOfEntries";
             connectedmodulelist = new Dictionary<int, int>();
         }
 
-        public MxFixedObjects(Dictionary<string, string> section) : this()
+        public MxFixedObjects(Dictionary<string, string> section, UInt16 modindex) : this(modindex)
         {
             parse(section);
 
@@ -1324,6 +1324,35 @@ namespace libEDSsharp
         }
     }
 
+    public class Module
+    {
+
+        public ModuleInfo mi;
+        public ModuleComments mc;
+        public ModuleSubExtends mse;
+        public MxFixedObjects mxfo;
+        public SortedDictionary<UInt16, ODentry> modulefixedobjects;
+        public SortedDictionary<UInt16, ODentry> modulesubext;
+
+        public UInt16 moduleindex;
+
+        public Module(UInt16 moduleindex)
+        {
+
+            this.moduleindex = moduleindex;
+
+            mi = new ModuleInfo(moduleindex);
+            mc = new ModuleComments(moduleindex);
+            mse = new ModuleSubExtends(moduleindex);
+            mxfo = new MxFixedObjects(moduleindex);
+            modulefixedobjects = new SortedDictionary<ushort, ODentry>();
+            modulesubext = new SortedDictionary<ushort, ODentry>();
+        }
+
+
+
+    }
+
     public class EDSsharp
     {
 
@@ -1382,13 +1411,15 @@ namespace libEDSsharp
 
         public SupportedModules sm;
         public ConnectedModules cm;
-        public Dictionary<UInt16, ModuleInfo> mi;
-        public Dictionary<UInt16, ModuleComments> mc;
-        public Dictionary<UInt16, ModuleSubExtends> mse;
-        public Dictionary<ushort, MxFixedObjects> mxfo;
 
-        public SortedDictionary<UInt16, SortedDictionary<UInt16, ODentry>> modulefixedobjects;
-        public SortedDictionary<UInt16, SortedDictionary<UInt16, ODentry>> modulesubext;
+        // public Dictionary<UInt16, ModuleInfo> mi;
+        // public Dictionary<UInt16, ModuleComments> mc;
+        // public Dictionary<UInt16, ModuleSubExtends> mse;
+        // public Dictionary<ushort, MxFixedObjects> mxfo;
+        // public SortedDictionary<UInt16, SortedDictionary<UInt16, ODentry>> modulefixedobjects;
+        // public SortedDictionary<UInt16, SortedDictionary<UInt16, ODentry>> modulesubext;
+
+        public Dictionary<UInt16, Module> modules;
 
         public UInt16 NodeId = 0;
 
@@ -1413,12 +1444,16 @@ namespace libEDSsharp
             c = new Comments();
             sm = new SupportedModules();
             cm = new ConnectedModules();
-            mi = new Dictionary<ushort, ModuleInfo>();
-            mc = new Dictionary<ushort, ModuleComments>();
-            mse = new Dictionary<ushort, ModuleSubExtends>();
-            mxfo = new Dictionary <ushort, MxFixedObjects>();
-            modulefixedobjects = new SortedDictionary<ushort, SortedDictionary<ushort, ODentry>>();
-            modulesubext = new SortedDictionary<ushort, SortedDictionary<ushort, ODentry>>();
+
+
+            //mi = new Dictionary<ushort, ModuleInfo>();
+            //mc = new Dictionary<ushort, ModuleComments>();
+            //mse = new Dictionary<ushort, ModuleSubExtends>();
+            //mxfo = new Dictionary <ushort, MxFixedObjects>();
+            //modulefixedobjects = new SortedDictionary<ushort, SortedDictionary<ushort, ODentry>>();
+            //modulesubext = new SortedDictionary<ushort, SortedDictionary<ushort, ODentry>>();
+
+            modules = new Dictionary<UInt16, Module>();
 
 
             //FIXME no way for the Major/Minor to make it to EDSVersion
@@ -1559,24 +1594,17 @@ namespace libEDSsharp
                     UInt16 modindex = Convert.ToUInt16(m2.Groups[1].Value);
                     UInt16 odindex = Convert.ToUInt16(m2.Groups[3].Value);
 
-                    if (m2.Groups[2].ToString() == "SubExt")
-                    {
-                        if (!modulesubext.ContainsKey(modindex))
-                        {
-                            modulesubext.Add(modindex, new SortedDictionary<ushort, ODentry>());
-                        }
+                    if (!modules.ContainsKey(modindex))
+                        modules.Add(modindex, new Module(modindex));
 
-                        target = modulesubext[modindex];
+                    if (m2.Groups[2].ToString() == "SubExt")
+                    {      
+                        target = modules[modindex].modulesubext;
+                          
                     }
                     else
                     {
-
-                        if (!modulefixedobjects.ContainsKey(modindex))
-                        {
-                            modulefixedobjects.Add(modindex, new SortedDictionary<ushort, ODentry>());
-                        }
-
-                        target = modulefixedobjects[modindex];
+                        target = modules[modindex].modulefixedobjects;
                     }
                 }
 
@@ -1852,7 +1880,12 @@ namespace libEDSsharp
                         {
                             UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
                             ModuleInfo mi = new ModuleInfo(eds[s], modindex);
-                            this.mi.Add(modindex, mi);
+
+                            if (!modules.ContainsKey(modindex))
+                                modules.Add(modindex, new Module(modindex));
+
+                            modules[modindex].mi = mi;
+
                         }
 
 
@@ -1864,7 +1897,12 @@ namespace libEDSsharp
                         {
                             UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
                             ModuleComments mc = new ModuleComments(eds[s], modindex);
-                            this.mc.Add(modindex, mc);
+
+                            if (!modules.ContainsKey(modindex))
+                                modules.Add(modindex, new Module(modindex));
+
+                            modules[modindex].mc = mc;
+
                         }
 
                         pat = @"^M([0-9]+)SubExtends";
@@ -1877,7 +1915,11 @@ namespace libEDSsharp
 
                             UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
                             ModuleSubExtends mse = new ModuleSubExtends(eds[s], modindex);
-                            this.mse.Add(modindex, mse);
+
+                            if (!modules.ContainsKey(modindex))
+                                modules.Add(modindex, new Module(modindex));
+
+                            modules[modindex].mse = mse;
                         }
 
 
@@ -1889,8 +1931,13 @@ namespace libEDSsharp
                         if (m.Success)
                         {
                             UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                            MxFixedObjects mxf = new MxFixedObjects(eds[s]);
-                            this.mxfo.Add(modindex, mxf);
+                            MxFixedObjects mxf = new MxFixedObjects(eds[s],modindex);
+
+                            if (!modules.ContainsKey(modindex))
+                                modules.Add(modindex, new Module(modindex));
+
+                            modules[modindex].mxfo = mxf;
+
                         }
                     }
                 }
@@ -2139,13 +2186,34 @@ namespace libEDSsharp
 
                 for (UInt16 moduleid = 1; moduleid <= sm.NrOfEntries; moduleid++)
                 {
-                    mi[moduleid].write(writer, ft);
 
-                    if(mc.ContainsKey(moduleid))
-                        mc[moduleid].write(writer);
+                    modules[moduleid].mi.write(writer, ft);
 
-                    if(mse.ContainsKey(moduleid))
-                        mse[moduleid].write(writer);
+                    modules[moduleid].mc.write(writer);
+
+                    modules[moduleid].mse.write(writer);
+
+
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in modules[moduleid].modulesubext)
+                    {
+                        ODentry od = kvp2.Value;
+                        od.write(writer, ft, ODentry.odtype.SUBEXT, moduleid);
+
+                    }
+
+                    modules[moduleid].mxfo.write(writer);
+
+                    foreach (KeyValuePair<UInt16, ODentry> kvp3 in modules[moduleid].modulefixedobjects)
+                    {
+                        ODentry od = kvp3.Value;
+                        od.write(writer, ft, ODentry.odtype.SUBEXT, moduleid);
+
+                        foreach (KeyValuePair<UInt16, ODentry> kvp4 in od.subobjects)
+                        {
+                            ODentry subod = kvp4.Value;
+                            subod.write(writer, ft, ODentry.odtype.FIXED, moduleid);
+                        }
+                    }
                 }
             }
 
@@ -2156,46 +2224,6 @@ namespace libEDSsharp
                     cm.write(writer);
                 }
             }
-
-
-
-            if (mxfo.Count > 0)
-            {
-                foreach (MxFixedObjects mxf in mxfo.Values)
-                {
-                    mxf.write(writer);
-                }
-            }
-
-
-            foreach (KeyValuePair<UInt16, SortedDictionary<UInt16, ODentry>> kvp in modulesubext)
-            {
-                foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value)
-                {
-                    ODentry od = kvp2.Value;
-                    od.write(writer, ft, ODentry.odtype.SUBEXT,kvp.Key);
-
-                }
-
-            }
-          
-            foreach (KeyValuePair<UInt16, SortedDictionary<UInt16, ODentry>> kvp in modulefixedobjects)
-            {
-                foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value)
-                {
-                    ODentry od = kvp2.Value;
-                    od.write(writer, ft, ODentry.odtype.FIXED,kvp.Key);
-
-                    foreach (KeyValuePair<UInt16, ODentry> kvp3 in od.subobjects)
-                    {
-                        ODentry od2 = kvp3.Value;
-                        od2.write(writer, ft, ODentry.odtype.FIXED,kvp.Key);
-                    }
-
-                }   
-
-            }
-
 
             writer.Close();
 
