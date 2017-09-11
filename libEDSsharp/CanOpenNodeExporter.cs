@@ -72,6 +72,9 @@ namespace libEDSsharp
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
+                if (kvp.Value.Disabled == true)
+                    continue;
+
                 if (kvp.Key >= start && kvp.Key <= end)
                 {
                     if (kvp.Key > highest)
