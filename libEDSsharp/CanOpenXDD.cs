@@ -260,7 +260,7 @@ namespace libEDSsharp
             ProfileBody_CommunicationNetwork_CANopen comnet = (ProfileBody_CommunicationNetwork_CANopen)dev.ISO15745Profile[1].ProfileBody;
             comnet.Items = new object[3];
 
-            //todo fill in ProfileBody properties here
+
             comnet.fileCreator = eds.fi.CreatedBy; //etc
 
             comnet.Items[0] = new ProfileBody_CommunicationNetwork_CANopenApplicationLayers();

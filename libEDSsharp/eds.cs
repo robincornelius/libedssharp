@@ -1149,7 +1149,6 @@ namespace libEDSsharp
     
                 writer.WriteLine(string.Format("DefaultValue={0}", formatoctetstring(defaultvalue)));
 
-
                 //TODO If the ObjectType is domain (0x2) the value of the object may be stored in a file,UploadFile and DownloadFile
                 if (ft == InfoSection.filetype.File_DCF)
                 {

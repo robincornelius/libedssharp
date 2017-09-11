@@ -5,8 +5,8 @@ CanOpen and also to generate the object dictionary for CanOpenNode
 CO_OD.c and CO_OD.h) to aid development of CanOpenNode devices.
 
 EDS (Electronic Data Sheet) files are text files that define CanOpen Devices.
-DCF (Device Configuration File) files are text files that define configured CanOpenDevices
-XDD files are an XML version of EDS files 
+DCF (Device Configuration File) files are text files that define configured 
+CanOpenDevices XDD files are an XML version of EDS files 
 
 EDS/DCF are fully defined in the DSP306 standard by the can open standards 
 body CiA.
@@ -35,14 +35,15 @@ improving the code
 Releases
 --------
 
-If you would like to try a pre compiled version, then head over to the [releases page!](https://github.com/robincornelius/libedssharp/releases)
+If you would like to try a pre compiled version, then head over to the 
+[releases page!](https://github.com/robincornelius/libedssharp/releases)
 
 Current Features
 
 Library
 -------
 
-* Read EDS/DCF file and parse contents to approprate classes
+* Read EDS/DCF/XDC file and parse contents to approprate classes
 * Dump EDS/DCF classes via ToString()
 * Save EDS/DCF classes back to EDS file
 * Read CanOpenNode xml project file
@@ -54,6 +55,7 @@ Library
 * EDS/DCF supports compactPDO (read only) 1*
 * EDS/DCF supports implict PDO (read only) 1*
 * EDS/DCF supports CompactSubOb (read only) 1*
+* Supports loading/saving of all EDS/DCF module information
 
 1* read only in this context means the EDS/DCF is fully expanded but the compact
    forms is not written back, only the expanded form will be saved.
@@ -61,8 +63,8 @@ Library
 GUI
 ---
 * Open multiple devices
-* Open EDS file
-* Save EDS file
+* Open EDS/DCF/XDC files
+* Save EDS/DCF/XDC files
 * Open CanOpenNode XML Project file
 * Save CanOpenNode XML File
 * View OD Entries and explore the Object Dictionary
@@ -81,17 +83,28 @@ GUI
 * View/edit actual object values for device configuring/DCF files
 * Support for loading XDD files (CanOpen offical XML)
 * Support for saving XDD files (CanOpen offical XML)
+* Some module info is displayed in GUI showing avaiable modules (eds) and 
+  configured modules (dcf) and what OD entries they reference. Full details such
+  as subobj extension and fixed subobj are not currently displayed and unless
+  there is demand probably will not ever be.
 
 TODO
 ----
 
-* Ensure and validate all XDD is loading/save correctly
-* Add extra Gui fields for accessing extra XDD paramaters not in EDS
+* Ensure and validate all XDD is loading/save correctly (Looking good so far)
+* Add extra Gui fields for accessing extra XDD paramaters not in EDS 
+  (all common ones are done, a few special/edge cases remain)
 * Look at XDC files and see if we can save config changes and allow editing and
   network setup here in the app, partial support is implemented by supporting 
   DCF files
   
 
+BUGS
+----
+
+If you find any, please open a bug report on github and attach any files you
+have created/opened etc.
+  
 Pictures
 --------
 
