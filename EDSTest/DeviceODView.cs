@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of libEDSsharp.
 
     libEDSsharp is free software: you can redistribute it and/or modify
@@ -65,10 +65,7 @@ namespace ODEditor
 
             comboBox_accesstype.Items.Add("0x1003 rw/ro");
 
-            foreach (StorageLocation foo in Enum.GetValues(typeof(StorageLocation)))
-            {
-                comboBox_memory.Items.Add(foo.ToString());
-            }
+            comboBox_memory.Items.Add("Add...");
 
             comboBox_pdomap.Items.Add("no");
             comboBox_pdomap.Items.Add("optional");
@@ -153,7 +150,7 @@ namespace ODEditor
 
                 selectedobject.Disabled = !checkBox_enabled.Checked;
 
-                selectedobject.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), comboBox_memory.SelectedItem.ToString());
+                selectedobject.StorageLocation = comboBox_memory.SelectedItem.ToString();
 
             }
 
@@ -184,7 +181,7 @@ namespace ODEditor
                 foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
                 {
                     ODentry subod = kvp.Value;
-                    subod.location = selectedobject.location;
+                    subod.StorageLocation = selectedobject.StorageLocation;
                 }
             }
 
@@ -269,7 +266,7 @@ namespace ODEditor
           
             checkBox_enabled.Checked = !od.Disabled;
 
-            comboBox_memory.SelectedItem = od.location.ToString();
+            comboBox_memory.SelectedItem = od.StorageLocation;
 
             checkBox_enabled.Enabled = true;
             comboBox_memory.Enabled = true;
@@ -628,6 +625,22 @@ namespace ODEditor
 
         }
 
+        public void populatememorytypes()
+        {
+            if (eds == null)
+                return;
+
+            foreach (string location in eds.storageLocation)
+            {
+                if (location == "Unused")
+                {
+                    continue;
+                }
+                /* add string to the second to last position (before "add...") */
+                comboBox_memory.Items.Insert(comboBox_memory.Items.Count - 1,  location.ToString());
+            }
+        }
+        
         public void populateindexlists()
         {
 
@@ -717,7 +730,7 @@ namespace ODEditor
 
                 od.objecttype = ni.ot;
                 od.index = ni.index;
-                od.location = StorageLocation.RAM;
+                od.StorageLocation = "RAM";
                 od.defaultvalue = "";
                 od.accesstype = EDSsharp.AccessType.rw;
                 od.datatype = ni.dt;
@@ -731,7 +744,7 @@ namespace ODEditor
                         sod.objecttype = ObjectType.VAR;
                         sod.subindex = 0;
                         sod.index = ni.index;
-                        sod.location = StorageLocation.RAM;
+                        sod.StorageLocation = "RAM";
                         sod.defaultvalue = String.Format("{0}",ni.nosubindexes);
                         sod.accesstype = EDSsharp.AccessType.ro;
                         sod.datatype = DataType.UNSIGNED8;
@@ -750,7 +763,7 @@ namespace ODEditor
                         sod.objecttype = ObjectType.VAR;
                         sod.subindex = (UInt16)(p + 1);
                         sod.index = ni.index;
-                        sod.location = StorageLocation.RAM;
+                        sod.StorageLocation = "RAM";
                         sod.defaultvalue = "";
                         sod.accesstype = EDSsharp.AccessType.rw;
                         sod.datatype = ni.dt;
@@ -1040,6 +1053,24 @@ namespace ODEditor
             }
 
             return false;
+        }
+
+        private void comboBox_memory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox_memory.SelectedItem.ToString() == "Add...")
+            {
+                NewMemoryType memory = new NewMemoryType();
+                if (memory.ShowDialog() == DialogResult.OK)
+                {
+                    if (comboBox_memory.FindStringExact(memory.name) == -1)
+                    {
+                        /* add string to the second to last position (before "add...") */
+                        comboBox_memory.Items.Insert(comboBox_memory.Items.Count - 1, memory.name);
+                        /* add new memory location to eds backend */
+                        eds.storageLocation.Add(memory.name);
+                    }
+                }
+            }
         }
     }
 

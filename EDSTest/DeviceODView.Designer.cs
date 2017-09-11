@@ -1,4 +1,4 @@
-﻿namespace ODEditor
+namespace ODEditor
 {
     partial class DeviceODView
     {
@@ -559,6 +559,7 @@
             this.comboBox_memory.Name = "comboBox_memory";
             this.comboBox_memory.Size = new System.Drawing.Size(122, 21);
             this.comboBox_memory.TabIndex = 25;
+            this.comboBox_memory.SelectedIndexChanged += new System.EventHandler(this.comboBox_memory_SelectedIndexChanged);
             // 
             // label_index
             // 

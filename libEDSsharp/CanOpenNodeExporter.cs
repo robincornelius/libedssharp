@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of libEDSsharp.
 
     libEDSsharp is free software: you can redistribute it and/or modify
@@ -163,7 +163,7 @@ namespace libEDSsharp
         }
 
 
-        private void print_h_bylocation(StreamWriter file, StorageLocation location)
+        private void print_h_bylocation(StreamWriter file, string location)
         {
 
             string lastname = "";
@@ -175,12 +175,12 @@ namespace libEDSsharp
                 if (od.Disabled == true)
                     continue;
 
-                if ((od.location != location))
+                if ((od.StorageLocation != location))
                 {
-                    if (!(od.location == 0 && location == StorageLocation.RAM))
+                    if (!(od.StorageLocation == "Unused" && location == "RAM"))
+                        /* this entry doesn't belong in this section */
                         continue;
                 }
-
 
                 if (od.nosubindexes == 0)
                 {
@@ -540,52 +540,50 @@ namespace libEDSsharp
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS
 *******************************************************************************/
 #define  CO_OD_FIRST_LAST_WORD     0x55 //Any value from 0x01 to 0xFE. If changed, EEPROM will be reinitialized.
-
-/***** Structure for RAM variables ********************************************/
-struct sCO_OD_RAM{
-               UNSIGNED32     FirstWord;
 ");
+            foreach (string location in eds.storageLocation)
+            {
+                if (location == "Unused")
+                {
+                    continue;
+                }
 
-            print_h_bylocation(file, StorageLocation.RAM);
-
-            file.WriteLine(@"
-               UNSIGNED32     LastWord;
-};");
-
-            file.WriteLine(@"/***** Structure for EEPROM variables *****************************************/
-struct sCO_OD_EEPROM{
-               UNSIGNED32     FirstWord;
-
-
-");
-            print_h_bylocation(file, StorageLocation.EEPROM);
-
-            file.WriteLine(@"
-               UNSIGNED32     LastWord;
-};");
-
-            file.WriteLine(@"/***** Structure for ROM variables ********************************************/
-struct sCO_OD_ROM{
+                file.Write("/***** Structure for ");
+                file.Write(location);
+                file.WriteLine(" variables ********************************************/");
+                file.Write("struct sCO_OD_");
+                file.Write(location);
+                file.Write(@"{
                UNSIGNED32     FirstWord;
 
-
 ");
-            print_h_bylocation(file, StorageLocation.ROM);
 
-            file.WriteLine(@"
+                print_h_bylocation(file, location);
+
+                file.WriteLine(@"
                UNSIGNED32     LastWord;
-};");
+};
+");
+            }
 
+            file.WriteLine(@"/***** Declaration of Object Dictionary variables *****************************/");
 
-            file.WriteLine(@"/***** Declaration of Object Dictionary variables *****************************/
-extern struct sCO_OD_RAM CO_OD_RAM;
+            foreach (string location in eds.storageLocation)
+            {
+                if (location == "Unused")
+                {
+                    continue;
+                }
+                
+                file.Write("extern struct sCO_OD_");
+                file.Write(location);
+                file.Write(" CO_OD_");
+                file.Write(location);
+                file.WriteLine(@";
+");
+            }
 
-extern struct sCO_OD_EEPROM CO_OD_EEPROM;
-
-extern struct sCO_OD_ROM CO_OD_ROM;
-
-
-/*******************************************************************************
+file.WriteLine(@"/*******************************************************************************
    ALIASES FOR OBJECT DICTIONARY VARIABLES
 *******************************************************************************/");
 
@@ -600,7 +598,7 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 				if (od.Disabled == true)
 					continue;
 
-                string loc = getlocation(od.location);
+                string loc = "CO_OD_" + od.StorageLocation;
 
                 DataType t = eds.getdatatype(od);
 
@@ -704,43 +702,37 @@ extern struct sCO_OD_ROM CO_OD_ROM;
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
 *******************************************************************************/
 
-/***** Definition for RAM variables *******************************************/
-struct sCO_OD_RAM CO_OD_RAM = {
+");
+            foreach (string location in eds.storageLocation)
+            {
+                if (location == "Unused")
+                {
+                    continue;
+                }
+
+                file.Write("/***** Definition for ");
+                file.Write(location);
+                file.WriteLine(" variables ********************************************/");
+                file.Write("struct sCO_OD_");
+                file.Write(location);
+                file.Write(" CO_OD_");
+                file.Write(location);
+                file.Write(@" = {
            CO_OD_FIRST_LAST_WORD,
+
 ");
 
-            export_OD_def_array(file, StorageLocation.RAM);
+                export_OD_def_array(file, location);
+
+                file.WriteLine(@"
+           CO_OD_FIRST_LAST_WORD,
+};
+
+");
+            }
+
 
             file.WriteLine(@"
-           CO_OD_FIRST_LAST_WORD,
-};
-
-/***** Definition for EEPROM variables ****************************************/
-struct sCO_OD_EEPROM CO_OD_EEPROM = {
-           CO_OD_FIRST_LAST_WORD,
-");
-
-
-            export_OD_def_array(file, StorageLocation.EEPROM);
-
-            file.WriteLine(@"  CO_OD_FIRST_LAST_WORD,
-};
-
-
-/***** Definition for ROM variables *******************************************/
-struct sCO_OD_ROM CO_OD_ROM = {    //constant variables, stored in flash
-           CO_OD_FIRST_LAST_WORD,
-
-");
-
-
-            export_OD_def_array(file, StorageLocation.ROM);
-
-            file.WriteLine(@"
-
-           CO_OD_FIRST_LAST_WORD
-};
-
 
 /*******************************************************************************
    STRUCTURES FOR RECORD TYPE OBJECTS
@@ -772,16 +764,12 @@ const CO_OD_entry_t CO_OD[");
                 if (od.Disabled == true)
                     continue;
 
-                string loc = getlocation(od.location);
+                string loc = "CO_OD_" + od.StorageLocation;
 
                 byte flags = getflags(od);
 
                 DataType t = eds.getdatatype(od);
-                int datasize;
-                if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
-                    datasize = od.lengthofstring();
-                else
-                    datasize = od.sizeofdatatype();
+                int datasize = get_datatype_length(od);
 
                 string odf;
 
@@ -876,7 +864,12 @@ const CO_OD_entry_t CO_OD[");
             if (od.objecttype == ObjectType.REC)
                 return 0;
 
-            flags = (byte)od.location;
+            flags = (byte)eds.storageLocation.IndexOf(od.StorageLocation);
+            //1 = ROM, 2 = RAM, >= 3 some EEPROM region
+            if (flags > 0x03)
+            {
+                flags = 0x03;
+            }
 
             /* some exceptions for rwr/rww. Those are entries that are always r/w via SDO transfer, 
              * but can only be read -or- written via PDO */
@@ -921,7 +914,7 @@ const CO_OD_entry_t CO_OD[");
               flags |=0x40;
             }
 
-            int datasize = od.sizeofdatatype();
+            int datasize = get_datatype_length(od);
 
             if (datasize > 1)
             {
@@ -933,26 +926,15 @@ const CO_OD_entry_t CO_OD[");
 
         }
 
-
-        string getlocation(StorageLocation location)
+        protected int get_datatype_length(ODentry entry)
         {
-            string loc;
-            switch (location)
-            {
-                case StorageLocation.ROM:
-                    loc = "CO_OD_ROM";
-                    break;
-                default:
-                case StorageLocation.RAM:
-                    loc = "CO_OD_RAM";
-                    break;
-                case StorageLocation.EEPROM:
-                    loc = "CO_OD_EEPROM";
-                    break;
+            int datasize;
+            if (entry.datatype == DataType.VISIBLE_STRING || entry.datatype == DataType.OCTET_STRING || entry.datatype == DataType.UNICODE_STRING)
+                datasize = entry.lengthofstring();
+            else
+                datasize = entry.sizeofdatatype();
 
-            }
-
-            return loc;
+            return datasize;
         }
 
         string formatvaluewithdatatype(string defaultvalue, DataType dt)
@@ -1170,7 +1152,7 @@ const CO_OD_entry_t CO_OD[");
                 output = output.ToLower(); //single character
 
             return output;
-       }
+        }
 
         void export_record_types(StreamWriter file)
         {
@@ -1217,15 +1199,16 @@ const CO_OD_entry_t CO_OD[");
                     ODentry sub = kvpsub.Value;
 
                     string subcname = make_cname(sub.parameter_name);
+                    int datasize = get_datatype_length(sub);
 
                     if (sub.datatype != DataType.DOMAIN)
                     {
-                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, getlocation(od.location)));
+                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, "CO_OD_" + od.StorageLocation));
                     }
                     else
                     {
                         //Domain type MUST have its data pointer set to 0 for CanOpenNode
-                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, getlocation(od.location)));
+                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, "CO_OD_" + od.StorageLocation));
                     }
                 }
 
@@ -1315,7 +1298,7 @@ const CO_OD_entry_t CO_OD[");
         }
 
 
-        void export_OD_def_array(StreamWriter file, StorageLocation location)
+        void export_OD_def_array(StreamWriter file, string location)
         {
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
@@ -1325,9 +1308,10 @@ const CO_OD_entry_t CO_OD[");
                 if (od.Disabled == true)
                     continue;
 
-                if ((od.location != location))
+                if ((od.StorageLocation != location))
                 {
-                    if (!(od.location == 0 && location == StorageLocation.RAM))
+                    if (!(od.StorageLocation == "Unused" && location == "RAM"))
+                        /* this entry doesn't belong in this section */
                         continue;
                 }
 

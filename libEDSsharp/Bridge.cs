@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of libEDSsharp.
 
     libEDSsharp is free software: you can redistribute it and/or modify
@@ -59,7 +59,8 @@ namespace libEDSsharp
                     coo.Name = od.parameter_name;
                     coo.ObjectType = od.objecttype.ToString();
                     coo.Disabled = od.Disabled.ToString().ToLower();
-                    coo.MemoryType = od.location.ToString();
+                    coo.MemoryType = od.StorageLocation;
+                    eds.storageLocation.Add(od.StorageLocation);
                     coo.AccessType = od.accesstype.ToString();
                     coo.DataType = string.Format("0x{0:x2}", (int)od.datatype);
                     coo.DefaultValue = od.defaultvalue;
@@ -333,7 +334,10 @@ namespace libEDSsharp
                     entry.Label = coo.Label.Text; //FIXME LANG
 
                 if (coo.MemoryType != null)
-                    entry.location = (StorageLocation)Enum.Parse(typeof(StorageLocation), coo.MemoryType);
+                {
+                    entry.StorageLocation = coo.MemoryType;
+                    eds.storageLocation.Add(coo.MemoryType);
+                }
 
                 eds.ods.Add(entry.index, entry);
 
@@ -381,7 +385,7 @@ namespace libEDSsharp
                         subentry.PDOtype = entry.PDOtype;
                     }
 
-                    subentry.location = entry.location;
+                    subentry.StorageLocation = entry.StorageLocation;
                     subentry.parent = entry;
 
                     subentry.objecttype = ObjectType.VAR;
@@ -468,7 +472,7 @@ namespace libEDSsharp
             if (keypairs.ContainsKey("LSS_Supported") && bool.TryParse(keypairs["LSS_Supported"], out boolout))
                 eds.di.LSS_Supported = boolout;
 
-            if (keypairs.ContainsKey("LSS_Type"))
+            if (keypairs.ContainsKey("LSS_Type") && keypairs["LSS_Type"]!=null)
                 eds.di.LSS_Type = keypairs["LSS_Type"].ToString();
 
             if (keypairs.ContainsKey("Granularity") && byte.TryParse(keypairs["Granularity"], out byteout))
