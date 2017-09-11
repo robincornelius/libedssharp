@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of libEDSsharp.
 
     libEDSsharp is free software: you can redistribute it and/or modify
@@ -94,6 +94,7 @@ namespace ODEditor
                 return;
 
             deviceODView1.eds = eds;
+            deviceODView1.populatememorytypes();
             deviceODView1.populateindexlists();
             deviceODView1.validateanddisplaydata();
             deviceODView1.updateselectedindexdisplay();
