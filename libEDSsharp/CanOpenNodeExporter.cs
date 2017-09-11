@@ -780,11 +780,7 @@ const CO_OD_entry_t CO_OD[");
                 byte flags = getflags(od);
 
                 DataType t = eds.getdatatype(od);
-                int datasize;
-                if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
-                    datasize = od.lengthofstring();
-                else
-                    datasize = od.sizeofdatatype();
+                int datasize = get_datatype_length(od);
 
                 string odf;
 
@@ -924,7 +920,7 @@ const CO_OD_entry_t CO_OD[");
               flags |=0x40;
             }
 
-            int datasize = od.sizeofdatatype();
+            int datasize = get_datatype_length(od);
 
             if (datasize > 1)
             {
@@ -936,6 +932,16 @@ const CO_OD_entry_t CO_OD[");
 
         }
 
+        protected int get_datatype_length(ODentry entry)
+        {
+            int datasize;
+            if (entry.datatype == DataType.VISIBLE_STRING || entry.datatype == DataType.OCTET_STRING || entry.datatype == DataType.UNICODE_STRING)
+                datasize = entry.lengthofstring();
+            else
+                datasize = entry.sizeofdatatype();
+
+            return datasize;
+        }
 
         string getlocation(StorageLocation location)
         {
@@ -1173,7 +1179,7 @@ const CO_OD_entry_t CO_OD[");
                 output = output.ToLower(); //single character
 
             return output;
-       }
+        }
 
         void export_record_types(StreamWriter file)
         {
@@ -1220,15 +1226,16 @@ const CO_OD_entry_t CO_OD[");
                     ODentry sub = kvpsub.Value;
 
                     string subcname = make_cname(sub.parameter_name);
+                    int datasize = get_datatype_length(sub);
 
                     if (sub.datatype != DataType.DOMAIN)
                     {
-                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, getlocation(od.location)));
+                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, {3} }},", cname, subcname, getflags(sub), datasize, arrayaccess, getlocation(od.location)));
                     }
                     else
                     {
                         //Domain type MUST have its data pointer set to 0 for CanOpenNode
-                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, getlocation(od.location)));
+                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, {3} }},", cname, subcname, getflags(sub), datasize, arrayaccess, getlocation(od.location)));
                     }
                 }
 
