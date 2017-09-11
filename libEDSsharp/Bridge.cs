@@ -464,7 +464,7 @@ namespace libEDSsharp
             if (keypairs.ContainsKey("LSS_Supported") && bool.TryParse(keypairs["LSS_Supported"], out boolout))
                 eds.di.LSS_Supported = boolout;
 
-            if (keypairs.ContainsKey("LSS_Type"))
+            if (keypairs.ContainsKey("LSS_Type") && keypairs["LSS_Type"]!=null)
                 eds.di.LSS_Type = keypairs["LSS_Type"].ToString();
 
             byte byteout;
