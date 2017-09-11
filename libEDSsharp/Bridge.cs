@@ -236,6 +236,7 @@ namespace libEDSsharp
 
             dev.Other.File.ExportFolder = eds.fi.exportFolder;
             dev.Other.File.EdsFile = eds.edsfilename;
+            //fixme dcffilename
           
 
             return dev;
@@ -500,6 +501,7 @@ namespace libEDSsharp
 
             eds.fi.FileName = dev.Other.File.FileName;
             eds.edsfilename = dev.Other.File.EdsFile;
+            //fixme dcffilename
 
             dtcombined = string.Format("{0} {1}", dev.Other.File.FileCreationTime, dev.Other.File.FileCreationDate);
             try

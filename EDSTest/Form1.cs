@@ -234,7 +234,7 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.eds;*.xml;*.xdd)|*.eds;*.xml;*.xdd|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Datasheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
+            odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Datasheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
 

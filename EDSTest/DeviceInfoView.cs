@@ -106,11 +106,28 @@ namespace ODEditor
             if(eds.edsfilename!=null)
                 textBox_deviceedsname.Text = eds.edsfilename;
 
+            if (eds.dcffilename != null)
+                textBox_devicedcfname.Text = eds.dcffilename;
+
             if (eds.xmlfilename != null)
                 textBox_devicefilename.Text = eds.xmlfilename;
 
             if(eds.fi.exportFolder !=null)
                 textBox_exportfolder.Text = eds.fi.exportFolder;
+
+
+            //DCF support
+
+            if(eds.dc!=null)
+            {
+                textBox_concretenodeid.Text = eds.dc.NodeId.ToString();
+                textBox_nodename.Text = eds.dc.NodeName;
+                textBox_baudrate.Text = eds.dc.BaudRate.ToString();
+                textBox_netnum.Text = eds.dc.NetNumber.ToString();
+                checkBox_canopenmanager.Checked = eds.dc.CANopenManager;
+                textBox_lssserial.Text = eds.dc.LSS_SerialNumber.ToString();
+
+            }
 
 
 
@@ -179,6 +196,16 @@ namespace ODEditor
                 //textBox_rxpdos.Text = eds.di.NrOfRXPDO.ToString();
                 //textBox_txpdos.Text = eds.di.NrOfTXPDO.ToString();
 
+
+                //DCF support
+
+                eds.dc.NodeId = Convert.ToByte(textBox_concretenodeid.Text);
+                eds.dc.NodeName = textBox_nodename.Text;
+                eds.dc.BaudRate = Convert.ToUInt16(textBox_baudrate.Text);
+                eds.dc.NetNumber = Convert.ToUInt32(textBox_netnum.Text);
+                eds.dc.CANopenManager = checkBox_canopenmanager.Checked;
+                eds.dc.LSS_SerialNumber = Convert.ToUInt32(textBox_lssserial.Text);
+
                 eds.dirty = true;
             }
             catch (Exception ex)
@@ -198,6 +225,11 @@ namespace ODEditor
             {
                 comboBox_lss.Enabled = false;
             }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

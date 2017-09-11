@@ -431,9 +431,10 @@ namespace ODEditor
             // textBox_actualvalue
             // 
             this.textBox_actualvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox_actualvalue.BackColor = System.Drawing.Color.PeachPuff;
             this.textBox_actualvalue.Location = new System.Drawing.Point(527, 360);
             this.textBox_actualvalue.Name = "textBox_actualvalue";
-            this.textBox_actualvalue.Size = new System.Drawing.Size(278, 20);
+            this.textBox_actualvalue.Size = new System.Drawing.Size(202, 20);
             this.textBox_actualvalue.TabIndex = 35;
             // 
             // textBox_lowvalue
@@ -441,7 +442,7 @@ namespace ODEditor
             this.textBox_lowvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBox_lowvalue.Location = new System.Drawing.Point(527, 334);
             this.textBox_lowvalue.Name = "textBox_lowvalue";
-            this.textBox_lowvalue.Size = new System.Drawing.Size(278, 20);
+            this.textBox_lowvalue.Size = new System.Drawing.Size(202, 20);
             this.textBox_lowvalue.TabIndex = 34;
             // 
             // textBox_highvalue
@@ -449,7 +450,7 @@ namespace ODEditor
             this.textBox_highvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBox_highvalue.Location = new System.Drawing.Point(527, 307);
             this.textBox_highvalue.Name = "textBox_highvalue";
-            this.textBox_highvalue.Size = new System.Drawing.Size(278, 20);
+            this.textBox_highvalue.Size = new System.Drawing.Size(202, 20);
             this.textBox_highvalue.TabIndex = 33;
             // 
             // label18

@@ -619,7 +619,6 @@ namespace libEDSsharp
                 Warnings.warning_list.Add(String.Format("Unable to parse EDS version {0}", section["EDSVersion"]));
             }
 
-
         }
     }
 
@@ -1234,6 +1233,7 @@ namespace libEDSsharp
         //This is the last file name used for this eds/xml file and is not
         //the same as filename within the FileInfo structure.
         public string edsfilename = null;
+        public string dcffilename = null;
         public string xmlfilename = null;
 
         //property to indicate unsaved data;
@@ -1612,7 +1612,19 @@ namespace libEDSsharp
         public void loadfile(string filename)
         {
 
-            edsfilename = filename;
+            
+            if (Path.GetExtension(filename).ToLower() == ".eds")
+            {
+                edsfilename = filename;
+            }
+
+            if (Path.GetExtension(filename).ToLower() == ".dcf")
+            {
+                dcffilename = filename;
+            }
+
+
+
             //try
             {
                 foreach (string linex in File.ReadLines(filename))
@@ -1639,6 +1651,7 @@ namespace libEDSsharp
                 if(eds.ContainsKey("DeviceCommissioning"))
                 {
                     dc.parse(eds["DeviceCommissioning"]);
+                    edsfilename = fi.LastEDS;
                 }
                 
                 c = new Comments();
@@ -1813,7 +1826,14 @@ namespace libEDSsharp
 
         public void savefile(string filename, InfoSection.filetype ft)
         {
-            this.edsfilename = filename;
+            if(ft==InfoSection.filetype.File_EDS)
+                this.edsfilename = filename;
+
+            if (ft == InfoSection.filetype.File_DCF)
+            {
+                this.dcffilename = filename;
+                fi.LastEDS = edsfilename;
+            }
 
             updatePDOcount();
 
