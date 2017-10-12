@@ -282,11 +282,14 @@ namespace libEDSsharp
             {
                 AppLayer.CANopenObjectList.CANopenObject[count] = new CANopenObjectListCANopenObject();
 
-                AppLayer.CANopenObjectList.CANopenObject[count].index = BitConverter.GetBytes((UInt16)od.index);
+                byte[] bytes = BitConverter.GetBytes((UInt16)od.index);
+                Array.Reverse(bytes);
+
+                AppLayer.CANopenObjectList.CANopenObject[count].index = bytes;
                 AppLayer.CANopenObjectList.CANopenObject[count].name = od.parameter_name;
                 AppLayer.CANopenObjectList.CANopenObject[count].objectType = (byte)od.objecttype;
 
-                byte[] bytes = BitConverter.GetBytes((UInt16)od.datatype);
+                bytes = BitConverter.GetBytes((UInt16)od.datatype);
                 Array.Reverse(bytes);
 
                 AppLayer.CANopenObjectList.CANopenObject[count].dataType = bytes;
@@ -310,8 +313,10 @@ namespace libEDSsharp
                     {
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount] = new CANopenObjectListCANopenObjectCANopenSubObject();
 
+                        bytes = BitConverter.GetBytes((UInt16)subod.subindex);
+                        Array.Reverse(bytes);
 
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].subIndex = BitConverter.GetBytes((UInt16)subod.subindex);
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].subIndex = bytes;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].name = subod.parameter_name;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].objectType = (byte)subod.objecttype;
 
