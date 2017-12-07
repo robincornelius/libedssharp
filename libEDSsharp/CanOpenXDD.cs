@@ -220,6 +220,10 @@ namespace libEDSsharp
 
             foreach (ODentry od in eds.ods.Values)
             {
+
+                if (od.Disabled)
+                    continue;
+
                 parameter p = new parameter();
 
                 fillparamater(p, od);
@@ -276,10 +280,13 @@ namespace libEDSsharp
 
 
             AppLayer.CANopenObjectList.CANopenObject = new CANopenObjectListCANopenObject[eds.getNoEnabledObjects()];
-
+            
             int count = 0;
             foreach (ODentry od in eds.ods.Values)
             {
+                if (od.Disabled)
+                    continue;
+
                 AppLayer.CANopenObjectList.CANopenObject[count] = new CANopenObjectListCANopenObject();
 
                 byte[] bytes = BitConverter.GetBytes((UInt16)od.index);
