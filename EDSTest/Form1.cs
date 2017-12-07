@@ -498,7 +498,7 @@ namespace ODEditor
 
                         case ".dcf":
                             dv.eds.savefile(sfd.FileName, InfoSection.filetype.File_DCF);
-                            dv.eds.edsfilename = sfd.FileName;
+                            dv.eds.dcffilename = sfd.FileName;
                             break;
 
                         case ".xml":
