@@ -200,9 +200,9 @@ namespace ODEditor
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 13);
+            this.label1.Size = new System.Drawing.Size(96, 13);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Compulsory Objects";
+            this.label1.Text = "Mandatory Objects";
             // 
             // splitContainer3
             // 
@@ -294,9 +294,9 @@ namespace ODEditor
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(3, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(109, 13);
+            this.label3.Size = new System.Drawing.Size(150, 13);
             this.label3.TabIndex = 5;
-            this.label3.Text = "Manufacturer Objects";
+            this.label3.Text = "Manufacturer Specific Objects";
             // 
             // listView_manufacture_objects
             // 
