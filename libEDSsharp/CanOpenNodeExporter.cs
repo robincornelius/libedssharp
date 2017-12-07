@@ -1092,7 +1092,7 @@ const CO_OD_entry_t CO_OD[");
 
                 case DataType.TIME_DIFFERENCE:
                 case DataType.TIME_OF_DAY:
-                    return String.Format("{{0}}", Convert.ToUInt64(defaultvalue, nobase));
+                    return String.Format("{{{0}}}", Convert.ToUInt64(defaultvalue, nobase));
                 
                 default:
                     return (String.Format("{0:x}", defaultvalue));
