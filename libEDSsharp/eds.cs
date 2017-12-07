@@ -350,7 +350,7 @@ namespace libEDSsharp
         public Dictionary<int, int> objectlist;
         public string infoheader;
         public string edssection;
-        public string countmsg = "Supported Objects";
+        public string countmsg = "SupportedObjects";
 
         public SupportedObjects()
         {
