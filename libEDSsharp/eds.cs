@@ -1963,7 +1963,7 @@ namespace libEDSsharp
                         applycompactPDO(index);
                     }
 
-                    for (UInt16 index = 0x1800; index < 0x2000;index ++)
+                    for (UInt16 index = 0x1800; index < 0x1A00;index ++)
                     {
                         applycompactPDO(index);
                     }
@@ -2552,7 +2552,7 @@ mapped object  (subindex 1...8)
             od_mapping.accesstype = AccessType.rw; //Same as default but inconsistant with ROM above
             od_mapping.PDOtype = PDOMappingType.no;
 
-            sub = new ODentry("Number of mapped objects", index, 0, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, od_mapping);
+            sub = new ODentry("Number of mapped objects", (UInt16)(index + 0x200), 0, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, od_mapping);
             od_mapping.subobjects.Add(0, sub);
 
             for (int p=1;p<=8;p++)
