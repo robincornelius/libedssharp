@@ -344,6 +344,20 @@ namespace libEDSsharp
    typedef oChar_t      OCTET_STRING;
    typedef domain_t     DOMAIN;
 
+#ifndef timeOfDay_t
+    typedef union {
+        unsigned long long ullValue;
+        struct {
+            unsigned long ms:28;
+            unsigned reserved:4;
+            unsigned days:16;
+            unsigned reserved2:16;
+        };
+    }timeOfDay_t;
+#endif
+
+    typedef timeOfDay_t TIME_OF_DAY;
+
 ");
 
             file.WriteLine("/*******************************************************************************");
@@ -1076,6 +1090,10 @@ const CO_OD_entry_t CO_OD[");
                 case DataType.UNSIGNED64:
                     return String.Format("0x{0:x8}L", Convert.ToUInt64(defaultvalue, nobase));
 
+                case DataType.TIME_DIFFERENCE:
+                case DataType.TIME_OF_DAY:
+                    return String.Format("{{0}}", Convert.ToUInt64(defaultvalue, nobase));
+                
                 default:
                     return (String.Format("{0:x}", defaultvalue));
 
