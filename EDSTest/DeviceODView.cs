@@ -671,8 +671,13 @@ namespace ODEditor
                 {
                     continue;
                 }
+
                 /* add string to the second to last position (before "add...") */
-                comboBox_memory.Items.Insert(comboBox_memory.Items.Count - 1,  location.ToString());
+                /* Ensuring that it does not already exist */
+                if (!comboBox_memory.Items.Contains(location.ToString()))
+                {
+                    comboBox_memory.Items.Insert(comboBox_memory.Items.Count - 1, location.ToString());
+                }
             }
         }
         
