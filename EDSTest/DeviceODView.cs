@@ -65,6 +65,8 @@ namespace ODEditor
             }
 
             comboBox_accesstype.Items.Add("0x1003 rw/ro");
+            comboBox_accesstype.Items.Add("0x1010 const/rw");
+            comboBox_accesstype.Items.Add("0x1010 const/ro");
 
             comboBox_memory.Items.Add("Add...");
 
@@ -130,22 +132,48 @@ namespace ODEditor
                 DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
                 selectedobject.datatype = dt;
 
-                if (comboBox_accesstype.SelectedItem.ToString() == "0x1003 rw/ro")
+
+                switch(comboBox_accesstype.SelectedItem.ToString())
                 {
-                    selectedobject.accesstype = EDSsharp.AccessType.rw;
-                    for(byte p=0;p<selectedobject.subobjects.Count;p++)
-                    {
-                        if (selectedobject.subobjects[p].subindex == 0)
-                            selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.rw;
-                        else
-                            selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.ro;
-                    }
+                    case "0x1003 rw/ro":
+                        selectedobject.accesstype = EDSsharp.AccessType.rw;
+                        for (byte p = 0; p < selectedobject.subobjects.Count; p++)
+                        {
+                            if (selectedobject.subobjects[p].subindex == 0)
+                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.rw;
+                            else
+                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.ro;
+                        }
+                        break;
+
+                    case "0x1010 const/rw":
+                        for (byte p = 0; p < selectedobject.subobjects.Count; p++)
+                        {
+                            if (selectedobject.subobjects[p].subindex == 0)
+                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.@const;
+                            else
+                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.rw;
+                        }
+                        break;
+
+                    case "0x1010 const/ro":
+                        for (byte p = 0; p < selectedobject.subobjects.Count; p++)
+                        {
+                            if (selectedobject.subobjects[p].subindex == 0)
+                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.@const;
+                            else
+                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.ro;
+                        }
+                        break;
+
+                    default:
+                        EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
+                        selectedobject.accesstype = at;
+                        break;
+
                 }
-                else
-                {
-                    EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
-                    selectedobject.accesstype = at;
-                }
+                
+         
 
                 selectedobject.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_pdomap.SelectedItem.ToString());
 
@@ -167,8 +195,20 @@ namespace ODEditor
                     ODentry subod = kvp.Value;
 
                     subod.PDOtype = selectedobject.PDOtype;
-                    if (comboBox_accesstype.SelectedItem.ToString() != "0x1003 rw/ro")
-                        subod.accesstype = selectedobject.accesstype;
+                    switch(comboBox_accesstype.SelectedItem.ToString())
+                    {
+                        case "0x1003 rw/ro":
+                        case "0x1010 const/rw":
+                        case "0x1010 const/ro":
+                            break;
+
+                        default:
+                            if (subod.subindex != 0)
+                                subod.accesstype = selectedobject.accesstype;
+                            break;
+
+                    }
+
                     if (kvp.Key != 0)
                         subod.datatype = selectedobject.datatype;
                 }
@@ -359,7 +399,6 @@ namespace ODEditor
                 textBox_defaultvalue.Enabled = true;
                 comboBox_accesstype.Enabled = true;
             }
-
 
             updating = false;
 
