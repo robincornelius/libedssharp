@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <CANopenObjectList>
-    <CANopenObject index="1f80" name="NMT Startup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="" subNumber="0" accessFunctionName="" disabled="false">
+    <CANopenObject index="1f80" name="NMTStartup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="" subNumber="0" accessFunctionName="" disabled="false">
       <description>This object configures the start-up behaviour of a device that is able to perform the NMT. The
 value has the following interpretation:</description>
       <accessFunctionPreCode />
