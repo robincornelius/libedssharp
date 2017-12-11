@@ -245,7 +245,21 @@ namespace libEDSsharp
                         }
                         else
                         {
-                            file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}[{3}];", od.index, objecttypewords, make_cname(od.parameter_name), od.nosubindexes - 1));
+                            string specialarraylength = "";
+
+                            if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
+                            {
+                                int maxlength = 0;
+                                foreach(ODentry sub in od.subobjects.Values)
+                                {
+                                    if (sub.lengthofstring() > maxlength)
+                                        maxlength = sub.lengthofstring(); 
+                                }
+
+                                specialarraylength = string.Format("[{0}]", maxlength);
+                            }
+
+                            file.WriteLine(string.Format("/*{0:x4}      */ {1,-15} {2}{4}[{3}];", od.index, objecttypewords, make_cname(od.parameter_name), od.nosubindexes - 1, specialarraylength));
                         }
                     }
                 }
