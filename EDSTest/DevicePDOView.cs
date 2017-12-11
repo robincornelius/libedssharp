@@ -148,7 +148,7 @@ namespace ODEditor
                     //good
                     if (od.subobjects.Count <= 1)
                         continue;
-
+                    
                     ListViewItem lvi = new ListViewItem(String.Format("0x{0:x3}", idx));
                     lvi.Tag = od;
 
@@ -159,7 +159,9 @@ namespace ODEditor
                     if (!ODEditor_MainForm.TXCobMap.ContainsKey(cob))
                         ODEditor_MainForm.TXCobMap.Add(cob, eds);
 
-                    ListViewItem lvi2 = new ListViewItem(String.Format("0x{0:x3}", cob));
+                    ListViewItem lvi2 = new ListViewItem(String.Format("{0}", row+1));
+
+                    lvi2.SubItems.Add(String.Format("0x{0:x3}", cob));
                     lvi2.SubItems.Add(string.Format("{0:x4}",idx));       
                     lvi2.SubItems.Add("   ");
                     lvi2.SubItems.Add("   ");
@@ -233,8 +235,8 @@ namespace ODEditor
 
                 if (data == 0)
                 {
-                    listView_TXCOBmap.AddComboBoxCell(row, byteoff + 2, TXchoices);
-                    listView_TXCOBmap.Items[row].SubItems[byteoff + 2].Text = "empty";
+                    listView_TXCOBmap.AddComboBoxCell(row, byteoff + 3, TXchoices);
+                    listView_TXCOBmap.Items[row].SubItems[byteoff + 3].Text = "empty";
                     byteoff++;
                     continue;
                 }           
@@ -324,14 +326,14 @@ namespace ODEditor
                 }
                 
 
-                listView_TXCOBmap.AddComboBoxCell(row, byteoff+2, TXchoices);
-                listView_TXCOBmap.Items[row].SubItems[byteoff+2].Text = target;
+                listView_TXCOBmap.AddComboBoxCell(row, byteoff+3, TXchoices);
+                listView_TXCOBmap.Items[row].SubItems[byteoff+3].Text = target;
 
                 int oldPDOdatasize = PDOdatasize;
 
                 while (oldPDOdatasize != 1)
                 {
-                    listView_TXCOBmap.Items[row].SubItems[byteoff + oldPDOdatasize + 1].Text = " - ";
+                    listView_TXCOBmap.Items[row].SubItems[byteoff + oldPDOdatasize + 2].Text = " - "; //?
                     oldPDOdatasize--;
 
                 }
@@ -348,7 +350,7 @@ namespace ODEditor
 
             eds.dirty = true;
 
-            UInt16 slot = (UInt16)(0x200 + Convert.ToUInt16(listView_TXCOBmap.Items[row].SubItems[1].Text, 16));
+            UInt16 slot = (UInt16)(0x200 + Convert.ToUInt16(listView_TXCOBmap.Items[row].SubItems[2].Text, 16));
             ODentry slotod = eds.ods[slot];
 
             //Now rebuild the entire slot working out data size as we go
@@ -452,8 +454,8 @@ namespace ODEditor
             if (listView_TXCOBmap.SelectedItems.Count != 1)
                 return;
 
-            UInt16 index = Convert.ToUInt16(listView_TXCOBmap.SelectedItems[0].SubItems[1].Text, 16);
-            UInt32 COB = Convert.ToUInt32(listView_TXCOBmap.SelectedItems[0].SubItems[0].Text, 16);
+            UInt16 index = Convert.ToUInt16(listView_TXCOBmap.SelectedItems[0].SubItems[2].Text, 16);
+            UInt32 COB = Convert.ToUInt32(listView_TXCOBmap.SelectedItems[0].SubItems[1].Text, 16);
             ODentry od = eds.ods[index];
 
             textBox_slot.Text = string.Format("0x{0:x4}",od.index);

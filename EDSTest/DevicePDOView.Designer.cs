@@ -63,6 +63,7 @@
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.button_addPDO = new System.Windows.Forms.Button();
+            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -279,6 +280,7 @@
             // listView_TXCOBmap
             // 
             this.listView_TXCOBmap.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader11,
             this.columnHeader1,
             this.columnHeader10,
             this.columnHeader2,
@@ -291,9 +293,9 @@
             this.columnHeader9});
             this.listView_TXCOBmap.FullRowSelect = true;
             this.listView_TXCOBmap.HideSelection = false;
-            this.listView_TXCOBmap.Location = new System.Drawing.Point(16, 255);
+            this.listView_TXCOBmap.Location = new System.Drawing.Point(16, 254);
             this.listView_TXCOBmap.Name = "listView_TXCOBmap";
-            this.listView_TXCOBmap.Size = new System.Drawing.Size(954, 307);
+            this.listView_TXCOBmap.Size = new System.Drawing.Size(998, 307);
             this.listView_TXCOBmap.TabIndex = 10;
             this.listView_TXCOBmap.UseCompatibleStateImageBehavior = false;
             this.listView_TXCOBmap.View = System.Windows.Forms.View.Details;
@@ -301,11 +303,13 @@
             // 
             // columnHeader1
             // 
+            this.columnHeader1.DisplayIndex = 2;
             this.columnHeader1.Text = "COB";
-            this.columnHeader1.Width = 92;
+            this.columnHeader1.Width = 88;
             // 
             // columnHeader10
             // 
+            this.columnHeader10.DisplayIndex = 1;
             this.columnHeader10.Text = "Slot";
             // 
             // columnHeader2
@@ -360,6 +364,11 @@
             this.button_addPDO.UseVisualStyleBackColor = true;
             this.button_addPDO.Click += new System.EventHandler(this.button_addPDO_Click);
             // 
+            // columnHeader11
+            // 
+            this.columnHeader11.Text = "Num";
+            this.columnHeader11.Width = 38;
+            // 
             // DevicePDOView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -371,7 +380,7 @@
             this.Controls.Add(this.label_availableobjects);
             this.Controls.Add(this.listView_TXPDO);
             this.Name = "DevicePDOView";
-            this.Size = new System.Drawing.Size(973, 695);
+            this.Size = new System.Drawing.Size(1017, 695);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -416,5 +425,6 @@
         private System.Windows.Forms.Button button_savepdochanges;
         private System.Windows.Forms.Button button_deletePDO;
         private System.Windows.Forms.CheckBox checkBox_invalidpdo;
+        private System.Windows.Forms.ColumnHeader columnHeader11;
     }
 }
