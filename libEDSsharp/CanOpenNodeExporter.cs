@@ -1243,12 +1243,12 @@ const CO_OD_entry_t CO_OD[");
 
                     if (sub.datatype != DataType.DOMAIN)
                     {
-                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, "CO_OD_" + od.StorageLocation));
+                        file.WriteLine(string.Format("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3:x} }},", cname, subcname, getflags(sub), datasize, arrayaccess, "CO_OD_" + od.StorageLocation));
                     }
                     else
                     {
                         //Domain type MUST have its data pointer set to 0 for CanOpenNode
-                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, 0x{3} }},", cname, subcname, getflags(sub), sub.sizeofdatatype(), arrayaccess, "CO_OD_" + od.StorageLocation));
+                        file.WriteLine(string.Format("           {{(void*)0, 0x{2:x2}, 0x{3:x} }},", cname, subcname, getflags(sub), datasize, arrayaccess, "CO_OD_" + od.StorageLocation));
                     }
                 }
 
