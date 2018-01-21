@@ -1198,16 +1198,16 @@ namespace libEDSsharp
             if (dt == DataType.UNKNOWN && this.parent != null)
                 dt = parent.datatype;
  
-                
-
             switch (dt)
             {
                 case DataType.BOOLEAN:
                 case DataType.UNSIGNED8:
                 case DataType.INTEGER8:
+                    return 1;
+
                 case DataType.VISIBLE_STRING:
                 case DataType.OCTET_STRING:
-                    return 1;
+                    return lengthofstring();
 
                 case DataType.INTEGER16:
                 case DataType.UNSIGNED16:
