@@ -52,6 +52,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.listView_TXCOBmap = new CustomListView.ListViewEx();
+            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -63,7 +64,6 @@
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.button_addPDO = new System.Windows.Forms.Button();
-            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -301,6 +301,11 @@
             this.listView_TXCOBmap.View = System.Windows.Forms.View.Details;
             this.listView_TXCOBmap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_TXCOBmap_MouseClick);
             // 
+            // columnHeader11
+            // 
+            this.columnHeader11.Text = "Num";
+            this.columnHeader11.Width = 38;
+            // 
             // columnHeader1
             // 
             this.columnHeader1.DisplayIndex = 2;
@@ -350,7 +355,7 @@
             // columnHeader9
             // 
             this.columnHeader9.Text = "Byte7";
-            this.columnHeader9.Width = 100;
+            this.columnHeader9.Width = 105;
             // 
             // button_addPDO
             // 
@@ -363,11 +368,6 @@
             this.button_addPDO.Text = "Add new PDO";
             this.button_addPDO.UseVisualStyleBackColor = true;
             this.button_addPDO.Click += new System.EventHandler(this.button_addPDO_Click);
-            // 
-            // columnHeader11
-            // 
-            this.columnHeader11.Text = "Num";
-            this.columnHeader11.Width = 38;
             // 
             // DevicePDOView
             // 

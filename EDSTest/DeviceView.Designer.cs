@@ -39,9 +39,9 @@
             this.devicePDOView1 = new ODEditor.DevicePDOView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.devicePDOView2 = new ODEditor.DevicePDOView();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.moduleInfo1 = new ODEditor.ModuleInfo();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -140,17 +140,8 @@
             // 
             this.devicePDOView2.Location = new System.Drawing.Point(3, 3);
             this.devicePDOView2.Name = "devicePDOView2";
-            this.devicePDOView2.Size = new System.Drawing.Size(973, 695);
+            this.devicePDOView2.Size = new System.Drawing.Size(1111, 695);
             this.devicePDOView2.TabIndex = 0;
-            // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "ListBox_686.png");
-            this.imageList1.Images.SetKeyName(1, "notebook_16xLG.png");
-            this.imageList1.Images.SetKeyName(2, "Output_16xLG.png");
-            this.imageList1.Images.SetKeyName(3, "SingleInput_8170_16x.png");
             // 
             // tabPage5
             // 
@@ -170,6 +161,15 @@
             this.moduleInfo1.Name = "moduleInfo1";
             this.moduleInfo1.Size = new System.Drawing.Size(1108, 740);
             this.moduleInfo1.TabIndex = 0;
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "ListBox_686.png");
+            this.imageList1.Images.SetKeyName(1, "notebook_16xLG.png");
+            this.imageList1.Images.SetKeyName(2, "Output_16xLG.png");
+            this.imageList1.Images.SetKeyName(3, "SingleInput_8170_16x.png");
             // 
             // DeviceView
             // 
