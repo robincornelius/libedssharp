@@ -80,6 +80,7 @@ namespace libEDSsharp
                         foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                         {
                             ODentry subod = kvp2.Value;
+                            UInt16 subindex = kvp2.Key;
 
                             Xml2CSharp.CANopenSubObject sub = new Xml2CSharp.CANopenSubObject();
 
@@ -89,7 +90,7 @@ namespace libEDSsharp
                             sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
                             sub.DefaultValue = subod.defaultvalue;
                             sub.PDOmapping = subod.PDOtype.ToString();
-                            sub.SubIndex = String.Format("{0:x2}", subod.subindex);
+                            sub.SubIndex = String.Format("{0:x2}", subindex);
                             sub.TPDOdetectCOS = subod.TPDODetectCos.ToString().ToLower();
                             coo.CANopenSubObject.Add(sub);
 
@@ -376,7 +377,7 @@ namespace libEDSsharp
 
                     subentry.defaultvalue = coosub.DefaultValue;
 
-                    subentry.subindex = Convert.ToUInt16(coosub.SubIndex, 16);
+                    byte subindex = Convert.ToByte(coosub.SubIndex, 16);
 
                     if (coosub.PDOmapping != null)
                         subentry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), coosub.PDOmapping);
@@ -402,7 +403,7 @@ namespace libEDSsharp
                     }
 
 
-                    entry.subobjects.Add(subentry.subindex, subentry);
+                    entry.subobjects.Add(subindex, subentry);
 
                 }
             }

@@ -99,7 +99,7 @@ CompactSubObj=9
             if (sub.PDOtype != PDOMappingType.no)
                 throw (new Exception("parseEDSentry() CompactSubObj incorrect generation"));
 
-            for (int x = 1; x < 10; x++)
+            for (UInt16 x = 1; x < 10; x++)
             {
                 if (!od.containssubindex(x))
                     throw (new Exception("parseEDSentry() CompactSubObj incorrect generation"));

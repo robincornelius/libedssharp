@@ -561,10 +561,10 @@ namespace libEDSsharp
                         {
                             ODentry sub = kvp2.Value;
 
-                            if (sub.subindex == 0)
+                            if (kvp2.Key == 0)
                                 continue;
 
-                            string ODSI = string.Format("{0}", string.Format("OD_{0:x4}_{1}_{2}_{3}", od.index, sub.subindex, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+                            string ODSI = string.Format("{0}", string.Format("OD_{0:x4}_{1}_{2}_{3}", od.index, kvp2.Key, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
 
                             if (ODSIs.Contains(ODSI))
                             {
@@ -573,7 +573,7 @@ namespace libEDSsharp
 
                             ODSIs.Add(ODSI);
 
-                            ODSIout += (string.Format("        #define {0,-51} {1}\r\n", ODSI, sub.subindex));
+                            ODSIout += (string.Format("        #define {0,-51} {1}\r\n", ODSI, kvp2.Key));
                         }
 
                         file.Write(ODSIout);
@@ -684,7 +684,7 @@ file.WriteLine(@"/**************************************************************
                             {
                                 ODentry sub = kvp2.Value;
 
-                                if (sub.subindex == 0)
+                                if (kvp2.Key == 0)
                                     continue;
 
                                 string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)));
@@ -700,11 +700,11 @@ file.WriteLine(@"/**************************************************************
                                 //so offset by one
                                 if (od.objecttype == ObjectType.ARRAY)
                                 {
-                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex - 1));
+                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), kvp2.Key - 1));
                                 }
                                 else
                                 {
-                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), sub.subindex));
+                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), kvp2.Key));
                                 }
                             }
 
@@ -807,14 +807,16 @@ const CO_OD_entry_t CO_OD[");
             file.Close();
         }
 
+        bool arrayspecialcase = false;
+        int arrayspecialcasecount = 0;
 
         string write_od()
         {
 
             StringBuilder returndata = new StringBuilder();
 
-            bool arrayspecialcase = false;
-            int count = 0;
+          
+         
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -824,95 +826,104 @@ const CO_OD_entry_t CO_OD[");
                 if (od.Disabled == true)
                     continue;
 
-                string loc = "CO_OD_" + od.StorageLocation;
+                returndata.Append(write_od_line(od));
 
-                byte flags = getflags(od);
-
-                DataType t = eds.getdatatype(od);
-                int datasize = od.sizeofdatatype();
-
-                string odf;
-
-                if (od.AccessFunctionName != null)
-                {
-                    odf = od.AccessFunctionName;
-                }
-                else
-                {
-                    odf = "CO_ODF";
-                }
-
-                string array = "";
-
-                //only needed for array objects
-                if (od.objecttype == ObjectType.ARRAY && od.nosubindexes > 0)
-                    array = string.Format("[0]");
-
-
-                if (arrayspecial(od.index, true))
-                {
-                    arrayspecialcase = true;
-                    count = 0;
-                }
-
-                if (arrayspecialcase)
-                {
-                    array = string.Format("[{0}]", count);
-                    count++;
-                }
-
-                //Arrays and Recs have 1 less subindex than actually present in the od.subobjects
-                int nosubindexs = od.nosubindexes;
-                if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
-                {
-                    if (nosubindexs > 0)
-                        nosubindexs--;
-                }
-
-                //Arrays really should obey the max subindex paramater not the physical number of elements
-                if (od.objecttype == ObjectType.ARRAY)
-                {
-                    if ((od.getmaxsubindex() != nosubindexs))
-                    {
-
-                        if (od.index != 0x1003 && od.index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
-                        {
-
-                            Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex()));
-                            nosubindexs = od.getmaxsubindex();
-                        }
-                    }
-                }
-
-                string pdata; //CO_OD_entry_t pData generator
-
-                if (od.objecttype == ObjectType.REC)
-                {
-
-                    pdata = string.Format("&OD_record{0:x4}", od.index);
-                }
-                else
-                {
-                    pdata = string.Format("&{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
-                }
-
-                if ((od.objecttype == ObjectType.VAR || od.objecttype == ObjectType.ARRAY) && od.datatype == DataType.DOMAIN)
-                {
-                    //NB domain MUST have a data pointer of 0, can open node requires this and makes checks
-                    //against null to determine this is a DOMAIN type. 
-                    pdata = "0";
-                }
-
-                returndata.AppendFormat("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*){4}}},\n", od.index, nosubindexs, flags, datasize, pdata);
-
-                if (arrayspecial(od.index, false))
-                {
-                    arrayspecialcase = false;
-                }
+               
             }
 
             return returndata.ToString();
 
+        }
+
+        protected string write_od_line(ODentry od)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            string loc = "CO_OD_" + od.StorageLocation;
+
+            byte flags = getflags(od);
+
+            DataType t = eds.getdatatype(od);
+            int datasize = od.sizeofdatatype();
+
+            string odf;
+
+            if (od.AccessFunctionName != null)
+            {
+                odf = od.AccessFunctionName;
+            }
+            else
+            {
+                odf = "CO_ODF";
+            }
+
+            string array = "";
+
+            //only needed for array objects
+            if (od.objecttype == ObjectType.ARRAY && od.nosubindexes > 0)
+                array = string.Format("[0]");
+
+
+            if (arrayspecial(od.index, true))
+            {
+                arrayspecialcase = true;
+                arrayspecialcasecount = 0;
+            }
+
+            if (arrayspecialcase)
+            {
+                array = string.Format("[{0}]", arrayspecialcasecount);
+                arrayspecialcasecount++;
+            }
+
+            //Arrays and Recs have 1 less subindex than actually present in the od.subobjects
+            int nosubindexs = od.nosubindexes;
+            if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
+            {
+                if (nosubindexs > 0)
+                    nosubindexs--;
+            }
+
+            //Arrays really should obey the max subindex paramater not the physical number of elements
+            if (od.objecttype == ObjectType.ARRAY)
+            {
+                if ((od.getmaxsubindex() != nosubindexs))
+                {
+                    if (od.index != 0x1003 && od.index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
+                    {
+                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex())); 
+                    }
+                    nosubindexs = od.getmaxsubindex();
+                }
+            }
+
+            string pdata; //CO_OD_entry_t pData generator
+
+            if (od.objecttype == ObjectType.REC)
+            {
+
+                pdata = string.Format("&OD_record{0:x4}", od.index);
+            }
+            else
+            {
+                pdata = string.Format("&{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
+            }
+
+            if ((od.objecttype == ObjectType.VAR || od.objecttype == ObjectType.ARRAY) && od.datatype == DataType.DOMAIN)
+            {
+                //NB domain MUST have a data pointer of 0, can open node requires this and makes checks
+                //against null to determine this is a DOMAIN type. 
+                pdata = "0";
+            }
+
+            sb.AppendFormat("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*){4}}},\n", od.index, nosubindexs, flags, datasize, pdata);
+
+            if (arrayspecial(od.index, false))
+            {
+                arrayspecialcase = false;
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -1433,7 +1444,7 @@ const CO_OD_entry_t CO_OD[");
 
                         DataType dt = sub.datatype;
 
-                        if ((od.objecttype==ObjectType.ARRAY) && sub.subindex == 0)
+                        if ((od.objecttype==ObjectType.ARRAY) && kvp2.Key == 0)
                             continue;
 
                         sb.Append(formatvaluewithdatatype(sub.defaultvalue, dt));

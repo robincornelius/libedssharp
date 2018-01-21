@@ -137,32 +137,43 @@ namespace ODEditor
                 {
                     case "0x1003 rw/ro":
                         selectedobject.accesstype = EDSsharp.AccessType.rw;
-                        for (byte p = 0; p < selectedobject.subobjects.Count; p++)
+
+                        foreach(KeyValuePair <UInt16,ODentry> kvp in selectedobject.subobjects)
                         {
-                            if (selectedobject.subobjects[p].subindex == 0)
-                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.rw;
+                            ODentry od = kvp.Value;
+                            UInt16 subindex = kvp.Key;
+
+                            if (subindex == 0)
+                                od.accesstype = EDSsharp.AccessType.rw;
                             else
-                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.ro;
+                                od.accesstype = EDSsharp.AccessType.ro;
+
                         }
+
                         break;
 
                     case "0x1010 const/rw":
-                        for (byte p = 0; p < selectedobject.subobjects.Count; p++)
+                        foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
                         {
-                            if (selectedobject.subobjects[p].subindex == 0)
-                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.@const;
+                            ODentry od = kvp.Value;
+                            UInt16 subindex = kvp.Key;
+
+                            if (subindex == 0)
+                                od.accesstype = EDSsharp.AccessType.@const;
                             else
-                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.rw;
+                                od.accesstype = EDSsharp.AccessType.rw;
                         }
                         break;
 
                     case "0x1010 const/ro":
-                        for (byte p = 0; p < selectedobject.subobjects.Count; p++)
+                        foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
                         {
-                            if (selectedobject.subobjects[p].subindex == 0)
-                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.@const;
+                            ODentry od = kvp.Value;
+                            UInt16 subindex = kvp.Key;
+                            if (subindex == 0)
+                                od.accesstype = EDSsharp.AccessType.@const;
                             else
-                                selectedobject.subobjects[p].accesstype = EDSsharp.AccessType.ro;
+                                od.accesstype = EDSsharp.AccessType.ro;
                         }
                         break;
 
@@ -193,6 +204,7 @@ namespace ODEditor
                 foreach (KeyValuePair<UInt16,ODentry>kvp in selectedobject.subobjects)
                 {
                     ODentry subod = kvp.Value;
+                    UInt16 subindex = kvp.Key;
 
                     subod.PDOtype = selectedobject.PDOtype;
                     switch(comboBox_accesstype.SelectedItem.ToString())
@@ -203,7 +215,7 @@ namespace ODEditor
                             break;
 
                         default:
-                            if (subod.subindex != 0)
+                            if (subindex != 0)
                                 subod.accesstype = selectedobject.accesstype;
                             break;
 
@@ -379,7 +391,6 @@ namespace ODEditor
 
             }
 
-
             if (od.parent.objecttype == ObjectType.REC && od.subindex != 0)
             {
                 textBox_defaultvalue.Enabled = true;
@@ -481,7 +492,7 @@ namespace ODEditor
                     lvi2.SubItems.Add(subod.objecttype.ToString());
 
 
-                    if (subod.datatype == DataType.UNKNOWN || (od.objecttype == ObjectType.ARRAY && subod.subindex != 0))
+                    if (subod.datatype == DataType.UNKNOWN || (od.objecttype == ObjectType.ARRAY && subindex != 0))
                     {
                         lvi2.SubItems.Add(" -- ");
                     }
@@ -854,7 +865,6 @@ namespace ODEditor
                         ODentry sod = new ODentry();
 
                         sod.objecttype = ObjectType.VAR;
-                        sod.subindex = 0;
                         sod.index = ni.index;
                         sod.StorageLocation = "RAM";
                         sod.defaultvalue = String.Format("{0}",ni.nosubindexes);
@@ -873,7 +883,6 @@ namespace ODEditor
                         ODentry sod = new ODentry();
 
                         sod.objecttype = ObjectType.VAR;
-                        sod.subindex = (UInt16)(p + 1);
                         sod.index = ni.index;
                         sod.StorageLocation = "RAM";
                         sod.defaultvalue = "";
@@ -988,7 +997,6 @@ namespace ODEditor
                     newsub.PDOtype = od.PDOtype;
                     newsub.index = od.index;
                     newsub.objecttype = ObjectType.VAR;
-                    newsub.subindex = (UInt16)od.subobjects.Count;
                     od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
 
                     UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
@@ -1014,7 +1022,6 @@ namespace ODEditor
                         newsub.PDOtype = od.PDOtype;
                         newsub.index = od.index;
                         newsub.objecttype = ObjectType.VAR;
-                        newsub.subindex = (UInt16)od.subobjects.Count;
                         newsub.parameter_name = ni.name;
 
                         od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
@@ -1055,7 +1062,6 @@ namespace ODEditor
                 foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
                 {
                     ODentry sub = kvp.Value;
-                    sub.subindex = countx;
                     newlist.Add(countx, sub);
                     countx++;
                 }

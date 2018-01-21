@@ -104,8 +104,9 @@ namespace ODEditor
                 foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
                 {
                     ODentry odsub = kvp2.Value;
+                    UInt16 subindex = kvp2.Key;
 
-                    if (odsub.subindex == 0)
+                    if (subindex == 0)
                         continue;
 
                     if (odsub.PDOtype == PDOMappingType.optional || (isTXPDO && (odsub.PDOtype == PDOMappingType.TPDO)) || (!isTXPDO && (odsub.PDOtype == PDOMappingType.RPDO)))
@@ -321,7 +322,7 @@ namespace ODEditor
                         targetod = targetod.subobjects[pdosub];
                     }
 
-                    target = String.Format("0x{0:x4}/{1:x2}/", targetod.index, targetod.subindex) + targetod.parameter_name;
+                    target = String.Format("0x{0:x4}/{1:x2}/", targetod.index, pdosub) + targetod.parameter_name;
                     PDOdatasize = targetod.sizeofdatatype();
                 }
                 

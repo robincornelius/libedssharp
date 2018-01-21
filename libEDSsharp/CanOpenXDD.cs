@@ -3,6 +3,7 @@ using System.Xml.Serialization;
 using System.IO;
 using XSDImport;
 using System.Text.RegularExpressions; //and nope this is not anywhere near the xml parsing
+using System.Collections.Generic;
 
 namespace libEDSsharp
 {
@@ -41,7 +42,6 @@ namespace libEDSsharp
 
         public void fillparamater(parameter p, ODentry od)
         {
-
 
             if (od.parent == null)
             {
@@ -282,8 +282,11 @@ namespace libEDSsharp
             AppLayer.CANopenObjectList.CANopenObject = new CANopenObjectListCANopenObject[eds.getNoEnabledObjects()];
             
             int count = 0;
-            foreach (ODentry od in eds.ods.Values)
+            foreach (KeyValuePair<UInt16,ODentry> kvp in eds.ods)
             {
+                ODentry od = kvp.Value;
+                UInt16 subindex = kvp.Key;
+
                 if (od.Disabled)
                     continue;
 
@@ -316,11 +319,14 @@ namespace libEDSsharp
 
                     int subcount = 0;
 
-                    foreach (ODentry subod in od.subobjects.Values)
+                    foreach ( KeyValuePair<UInt16,ODentry> kvp2 in od.subobjects)
                     {
+                        ODentry subod = kvp2.Value;
+                        UInt16 subindex2 = kvp2.Key;
+
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount] = new CANopenObjectListCANopenObjectCANopenSubObject();
 
-                        bytes = BitConverter.GetBytes((UInt16)subod.subindex);
+                        bytes = BitConverter.GetBytes((UInt16)kvp.Key);
                         Array.Reverse(bytes);
 
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].subIndex = bytes;
@@ -333,7 +339,7 @@ namespace libEDSsharp
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)subod.PDOtype;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmappingSpecified = true;
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index, subod.subindex);
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index, subindex2);
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), od.accesstype.ToString());
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessTypeSpecified = true;
 
@@ -816,7 +822,7 @@ namespace libEDSsharp
                             }
 
 
-                            ODentry subentry = new ODentry(subobj.name, index, subobj.subIndex[0], datatype, subobj.defaultValue, accesstype, pdotype, entry);
+                            ODentry subentry = new ODentry(subobj.name, index, datatype, subobj.defaultValue, accesstype, pdotype, entry);
 
 
                             //extra items
