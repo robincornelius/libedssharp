@@ -271,7 +271,9 @@ namespace ODEditor
             try
             {
                 EDSsharp eds;
-                ISO15745ProfileContainer devs; //one day this will be multiple devices
+
+                //fixme
+                //ISO15745ProfileContainer devs; //one day this will be multiple devices
 
                 CanOpenXDD coxml = new CanOpenXDD();
                 eds = coxml.readXML(path);

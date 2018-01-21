@@ -931,7 +931,7 @@ namespace ODEditor
                                 return;
                             }
                         }
-                        catch(Exception ex)
+                        catch(Exception)
                         {
                             //Failed to parse the PDO
                         }
@@ -1191,8 +1191,6 @@ namespace ODEditor
 
         private ODentry getOD(UInt16 index, UInt16 selectedmodule)
         {
-            ODentry ret = null;
-
             if (selectedmodule == 0)
             {
                 if (eds.ods.ContainsKey(index))

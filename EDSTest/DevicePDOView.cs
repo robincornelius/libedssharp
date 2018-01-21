@@ -556,7 +556,7 @@ namespace ODEditor
                 eds.dirty = true;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -657,7 +657,7 @@ namespace ODEditor
 
                 eds.dirty = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

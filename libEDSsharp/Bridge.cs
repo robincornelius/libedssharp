@@ -448,7 +448,7 @@ namespace libEDSsharp
                         {
                             keypairs.Add(c.CharacteristicName.Label.Text, c.CharacteristicContent.Label.Text);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             // Warnings.warning_list.Add("Parsing characteristics failed " + e.ToString());
                         }
@@ -511,7 +511,7 @@ namespace libEDSsharp
                 eds.fi.CreationTime = eds.fi.CreationDateTime.ToString("h:mmtt");
 
             }
-            catch (Exception e) { }
+            catch (Exception) { }
 
             eds.fi.CreatedBy = dev.Other.File.FileCreator;
             eds.fi.exportFolder = dev.Other.File.ExportFolder;
@@ -523,7 +523,7 @@ namespace libEDSsharp
                 eds.fi.ModificationDate = eds.fi.ModificationDateTime.ToString("MM-dd-yyyy");
                 eds.fi.ModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
             }
-            catch (Exception e) { }
+            catch (Exception) { }
 
 
 

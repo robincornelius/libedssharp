@@ -19,7 +19,7 @@ namespace libEDSsharp
                 dev = (ISO15745ProfileContainer)serializer.Deserialize(reader);
                 reader.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
@@ -485,7 +485,8 @@ namespace libEDSsharp
 
             //Find Objet Dictionary entries
 
-            ProfileBody_DataType dt;
+           //fixme??
+           // ProfileBody_DataType dt;
 
 
             ProfileBody_CommunicationNetwork_CANopen body_network = null;
@@ -534,9 +535,11 @@ namespace libEDSsharp
                 {
 
                     string vendorID = "";
-                    string deviceFamily = "";
+                    //fixme
+                    //string deviceFamily = "";
                     string productID = "";
-                    string version = "";
+                    //fixme
+                    //string version = "";
                     DateTime buildDate;
                     string specificationRevision = "";
 

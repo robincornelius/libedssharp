@@ -899,13 +899,24 @@ namespace libEDSsharp
 
     }
 
+    public class ODSubentry : ODentry
+    {
+
+
+    }
+
 
     public class ODentry
     {
         [EdsExport]
         public UInt16 index;
+
+
         [EdsExport]
         public UInt16 subindex;
+
+
+
         [EdsExport]
         public int nosubindexes
         {
@@ -1916,8 +1927,6 @@ namespace libEDSsharp
 
                         if (m.Success)
                         {
-                            int x = 0;
-
                             UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
                             ModuleSubExtends mse = new ModuleSubExtends(eds[s], modindex);
 
@@ -2412,8 +2421,6 @@ namespace libEDSsharp
         //call this with the comm param index not the mapping
         public bool createPDO(bool rx,UInt16 index)
         {
-            bool status;
-
             //check if we are creating an RX PDO it is a valid index
             if (rx && (index < 0x1400 || index > 0x15ff))
                 return false;

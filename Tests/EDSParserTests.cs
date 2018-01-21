@@ -156,7 +156,7 @@ CompactSubObj=9
                         ok = true;
                     }
                 }
-                catch (ParameterException p)
+                catch (ParameterException)
                 {
                     ok = true;
 
