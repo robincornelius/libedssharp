@@ -357,7 +357,7 @@ namespace libEDSsharp
             file.WriteLine("");
 
             file.WriteLine(@"/*******************************************************************************
-   CANopen DATA DYPES
+   CANopen DATA TYPES
 *******************************************************************************/
    typedef bool_t       BOOLEAN;
    typedef uint8_t      UNSIGNED8;

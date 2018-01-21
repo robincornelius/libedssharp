@@ -37,7 +37,7 @@ namespace libEDSsharp
 
            file.Write("<!DOCTYPE html><html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /></head><body>");
 
-           file.Write(string.Format("<h1> {0} Documementation </h1>",eds.di.ProductName));
+           file.Write(string.Format("<h1> {0} Documentation </h1>",eds.di.ProductName));
 
            file.Write("<h2>Device Information</h2>");
 
