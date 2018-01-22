@@ -57,8 +57,8 @@ namespace ODEditor
                 }
             }
 
-            devicePDOView1.init(true);
-            devicePDOView2.init(false);
+            devicePDOView1.Init(true);
+            devicePDOView2.Init(false);
      
         }
 
@@ -85,10 +85,10 @@ namespace ODEditor
                 return;
 
             devicePDOView1.eds = eds;
-            devicePDOView1.updatePDOinfo();
+            devicePDOView1.UpdatePDOinfo();
 
             devicePDOView2.eds = eds;
-            devicePDOView2.updatePDOinfo();
+            devicePDOView2.UpdatePDOinfo();
 
         }
 

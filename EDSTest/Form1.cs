@@ -137,7 +137,7 @@ namespace ODEditor
                 dv.dispatch_updateOD();
                 dv.dispatch_updatePDOinfo();
 
-                dv.eds.updatePDOcount();
+                dv.eds.UpdatePDOcount();
                 dv.dispatch_updatedevice();
 
             }
@@ -150,12 +150,12 @@ namespace ODEditor
             odf.Filter = "Electronic Data Sheets (*.eds)|*.eds";
             if (odf.ShowDialog() == DialogResult.OK)
             {
-                openEDSfile(odf.FileName,InfoSection.filetype.File_EDS);
+                openEDSfile(odf.FileName,InfoSection.Filetype.File_EDS);
                 addtoMRU(odf.FileName);
             }
         }
 
-        private void openEDSfile(string path,InfoSection.filetype ft)
+        private void openEDSfile(string path,InfoSection.Filetype ft)
         {
             Warnings.warning_list.Clear();
 
@@ -164,13 +164,13 @@ namespace ODEditor
                 EDSsharp eds = new EDSsharp();
                 Device dev; 
 
-                eds.loadfile(path);
+                eds.Loadfile(path);
                 Bridge bridge = new Bridge(); //tell me again why bridge is not static?
                 dev = bridge.convert(eds);
 
                 DeviceView device = new DeviceView();
 
-                eds.onDataDirty += Eds_onDataDirty;
+                eds.OnDataDirty += Eds_onDataDirty;
 
                 device.eds = eds;
                 tabControl1.TabPages.Add(eds.di.ProductName);
@@ -249,11 +249,11 @@ namespace ODEditor
                         break;
 
                     case ".eds":
-                        openEDSfile(odf.FileName, InfoSection.filetype.File_EDS);
+                        openEDSfile(odf.FileName, InfoSection.Filetype.File_EDS);
                         break;
 
                     case ".dcf":
-                        openEDSfile(odf.FileName, InfoSection.filetype.File_DCF);
+                        openEDSfile(odf.FileName, InfoSection.Filetype.File_DCF);
                         break;
 
                     default:
@@ -287,7 +287,7 @@ namespace ODEditor
 
                 DeviceView device = new DeviceView();
 
-                eds.onDataDirty += Eds_onDataDirty;
+                eds.OnDataDirty += Eds_onDataDirty;
 
                 device.eds = eds;
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
@@ -336,7 +336,7 @@ namespace ODEditor
 
                 DeviceView device = new DeviceView();
 
-                eds.onDataDirty += Eds_onDataDirty;
+                eds.OnDataDirty += Eds_onDataDirty;
 
                 device.eds = eds;
                 tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
@@ -369,7 +369,7 @@ namespace ODEditor
                     if(c.GetType() == typeof(DeviceView))
                     {
                         DeviceView d = (DeviceView)c;
-                        if (d.eds.dirty == true)
+                        if (d.eds.Dirty == true)
                         {
                             page.BackColor = Color.Red;
                         }
@@ -427,7 +427,7 @@ namespace ODEditor
 
                 DeviceView device = (DeviceView)tabControl1.SelectedTab.Controls[0];
 
-                if(device.eds.dirty==true)
+                if(device.eds.Dirty==true)
                 {
                     if (MessageBox.Show( "All usaved changes will be lost\n continue?", "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
                         return;
@@ -462,9 +462,9 @@ namespace ODEditor
                 {
 
                     if (dv.eds.edsfilename != sfd.FileName)
-                        dv.eds.dirty = true;
+                        dv.eds.Dirty = true;
 
-                    dv.eds.savefile(sfd.FileName,InfoSection.filetype.File_EDS);
+                    dv.eds.Savefile(sfd.FileName,InfoSection.Filetype.File_EDS);
 
                     dv.eds.edsfilename = sfd.FileName;
                     dv.dispatch_updateOD();
@@ -494,12 +494,12 @@ namespace ODEditor
                     switch(Path.GetExtension(sfd.FileName))
                     {
                         case ".eds":
-                            dv.eds.savefile(sfd.FileName, InfoSection.filetype.File_EDS);
+                            dv.eds.Savefile(sfd.FileName, InfoSection.Filetype.File_EDS);
                             dv.eds.edsfilename = sfd.FileName;
                             break;
 
                         case ".dcf":
-                            dv.eds.savefile(sfd.FileName, InfoSection.filetype.File_DCF);
+                            dv.eds.Savefile(sfd.FileName, InfoSection.Filetype.File_DCF);
                             dv.eds.dcffilename = sfd.FileName;
                             break;
 
@@ -513,7 +513,7 @@ namespace ODEditor
                             coxml.writeXML(sfd.FileName);
 
                             dv.eds.xmlfilename = sfd.FileName;
-                            dv.eds.dirty = false;
+                            dv.eds.Dirty = false;
                             dv.dispatch_updateOD();
                             break;
 
@@ -539,7 +539,7 @@ namespace ODEditor
             DeviceView device = new DeviceView();
 
             device.eds = eds;
-            eds.onDataDirty += Eds_onDataDirty;
+            eds.OnDataDirty += Eds_onDataDirty;
 
             tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
             device.Dock = DockStyle.Fill;
@@ -586,9 +586,9 @@ namespace ODEditor
             if (ext == ".xdd")
                 openXDDfile(filepath);
             if ( ext == ".eds" )
-                openEDSfile(filepath, InfoSection.filetype.File_EDS);
+                openEDSfile(filepath, InfoSection.Filetype.File_EDS);
             if (ext == ".dcf")
-                openEDSfile(filepath, InfoSection.filetype.File_DCF);
+                openEDSfile(filepath, InfoSection.Filetype.File_DCF);
             if (ext == ".nxml")
                 openNetworkfile(filepath);
 
@@ -735,7 +735,7 @@ namespace ODEditor
                 device.Dock = DockStyle.Fill;
 
                 network.Add(eds);
-                eds.onDataDirty += Eds_onDataDirty;
+                eds.OnDataDirty += Eds_onDataDirty;
 
                 device.dispatch_updateOD();
 
@@ -918,7 +918,7 @@ namespace ODEditor
 
 
                 //export EDS
-                dv.eds.savefile(dv.eds.edsfilename, InfoSection.filetype.File_EDS);
+                dv.eds.Savefile(dv.eds.edsfilename, InfoSection.Filetype.File_EDS);
 
                 //export CO_OD.c and CO_OD.h
                 CanOpenNodeExporter cone = new CanOpenNodeExporter();
@@ -933,7 +933,7 @@ namespace ODEditor
                     return;
                 }
 
-                dv.eds.dirty = false;
+                dv.eds.Dirty = false;
 
                 if (Warnings.warning_list.Count != 0)
                 {
@@ -958,7 +958,7 @@ namespace ODEditor
                     if (c.GetType() == typeof(DeviceView))
                     {
                         DeviceView d = (DeviceView)c;
-                        if (d.eds.dirty == true)
+                        if (d.eds.Dirty == true)
                         {
                            if(MessageBox.Show("Warning you have unsaved changes\n Do you wish to continue","Unsaved changes",MessageBoxButtons.YesNo)==DialogResult.No)
                             {

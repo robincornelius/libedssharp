@@ -206,7 +206,7 @@ namespace ODEditor
                 eds.dc.CANopenManager = checkBox_canopenmanager.Checked;
                 eds.dc.LSS_SerialNumber = Convert.ToUInt32(textBox_lssserial.Text);
 
-                eds.dirty = true;
+                eds.Dirty = true;
             }
             catch (Exception ex)
             {

@@ -53,7 +53,7 @@ namespace libEDSsharp
             this.eds = eds;
 
 
-            enabledcount = eds.getNoEnabledObjects();
+            enabledcount = eds.GetNoEnabledObjects();
 
             countPDOS();
 
@@ -200,20 +200,20 @@ namespace libEDSsharp
         {
             StringBuilder sb = new StringBuilder();
 
-            if (od.nosubindexes == 0)
+            if (od.Nosubindexes == 0)
             {
                 string specialarraylength = "";
                 if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
                 {
-                    specialarraylength = string.Format("[{0}]", od.lengthofstring());
+                    specialarraylength = string.Format("[{0}]", od.Lengthofstring);
                 }
 
-                sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}{3};\n", od.index, od.datatype.ToString(), make_cname(od.parameter_name), specialarraylength);
+                sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}{3};\n", od.Index, od.datatype.ToString(), make_cname(od.parameter_name), specialarraylength);
             }
             else
             {
                 //fixme why is this not od.datatype?
-                DataType t = eds.getdatatype(od);
+                DataType t = eds.Getdatatype(od);
 
                 //If it not a defined type, and it probably is not for a REC, we must generate a name, this is 
                 //related to the previous code that generated the actual structures.
@@ -241,7 +241,7 @@ namespace libEDSsharp
                         return "";
 
                     lastname = name;
-                    sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}[{3}];\n", od.index, objecttypewords, make_cname(od.parameter_name), au[name]);
+                    sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}[{3}];\n", od.Index, objecttypewords, make_cname(od.parameter_name), au[name]);
                 }
                 else
                 {
@@ -250,13 +250,13 @@ namespace libEDSsharp
                     //values that arrayspecial() checks for, to generate 1 element arrays if needed
                     if (od.objecttype == ObjectType.REC)
                     {
-                        if (arrayspecial(od.index, true))
+                        if (arrayspecial(od.Index, true))
                         {
-                            sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}[1];\n", od.index, objecttypewords, make_cname(od.parameter_name));
+                            sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}[1];\n", od.Index, objecttypewords, make_cname(od.parameter_name));
                         }
                         else
                         {
-                            sb.AppendFormat("/*{0:x4}      */ {1,-15} {2};\n", od.index, objecttypewords, make_cname(od.parameter_name));
+                            sb.AppendFormat("/*{0:x4}      */ {1,-15} {2};\n", od.Index, objecttypewords, make_cname(od.parameter_name));
                         }
                     }
                     else
@@ -268,14 +268,14 @@ namespace libEDSsharp
                             int maxlength = 0;
                             foreach (ODentry sub in od.subobjects.Values)
                             {
-                                if (sub.lengthofstring() > maxlength)
-                                    maxlength = sub.lengthofstring();
+                                if (sub.Lengthofstring> maxlength)
+                                    maxlength = sub.Lengthofstring;
                             }
 
                             specialarraylength = string.Format("[{0}]", maxlength);
                         }
 
-                        sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}{4}[{3}];\n", od.index, objecttypewords, make_cname(od.parameter_name), od.nosubindexes - 1, specialarraylength);
+                        sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}{4}[{3}];\n", od.Index, objecttypewords, make_cname(od.parameter_name), od.Nosubindexes - 1, specialarraylength);
                     }
                 }
             }
@@ -497,7 +497,7 @@ namespace libEDSsharp
 
                     if(subod.datatype==DataType.VISIBLE_STRING || subod.datatype==DataType.OCTET_STRING)
                     {
-                        paramaterarrlen = String.Format("[{0}]", subod.lengthofstring());
+                        paramaterarrlen = String.Format("[{0}]", subod.Lengthofstring);
                     }
 
                     file.WriteLine(string.Format("               {0,-15}{1}{2};", subod.datatype.ToString(), make_cname(subod.parameter_name),paramaterarrlen));
@@ -528,15 +528,15 @@ namespace libEDSsharp
                 if (od.Disabled == true)
                     continue;
                 
-                DataType t = eds.getdatatype(od);
+                DataType t = eds.Getdatatype(od);
 
 
                 switch (od.objecttype)
                 {
                 default:
                     {
-                        file.WriteLine(string.Format("/*{0:x4} */", od.index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.index, make_cname(od.parameter_name)), od.index, t.ToString()));
+                        file.WriteLine(string.Format("/*{0:x4} */", od.Index));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
 
                         file.WriteLine("");
                     }
@@ -545,13 +545,13 @@ namespace libEDSsharp
                 case ObjectType.ARRAY:
                 case ObjectType.REC:
                     {
-                        file.WriteLine(string.Format("/*{0:x4} */", od.index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.index, make_cname(od.parameter_name)), od.index, t.ToString()));
+                        file.WriteLine(string.Format("/*{0:x4} */", od.Index));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
 
                         file.WriteLine("");
 
                         //sub indexes
-                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_{0:x4}_0_{1}_maxSubIndex", od.index, make_cname(od.parameter_name))));         
+                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_{0:x4}_0_{1}_maxSubIndex", od.Index, make_cname(od.parameter_name))));         
 
                         List<string> ODSIs = new List<string>();
 
@@ -564,7 +564,7 @@ namespace libEDSsharp
                             if (kvp2.Key == 0)
                                 continue;
 
-                            string ODSI = string.Format("{0}", string.Format("OD_{0:x4}_{1}_{2}_{3}", od.index, kvp2.Key, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+                            string ODSI = string.Format("{0}", string.Format("OD_{0:x4}_{1}_{2}_{3}", od.Index, kvp2.Key, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
 
                             if (ODSIs.Contains(ODSI))
                             {
@@ -647,21 +647,21 @@ file.WriteLine(@"/**************************************************************
 
                 string loc = "CO_OD_" + od.StorageLocation;
 
-                DataType t = eds.getdatatype(od);
+                DataType t = eds.Getdatatype(od);
 
 
                 switch (od.objecttype)
                 {
                     default:
                         {
-                            file.WriteLine(string.Format("/*{0:x4}, Data Type: {1} */", od.index, t.ToString()));
+                            file.WriteLine(string.Format("/*{0:x4}, Data Type: {1} */", od.Index, t.ToString()));
                             file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
 
                             DataType dt = od.datatype;
 
                             if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                             {
-                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.lengthofstring()));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.Lengthofstring));
                             }
                             file.WriteLine("");
                         }
@@ -671,9 +671,9 @@ file.WriteLine(@"/**************************************************************
                         {
                             DataType dt = od.datatype;
 
-                            file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.index, t.ToString(), od.nosubindexes - 1));
+                            file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.Index, t.ToString(), od.Nosubindexes - 1));
                             file.WriteLine(string.Format("        #define OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
-                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.nosubindexes - 1));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.Nosubindexes - 1));
 
 
                             List<string> ODAs = new List<string>();
@@ -719,7 +719,7 @@ file.WriteLine(@"/**************************************************************
 
                             if (!constructed_rec_types.Contains(rectype))
                             {
-                                file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}_t */", od.index, rectype));
+                                file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}_t */", od.Index, rectype));
                                 file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", rectype), loc, rectype));
                                 constructed_rec_types.Add(rectype);
                                 file.WriteLine("");
@@ -843,8 +843,8 @@ const CO_OD_entry_t CO_OD[");
 
             byte flags = getflags(od);
 
-            DataType t = eds.getdatatype(od);
-            int datasize = od.sizeofdatatype();
+            DataType t = eds.Getdatatype(od);
+            int datasize = od.Sizeofdatatype();
 
             string odf;
 
@@ -860,11 +860,11 @@ const CO_OD_entry_t CO_OD[");
             string array = "";
 
             //only needed for array objects
-            if (od.objecttype == ObjectType.ARRAY && od.nosubindexes > 0)
+            if (od.objecttype == ObjectType.ARRAY && od.Nosubindexes > 0)
                 array = string.Format("[0]");
 
 
-            if (arrayspecial(od.index, true))
+            if (arrayspecial(od.Index, true))
             {
                 arrayspecialcase = true;
                 arrayspecialcasecount = 0;
@@ -877,7 +877,7 @@ const CO_OD_entry_t CO_OD[");
             }
 
             //Arrays and Recs have 1 less subindex than actually present in the od.subobjects
-            int nosubindexs = od.nosubindexes;
+            int nosubindexs = od.Nosubindexes;
             if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
             {
                 if (nosubindexs > 0)
@@ -887,20 +887,20 @@ const CO_OD_entry_t CO_OD[");
             //Arrays really should obey the max subindex paramater not the physical number of elements
             if (od.objecttype == ObjectType.ARRAY)
             {
-                if ((od.getmaxsubindex() != nosubindexs))
+                if ((od.Getmaxsubindex() != nosubindexs))
                 {
-                    if (od.index != 0x1003 && od.index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
+                    if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
                     {
-                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex())); 
+                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.Index, nosubindexs, od.Getmaxsubindex())); 
                     }
 
                     //0x1003 is a special case for CanOpenNode
                     //SubIndex 0 will probably be 0 for no errors
                     //so we cannot read that to determine max subindex size, which is required to set up CanOpenNode so we leave it alone here
                     //as its already set to subod.count
-                    if (od.index != 0x1003)
+                    if (od.Index != 0x1003)
                     {
-                        nosubindexs = od.getmaxsubindex();
+                        nosubindexs = od.Getmaxsubindex();
                     }
 
                    
@@ -912,7 +912,7 @@ const CO_OD_entry_t CO_OD[");
             if (od.objecttype == ObjectType.REC)
             {
 
-                pdata = string.Format("&OD_record{0:x4}", od.index);
+                pdata = string.Format("&OD_record{0:x4}", od.Index);
             }
             else
             {
@@ -926,9 +926,9 @@ const CO_OD_entry_t CO_OD[");
                 pdata = "0";
             }
 
-            sb.AppendFormat("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*){4}}},\n", od.index, nosubindexs, flags, datasize, pdata);
+            sb.AppendFormat("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*){4}}},\n", od.Index, nosubindexs, flags, datasize, pdata);
 
-            if (arrayspecial(od.index, false))
+            if (arrayspecial(od.Index, false))
             {
                 arrayspecialcase = false;
             }
@@ -1019,7 +1019,7 @@ const CO_OD_entry_t CO_OD[");
               flags |=0x40;
             }
 
-            int datasize = od.sizeofdatatype();
+            int datasize = od.Sizeofdatatype();
 
             if (datasize > 1)
             {
@@ -1275,16 +1275,16 @@ const CO_OD_entry_t CO_OD[");
 
                 int count = od.subobjects.Count; //don't include index
 
-                if(od.index>=0x1400 && od.index<0x1600)
+                if(od.Index>=0x1400 && od.Index<0x1600)
                 {
                     count = 3; //CanOpenNode Fudging. Its only 3 paramaters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
-                returndata.AppendFormat("/*0x{0:x4}*/ const CO_OD_entryRecord_t OD_record{0:x4}[{1}] = {{\n", od.index, count);
+                returndata.AppendFormat("/*0x{0:x4}*/ const CO_OD_entryRecord_t OD_record{0:x4}[{1}] = {{\n", od.Index, count);
 
                 string arrayaccess = "";
 
-                if (arrayspecial(od.index, true) || arrayopen)
+                if (arrayspecial(od.Index, true) || arrayopen)
                 {
                     arrayaccess = string.Format("[{0}]",arrayindex);
                     arrayindex++;
@@ -1296,7 +1296,7 @@ const CO_OD_entry_t CO_OD[");
                     returndata.Append(export_one_record_type(kvpsub.Value,arrayaccess));
                 }
 
-                if (arrayspecial(od.index, false))
+                if (arrayspecial(od.Index, false))
                 {
                     arrayindex=0;
                     arrayopen = false;
@@ -1325,7 +1325,7 @@ const CO_OD_entry_t CO_OD[");
             string cname = make_cname(sub.parent.parameter_name);
 
             string subcname = make_cname(sub.parameter_name);
-            int datasize = sub.sizeofdatatype();
+            int datasize = sub.Sizeofdatatype();
 
             if (sub.datatype != DataType.DOMAIN)
             {
@@ -1433,19 +1433,19 @@ const CO_OD_entry_t CO_OD[");
                         continue;
                 }
 
-                if (od.nosubindexes == 0)
+                if (od.Nosubindexes == 0)
                 {
-                    sb.AppendFormat("/*{0:x4}*/ {1},\n", od.index, formatvaluewithdatatype(od.defaultvalue, od.datatype));
+                    sb.AppendFormat("/*{0:x4}*/ {1},\n", od.Index, formatvaluewithdatatype(od.defaultvalue, od.datatype));
                 }
                 else
                 {
-                    if (arrayspecial(od.index, true))
+                    if (arrayspecial(od.Index, true))
                     {
-                        sb.AppendFormat("/*{0:x4}*/ {{{{", od.index);
+                        sb.AppendFormat("/*{0:x4}*/ {{{{", od.Index);
                     }
                     else
                     {
-                        sb.AppendFormat("/*{0:x4}*/ {{", od.index);
+                        sb.AppendFormat("/*{0:x4}*/ {{", od.Index);
                     }
 
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
@@ -1464,7 +1464,7 @@ const CO_OD_entry_t CO_OD[");
                     }
 
 
-                    if (arrayspecial(od.index, false))
+                    if (arrayspecial(od.Index, false))
                     {
                         sb.Append("}},\n");
                     }

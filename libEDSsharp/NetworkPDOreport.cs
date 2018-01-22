@@ -78,29 +78,29 @@ namespace libEDSsharp
 
                             bool nodeidpresent;
 
-                            if (kvp.Value.containssubindex(1))
-                                TXCOB = eds.GetNodeID(kvp.Value.getsubobject(1).defaultvalue, out nodeidpresent);
+                            if (kvp.Value.Containssubindex(1))
+                                TXCOB = eds.GetNodeID(kvp.Value.Getsubobject(1).defaultvalue, out nodeidpresent);
 
-                            if (kvp.Value.containssubindex(2))
-                                type = EDSsharp.ConvertToByte(kvp.Value.getsubobject(2).defaultvalue);
+                            if (kvp.Value.Containssubindex(2))
+                                type = EDSsharp.ConvertToByte(kvp.Value.Getsubobject(2).defaultvalue);
 
-                            if (kvp.Value.containssubindex(3))
-                                inhibit = EDSsharp.ConvertToUInt16(kvp.Value.getsubobject(3).defaultvalue);
+                            if (kvp.Value.Containssubindex(3))
+                                inhibit = EDSsharp.ConvertToUInt16(kvp.Value.Getsubobject(3).defaultvalue);
 
-                            if (kvp.Value.containssubindex(5))
-                                timer = EDSsharp.ConvertToUInt16(kvp.Value.getsubobject(5).defaultvalue);
+                            if (kvp.Value.Containssubindex(5))
+                                timer = EDSsharp.ConvertToUInt16(kvp.Value.Getsubobject(5).defaultvalue);
 
-                            if (kvp.Value.containssubindex(6))
-                                syncstart = EDSsharp.ConvertToByte(kvp.Value.getsubobject(6).defaultvalue);
+                            if (kvp.Value.Containssubindex(6))
+                                syncstart = EDSsharp.ConvertToByte(kvp.Value.Getsubobject(6).defaultvalue);
 
 
                             byte totalsize = 0;
-                            for (UInt16 sub = 1; sub <= map.getmaxsubindex(); sub++)
+                            for (UInt16 sub = 1; sub <= map.Getmaxsubindex(); sub++)
                             {
-                                if (!map.containssubindex(sub))
+                                if (!map.Containssubindex(sub))
                                     continue;
 
-                                UInt32 mapping = EDSsharp.ConvertToUInt32(map.getsubobject(sub).defaultvalue);
+                                UInt32 mapping = EDSsharp.ConvertToUInt32(map.Getsubobject(sub).defaultvalue);
                                 if (mapping == 0)
                                     continue;
 
@@ -130,16 +130,16 @@ namespace libEDSsharp
 
                             byte offsetend = 0;
                             byte offsetstart = 0;
-                            for (UInt16 sub = 1; sub <= map.getmaxsubindex(); sub++)
+                            for (UInt16 sub = 1; sub <= map.Getmaxsubindex(); sub++)
                             {
 
-                                if (!map.containssubindex(sub))
+                                if (!map.Containssubindex(sub))
                                     continue;
 
-                                if (map.getsubobjectdefaultvalue(sub) == "")
+                                if (map.Getsubobjectdefaultvalue(sub) == "")
                                     continue;
 
-                                UInt32 mapping = EDSsharp.ConvertToUInt32(map.getsubobjectdefaultvalue(sub));
+                                UInt32 mapping = EDSsharp.ConvertToUInt32(map.Getsubobjectdefaultvalue(sub));
                                 if (mapping == 0)
                                     continue;
 
@@ -160,7 +160,7 @@ namespace libEDSsharp
                                 }
                                 else
                                 {
-                                    name = eds.ods[index].getsubobject(subindex).parameter_name;
+                                    name = eds.ods[index].Getsubobject(subindex).parameter_name;
                                 }
 
 
@@ -190,7 +190,7 @@ namespace libEDSsharp
                                                 if (eds2.ods.ContainsKey((UInt16)(kvp2.Key + 0x200)))
                                                 {
                                                     bool nodeidpresent2;
-                                                    UInt32 RXCOB = eds2.GetNodeID(kvp2.Value.getsubobjectdefaultvalue(1), out nodeidpresent2);
+                                                    UInt32 RXCOB = eds2.GetNodeID(kvp2.Value.Getsubobjectdefaultvalue(1), out nodeidpresent2);
                                                     if (RXCOB == TXCOB)
                                                     {
 
@@ -210,9 +210,9 @@ namespace libEDSsharp
 
                                                         //Sanity check the total size
 
-                                                        for (byte sub2 = 1; sub2 <= map2.getmaxsubindex(); sub2++)
+                                                        for (byte sub2 = 1; sub2 <= map2.Getmaxsubindex(); sub2++)
                                                         {
-                                                            mapping2 = EDSsharp.ConvertToUInt32(map2.getsubobjectdefaultvalue(sub2));
+                                                            mapping2 = EDSsharp.ConvertToUInt32(map2.Getsubobjectdefaultvalue(sub2));
                                                             size2 = (byte)(mapping2);
                                                             totalsize2 += size2;
                                                         }
@@ -221,9 +221,9 @@ namespace libEDSsharp
                                                             file.WriteLine("<B> Critical error with network RX PDO size != TX PDO SIZE");
                                                         }
 
-                                                        for (byte sub2 = 1; sub2 <= map2.getmaxsubindex(); sub2++)
+                                                        for (byte sub2 = 1; sub2 <= map2.Getmaxsubindex(); sub2++)
                                                         {
-                                                            mapping2 = EDSsharp.ConvertToUInt32(map2.getsubobjectdefaultvalue(sub2));
+                                                            mapping2 = EDSsharp.ConvertToUInt32(map2.Getsubobjectdefaultvalue(sub2));
                                                             index2 = (UInt16)(mapping2 >> 16);
                                                             subindex2 = (UInt16)(0x00FF & (mapping2 >> 8));
                                                             size2 = (byte)mapping2;
@@ -261,13 +261,13 @@ namespace libEDSsharp
                                                             if (subindex2 == 0)
                                                             {
                                                                 //fixme getobject could return null
-                                                                name2 = eds2.getobject(index2).parameter_name;
+                                                                name2 = eds2.Getobject(index2).parameter_name;
 
                                                             }
                                                             else
                                                             {
                                                                 //fixme getobject could return null
-                                                                name2 = eds2.getobject(index2).getsubobject(subindex2).parameter_name;
+                                                                name2 = eds2.Getobject(index2).Getsubobject(subindex2).parameter_name;
                                                             }
 
                                                             string sizemsg = "";

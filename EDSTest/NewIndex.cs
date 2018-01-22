@@ -66,7 +66,7 @@ namespace ODEditor
 
                     childaddition = true;
          
-                    numericUpDown_index.Value = parent.index;
+                    numericUpDown_index.Value = parent.Index;
                     Text = "Create new sub index";
 
             }

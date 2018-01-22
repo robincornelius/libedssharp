@@ -56,7 +56,7 @@ namespace libEDSsharp
                 if (od.Disabled == true)
                     continue;
 
-                if (od.index == 0x1000 || od.index == 0x1001 || od.index == 0x1018)
+                if (od.Index == 0x1000 || od.Index == 0x1001 || od.Index == 0x1018)
                 {
                     writeODentryhtml(od);
                 }
@@ -70,7 +70,7 @@ namespace libEDSsharp
                 if (od.Disabled == true)
                     continue;
 
-                if ((od.index > 0x1001 && od.index != 0x1018 && od.index<0x2000) || od.index>=0x6000)
+                if ((od.Index > 0x1001 && od.Index != 0x1018 && od.Index<0x2000) || od.Index>=0x6000)
                 {
                     writeODentryhtml(od);
                 }
@@ -84,7 +84,7 @@ namespace libEDSsharp
                 if (od.Disabled == true)
                     continue;
 
-                if (od.index >= 0x2000 && od.index<0x6000)
+                if (od.Index >= 0x2000 && od.Index<0x6000)
                 {
                     writeODentryhtml(od);
                 }
@@ -103,11 +103,11 @@ namespace libEDSsharp
             if (od.parent == null)
             {
                 file.Write("<hr/>");
-                file.Write(String.Format("<h3>0x{0:x4} - {1}</h3>", od.index, od.parameter_name));
+                file.Write(String.Format("<h3>0x{0:x4} - {1}</h3>", od.Index, od.parameter_name));
             }
             else
             {
-                file.Write(String.Format("<h3>0x{0:x4} sub 0x{2:x2} - {1}</h3>", od.index, od.parameter_name,od.subindex));
+                file.Write(String.Format("<h3>0x{0:x4} sub 0x{2:x2} - {1}</h3>", od.Index, od.parameter_name,od.Subindex));
             }
 
             file.Write("<table id=\"odentry\">");
@@ -129,7 +129,7 @@ namespace libEDSsharp
             write2linetablerow("Location", od.StorageLocation);
             write2linetablerow("Access type", od.accesstype.ToString());
             write2linetablerow("PDO mapping", od.PDOMapping);
-            write2linetablerow("No Sub index", od.nosubindexes);
+            write2linetablerow("No Sub index", od.Nosubindexes);
 
             file.Write("</table>");
 

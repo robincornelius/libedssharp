@@ -154,7 +154,7 @@
             this.checkBox_invalidpdo.TabIndex = 16;
             this.checkBox_invalidpdo.Text = "Invalid";
             this.checkBox_invalidpdo.UseVisualStyleBackColor = true;
-            this.checkBox_invalidpdo.CheckedChanged += new System.EventHandler(this.checkBox_invalidpdo_CheckedChanged);
+            this.checkBox_invalidpdo.CheckedChanged += new System.EventHandler(this.CheckBox_invalidpdo_CheckedChanged);
             // 
             // button_savepdochanges
             // 
@@ -166,7 +166,7 @@
             this.button_savepdochanges.TabIndex = 15;
             this.button_savepdochanges.Text = "Save ";
             this.button_savepdochanges.UseVisualStyleBackColor = true;
-            this.button_savepdochanges.Click += new System.EventHandler(this.button_savepdochanges_Click);
+            this.button_savepdochanges.Click += new System.EventHandler(this.Button_savepdochanges_Click);
             // 
             // button_deletePDO
             // 
@@ -178,7 +178,7 @@
             this.button_deletePDO.TabIndex = 14;
             this.button_deletePDO.Text = "Delete PDO";
             this.button_deletePDO.UseVisualStyleBackColor = true;
-            this.button_deletePDO.Click += new System.EventHandler(this.button_deletePDO_Click);
+            this.button_deletePDO.Click += new System.EventHandler(this.Button_deletePDO_Click);
             // 
             // textBox_slot
             // 
@@ -299,7 +299,7 @@
             this.listView_TXCOBmap.TabIndex = 10;
             this.listView_TXCOBmap.UseCompatibleStateImageBehavior = false;
             this.listView_TXCOBmap.View = System.Windows.Forms.View.Details;
-            this.listView_TXCOBmap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_TXCOBmap_MouseClick);
+            this.listView_TXCOBmap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListView_TXCOBmap_MouseClick);
             // 
             // columnHeader11
             // 
@@ -367,7 +367,7 @@
             this.button_addPDO.TabIndex = 13;
             this.button_addPDO.Text = "Add new PDO";
             this.button_addPDO.UseVisualStyleBackColor = true;
-            this.button_addPDO.Click += new System.EventHandler(this.button_addPDO_Click);
+            this.button_addPDO.Click += new System.EventHandler(this.Button_addPDO_Click);
             // 
             // DevicePDOView
             // 

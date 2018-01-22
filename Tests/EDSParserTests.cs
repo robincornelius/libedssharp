@@ -29,7 +29,7 @@ namespace Tests
             {
                 eds.Clear();
                 sectionname = "Tests";
-                parseline(teststring);
+                Parseline(teststring);
 
                 if (!eds["Tests"].ContainsKey("ParameterName"))
                     throw (new Exception("Parser key detection error on string \"" + teststring + "\""));
@@ -48,11 +48,11 @@ namespace Tests
             string[] lines = testobject.Split('\n');
 
             foreach (string line in lines)
-                parseline(line);
+                Parseline(line);
 
             foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
             {
-                parseEDSentry(kvp);
+                ParseEDSentry(kvp);
             }
 
         }
@@ -80,7 +80,7 @@ CompactSubObj=9
             if (od.subobjects.Count != 10)
                 throw (new Exception("parseEDSentry() CompactSubObj faield to generate children"));
 
-            ODentry sub = od.getsubobject(0);
+            ODentry sub = od.Getsubobject(0);
 
             if (sub.parameter_name != "NrOfObjects")
                 throw (new Exception("parseEDSentry() CompactSubObj incorrect generation"));
@@ -101,10 +101,10 @@ CompactSubObj=9
 
             for (UInt16 x = 1; x < 10; x++)
             {
-                if (!od.containssubindex(x))
+                if (!od.Containssubindex(x))
                     throw (new Exception("parseEDSentry() CompactSubObj incorrect generation"));
 
-                sub = od.getsubobject(x);
+                sub = od.Getsubobject(x);
 
                 string name = string.Format("{0}{1:00}", od.parameter_name, x);
                 if (sub.parameter_name != name)
@@ -279,9 +279,9 @@ NrOfTXPDO=7
             UInt16 noexplicitrxpdos = di.NrOfRXPDO;
             UInt16 noexplicittxpdos = di.NrOfTXPDO;
 
-            applyimplicitPDO();
+            ApplyimplicitPDO();
 
-            updatePDOcount();
+            UpdatePDOcount();
 
             if(noexplicitrxpdos != di.NrOfRXPDO)
                 throw (new Exception("Implict RX PDO incorrect"));
@@ -309,7 +309,7 @@ ProDucTNumbeR=test4
             string[] lines = testobject.Split('\n');
 
             foreach(string line in lines)
-                parseline(line);
+                Parseline(line);
             DeviceInfo di = new DeviceInfo(eds["DeviceInfo"]);
 
         }

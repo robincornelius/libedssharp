@@ -25,11 +25,13 @@ namespace Tests
         public void Test_record_objects()
         {
 
-            ODentry od = new ODentry();
-            od.objecttype = ObjectType.REC;
-            od.parameter_name = "Test Record";
-            od.accesstype = EDSsharp.AccessType.ro;
-            od.index = 0x2000;
+            ODentry od = new ODentry
+            {
+                objecttype = ObjectType.REC,
+                parameter_name = "Test Record",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x2000
+            };
 
             ODentry subod = new ODentry("Test String 1", 0x2000, DataType.VISIBLE_STRING, "abcdefg", EDSsharp.AccessType.rw, PDOMappingType.optional, od);
 
@@ -50,15 +52,19 @@ namespace Tests
         public void TestArrays()
         {
 
-            ODentry od = new ODentry();
-            od.objecttype = ObjectType.ARRAY;
-            od.datatype = DataType.VISIBLE_STRING;
-            od.parameter_name = "Test Array";
-            od.accesstype = EDSsharp.AccessType.ro;
-            od.index = 0x2000;
+            ODentry od = new ODentry
+            {
+                objecttype = ObjectType.ARRAY,
+                datatype = DataType.VISIBLE_STRING,
+                parameter_name = "Test Array",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x2000
+            };
 
-            eds = new EDSsharp();
-            eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            eds = new EDSsharp
+            {
+                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
+            };
 
             eds.ods.Add(0x2000, od);
 
@@ -84,15 +90,19 @@ namespace Tests
         [TestMethod]
         public void TestArrayNoEntries()
         {
-            eds = new EDSsharp();
-            eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            eds = new EDSsharp
+            {
+                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
+            };
 
-            ODentry od = new ODentry();
-            od.objecttype = ObjectType.ARRAY;
-            od.datatype = DataType.VISIBLE_STRING;
-            od.parameter_name = "Test Array";
-            od.accesstype = EDSsharp.AccessType.ro;
-            od.index = 0x1011;
+            ODentry od = new ODentry
+            {
+                objecttype = ObjectType.ARRAY,
+                datatype = DataType.VISIBLE_STRING,
+                parameter_name = "Test Array",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x1011
+            };
 
             eds.ods.Add(0x1011, od);
 
@@ -104,12 +114,14 @@ namespace Tests
                 throw (new Exception("TestArrayNoEntries() failed"));
 
 
-            od = new ODentry();
-            od.objecttype = ObjectType.ARRAY;
-            od.datatype = DataType.VISIBLE_STRING;
-            od.parameter_name = "Test Array";
-            od.accesstype = EDSsharp.AccessType.ro;
-            od.index = 0x2000;
+            od = new ODentry
+            {
+                objecttype = ObjectType.ARRAY,
+                datatype = DataType.VISIBLE_STRING,
+                parameter_name = "Test Array",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x2000
+            };
 
             eds.ods.Add(0x2000, od);
 
@@ -121,12 +133,14 @@ namespace Tests
                 throw (new Exception("TestArrayNoEntries() failed"));
 
 
-            od = new ODentry();
-            od.objecttype = ObjectType.ARRAY;
-            od.datatype = DataType.VISIBLE_STRING;
-            od.parameter_name = "Test Array";
-            od.accesstype = EDSsharp.AccessType.ro;
-            od.index = 0x1003;
+            od = new ODentry
+            {
+                objecttype = ObjectType.ARRAY,
+                datatype = DataType.VISIBLE_STRING,
+                parameter_name = "Test Array",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x1003
+            };
 
             eds.ods.Add(0x1003, od);
 

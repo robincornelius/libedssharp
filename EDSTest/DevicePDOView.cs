@@ -31,7 +31,7 @@ namespace ODEditor
                 return;
             }
 
-            listView_TXCOBmap.onComboBoxIndexChanged += listView_TXCOBmap_onComboBoxIndexChanged;
+            listView_TXCOBmap.onComboBoxIndexChanged += ListView_TXCOBmap_onComboBoxIndexChanged;
 
             listView_TXPDO.DoubleBuffering(true);
             listView_TXCOBmap.DoubleBuffering(true);
@@ -42,10 +42,10 @@ namespace ODEditor
 
         private void DevicePDOView_Invalidated(object sender, InvalidateEventArgs e)
         {
-            updatePDOinfo();
+            UpdatePDOinfo();
         }
 
-        public void init(bool isTXPDO)
+        public void Init(bool isTXPDO)
         {
             this.isTXPDO = isTXPDO;
 
@@ -56,7 +56,7 @@ namespace ODEditor
 
         }
 
-        public void updatePDOinfo()
+        public void UpdatePDOinfo()
         {
 
             textBox_eventtimer.Enabled = false;
@@ -98,7 +98,7 @@ namespace ODEditor
 
                 if (od.objecttype == ObjectType.VAR && (od.PDOtype == PDOMappingType.optional || (isTXPDO && (od.PDOtype == PDOMappingType.TPDO)) || (!isTXPDO && (od.PDOtype == PDOMappingType.RPDO))))
                 {
-                    addTXPDOoption(od);
+                    AddTXPDOoption(od);
                 }
 
                 foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
@@ -111,7 +111,7 @@ namespace ODEditor
 
                     if (odsub.PDOtype == PDOMappingType.optional || (isTXPDO && (odsub.PDOtype == PDOMappingType.TPDO)) || (!isTXPDO && (odsub.PDOtype == PDOMappingType.RPDO)))
                     {
-                        addTXPDOoption(odsub);
+                        AddTXPDOoption(odsub);
                     }
                 }
 
@@ -149,12 +149,14 @@ namespace ODEditor
                     //good
                     if (od.subobjects.Count <= 1)
                         continue;
-                    
-                    ListViewItem lvi = new ListViewItem(String.Format("0x{0:x3}", idx));
-                    lvi.Tag = od;
 
-                    bool nodeidpresent;
-                    UInt32 cob = eds.GetNodeID(od.subobjects[1].defaultvalue, out nodeidpresent);
+                    ListViewItem lvi = new ListViewItem(String.Format("0x{0:x3}", idx))
+                    {
+                        Tag = od
+                    };
+
+                    //fixme ordinal access
+                    UInt32 cob = eds.GetNodeID(od.subobjects[1].defaultvalue, out bool nodeidpresent);
                     lvi.SubItems.Add(String.Format("0x{0:x8}",cob));
 
                     if (!ODEditor_MainForm.TXCobMap.ContainsKey(cob))
@@ -176,7 +178,7 @@ namespace ODEditor
 
                     listView_TXCOBmap.Items.Add(lvi2);
 
-                    updatePDOTXslot(od, row);
+                    UpdatePDOTXslot(od, row);
 
 
                     row++;
@@ -189,13 +191,13 @@ namespace ODEditor
 
         }
 
-        private void addTXPDOoption(ODentry od)
+        private void AddTXPDOoption(ODentry od)
         {
 
-            TXchoices.Add(String.Format("0x{0:x4}/{1:x2}/", od.index, od.subindex) + od.parameter_name);
+            TXchoices.Add(String.Format("0x{0:x4}/{1:x2}/", od.Index, od.Subindex) + od.parameter_name);
 
-            ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", od.index));
-            lvi.SubItems.Add(String.Format("0x{0:x2}", od.subindex));
+            ListViewItem lvi = new ListViewItem(String.Format("0x{0:x4}", od.Index));
+            lvi.SubItems.Add(String.Format("0x{0:x2}", od.Subindex));
             lvi.SubItems.Add(od.parameter_name);
 
             DataType dt = od.datatype;
@@ -209,10 +211,10 @@ namespace ODEditor
 
         }
 
-        void updatePDOTXslot(ODentry od , int row)
+        void UpdatePDOTXslot(ODentry od , int row)
         {
            
-            UInt16 idx = (UInt16)(od.index + 0x200);
+            UInt16 idx = (UInt16)(od.Index + 0x200);
 
             if (!eds.ods.ContainsKey(idx))
                 return;
@@ -227,12 +229,12 @@ namespace ODEditor
                     continue;
 
                 ODentry sub = kvp.Value;
-                if (sub.subindex == 0)
+                if (sub.Subindex == 0)
                     continue;
 
                 UInt32 data = 0;
                 if (sub.defaultvalue != "")
-                    data = Convert.ToUInt32(sub.defaultvalue, EDSsharp.getbase(sub.defaultvalue));
+                    data = Convert.ToUInt32(sub.defaultvalue, EDSsharp.Getbase(sub.defaultvalue));
 
                 if (data == 0)
                 {
@@ -250,22 +252,22 @@ namespace ODEditor
                 //sanity check the real OD against the mapping parameters section
 
                 bool mappingfail = true;
-                if(eds.ods.ContainsKey(pdoindex) && (pdosub==0 || eds.ods[pdoindex].containssubindex(pdosub)))
+                if(eds.ods.ContainsKey(pdoindex) && (pdosub==0 || eds.ods[pdoindex].Containssubindex(pdosub)))
                 {
                     ODentry maptarget;
                     if (pdosub == 0)
                         maptarget = eds.ods[pdoindex];
                     else
-                        maptarget = eds.ods[pdoindex].getsubobject(pdosub);
+                        maptarget = eds.ods[pdoindex].Getsubobject(pdosub);
 
-                    if (maptarget.Disabled == false &&  datasize == (8*maptarget.sizeofdatatype()))
+                    if (maptarget.Disabled == false &&  datasize == (8*maptarget.Sizeofdatatype()))
                     {
                         mappingfail = false;
                     }
 
                     if (mappingfail == true)
                     {
-                        MessageBox.Show(String.Format("PDO mapping failed for object 0x{0:x4}/{1:x2}\nplease manaully check the PDO mapping in the TX and RX PDO tabs\n as it does not agree with the mapping paramater 0x{2:x4}/{3:x2}\nThis can occur if you edit objects that are already mapped",pdoindex,pdosub, idx,sub.subindex));
+                        MessageBox.Show(String.Format("PDO mapping failed for object 0x{0:x4}/{1:x2}\nplease manaully check the PDO mapping in the TX and RX PDO tabs\n as it does not agree with the mapping paramater 0x{2:x4}/{3:x2}\nThis can occur if you edit objects that are already mapped",pdoindex,pdosub, idx,sub.Subindex));
                     }
                 }
 
@@ -322,8 +324,8 @@ namespace ODEditor
                         targetod = targetod.subobjects[pdosub];
                     }
 
-                    target = String.Format("0x{0:x4}/{1:x2}/", targetod.index, pdosub) + targetod.parameter_name;
-                    PDOdatasize = targetod.sizeofdatatype();
+                    target = String.Format("0x{0:x4}/{1:x2}/", targetod.Index, pdosub) + targetod.parameter_name;
+                    PDOdatasize = targetod.Sizeofdatatype();
                 }
                 
 
@@ -344,12 +346,12 @@ namespace ODEditor
             }
         }
 
-        void listView_TXCOBmap_onComboBoxIndexChanged(int row, int col, string Text)
+        void ListView_TXCOBmap_onComboBoxIndexChanged(int row, int col, string Text)
         {
 
             //row+0x1a00 will be the slot to adjust
 
-            eds.dirty = true;
+            eds.Dirty = true;
 
             UInt16 slot = (UInt16)(0x200 + Convert.ToUInt16(listView_TXCOBmap.Items[row].SubItems[2].Text, 16));
             ODentry slotod = eds.ods[slot];
@@ -358,6 +360,7 @@ namespace ODEditor
 
             for(byte p=1;p<slotod.subobjects.Count;p++)
             {
+                //fixme ordinal access
                 slotod.subobjects[p].defaultvalue = "0x00000000";
             }
 
@@ -410,20 +413,22 @@ namespace ODEditor
                 {
 
                     ODentry od = eds.ods[index];
+
+                    //fixme ordinal access
                     if (sub != 0)
                         od = od.subobjects[sub];
 
                     //fixme for non basic types will this work?? i think
                     //its not even allowed for PDO but need trap in code to
                     //prevent this and throw error here
-                    datalength = 8 * od.sizeofdatatype();
+                    datalength = 8 * od.Sizeofdatatype();
                 }
 
                 totaldatalength += datalength;
 
                 if(totaldatalength>64)
                 {
-                    MessageBox.Show(String.Format("Too much data in TX PDO {0}", slotod.index));
+                    MessageBox.Show(String.Format("Too much data in TX PDO {0}", slotod.Index));
                     break;
                 }
 
@@ -435,22 +440,24 @@ namespace ODEditor
                     break;
                 }
 
+                //fixme ordinal access
                 slotod.subobjects[subcount].defaultvalue = value;
 
                 subcount++;
                 
             }
 
+            //fixme ordinal access
             //write out the number of objects used into the sub object count [0]
             slotod.subobjects[0].defaultvalue = string.Format("{0}", subcount-1);
 
-            updatePDOinfo();
+            UpdatePDOinfo();
             doUpdateOD();
             
 
         }
 
-        private void listView_TXCOBmap_MouseClick(object sender, MouseEventArgs e)
+        private void ListView_TXCOBmap_MouseClick(object sender, MouseEventArgs e)
         {
             if (listView_TXCOBmap.SelectedItems.Count != 1)
                 return;
@@ -459,23 +466,23 @@ namespace ODEditor
             UInt32 COB = Convert.ToUInt32(listView_TXCOBmap.SelectedItems[0].SubItems[1].Text, 16);
             ODentry od = eds.ods[index];
 
-            textBox_slot.Text = string.Format("0x{0:x4}",od.index);
+            textBox_slot.Text = string.Format("0x{0:x4}",od.Index);
 
 
-            if(od.containssubindex(1) == true)
-                textBox_cob.Text = od.getsubobject(1).defaultvalue;
+            if(od.Containssubindex(1) == true)
+                textBox_cob.Text = od.Getsubobject(1).defaultvalue;
 
-            if (od.containssubindex(2) == true)
-                textBox_type.Text = od.getsubobject(2).defaultvalue;
+            if (od.Containssubindex(2) == true)
+                textBox_type.Text = od.Getsubobject(2).defaultvalue;
 
-            if (od.containssubindex(3) == true)
-                textBox_inhibit.Text = od.getsubobject(3).defaultvalue;
+            if (od.Containssubindex(3) == true)
+                textBox_inhibit.Text = od.Getsubobject(3).defaultvalue;
 
-            if (od.containssubindex(5) == true)
-                textBox_eventtimer.Text = od.getsubobject(5).defaultvalue;
+            if (od.Containssubindex(5) == true)
+                textBox_eventtimer.Text = od.Getsubobject(5).defaultvalue;
 
-            if (od.containssubindex(6) == true)
-                textBox_syncstart.Text = od.getsubobject(6).defaultvalue;
+            if (od.Containssubindex(6) == true)
+                textBox_syncstart.Text = od.Getsubobject(6).defaultvalue;
 
             if (isTXPDO)
             {
@@ -496,7 +503,7 @@ namespace ODEditor
 
         }
 
-        private void button_addPDO_Click(object sender, EventArgs e)
+        private void Button_addPDO_Click(object sender, EventArgs e)
         {
 
             UInt16 trycreateindex = 0;
@@ -519,24 +526,24 @@ namespace ODEditor
                 }
             }
 
-            if(!eds.createPDO(!this.isTXPDO,trycreateindex))
+            if(!eds.CreatePDO(!this.isTXPDO,trycreateindex))
             {
                 MessageBox.Show(String.Format("Failed to create PDO at index {0}", trycreateindex));
             }
             else
             {
-                eds.updatePDOcount();
+                eds.UpdatePDOcount();
                 doUpdatePDOs();
                 doUpdateOD();
 
             }
 
-            eds.dirty = true;
+            eds.Dirty = true;
 
 
         }
 
-        private void button_deletePDO_Click(object sender, EventArgs e)
+        private void Button_deletePDO_Click(object sender, EventArgs e)
         {
 
             try
@@ -549,12 +556,12 @@ namespace ODEditor
                     eds.ods.Remove(index);
                     eds.ods.Remove((UInt16)(index + 0x200));
 
-                    eds.updatePDOcount();
+                    eds.UpdatePDOcount();
                     doUpdatePDOs();
                     doUpdateOD();
                 }
 
-                eds.dirty = true;
+                eds.Dirty = true;
 
             }
             catch (Exception)
@@ -563,7 +570,7 @@ namespace ODEditor
             }
 
         }
-        private void button_savepdochanges_Click(object sender, EventArgs e)
+        private void Button_savepdochanges_Click(object sender, EventArgs e)
         {
             try
             {
@@ -575,22 +582,21 @@ namespace ODEditor
                     return;
                 }
 
-                if (isTXPDO && eds.ods[index].nosubindexes != 7)
+                //Fix me this is not strictly true, the reserved/compatability entries do not need to appear
+                //they can just be left as gaps in the sub OD
+                if (isTXPDO && eds.ods[index].Nosubindexes != 7)
+                {
+                    MessageBox.Show("Error with communication paramaters, manual edit required of OD");
+                    return;
+                }
+                if (!isTXPDO && eds.ods[index].Nosubindexes != 3)
                 {
                     MessageBox.Show("Error with communication paramaters, manual edit required of OD");
                     return;
                 }
 
-
-                if (!isTXPDO && eds.ods[index].nosubindexes != 3)
-                {
-                    MessageBox.Show("Error with communication paramaters, manual edit required of OD");
-                    return;
-                }
-
-                bool nodeidpresent;
-                UInt32 newnode = eds.GetNodeID(textBox_cob.Text, out nodeidpresent);
-                if(newnode < 0x180 || newnode >0x57F)
+                UInt32 newnode = eds.GetNodeID(textBox_cob.Text, out bool nodeidpresent);
+                if (newnode < 0x180 || newnode >0x57F)
                 {
                     //MessageBox.Show("PDO COBs should be between 0x180 and 0x57F");
                     //return;
@@ -606,8 +612,7 @@ namespace ODEditor
                 }
 
 
-                int dummy;
-                if(!int.TryParse(textBox_type.Text,out dummy) || dummy<0 || dummy>255)
+                if (!int.TryParse(textBox_type.Text, out int dummy) || dummy < 0 || dummy > 255)
                 {
                     MessageBox.Show("Type should be a number between 0 and 255");
                     return;
@@ -644,19 +649,20 @@ namespace ODEditor
                 if (nodeidpresent && eds.dc.NodeId != 0)
                     nodeoffset = eds.dc.NodeId;
 
+                //fix me ordinal access
                 eds.ods[index].subobjects[1].defaultvalue = string.Format("0x{0:x8}", newnode-nodeoffset);
                 if (nodeidpresent)
                     eds.ods[index].subobjects[1].defaultvalue += "+$NODEID";
 
 
-
+                //fix me ordinal access
                 eds.ods[index].subobjects[2].defaultvalue = textBox_type.Text;
 
 
                 doUpdatePDOs();
                 doUpdateOD();
 
-                eds.dirty = true;
+                eds.Dirty = true;
             }
             catch (Exception)
             {
@@ -664,7 +670,7 @@ namespace ODEditor
             }
         }
 
-        private void checkBox_invalidpdo_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_invalidpdo_CheckedChanged(object sender, EventArgs e)
         {
 
         }

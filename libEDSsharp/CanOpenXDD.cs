@@ -45,11 +45,11 @@ namespace libEDSsharp
 
             if (od.parent == null)
             {
-                p.uniqueID = string.Format("UID_PARAM_{0:x4}", od.index);
+                p.uniqueID = string.Format("UID_PARAM_{0:x4}", od.Index);
             }
             else
             {
-                p.uniqueID = string.Format("UID_PARAM_{0:x4}{1:x2}", od.parent.index, od.subindex);
+                p.uniqueID = string.Format("UID_PARAM_{0:x4}{1:x2}", od.parent.Index, od.Subindex);
             }
 
             switch (od.accesstype)
@@ -214,7 +214,7 @@ namespace libEDSsharp
             device.ApplicationProcess = new ApplicationProcess[1];
             device.ApplicationProcess[0] = new ApplicationProcess();
 
-            device.ApplicationProcess[0].parameterList = new parameter[eds.getNoEnabledObjects(true)];
+            device.ApplicationProcess[0].parameterList = new parameter[eds.GetNoEnabledObjects(true)];
 
             int ordinal = 0;
 
@@ -279,7 +279,7 @@ namespace libEDSsharp
             AppLayer.CANopenObjectList = new CANopenObjectList();
 
 
-            AppLayer.CANopenObjectList.CANopenObject = new CANopenObjectListCANopenObject[eds.getNoEnabledObjects()];
+            AppLayer.CANopenObjectList.CANopenObject = new CANopenObjectListCANopenObject[eds.GetNoEnabledObjects()];
             
             int count = 0;
             foreach (KeyValuePair<UInt16,ODentry> kvp in eds.ods)
@@ -292,7 +292,7 @@ namespace libEDSsharp
 
                 AppLayer.CANopenObjectList.CANopenObject[count] = new CANopenObjectListCANopenObject();
 
-                byte[] bytes = BitConverter.GetBytes((UInt16)od.index);
+                byte[] bytes = BitConverter.GetBytes((UInt16)od.Index);
                 Array.Reverse(bytes);
 
                 AppLayer.CANopenObjectList.CANopenObject[count].index = bytes;
@@ -306,7 +306,7 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)od.PDOtype;
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmappingSpecified = true;
 
-                AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.index);
+                AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.Index);
                 AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType), od.accesstype.ToString());
                 AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
 
@@ -339,7 +339,7 @@ namespace libEDSsharp
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)subod.PDOtype;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmappingSpecified = true;
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.index, subindex2);
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.Index, subindex2);
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), od.accesstype.ToString());
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessTypeSpecified = true;
 
@@ -745,7 +745,7 @@ namespace libEDSsharp
                     if (obj3.index != null)
                     {
                         index = (UInt16)EDSsharp.ConvertToUInt16(obj3.index);
-                        entry.index = index;
+                        entry.Index = index;
                     }
                     else
                         continue; //unparseable
@@ -930,7 +930,7 @@ namespace libEDSsharp
                             //match unique ID
 
 
-                            ODentry od = eds.getobject(param.uniqueID);
+                            ODentry od = eds.Getobject(param.uniqueID);
 
                             if (od == null)
                                 continue;
