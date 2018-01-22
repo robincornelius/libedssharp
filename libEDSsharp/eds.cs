@@ -908,8 +908,30 @@ namespace libEDSsharp
 
     public class ODentry
     {
+        private UInt16 _index;
         [EdsExport]
-        public UInt16 index;
+        public UInt16 index
+        {
+            get
+            {
+                if (parent != null)
+                    return parent.index;
+                else
+                    return _index;
+            }
+            set
+            {
+                if(parent == null)
+                {
+                    _index = value;
+                }
+                else
+                {
+                    throw (new Exception("Typing to set index of a subobject"));
+                }
+               
+            }
+        }
 
 
       //  [EdsExport]
@@ -995,13 +1017,27 @@ namespace libEDSsharp
         //XDD Extensions//
         public string uniqueID;
 
+        public enum odtype
+        {
+            NORMAL,
+            SUBEXT,
+            FIXED,
+        }
 
         public ODentry()
         {
 
         }
 
-        //Constructor for a simple VAR type
+        /// <summary>
+        /// ODentry constructor for a siple VAR type
+        /// </summary>
+        /// <param name="parameter_name">Name of Object Dictionary Entry</param>
+        /// <param name="index">Index of object in object dictionary</param>
+        /// <param name="datatype">Type of this objects data</param>
+        /// <param name="defaultvalue">Default value (always set as a string)</param>
+        /// <param name="accesstype">Allowed CanOpen access permissions</param>
+        /// <param name="PDOMapping">Allowed PDO mapping options</param>
         public ODentry(string parameter_name,UInt16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping)
         {
             this.parameter_name = parameter_name;
@@ -1020,13 +1056,20 @@ namespace libEDSsharp
 
         }
 
-        //SubIndex type
-        
+         /// <summary>
+         /// ODConstructor useful for subobjects
+         /// </summary>
+         /// <param name="parameter_name"></param>
+         /// <param name="index">NOT USED</param>
+         /// <param name="datatype"></param>
+         /// <param name="defaultvalue"></param>
+         /// <param name="accesstype"></param>
+         /// <param name="PDOMapping"></param>
+         /// <param name="parent"></param>
         public ODentry(string parameter_name, UInt16 index,  DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping, ODentry parent)
         {
             this.parent = parent;
             this.parameter_name = parameter_name;
-            this.index = index;
             this.objecttype = ObjectType.VAR;
             this.datatype = datatype;
             this.defaultvalue = defaultvalue;
@@ -1040,7 +1083,12 @@ namespace libEDSsharp
         }
         
 
-        //Array subindex type
+        /// <summary>
+        /// ODEntry constuctor for array subobjects
+        /// </summary>
+        /// <param name="parameter_name"></param>
+        /// <param name="index"></param>
+        /// <param name="nosubindex"></param>
         public ODentry(string parameter_name,UInt16 index, byte nosubindex)
         {
             this.parameter_name = parameter_name;
@@ -1095,14 +1143,6 @@ namespace libEDSsharp
         /// <param name="writer">Handle to the stream writer to write to</param>
         /// <param name="ft">File type being written</param>
         /// 
-
-        public enum odtype
-        {
-            NORMAL,
-            SUBEXT,
-            FIXED,
-        }
-
         public void write(StreamWriter writer, InfoSection.filetype ft, odtype odt= odtype.NORMAL, int module=0)
         {
 
@@ -1195,6 +1235,11 @@ namespace libEDSsharp
             writer.WriteLine("");
         }
 
+        /// <summary>
+        /// Returns a c compatable string that represents the name of the object, - is replaced with _
+        /// words seperated by a space are replaced with _ for a seperator eg ONE TWO becomes ONE_TWO
+        /// </summary>
+        /// <returns></returns>
         public string paramater_cname()
         {
             string cname = parameter_name.Replace("-", "_");
@@ -1205,6 +1250,10 @@ namespace libEDSsharp
             return cname;
         }
 
+        /// <summary>
+        /// Return the size in bytes for the given CanOpen datatype of this object, eg the size of what ever the datatype field is set to 
+        /// </summary>
+        /// <returns>no of bytes</returns>
         public int sizeofdatatype()
         {
             DataType dt = datatype;
@@ -1339,7 +1388,7 @@ namespace libEDSsharp
             {
                 if(this.parent!=null)
                 {
-                    parent.findsubindex(this);
+                    return parent.findsubindex(this);
                 }
                 return 0;
 
