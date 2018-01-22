@@ -893,7 +893,17 @@ const CO_OD_entry_t CO_OD[");
                     {
                         Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.index, nosubindexs, od.getmaxsubindex())); 
                     }
-                    nosubindexs = od.getmaxsubindex();
+
+                    //0x1003 is a special case for CanOpenNode
+                    //SubIndex 0 will probably be 0 for no errors
+                    //so we cannot read that to determine max subindex size, which is required to set up CanOpenNode so we leave it alone here
+                    //as its already set to subod.count
+                    if (od.index != 0x1003)
+                    {
+                        nosubindexs = od.getmaxsubindex();
+                    }
+
+                   
                 }
             }
 
