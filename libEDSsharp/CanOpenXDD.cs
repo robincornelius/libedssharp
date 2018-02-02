@@ -302,12 +302,33 @@ namespace libEDSsharp
                 bytes = BitConverter.GetBytes((UInt16)od.datatype);
                 Array.Reverse(bytes);
 
+                //hack - special handling for rrw / rww access type
+                EDSsharp.AccessType accesstype = od.accesstype;
+                PDOMappingType PDOtype = od.PDOtype;
+                if (accesstype == EDSsharp.AccessType.rww) {
+                    accesstype = EDSsharp.AccessType.rw;
+
+                    // when optional, set it to the corresponding type
+                    if (od.PDOtype == PDOMappingType.optional) {
+                        od.PDOtype = PDOMappingType.RPDO;
+                    }
+                }
+                if (accesstype == EDSsharp.AccessType.rwr) {
+                    accesstype = EDSsharp.AccessType.rw;
+
+                    // when optional, set it to the corresponding type
+                    if (od.PDOtype == PDOMappingType.optional) {
+                        od.PDOtype = PDOMappingType.TPDO;
+                    }
+                }
+
                 AppLayer.CANopenObjectList.CANopenObject[count].dataType = bytes;
-                AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)od.PDOtype;
+                AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)PDOtype;
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmappingSpecified = true;
 
                 AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.Index);
-                AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType), od.accesstype.ToString());
+
+                AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType), accesstype.ToString());
                 AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
 
                 if (od.subobjects != null && od.subobjects.Count > 0)
@@ -336,11 +357,30 @@ namespace libEDSsharp
                         bytes = BitConverter.GetBytes((UInt16)subod.datatype);
                         Array.Reverse(bytes);
 
+                        //hack - special handling for rrw / rww access type
+                        accesstype = subod.accesstype;
+                        PDOtype = subod.PDOtype;
+                        if (accesstype == EDSsharp.AccessType.rww) {
+                            accesstype = EDSsharp.AccessType.rw;
+
+                            // when optional is set, 
+                            if (od.PDOtype == PDOMappingType.optional) {
+                                od.PDOtype = PDOMappingType.RPDO;
+                            }
+                        }
+                        if (accesstype == EDSsharp.AccessType.rwr) {
+                            accesstype = EDSsharp.AccessType.rw;
+
+                            // when optional is set, 
+                            if (od.PDOtype == PDOMappingType.optional) {
+                                od.PDOtype = PDOMappingType.TPDO;
+                            }
+                        }
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)subod.PDOtype;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)PDOtype;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmappingSpecified = true;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.Index, subindex2);
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), od.accesstype.ToString());
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), accesstype.ToString());
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessTypeSpecified = true;
 
                         subcount++;
