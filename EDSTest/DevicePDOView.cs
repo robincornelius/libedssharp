@@ -156,7 +156,8 @@ namespace ODEditor
                     };
 
                     //fixme ordinal access
-                    UInt32 cob = eds.GetNodeID(od.subobjects[1].defaultvalue, out bool nodeidpresent);
+                    bool nodeidpresent;
+                    UInt32 cob = eds.GetNodeID(od.subobjects[1].defaultvalue, out nodeidpresent);
                     lvi.SubItems.Add(String.Format("0x{0:x8}",cob));
 
                     if (!ODEditor_MainForm.TXCobMap.ContainsKey(cob))
@@ -595,7 +596,8 @@ namespace ODEditor
                     return;
                 }
 
-                UInt32 newnode = eds.GetNodeID(textBox_cob.Text, out bool nodeidpresent);
+                bool nodeidpresent;
+                UInt32 newnode = eds.GetNodeID(textBox_cob.Text, out nodeidpresent);
                 if (newnode < 0x180 || newnode >0x57F)
                 {
                     //MessageBox.Show("PDO COBs should be between 0x180 and 0x57F");
@@ -611,8 +613,8 @@ namespace ODEditor
                     newnode &= 0x7FFFFFFF;
                 }
 
-
-                if (!int.TryParse(textBox_type.Text, out int dummy) || dummy < 0 || dummy > 255)
+                int dummy;
+                if (!int.TryParse(textBox_type.Text, out dummy) || dummy < 0 || dummy > 255)
                 {
                     MessageBox.Show("Type should be a number between 0 and 255");
                     return;
