@@ -679,31 +679,6 @@ namespace libEDSsharp
 
                 if (NetworkManagment != null)
                 {
-                    if (NetworkManagment.CANopenGeneralFeatures != null)
-                    {
-                        eds.di.SimpleBootUpSlave = NetworkManagment.CANopenGeneralFeatures.bootUpSlave;
-                        eds.di.DynamicChannelsSupported = NetworkManagment.CANopenGeneralFeatures.dynamicChannels > 0;
-                        //fix me count of dynamic channles not handled yet eds only has bool
-
-                        eds.di.Granularity = NetworkManagment.CANopenGeneralFeatures.granularity;
-                        eds.di.GroupMessaging = NetworkManagment.CANopenGeneralFeatures.groupMessaging;
-
-                        //Fix me if Client and Server are set in XDD i can't deal with this and will default to Server
-                        if (NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave)
-                        {
-                            eds.di.LSS_Type = "Client";
-                            eds.di.LSS_Supported = true;
-                        }
-
-                        eds.di.NrOfRXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfRxPDO;
-                        eds.di.NrOfTXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfTxPDO;
-
-                        //fixme extra items
-                        //NetworkManagment.CANopenGeneralFeatures.SDORequestingDevice;
-                        //NetworkManagment.CANopenGeneralFeatures.selfStartingDevice;
-
-                    }
-
                     if (NetworkManagment.CANopenMasterFeatures != null)
                     {
                         eds.di.SimpleBootUpMaster = NetworkManagment.CANopenMasterFeatures.bootUpMaster;
@@ -716,10 +691,35 @@ namespace libEDSsharp
                         if (NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster)
                         {
                             eds.di.LSS_Supported = true;
-                            eds.di.LSS_Type = "Server";
+                            eds.di.LSS_Type = "Client";
                         }
 
                         //NetworkManagment.CANopenMasterFeatures.SDOManager;
+                    }
+
+                    if (NetworkManagment.CANopenGeneralFeatures != null)
+                    {
+                        eds.di.SimpleBootUpSlave = NetworkManagment.CANopenGeneralFeatures.bootUpSlave;
+                        eds.di.DynamicChannelsSupported = NetworkManagment.CANopenGeneralFeatures.dynamicChannels > 0;
+                        //fix me count of dynamic channles not handled yet eds only has bool
+
+                        eds.di.Granularity = NetworkManagment.CANopenGeneralFeatures.granularity;
+                        eds.di.GroupMessaging = NetworkManagment.CANopenGeneralFeatures.groupMessaging;
+
+                        //Fix me if Client and Server are set in XDD i can't deal with this and will default to Server
+                        if (NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave)
+                        {
+                            eds.di.LSS_Type = "Server";
+                            eds.di.LSS_Supported = true;
+                        }
+
+                        eds.di.NrOfRXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfRxPDO;
+                        eds.di.NrOfTXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfTxPDO;
+
+                        //fixme extra items
+                        //NetworkManagment.CANopenGeneralFeatures.SDORequestingDevice;
+                        //NetworkManagment.CANopenGeneralFeatures.selfStartingDevice;
+
                     }
 
                     if (NetworkManagment.deviceCommissioning != null)
