@@ -450,7 +450,7 @@ namespace libEDSsharp
             NetworkManagement.CANopenGeneralFeatures.granularity = eds.di.Granularity;
             NetworkManagement.CANopenGeneralFeatures.groupMessaging = eds.di.GroupMessaging;
 
-            NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported && eds.di.LSS_Type == "Client";
+            NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported && eds.di.LSS_Type == "Server";
             NetworkManagement.CANopenGeneralFeatures.nrOfRxPDO = eds.di.NrOfRXPDO;
             NetworkManagement.CANopenGeneralFeatures.nrOfTxPDO = eds.di.NrOfTXPDO;
             //extra items
@@ -464,7 +464,7 @@ namespace libEDSsharp
             //Extra items
             //NetworkManagment.CANopenMasterFeatures.configurationManager;
             //NetworkManagment.CANopenMasterFeatures.flyingMaster;
-            NetworkManagement.CANopenMasterFeatures.layerSettingServiceMaster = eds.di.LSS_Supported && eds.di.LSS_Type == "Server";
+            NetworkManagement.CANopenMasterFeatures.layerSettingServiceMaster = eds.di.LSS_Supported && eds.di.LSS_Type == "Client";
             //NetworkManagment.CANopenMasterFeatures.SDOManager;
 
 
