@@ -309,16 +309,16 @@ namespace libEDSsharp
                     accesstype = EDSsharp.AccessType.rw;
 
                     // when optional, set it to the corresponding type
-                    if (od.PDOtype == PDOMappingType.optional) {
-                        od.PDOtype = PDOMappingType.RPDO;
+                    if (PDOtype == PDOMappingType.optional) {
+                        PDOtype = PDOMappingType.RPDO;
                     }
                 }
                 if (accesstype == EDSsharp.AccessType.rwr) {
                     accesstype = EDSsharp.AccessType.rw;
 
                     // when optional, set it to the corresponding type
-                    if (od.PDOtype == PDOMappingType.optional) {
-                        od.PDOtype = PDOMappingType.TPDO;
+                    if (PDOtype == PDOMappingType.optional) {
+                        PDOtype = PDOMappingType.TPDO;
                     }
                 }
 
@@ -364,16 +364,16 @@ namespace libEDSsharp
                             accesstype = EDSsharp.AccessType.rw;
 
                             // when optional is set, 
-                            if (od.PDOtype == PDOMappingType.optional) {
-                                od.PDOtype = PDOMappingType.RPDO;
+                            if (PDOtype == PDOMappingType.optional) {
+                                PDOtype = PDOMappingType.RPDO;
                             }
                         }
                         if (accesstype == EDSsharp.AccessType.rwr) {
                             accesstype = EDSsharp.AccessType.rw;
 
                             // when optional is set, 
-                            if (od.PDOtype == PDOMappingType.optional) {
-                                od.PDOtype = PDOMappingType.TPDO;
+                            if (PDOtype == PDOMappingType.optional) {
+                                PDOtype = PDOMappingType.TPDO;
                             }
                         }
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
