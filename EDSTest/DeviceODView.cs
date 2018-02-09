@@ -865,12 +865,11 @@ namespace ODEditor
                         ODentry sod = new ODentry();
 
                         sod.objecttype = ObjectType.VAR;
-                        sod.Index = ni.index;
+                        sod.parent = od;
                         sod.StorageLocation = "RAM";
                         sod.defaultvalue = String.Format("{0}",ni.nosubindexes);
                         sod.accesstype = EDSsharp.AccessType.ro;
                         sod.datatype = DataType.UNSIGNED8;
-                        sod.parent = od;
 
                         sod.parameter_name = "max sub-index";
 
@@ -883,12 +882,11 @@ namespace ODEditor
                         ODentry sod = new ODentry();
 
                         sod.objecttype = ObjectType.VAR;
-                        sod.Index = ni.index;
+                        sod.parent = od;
                         sod.StorageLocation = "RAM";
                         sod.defaultvalue = "";
                         sod.accesstype = EDSsharp.AccessType.rw;
                         sod.datatype = ni.dt;
-                        sod.parent = od;
 
                         od.subobjects.Add((ushort)(p + 1), sod);
                     }
@@ -995,7 +993,6 @@ namespace ODEditor
                     newsub.datatype = od.datatype;
                     newsub.accesstype = od.accesstype;
                     newsub.PDOtype = od.PDOtype;
-                    newsub.Index = od.Index;
                     newsub.objecttype = ObjectType.VAR;
                     od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
 
@@ -1020,7 +1017,6 @@ namespace ODEditor
                         newsub.datatype = ni.dt;
                         newsub.accesstype = od.accesstype;
                         newsub.PDOtype = od.PDOtype;
-                        newsub.Index = od.Index;
                         newsub.objecttype = ObjectType.VAR;
                         newsub.parameter_name = ni.name;
 
