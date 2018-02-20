@@ -326,7 +326,7 @@ namespace libEDSsharp
 
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount] = new CANopenObjectListCANopenObjectCANopenSubObject();
 
-                        bytes = BitConverter.GetBytes((UInt16)kvp.Key);
+                        bytes = BitConverter.GetBytes((UInt16)kvp2.Key);
                         Array.Reverse(bytes);
 
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].subIndex = bytes;
