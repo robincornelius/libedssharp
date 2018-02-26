@@ -302,7 +302,8 @@ namespace libEDSsharp
                 bytes = BitConverter.GetBytes((UInt16)od.datatype);
                 Array.Reverse(bytes);
 
-                //hack - special handling for rrw / rww access type
+                // hack - special handling for rrw / rww access type 
+                // https://github.com/robincornelius/libedssharp/issues/128
                 EDSsharp.AccessType accesstype = od.accesstype;
                 PDOMappingType PDOtype = od.PDOtype;
                 if (accesstype == EDSsharp.AccessType.rww) {
@@ -323,7 +324,7 @@ namespace libEDSsharp
                 }
 
                 AppLayer.CANopenObjectList.CANopenObject[count].dataType = bytes;
-                AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)PDOtype;
+                AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)Enum.Parse(typeof(CANopenObjectListCANopenObjectPDOmapping),PDOtype.ToString());
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmappingSpecified = true;
 
                 AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.Index);
@@ -357,7 +358,8 @@ namespace libEDSsharp
                         bytes = BitConverter.GetBytes((UInt16)subod.datatype);
                         Array.Reverse(bytes);
 
-                        //hack - special handling for rrw / rww access type
+                        // hack - special handling for rrw / rww access type
+                        // https://github.com/robincornelius/libedssharp/issues/128
                         accesstype = subod.accesstype;
                         PDOtype = subod.PDOtype;
                         if (accesstype == EDSsharp.AccessType.rww) {
@@ -377,7 +379,7 @@ namespace libEDSsharp
                             }
                         }
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].dataType = bytes;
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)PDOtype;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmapping = (CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping),PDOtype.ToString());
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].PDOmappingSpecified = true;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.Index, subindex2);
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), accesstype.ToString());
@@ -772,8 +774,6 @@ namespace libEDSsharp
                         eds.dc.NodeName = NetworkManagment.deviceCommissioning.nodeName;
 
                     }
-
-
                 }
 
                 foreach (XSDImport.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
@@ -801,9 +801,6 @@ namespace libEDSsharp
                     if (obj3.defaultValue != null)
                         entry.defaultvalue = obj3.defaultValue;
 
-                    if (obj3.PDOmappingSpecified)
-                        entry.PDOtype = (PDOMappingType)obj3.PDOmapping;
-
                     if (obj3.highLimit != null)
                         entry.HighLimit = obj3.highLimit;
 
@@ -822,6 +819,41 @@ namespace libEDSsharp
 
                     entry.uniqueID = obj3.uniqueIDRef;
 
+                    // https://github.com/robincornelius/libedssharp/issues/128
+                    // Mapping of accesstype and pdo mappings have changed between EDS and XDD
+                    // in EDS we have rw,wo, r and const which are the same in both standards, but EDS also
+                    // has rww and rwr which are rw objects that can also be mapped to RPDOs (rww) or
+                    // TPDOs (rwr) 
+
+                    if (obj3.accessTypeSpecified)
+                    {
+                        entry.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), obj3.accessType.ToString());
+                    }
+                    else
+                    {
+                        entry.accesstype = EDSsharp.AccessType.ro; //fixme sensible default required here??    
+                    }
+
+                    if(obj3.PDOmappingSpecified)
+                    {
+
+                        entry.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), obj3.PDOmapping.ToString());
+
+                        if (entry.accesstype == EDSsharp.AccessType.rw && entry.PDOtype == PDOMappingType.RPDO)
+                        {
+                            entry.accesstype = EDSsharp.AccessType.rww;
+                        }
+
+                        if (entry.accesstype == EDSsharp.AccessType.rw && entry.PDOtype == PDOMappingType.TPDO)
+                        {
+                            entry.accesstype = EDSsharp.AccessType.rwr;
+                        }
+                    }
+                    else
+                    {
+                        entry.PDOtype = PDOMappingType.no; //fixme should this be @default??
+                    }
+
                     eds.ods.Add(index, entry);
 
                     if (obj3.CANopenSubObject != null)
@@ -830,8 +862,8 @@ namespace libEDSsharp
                         {
 
                             DataType datatype;
-                            EDSsharp.AccessType accesstype;
-                            PDOMappingType pdotype;
+                            EDSsharp.AccessType accesstype = EDSsharp.AccessType.ro; //fixme sensible default?
+                            PDOMappingType pdotype = PDOMappingType.no;
 
                             if (subobj.dataType != null)
                             {
@@ -842,19 +874,38 @@ namespace libEDSsharp
                                 datatype = entry.datatype;
                             }
 
+
+                            // https://github.com/robincornelius/libedssharp/issues/128
+                            // Mapping of accesstype and pdo mappings have changed between EDS and XDD
+                            // in EDS we have rw,wo, r and const which are the same in both standards, but EDS also
+                            // has rww and rwr which are rw objects that can also be mapped to RPDOs (rww) or
+                            // TPDOs (rwr) 
+
+
                             if (subobj.accessTypeSpecified == true)
                             {
-                                accesstype = (EDSsharp.AccessType)subobj.accessType;
+                                accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), subobj.accessType.ToString());
                             }
                             else
                             {
                                 accesstype = entry.accesstype;
                             }
-
-
+                           
                             if (subobj.PDOmappingSpecified == true)
                             {
-                                pdotype = (PDOMappingType)subobj.PDOmapping;
+
+                                pdotype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), subobj.PDOmapping.ToString());
+
+                                if(accesstype == EDSsharp.AccessType.rw && pdotype == PDOMappingType.RPDO)
+                                {
+                                    accesstype = EDSsharp.AccessType.rww;
+                                }
+
+                                if (accesstype == EDSsharp.AccessType.rw && pdotype == PDOMappingType.TPDO)
+                                {
+                                    accesstype = EDSsharp.AccessType.rwr;
+                                }
+
                             }
                             else
                             {
@@ -1004,6 +1055,7 @@ namespace libEDSsharp
     }
 
 }
+
 
 
 namespace XSDImport
