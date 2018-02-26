@@ -86,13 +86,15 @@ namespace libEDSsharp
             }
 
 
-            p.Items = new object[1];
+            p.Items = new object[2];
 
             vendorTextLabel lab = new vendorTextLabel();
             lab.lang = "en";
             lab.Value = od.parameter_name;
             p.Items[0] = lab;
 
+            //fixme we need to extract the denotation from the ODentry
+            //this is just an empty place holder
             denotation denot = new denotation();
             vendorTextLabel lab2 = new vendorTextLabel();
             lab2.lang = "en";
@@ -100,10 +102,13 @@ namespace libEDSsharp
             denot.Items[0] = lab2;
             p.denotation = denot;
 
+            vendorTextDescription desc = new vendorTextDescription();
+            desc.lang = "en"; //fixme we could and should do better than just english
+            desc.Value = od.Description;
+            p.Items[1] = desc;
 
             p.defaultValue = new defaultValue();
             p.defaultValue.value = od.defaultvalue;
-
 
         }
 
@@ -1040,7 +1045,21 @@ namespace libEDSsharp
                             if (param.defaultValue != null)
                                 od.defaultvalue = param.defaultValue.value;
 
+                            //fix me, if more than one vendorTextDescription is present, eg
+                            //multi language this will result in the last one being used
+                            if (param.Items!=null && param.Items.Length>0)
+                            {
+                                foreach(object item in param.Items)
+                                {
+                                    if(item.GetType() == typeof(vendorTextDescription))
+                                    {
+                                        vendorTextDescription vtd = (vendorTextDescription)item;
+                                        od.Description = vtd.Value;
+                                    }
 
+                                }
+
+                            }
 
 
 
