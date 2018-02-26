@@ -689,29 +689,38 @@ namespace libEDSsharp
 
                 if (TransportLayers != null)
                 {
-                    foreach (ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate baud in TransportLayers.PhysicalLayer.baudRate.supportedBaudRate)
+                    if(TransportLayers.PhysicalLayer!=null)
                     {
+                        if (TransportLayers.PhysicalLayer.baudRate != null)
+                        {
+                            if (TransportLayers.PhysicalLayer.baudRate.supportedBaudRate != null)
+                            {
+                                foreach (ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate baud in TransportLayers.PhysicalLayer.baudRate.supportedBaudRate)
+                                {
 
-                        if (baud.value.ToString() == "Item10Kbps")
-                            eds.di.BaudRate_10 = true;
-                        if (baud.value.ToString() == "Item20Kbps")
-                            eds.di.BaudRate_20 = true;
-                        if (baud.value.ToString() == "Item50Kbps")
-                            eds.di.BaudRate_50 = true;
-                        if (baud.value.ToString() == "Item125Kbps")
-                            eds.di.BaudRate_125 = true;
-                        if (baud.value.ToString() == "Item250Kbps")
-                            eds.di.BaudRate_250 = true;
-                        if (baud.value.ToString() == "Item500Kbps")
-                            eds.di.BaudRate_500 = true;
-                        if (baud.value.ToString() == "Item800Kbps")
-                            eds.di.BaudRate_800 = true;
-                        if (baud.value.ToString() == "Item1000Kbps")
-                            eds.di.BaudRate_1000 = true;
+                                    if (baud.value.ToString() == "Item10Kbps")
+                                        eds.di.BaudRate_10 = true;
+                                    if (baud.value.ToString() == "Item20Kbps")
+                                        eds.di.BaudRate_20 = true;
+                                    if (baud.value.ToString() == "Item50Kbps")
+                                        eds.di.BaudRate_50 = true;
+                                    if (baud.value.ToString() == "Item125Kbps")
+                                        eds.di.BaudRate_125 = true;
+                                    if (baud.value.ToString() == "Item250Kbps")
+                                        eds.di.BaudRate_250 = true;
+                                    if (baud.value.ToString() == "Item500Kbps")
+                                        eds.di.BaudRate_500 = true;
+                                    if (baud.value.ToString() == "Item800Kbps")
+                                        eds.di.BaudRate_800 = true;
+                                    if (baud.value.ToString() == "Item1000Kbps")
+                                        eds.di.BaudRate_1000 = true;
 
-                        //fixme "auto-baudRate" is a valid identifier here as well
+                                    //fixme "auto-baudRate" is a valid identifier here as well
 
 
+                                }
+                            }
+                        }
                     }
 
 
@@ -936,7 +945,8 @@ namespace libEDSsharp
 
                             subentry.uniqueID = subobj.uniqueIDRef;
 
-                            entry.subobjects.Add(subobj.subIndex[0], subentry);
+                            //FIXME WTF is going on here??
+                            entry.subobjects.Add(subobj.subIndex[1], subentry);
 
                         }
                     }
