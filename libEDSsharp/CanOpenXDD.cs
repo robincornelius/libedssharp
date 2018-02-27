@@ -33,7 +33,7 @@ namespace libEDSsharp
         {
 
             dev = convert(eds);
-
+          
             XmlSerializer serializer = new XmlSerializer(typeof(ISO15745ProfileContainer));
             StreamWriter writer = new StreamWriter(file);
             serializer.Serialize(writer, dev);
@@ -85,7 +85,6 @@ namespace libEDSsharp
 
             }
 
-
             p.Items = new object[2];
 
             vendorTextLabel lab = new vendorTextLabel();
@@ -116,8 +115,9 @@ namespace libEDSsharp
         public ISO15745ProfileContainer convert(EDSsharp eds)
         {
             dev = new ISO15745ProfileContainer();
-
+            
             dev.ISO15745Profile = new ISO15745Profile[2];
+
 
 
             //Profile 0 ProfileBody_Device_CANopen
@@ -149,6 +149,31 @@ namespace libEDSsharp
             device.DeviceIdentity.vendorID.Value = eds.di.VendorNumber.ToString();
             device.DeviceIdentity.vendorID.readOnly = true;
 
+            device.DeviceIdentity.deviceFamily = new deviceFamily();
+
+            device.DeviceIdentity.productFamily = new productFamily();
+
+            //device.DeviceIdentity.orderNumber = 
+
+            device.fileCreationDate = eds.fi.CreationDateTime;
+            device.fileCreationTime = eds.fi.CreationDateTime;
+            device.fileCreationTimeSpecified = true;
+            
+            device.fileModificationDate = eds.fi.ModificationDateTime;
+            device.fileModificationTime = eds.fi.ModificationDateTime;
+            device.fileModificationDateSpecified = true;
+            device.fileModificationTimeSpecified = true;
+
+            device.fileCreator = eds.fi.CreatedBy;
+            device.fileModifiedBy = eds.fi.ModifiedBy;
+
+            device.supportedLanguages = "en";
+
+            device.fileVersion = eds.fi.FileVersion.ToString();
+
+            device.fileName = eds.fi.FileName;
+            
+
             //device.DeviceIdentity.vendorText
             //device.DeviceIdentity.deviceFamily
             //device.DeviceIdentity.productFamily;
@@ -164,9 +189,11 @@ namespace libEDSsharp
             device.DeviceIdentity.productText = new productText();
             device.DeviceIdentity.productText.Items = new object[1];
 
+
             vendorTextDescription des = new vendorTextDescription();
             des.lang = "en";
-            des.Value = eds.fi.Description;
+
+            des.Value = String.Format("FileDescription={0}|EdsVersion={1}|FileRevision={2}|RevisionNum={3}",eds.fi.Description,eds.fi.EDSVersion,eds.fi.FileVersion,eds.fi.FileRevision);
 
             device.DeviceIdentity.productText.Items[0] = des;
             device.DeviceIdentity.productText.readOnly = true;
@@ -269,8 +296,20 @@ namespace libEDSsharp
             ProfileBody_CommunicationNetwork_CANopen comnet = (ProfileBody_CommunicationNetwork_CANopen)dev.ISO15745Profile[1].ProfileBody;
             comnet.Items = new object[3];
 
+            comnet.fileName = eds.fi.FileName;
 
             comnet.fileCreator = eds.fi.CreatedBy; //etc
+            comnet.fileCreationDate = eds.fi.CreationDateTime;
+            comnet.fileCreationTime = eds.fi.CreationDateTime;
+            comnet.fileCreationTimeSpecified = true;
+
+            comnet.fileModificationDate = eds.fi.ModificationDateTime;
+            comnet.fileModificationTime = eds.fi.ModificationDateTime;
+            comnet.fileModificationDateSpecified = true;
+
+            comnet.fileVersion = eds.fi.FileVersion.ToString();
+
+            comnet.supportedLanguages = "en";
 
             comnet.Items[0] = new ProfileBody_CommunicationNetwork_CANopenApplicationLayers();
             ProfileBody_CommunicationNetwork_CANopenApplicationLayers AppLayer = (ProfileBody_CommunicationNetwork_CANopenApplicationLayers)comnet.Items[0];
@@ -981,7 +1020,32 @@ namespace libEDSsharp
 
                         if (o.GetType() == typeof(vendorTextDescription))
                         {
-                            eds.fi.Description = ((vendorTextDescription)o).Value;
+                            String desc = ((vendorTextDescription)o).Value;
+                            string[] bits = desc.Split('|');
+
+                            foreach(string bit in bits)
+                            {
+                                string[] keyvalue = bit.Split('=');
+                                if(keyvalue.Length==2)
+                                {
+                                    switch(keyvalue[0])
+                                    {
+                                        case "FileDescription":
+                                            eds.fi.Description = keyvalue[1];
+                                            break;
+                                        case "EdsVersion":
+                                            eds.fi.EDSVersion = keyvalue[1];
+                                            break;
+                                        case "FileRevision":
+                                            byte.TryParse(keyvalue[1],out eds.fi.FileVersion);
+                                            break;
+                                        case "RevisionNum":
+                                            byte.TryParse(keyvalue[1], out eds.fi.FileRevision);                                            break;
+
+                                                
+                                    }
+                                }
+                            }
                         }
 
                         if (o.GetType() == typeof(vendorTextDescriptionRef))
@@ -995,6 +1059,8 @@ namespace libEDSsharp
                         }
                     }
 
+                    //fixme i think date should be tested in a seperate way
+                    //as dates are supported without times
                     if (obj.fileCreationTimeSpecified)
                     {
                         eds.fi.CreationDateTime = obj.fileCreationDate.Add(obj.fileCreationTime.TimeOfDay);
@@ -4740,7 +4806,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
+        //[System.ComponentModel.DefaultValueAttribute(true)]
         public bool readOnly
         {
             get
@@ -4806,7 +4872,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
+        //[System.ComponentModel.DefaultValueAttribute(true)]
         public bool readOnly
         {
             get
@@ -4841,7 +4907,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
+        //[System.ComponentModel.DefaultValueAttribute(true)]
         public bool readOnly
         {
             get
@@ -4890,7 +4956,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
+        //[System.ComponentModel.DefaultValueAttribute(true)]
         public bool readOnly
         {
             get
@@ -4956,7 +5022,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
+        //[System.ComponentModel.DefaultValueAttribute(true)]
         public bool readOnly
         {
             get
@@ -4991,7 +5057,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
+        //[System.ComponentModel.DefaultValueAttribute(true)]
         public bool readOnly
         {
             get
@@ -8756,7 +8822,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(parameterTemplateAccess.read)]
+        //[System.ComponentModel.DefaultValueAttribute(parameterTemplateAccess.read)]
         public parameterTemplateAccess access
         {
             get
@@ -9575,7 +9641,7 @@ namespace XSDImport
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(parameterTemplateAccess.read)]
+        //[System.ComponentModel.DefaultValueAttribute(parameterTemplateAccess.read)]
         public parameterTemplateAccess access
         {
             get
