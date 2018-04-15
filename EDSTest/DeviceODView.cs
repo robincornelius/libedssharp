@@ -1213,6 +1213,46 @@ namespace ODEditor
             return null; ;
 
         }
+
+        private void removeSubItemleaveGapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+              if (selecteditemsub.Tag != null)
+            {
+                ODentry od = (ODentry)selecteditemsub.Tag;
+
+                if (od.parent.objecttype == ObjectType.ARRAY)
+                {
+                    UInt16 count = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
+                    if (count > 0)
+                        count--;
+                    od.parent.subobjects[0].defaultvalue = count.ToString();
+                }
+
+                bool success = od.parent.subobjects.Remove(od.Subindex);
+
+                /*
+                UInt16 countx = 0;
+
+                SortedDictionary<UInt16, ODentry> newlist = new SortedDictionary<ushort, ODentry>();
+
+                foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
+                {
+                    ODentry sub = kvp.Value;
+                    newlist.Add(countx, sub);
+                    countx++;
+                }
+                
+                od.parent.subobjects = newlist;
+                */
+
+                eds.Dirty = true;
+                updateselectedindexdisplay(selectedobject.Index, currentmodule);
+                validateanddisplaydata();
+            }
+
+
+        }
     }
 
     public static class ControlExtensions
