@@ -2586,9 +2586,6 @@ Transmission type
 inhibit time
  bit 0 - 15:  Minimum time between transmissions of the PDO in 100µs.Zero disables functionality.
 
-compatibility entry
- bit 0 - 7:   Not used.
-
 event timer
  bit 0-15:  Time between periodic transmissions of the PDO in ms.Zero disables functionality.
 
@@ -2639,8 +2636,8 @@ mapped object  (subindex 1...8)
                 od_comparam.subobjects.Add(2, sub);
                 sub = new ODentry("inhibit time", index, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(3, sub);
-                sub = new ODentry("compatibility entry", index, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no, od_comparam);
-                od_comparam.subobjects.Add(4, sub);
+                //sub = new ODentry("compatibility entry", index, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no, od_comparam);
+                //od_comparam.subobjects.Add(4, sub);
                 sub = new ODentry("event timer", index, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, od_comparam);
                 od_comparam.subobjects.Add(5, sub);
                 sub = new ODentry("SYNC start value", index, DataType.UNSIGNED8, "0", AccessType.rw, PDOMappingType.no, od_comparam);

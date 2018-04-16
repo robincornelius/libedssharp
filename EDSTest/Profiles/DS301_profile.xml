@@ -275,9 +275,6 @@ value = 255:     asinchronous, specification in device profile
 inhibit time
 bit 0-15:  Minimum time between transmissions of the PDO in 100µs. Zero disables functionality.
 
-compatibility entry
-bit 0-7:   Not used.
-
 event timer
 bit 0-15:  Time between periodic transmissions of the PDO in ms. Zero disables functionality.
 
@@ -288,7 +285,6 @@ value = 1-240:   The SYNC message with the counter value equal to this value sha
       <CANopenSubObject subIndex="01" name="COB-ID used by TPDO" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="$NODEID+0x180" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="02" name="transmission type" objectType="VAR" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="255" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="03" name="inhibit time" objectType="VAR" dataType="0x06" accessType="rw" PDOmapping="no" defaultValue="100" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="04" name="compatibility entry" objectType="VAR" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="05" name="event timer" objectType="VAR" dataType="0x06" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="06" name="SYNC start value" objectType="VAR" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
     </CANopenObject>
