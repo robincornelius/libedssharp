@@ -609,7 +609,7 @@ namespace ODEditor
                     .GetManifestResourceStream("ODEditor." + "version.txt"))
             using (StreamReader reader = new StreamReader(stream))
             {
-                gitVersion = reader.ReadToEnd();
+                gitVersion = reader.ReadToEnd().TrimEnd('\n');
             }
             if (gitVersion == "")
             {

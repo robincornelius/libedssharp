@@ -243,16 +243,16 @@ namespace libEDSsharp
         {
             string msg;
 
-            msg = "*****************************************************\n";
-            msg += String.Format("*{0,-51}*\n", String.Format("{0," + ((51 + infoheader.Length) / 2).ToString() + "}", infoheader));
-            msg += "*****************************************************\n";
+            msg = $"*****************************************************{Environment.NewLine}";
+            msg += $"*{String.Format("{0," + ((51 + infoheader.Length) / 2).ToString() + "}", infoheader),-51}*{Environment.NewLine}";
+            msg += $"*****************************************************{Environment.NewLine}";
 
             Type tx = this.GetType();
             FieldInfo[] fields = this.GetType().GetFields();
 
             foreach (FieldInfo f in fields)
             {
-                msg += string.Format("{0,-28}: {1}\n", f.Name, f.GetValue(this).ToString());
+                msg += $"{f.Name,-28}: {f.GetValue(this).ToString()}{Environment.NewLine}";
             }
 
             return msg;
@@ -378,13 +378,13 @@ namespace libEDSsharp
         {
             string msg;
 
-            msg = "*****************************************************\n";
-            msg += String.Format("*{0,-51}*\n", String.Format("{0," + ((51 + infoheader.Length) / 2).ToString() +  "}", infoheader));
-            msg += "*****************************************************\n";
-            msg += string.Format("\n{0} = {1}\n", countmsg, objectlist.Count);
+            msg = $"*****************************************************{Environment.NewLine}";
+            msg += $"*{String.Format("{0," + ((51 + infoheader.Length) / 2).ToString() + "}", infoheader),-51}*{Environment.NewLine}";
+            msg += $"*****************************************************{Environment.NewLine}";
+            msg += $"}}{Environment.NewLine}{countmsg} = {objectlist.Count}{Environment.NewLine}";
             foreach(KeyValuePair<int,int> kvp in objectlist)
             {
-                msg += string.Format("{0,-5}: {1:x4}\n", kvp.Key, kvp.Value);
+                msg += $"{kvp.Key,-5}: {kvp.Value:x4}{Environment.NewLine}";
             }
 
             return msg;
@@ -439,13 +439,13 @@ namespace libEDSsharp
         {
             string msg;
 
-            msg = "*****************************************************\n";
-            msg += String.Format("*{0,-51}*\n", String.Format("{0," + ((51 + infoheader.Length) / 2).ToString() + "}", infoheader));
-            msg += "*****************************************************\n";
-            msg += string.Format("\nLines = {0}\n", comments.Count);
+            msg = $"*****************************************************{Environment.NewLine}";
+            msg += $"*{String.Format("{0," + ((51 + infoheader.Length) / 2).ToString() + "}", infoheader),-51}*{Environment.NewLine}";
+            msg += $"*****************************************************{Environment.NewLine}";
+            msg += $"{Environment.NewLine}Lines = {comments.Count}{Environment.NewLine}";
             foreach (string s in comments)
             {
-                msg += string.Format("{0}\n",s);
+                msg += $"{s}{Environment.NewLine}";
             }
 
             return msg;
