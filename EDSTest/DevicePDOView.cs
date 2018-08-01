@@ -585,7 +585,7 @@ namespace ODEditor
 
                 //Fix me this is not strictly true, the reserved/compatability entries do not need to appear
                 //they can just be left as gaps in the sub OD
-                if (isTXPDO && eds.ods[index].Nosubindexes != 7)
+                if (isTXPDO && (eds.ods[index].Nosubindexes != 6 && eds.ods[index].Nosubindexes != 7))
                 {
                     MessageBox.Show("Error with communication paramaters, manual edit required of OD");
                     return;
