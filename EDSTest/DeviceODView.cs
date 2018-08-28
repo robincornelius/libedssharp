@@ -1041,7 +1041,7 @@ namespace ODEditor
             {
                 ODentry od = (ODentry)selecteditemsub.Tag;
 
-                if (od.parent.objecttype == ObjectType.ARRAY)
+                if (od.parent.objecttype == ObjectType.ARRAY || od.parent.objecttype == ObjectType.REC)
                 {
                     UInt16 count = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
                     if (count > 0)
@@ -1221,7 +1221,7 @@ namespace ODEditor
             {
                 ODentry od = (ODentry)selecteditemsub.Tag;
 
-                if (od.parent.objecttype == ObjectType.ARRAY)
+                if (od.parent.objecttype == ObjectType.ARRAY || od.parent.objecttype == ObjectType.REC)
                 {
                     UInt16 count = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
                     if (count > 0)
