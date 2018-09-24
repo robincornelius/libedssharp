@@ -148,7 +148,8 @@ namespace ODEditor
 
                 eds.fi.EDSVersion = textBox_fileversion.Text;
 
-                eds.fi.ModificationDateTime = DateTime.Parse(textBox_modified_datetime.Text);
+                eds.fi.ModificationDateTime = DateTime.Now;
+                textBox_modified_datetime.Text = DateTime.Now.ToString();
 
                 eds.fi.ModifiedBy = textBox_modifiedby.Text;
 
