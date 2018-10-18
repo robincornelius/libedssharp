@@ -372,6 +372,11 @@ namespace libEDSsharp
    typedef float64_t    REAL64; 
    typedef char_t       VISIBLE_STRING;
    typedef oChar_t      OCTET_STRING;
+
+   #ifdef DOMAIN
+   #undef DOMAIN
+   #endif
+
    typedef domain_t     DOMAIN;
 
 #ifndef timeOfDay_t
