@@ -1596,78 +1596,66 @@ namespace libEDSsharp
         public void Parseline(string linex)
         {
 
-                string key = "";
-                string value = "";
+            string key = "";
+            string value = "";
 
-                //Special Handling of custom fields
-                if (linex.IndexOf(';') == 0 && linex.IndexOf(";StorageLocation") != -1)
+            string line = linex.TrimStart(';');
+            bool custom_extension = false;
+
+            if (linex == null || linex == "")
+                return;
+
+            if (linex[0] == ';')
+                custom_extension = true;
+
+
+            //extract sections
+            {
+                string pat = @"^\[([a-z0-9]+)\]";
+
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(line);
+                if (m.Success)
                 {
-                    if (sectionname != null)
+                    Group g = m.Groups[1];
+                    sectionname = g.ToString();
+                }
+            }
+
+            //extract keyvalues
+            {
+                //Bug #70 Eat whitespace!
+                string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
+
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(line);
+                if (m.Success)
+                {
+                    key = m.Groups[1].ToString();
+                    value = m.Groups[2].ToString();
+                    value = value.TrimEnd(' ','\t','\n','\r');
+
+                    if (!eds.ContainsKey(sectionname))
                     {
-                        if (!eds.ContainsKey(sectionname))
-                        {
-                            //could be more generic
-                            eds[sectionname].Add("StorageLocation", value);
-                        }
+                        eds.Add(sectionname, new Dictionary<string, string>());
                     }
 
-                    return;
-                }
-
-                string line = linex.TrimStart(';');
-
-                if (linex.IndexOf(';') == 0 && linex.IndexOf(";LSS_Type") != -1)
-                {
-                    if (sectionname != null)
+                    if (custom_extension == false)
                     {
-                        if (eds.ContainsKey(sectionname))
-                        {
-                            //could be more generic
-                            eds[sectionname].Add("LSS_Type", value);
-                        }
-                    }
-
-                    return;
-                }
-
-                //extract sections
-                {
-                    string pat = @"^\[([a-z0-9]+)\]";
-
-                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                    Match m = r.Match(line);
-                    if (m.Success)
-                    {
-                        Group g = m.Groups[1];
-                        sectionname = g.ToString();
-                    }
-                }
-
-                //extract keyvalues
-                {
-                    //Bug #70 Eat whitespace!
-                    string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
-
-                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                    Match m = r.Match(line);
-                    if (m.Success)
-                    {
-
-                        key = m.Groups[1].ToString();
-                        value = m.Groups[2].ToString();
-                        value = value.TrimEnd(' ','\t','\n','\r');
-
-                        if (!eds.ContainsKey(sectionname))
-                        {
-                            eds.Add(sectionname, new Dictionary<string, string>());
-                        }
-
                         eds[sectionname].Add(key, value);
+                    }
+                    else
+                    //Only allow our own extensions to populate the key/value pair
+                    {
+                        if (key == "StorageLocation" || key == "LSS_Type")
+                        {
+                            eds[sectionname].Add(key, value);
+                        }
 
                     }
                 }
-            
-           
+            }
+
         }
 
         public void ParseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
