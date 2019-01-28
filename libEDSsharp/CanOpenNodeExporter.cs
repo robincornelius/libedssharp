@@ -57,10 +57,41 @@ namespace libEDSsharp
 
             countPDOS();
 
+
+            fixcompatentry();
+
             prewalkArrays();
 
             export_h();
             export_c();
+
+        }
+
+        private bool compatfixed = false;
+        private void fixcompatentry()
+        {
+            compatfixed = false;
+
+
+            // Handle the TPDO communication paramaters in a special way, because of
+            // sizeof(OD_TPDOCommunicationParameter_t) != sizeof(CO_TPDOCommPar_t) in CanOpen.c
+            // the existing CO_TPDOCommPar_t has a compatability entry so we must export one regardless
+            // of if its in the OD or not
+
+            for (UInt16 idx = 0x1800; idx < 0x1900; idx++)
+            {
+                if (eds.ods.ContainsKey(idx))
+                {
+                    ODentry od = eds.ods[idx];
+
+                    if (!od.Containssubindex(0x04))
+                    {
+                        compatfixed = true;
+                        ODentry compatability = new ODentry("compatability Entry", 0x05, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no);
+                        od.subobjects.Add(0x04, compatability);
+                    }
+                }
+            }
 
         }
 
@@ -495,7 +526,7 @@ namespace libEDSsharp
 
                 file.WriteLine(string.Format("/*{0:x4}    */ typedef struct {{", kvp.Key));
                 foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value.subobjects)
-                {
+                {                   
                     string paramaterarrlen = "";
                     
                     ODentry subod = kvp2.Value;
@@ -1028,8 +1059,17 @@ const CO_OD_entry_t CO_OD[");
 
             if (datasize > 1)
             {
-                /* variable is a multibyte value */
-                flags |= 0x80;
+                if (od.datatype == DataType.VISIBLE_STRING ||
+                    od.datatype == DataType.OCTET_STRING)
+                {
+                    //#149 VISIBLE_STRING and OCTET_STRING are an arrays of 8 bit values, either VISIBLE_CHAR or UNSIGNED8
+                    //and therefor are NOT multibyte
+                }
+                else
+                {
+                    /* variable is a multibyte value */
+                    flags |= 0x80;
+                }
             }
 
             return flags;
@@ -1467,7 +1507,6 @@ const CO_OD_entry_t CO_OD[");
                         if (od.subobjects.Keys.Last() != kvp2.Key)
                             sb.Append(", ");
                     }
-
 
                     if (arrayspecial(od.Index, false))
                     {
