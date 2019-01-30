@@ -239,7 +239,7 @@ namespace libEDSsharp
                     specialarraylength = string.Format("[{0}]", od.Lengthofstring);
                 }
 
-                sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}{3};\n", od.Index, od.datatype.ToString(), make_cname(od.parameter_name), specialarraylength);
+                sb.AppendLine($"/*{od.Index:x4}      */ {od.datatype.ToString(),-15} {make_cname(od.parameter_name)}{specialarraylength};");
             }
             else
             {
@@ -272,7 +272,7 @@ namespace libEDSsharp
                         return "";
 
                     lastname = name;
-                    sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}[{3}];\n", od.Index, objecttypewords, make_cname(od.parameter_name), au[name]);
+                    sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[{au[name]}];");
                 }
                 else
                 {
@@ -283,11 +283,11 @@ namespace libEDSsharp
                     {
                         if (arrayspecial(od.Index, true))
                         {
-                            sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}[1];\n", od.Index, objecttypewords, make_cname(od.parameter_name));
+                            sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[1];");
                         }
                         else
                         {
-                            sb.AppendFormat("/*{0:x4}      */ {1,-15} {2};\n", od.Index, objecttypewords, make_cname(od.parameter_name));
+                            sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)};");
                         }
                     }
                     else
@@ -306,7 +306,7 @@ namespace libEDSsharp
                             specialarraylength = string.Format("[{0}]", maxlength);
                         }
 
-                        sb.AppendFormat("/*{0:x4}      */ {1,-15} {2}{4}[{3}];\n", od.Index, objecttypewords, make_cname(od.parameter_name), od.Nosubindexes - 1, specialarraylength);
+                        sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}{specialarraylength}[{od.Nosubindexes - 1}];");
                     }
                 }
             }
@@ -610,7 +610,7 @@ namespace libEDSsharp
 
                             ODSIs.Add(ODSI);
 
-                            ODSIout += (string.Format("        #define {0,-51} {1}\r\n", ODSI, kvp2.Key));
+                            ODSIout += ($"        #define {ODSI,-51} {kvp2.Key}{Environment.NewLine}");
                         }
 
                         file.Write(ODSIout);
@@ -737,11 +737,11 @@ file.WriteLine(@"/**************************************************************
                                 //so offset by one
                                 if (od.objecttype == ObjectType.ARRAY)
                                 {
-                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), kvp2.Key - 1));
+                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key - 1}{Environment.NewLine}");
                                 }
                                 else
                                 {
-                                    ODAout += (string.Format("        #define {0,-51} {1}\r\n", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)), kvp2.Key));
+                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key}{Environment.NewLine}");
                                 }
                             }
 
@@ -963,7 +963,7 @@ const CO_OD_entry_t CO_OD[");
                 pdata = "0";
             }
 
-            sb.AppendFormat("{{0x{0:x4}, 0x{1:x2}, 0x{2:x2}, {3}, (void*){4}}},\n", od.Index, nosubindexs, flags, datasize, pdata);
+            sb.AppendLine($"{{0x{od.Index:x4}, 0x{nosubindexs:x2}, 0x{flags:x2}, {datasize}, (void*){pdata}}},");
 
             if (arrayspecial(od.Index, false))
             {
@@ -1326,7 +1326,7 @@ const CO_OD_entry_t CO_OD[");
                     count = 3; //CanOpenNode Fudging. Its only 3 paramaters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
-                returndata.AppendFormat("/*0x{0:x4}*/ const CO_OD_entryRecord_t OD_record{0:x4}[{1}] = {{\n", od.Index, count);
+                returndata.AppendLine($"/*0x{od.Index:x4}*/ const CO_OD_entryRecord_t OD_record{od.Index:x4}[{count}] = {{");
 
                 string arrayaccess = "";
 
@@ -1348,7 +1348,7 @@ const CO_OD_entry_t CO_OD[");
                     arrayopen = false;
                 }
 
-                returndata.Append("};\r\n\r\n");
+                returndata.AppendLine($"}};{Environment.NewLine}");
             }
 
             return returndata.ToString();
@@ -1375,12 +1375,12 @@ const CO_OD_entry_t CO_OD[");
 
             if (sub.datatype != DataType.DOMAIN)
             {
-                sb.AppendFormat("           {{(void*)&{5}.{0}{4}.{1}, 0x{2:x2}, 0x{3:x} }},\n", cname, subcname, getflags(sub), datasize, arrayaccess, "CO_OD_" + sub.parent.StorageLocation);
+                sb.AppendLine($"           {{(void*)&{"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):x2}, 0x{datasize:x} }},");
             }
             else
             {
                 //Domain type MUST have its data pointer set to 0 for CanOpenNode
-                sb.AppendFormat("           {{(void*)0, 0x{2:x2}, 0x{3:x} }},\n", cname, subcname, getflags(sub), datasize, arrayaccess, "CO_OD_" + sub.parent.StorageLocation);
+                sb.AppendLine($"           {{(void*)0, 0x{getflags(sub):x2}, 0x{datasize:x} }},");
             }
 
             return sb.ToString();
@@ -1481,7 +1481,7 @@ const CO_OD_entry_t CO_OD[");
 
                 if (od.Nosubindexes == 0)
                 {
-                    sb.AppendFormat("/*{0:x4}*/ {1},\n", od.Index, formatvaluewithdatatype(od.defaultvalue, od.datatype));
+                    sb.AppendLine($"/*{od.Index:x4}*/ {formatvaluewithdatatype(od.defaultvalue, od.datatype)},");
                 }
                 else
                 {
@@ -1511,11 +1511,11 @@ const CO_OD_entry_t CO_OD[");
 
                     if (arrayspecial(od.Index, false))
                     {
-                        sb.Append("}},\n");
+                        sb.AppendLine("}},");
                     }
                     else
                     {
-                        sb.Append("},\n");
+                        sb.AppendLine("},");
                     }
 
                 }

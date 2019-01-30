@@ -37,13 +37,13 @@ namespace Tests
 
             string test = export_one_record_type(subod, "");
 
-            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString1, 0xbe, 0x7 },\n")
+            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString1, 0xbe, 0x7 }," + Environment.NewLine)
                 throw (new Exception("export_one_record_type() error test 1"));
 
             subod = new ODentry("Test String 2", 0x01, DataType.VISIBLE_STRING, new string('*', 255), EDSsharp.AccessType.ro, PDOMappingType.optional, od);
             test = export_one_record_type(subod, "");
 
-            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString2, 0xa6, 0xff },\n")
+            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString2, 0xa6, 0xff }," + Environment.NewLine)
                 throw (new Exception("export_one_record_type() error test 2"));
 
         }
@@ -77,7 +77,7 @@ namespace Tests
 
             string test = print_h_entry(od);
 
-            if (test != "/*2000      */ VISIBLE_STRING  testArray[32][4];\n")
+            if (test != "/*2000      */ VISIBLE_STRING  testArray[32][4];" + Environment.NewLine)
                 throw (new Exception("TestArrays() test 1 failed"));
 
 
@@ -110,7 +110,7 @@ namespace Tests
             od.subobjects.Add(0x01, new ODentry("LINE1", 0x01, DataType.UNSIGNED32, "0x01", EDSsharp.AccessType.ro, PDOMappingType.optional));
           
             string test = write_od_line(od);
-            if(test != "{0x1011, 0x7f, 0x06, 0, (void*)&CO_OD_RAM.testArray[0]},\n")
+            if(test != "{0x1011, 0x7f, 0x06, 0, (void*)&CO_OD_RAM.testArray[0]}," + Environment.NewLine)
                 throw (new Exception("TestArrayNoEntries() failed"));
 
 
@@ -129,7 +129,7 @@ namespace Tests
             od.subobjects.Add(0x01, new ODentry("LINE1", 0x01, DataType.UNSIGNED32, "0x01", EDSsharp.AccessType.ro, PDOMappingType.optional));
 
             test = write_od_line(od);
-            if (test != "{0x2000, 0x7f, 0x06, 0, (void*)&CO_OD_RAM.testArray[0]},\n")
+            if (test != "{0x2000, 0x7f, 0x06, 0, (void*)&CO_OD_RAM.testArray[0]}," + Environment.NewLine)
                 throw (new Exception("TestArrayNoEntries() failed"));
 
 
@@ -150,7 +150,7 @@ namespace Tests
             od.subobjects.Add(0x03, new ODentry("LINE1", 0x03, DataType.UNSIGNED32, "0x01", EDSsharp.AccessType.ro, PDOMappingType.optional));
 
             test = write_od_line(od);
-            if (test != "{0x1003, 0x03, 0x06, 0, (void*)&CO_OD_RAM.testArray[0]},\n")
+            if (test != "{0x1003, 0x03, 0x06, 0, (void*)&CO_OD_RAM.testArray[0]}," + Environment.NewLine)
                 throw (new Exception("TestArrayNoEntries() failed"));
 
 
