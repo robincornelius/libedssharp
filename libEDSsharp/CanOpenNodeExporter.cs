@@ -928,7 +928,7 @@ const CO_OD_entry_t CO_OD[");
                 {
                     if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
                     {
-                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max-subindex: {2}", od.Index, nosubindexs, od.Getmaxsubindex())); 
+                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max sub-index: {2}", od.Index, nosubindexs, od.Getmaxsubindex())); 
                     }
 
                     //0x1003 is a special case for CanOpenNode
