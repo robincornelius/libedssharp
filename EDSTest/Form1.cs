@@ -520,6 +520,7 @@ namespace ODEditor
                         case ".xdd":
                             CanOpenXDD coxdd = new CanOpenXDD();
                             coxdd.writeXML(sfd.FileName, dv.eds);
+                            dv.eds.xddfilename = sfd.FileName;
                             break;
 
                     }
@@ -896,6 +897,8 @@ namespace ODEditor
                     return;
                 }
 
+
+
                 if (dv.eds.fi.exportFolder == null || dv.eds.fi.exportFolder == "")
                 {
                     MessageBox.Show("Please export CO_OD.c/h at least once");
@@ -916,6 +919,11 @@ namespace ODEditor
 
                 coxml.writeXML(dv.eds.xmlfilename);
 
+                if (dv.eds.xddfilename != null)
+                {
+                    CanOpenXDD coxdd = new CanOpenXDD();
+                    coxdd.writeXML(dv.eds.xddfilename, dv.eds);
+                }
 
                 //export EDS
                 dv.eds.Savefile(dv.eds.edsfilename, InfoSection.Filetype.File_EDS);

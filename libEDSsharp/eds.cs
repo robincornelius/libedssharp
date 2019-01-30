@@ -1479,6 +1479,7 @@ namespace libEDSsharp
         public string edsfilename = null;
         public string dcffilename = null;
         public string xmlfilename = null;
+        public string xddfilename = null;
 
         //property to indicate unsaved data;
         private bool _dirty;
