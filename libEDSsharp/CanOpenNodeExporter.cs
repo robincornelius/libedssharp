@@ -423,6 +423,7 @@ namespace libEDSsharp
 #endif
 
     typedef timeOfDay_t TIME_OF_DAY;
+    typedef timeOfDay_t TIME_DIFFERENCE;
 
 ");
 
