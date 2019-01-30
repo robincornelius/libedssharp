@@ -70,18 +70,20 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 238);
+            this.label1.Location = new System.Drawing.Point(23, 293);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(119, 13);
+            this.label1.Size = new System.Drawing.Size(158, 17);
             this.label1.TabIndex = 11;
             this.label1.Text = "Assigned PDO mapping";
             // 
             // label_availableobjects
             // 
             this.label_availableobjects.AutoSize = true;
-            this.label_availableobjects.Location = new System.Drawing.Point(13, 13);
+            this.label_availableobjects.Location = new System.Drawing.Point(17, 16);
+            this.label_availableobjects.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_availableobjects.Name = "label_availableobjects";
-            this.label_availableobjects.Size = new System.Drawing.Size(130, 13);
+            this.label_availableobjects.Size = new System.Drawing.Size(172, 17);
             this.label_availableobjects.TabIndex = 6;
             this.label_availableobjects.Text = "Available Objects for PDO";
             // 
@@ -93,11 +95,12 @@
             this.columnHeader16,
             this.columnHeader17});
             this.listView_TXPDO.FullRowSelect = true;
-            this.listView_TXPDO.Location = new System.Drawing.Point(16, 29);
+            this.listView_TXPDO.Location = new System.Drawing.Point(21, 36);
+            this.listView_TXPDO.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.listView_TXPDO.MultiSelect = false;
             this.listView_TXPDO.Name = "listView_TXPDO";
-            this.listView_TXPDO.Size = new System.Drawing.Size(492, 199);
-            this.listView_TXPDO.TabIndex = 5;
+            this.listView_TXPDO.Size = new System.Drawing.Size(655, 244);
+            this.listView_TXPDO.TabIndex = 0;
             this.listView_TXPDO.UseCompatibleStateImageBehavior = false;
             this.listView_TXPDO.View = System.Windows.Forms.View.Details;
             // 
@@ -138,9 +141,11 @@
             this.groupBox1.Controls.Add(this.textBox_cob);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Location = new System.Drawing.Point(521, 28);
+            this.groupBox1.Location = new System.Drawing.Point(695, 34);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(295, 199);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Size = new System.Drawing.Size(393, 245);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Communication parameters";
@@ -148,10 +153,11 @@
             // checkBox_invalidpdo
             // 
             this.checkBox_invalidpdo.AutoSize = true;
-            this.checkBox_invalidpdo.Location = new System.Drawing.Point(192, 49);
+            this.checkBox_invalidpdo.Location = new System.Drawing.Point(256, 60);
+            this.checkBox_invalidpdo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.checkBox_invalidpdo.Name = "checkBox_invalidpdo";
-            this.checkBox_invalidpdo.Size = new System.Drawing.Size(57, 17);
-            this.checkBox_invalidpdo.TabIndex = 16;
+            this.checkBox_invalidpdo.Size = new System.Drawing.Size(70, 21);
+            this.checkBox_invalidpdo.TabIndex = 2;
             this.checkBox_invalidpdo.Text = "Invalid";
             this.checkBox_invalidpdo.UseVisualStyleBackColor = true;
             this.checkBox_invalidpdo.CheckedChanged += new System.EventHandler(this.CheckBox_invalidpdo_CheckedChanged);
@@ -160,10 +166,11 @@
             // 
             this.button_savepdochanges.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.button_savepdochanges.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_savepdochanges.Location = new System.Drawing.Point(192, 161);
+            this.button_savepdochanges.Location = new System.Drawing.Point(256, 198);
+            this.button_savepdochanges.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_savepdochanges.Name = "button_savepdochanges";
-            this.button_savepdochanges.Size = new System.Drawing.Size(101, 27);
-            this.button_savepdochanges.TabIndex = 15;
+            this.button_savepdochanges.Size = new System.Drawing.Size(135, 33);
+            this.button_savepdochanges.TabIndex = 8;
             this.button_savepdochanges.Text = "Save ";
             this.button_savepdochanges.UseVisualStyleBackColor = true;
             this.button_savepdochanges.Click += new System.EventHandler(this.Button_savepdochanges_Click);
@@ -172,108 +179,121 @@
             // 
             this.button_deletePDO.Image = global::ODEditor.Properties.Resources.Remove_16xLG;
             this.button_deletePDO.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_deletePDO.Location = new System.Drawing.Point(192, 128);
+            this.button_deletePDO.Location = new System.Drawing.Point(256, 158);
+            this.button_deletePDO.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_deletePDO.Name = "button_deletePDO";
-            this.button_deletePDO.Size = new System.Drawing.Size(101, 27);
-            this.button_deletePDO.TabIndex = 14;
+            this.button_deletePDO.Size = new System.Drawing.Size(135, 33);
+            this.button_deletePDO.TabIndex = 7;
             this.button_deletePDO.Text = "Delete PDO";
             this.button_deletePDO.UseVisualStyleBackColor = true;
             this.button_deletePDO.Click += new System.EventHandler(this.Button_deletePDO_Click);
             // 
             // textBox_slot
             // 
-            this.textBox_slot.Location = new System.Drawing.Point(80, 21);
+            this.textBox_slot.Location = new System.Drawing.Point(107, 26);
+            this.textBox_slot.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_slot.Name = "textBox_slot";
             this.textBox_slot.ReadOnly = true;
-            this.textBox_slot.Size = new System.Drawing.Size(96, 20);
-            this.textBox_slot.TabIndex = 11;
+            this.textBox_slot.Size = new System.Drawing.Size(127, 22);
+            this.textBox_slot.TabIndex = 0;
             // 
             // textBox_syncstart
             // 
-            this.textBox_syncstart.Location = new System.Drawing.Point(80, 168);
+            this.textBox_syncstart.Location = new System.Drawing.Point(107, 207);
+            this.textBox_syncstart.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_syncstart.Name = "textBox_syncstart";
-            this.textBox_syncstart.Size = new System.Drawing.Size(96, 20);
-            this.textBox_syncstart.TabIndex = 10;
+            this.textBox_syncstart.Size = new System.Drawing.Size(127, 22);
+            this.textBox_syncstart.TabIndex = 6;
             // 
             // textBox_eventtimer
             // 
-            this.textBox_eventtimer.Location = new System.Drawing.Point(80, 142);
+            this.textBox_eventtimer.Location = new System.Drawing.Point(107, 175);
+            this.textBox_eventtimer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_eventtimer.Name = "textBox_eventtimer";
-            this.textBox_eventtimer.Size = new System.Drawing.Size(96, 20);
-            this.textBox_eventtimer.TabIndex = 9;
+            this.textBox_eventtimer.Size = new System.Drawing.Size(127, 22);
+            this.textBox_eventtimer.TabIndex = 5;
             // 
             // textBox_inhibit
             // 
-            this.textBox_inhibit.Location = new System.Drawing.Point(80, 111);
+            this.textBox_inhibit.Location = new System.Drawing.Point(107, 137);
+            this.textBox_inhibit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_inhibit.Name = "textBox_inhibit";
-            this.textBox_inhibit.Size = new System.Drawing.Size(96, 20);
-            this.textBox_inhibit.TabIndex = 8;
+            this.textBox_inhibit.Size = new System.Drawing.Size(127, 22);
+            this.textBox_inhibit.TabIndex = 4;
             // 
             // textBox_type
             // 
-            this.textBox_type.Location = new System.Drawing.Point(80, 78);
+            this.textBox_type.Location = new System.Drawing.Point(107, 96);
+            this.textBox_type.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_type.Name = "textBox_type";
-            this.textBox_type.Size = new System.Drawing.Size(96, 20);
-            this.textBox_type.TabIndex = 7;
+            this.textBox_type.Size = new System.Drawing.Size(127, 22);
+            this.textBox_type.TabIndex = 3;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(10, 173);
+            this.label7.Location = new System.Drawing.Point(13, 213);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(54, 13);
+            this.label7.Size = new System.Drawing.Size(71, 17);
             this.label7.TabIndex = 6;
             this.label7.Text = "Sync start";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(10, 114);
+            this.label6.Location = new System.Drawing.Point(13, 140);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.Size = new System.Drawing.Size(45, 17);
             this.label6.TabIndex = 5;
             this.label6.Text = "Inhibit";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 145);
+            this.label5.Location = new System.Drawing.Point(13, 178);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(64, 13);
+            this.label5.Size = new System.Drawing.Size(84, 17);
             this.label5.TabIndex = 4;
             this.label5.Text = "Event Timer";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 81);
+            this.label4.Location = new System.Drawing.Point(13, 100);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(31, 13);
+            this.label4.Size = new System.Drawing.Size(40, 17);
             this.label4.TabIndex = 3;
             this.label4.Text = "Type";
             // 
             // textBox_cob
             // 
-            this.textBox_cob.Location = new System.Drawing.Point(80, 47);
+            this.textBox_cob.Location = new System.Drawing.Point(107, 58);
+            this.textBox_cob.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_cob.Name = "textBox_cob";
-            this.textBox_cob.Size = new System.Drawing.Size(96, 20);
-            this.textBox_cob.TabIndex = 2;
+            this.textBox_cob.Size = new System.Drawing.Size(127, 22);
+            this.textBox_cob.TabIndex = 1;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 50);
+            this.label3.Location = new System.Drawing.Point(13, 62);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 13);
+            this.label3.Size = new System.Drawing.Size(37, 17);
             this.label3.TabIndex = 1;
             this.label3.Text = "COB";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 24);
+            this.label2.Location = new System.Drawing.Point(13, 30);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(25, 13);
+            this.label2.Size = new System.Drawing.Size(32, 17);
             this.label2.TabIndex = 0;
             this.label2.Text = "Slot";
             // 
@@ -293,10 +313,11 @@
             this.columnHeader9});
             this.listView_TXCOBmap.FullRowSelect = true;
             this.listView_TXCOBmap.HideSelection = false;
-            this.listView_TXCOBmap.Location = new System.Drawing.Point(16, 254);
+            this.listView_TXCOBmap.Location = new System.Drawing.Point(21, 313);
+            this.listView_TXCOBmap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.listView_TXCOBmap.Name = "listView_TXCOBmap";
-            this.listView_TXCOBmap.Size = new System.Drawing.Size(998, 307);
-            this.listView_TXCOBmap.TabIndex = 10;
+            this.listView_TXCOBmap.Size = new System.Drawing.Size(1329, 377);
+            this.listView_TXCOBmap.TabIndex = 2;
             this.listView_TXCOBmap.UseCompatibleStateImageBehavior = false;
             this.listView_TXCOBmap.View = System.Windows.Forms.View.Details;
             this.listView_TXCOBmap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListView_TXCOBmap_MouseClick);
@@ -361,17 +382,18 @@
             // 
             this.button_addPDO.Image = global::ODEditor.Properties.Resources.action_add_16xLG;
             this.button_addPDO.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_addPDO.Location = new System.Drawing.Point(832, 38);
+            this.button_addPDO.Location = new System.Drawing.Point(1109, 47);
+            this.button_addPDO.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button_addPDO.Name = "button_addPDO";
-            this.button_addPDO.Size = new System.Drawing.Size(117, 27);
-            this.button_addPDO.TabIndex = 13;
+            this.button_addPDO.Size = new System.Drawing.Size(156, 33);
+            this.button_addPDO.TabIndex = 1;
             this.button_addPDO.Text = "Add new PDO";
             this.button_addPDO.UseVisualStyleBackColor = true;
             this.button_addPDO.Click += new System.EventHandler(this.Button_addPDO_Click);
             // 
             // DevicePDOView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.button_addPDO);
             this.Controls.Add(this.groupBox1);
@@ -379,8 +401,9 @@
             this.Controls.Add(this.listView_TXCOBmap);
             this.Controls.Add(this.label_availableobjects);
             this.Controls.Add(this.listView_TXPDO);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "DevicePDOView";
-            this.Size = new System.Drawing.Size(1017, 695);
+            this.Size = new System.Drawing.Size(1356, 855);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
