@@ -97,9 +97,11 @@ namespace libEDSsharp
             denotation denot = new denotation();
             vendorTextLabel lab2 = new vendorTextLabel();
             lab2.lang = "en";
+            lab2.Value = od.denotation;
             denot.Items = new object[1];
             denot.Items[0] = lab2;
             p.denotation = denot;
+            
 
             vendorTextDescription desc = new vendorTextDescription();
             desc.lang = "en"; //fixme we could and should do better than just english
@@ -1125,6 +1127,18 @@ namespace libEDSsharp
 
                                 }
 
+                            }
+
+                            if(param.denotation!=null && param.denotation.Items.Length>0)
+                            {
+                                foreach (object item in param.denotation.Items)
+                                {
+                                    if (item.GetType() == typeof(vendorTextLabel))
+                                    {
+                                        vendorTextLabel vtd = (vendorTextLabel)item;
+                                        od.denotation = vtd.Value;
+                                    }
+                                }
                             }
 
 

@@ -521,6 +521,8 @@ namespace ODEditor
                             CanOpenXDD coxdd = new CanOpenXDD();
                             coxdd.writeXML(sfd.FileName, dv.eds);
                             dv.eds.xddfilename = sfd.FileName;
+                            dv.eds.Dirty = false;
+
                             break;
 
                     }
