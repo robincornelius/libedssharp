@@ -118,17 +118,17 @@ namespace ODEditor
             selectedobject.Description = textBox_description.Text;
             selectedobject.defaultvalue = textBox_defaultvalue.Text;
             selectedobject.denotation = textBox_denotation.Text;
+            selectedobject.HighLimit = textBox_highvalue.Text;
+            selectedobject.LowLimit = textBox_lowvalue.Text;
+            selectedobject.actualvalue = textBox_actualvalue.Text;
 
             if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
             {
 
                 selectedobject.defaultvalue = textBox_defaultvalue.Text;
                 selectedobject.TPDODetectCos = checkBox_COS.Checked;
-                selectedobject.HighLimit = textBox_highvalue.Text;
-                selectedobject.LowLimit = textBox_lowvalue.Text;
-                selectedobject.actualvalue = textBox_actualvalue.Text;
-               
-
+              
+              
                 DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
                 selectedobject.datatype = dt;
 

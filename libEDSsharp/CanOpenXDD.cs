@@ -430,6 +430,10 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].denotation = od.denotation;
                 AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extenstion_storagelocation = od.StorageLocation;
 
+                AppLayer.CANopenObjectList.CANopenObject[count].highLimit = od.HighLimit;
+                AppLayer.CANopenObjectList.CANopenObject[count].lowLimit = od.LowLimit;
+                AppLayer.CANopenObjectList.CANopenObject[count].actualValue = od.actualvalue;
+
                 if (od.subobjects != null && od.subobjects.Count > 0)
                 {
                     AppLayer.CANopenObjectList.CANopenObject[count].subNumber = (byte)od.subobjects.Count;
@@ -484,6 +488,11 @@ namespace libEDSsharp
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].uniqueIDRef = String.Format("UID_PARAM_{0:x4}{1:x2}", od.Index, subindex2);
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessType = (CANopenObjectListCANopenObjectCANopenSubObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectCANopenSubObjectAccessType), accesstype.ToString());
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].accessTypeSpecified = true;
+
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].highLimit = subod.HighLimit;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].lowLimit = subod.LowLimit;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].actualValue = subod.actualvalue;
+
 
                         subcount++;
                     }
@@ -1048,6 +1057,10 @@ namespace libEDSsharp
 
 
                                 subentry.uniqueID = subobj.uniqueIDRef;
+
+                                subentry.HighLimit = subobj.highLimit;
+                                subentry.LowLimit = subobj.lowLimit;
+                                subentry.actualvalue = subobj.actualValue;
 
                                 //FIXME WTF is going on here??
                                 entry.subobjects.Add(subobj.subIndex[1], subentry);
