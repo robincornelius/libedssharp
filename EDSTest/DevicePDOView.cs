@@ -143,7 +143,7 @@ namespace ODEditor
                     if (od.Disabled == true)
                         continue;
 
-                    //protect againt not completed new CommunicationParamater sections
+                    //protect against not completed new CommunicationParamater sections
                     //we probably could do better and do more checking but as long as
                     //we protect against the subobjects[1] read in a few lines all else is
                     //good
@@ -268,7 +268,7 @@ namespace ODEditor
 
                     if (mappingfail == true)
                     {
-                        MessageBox.Show(String.Format("PDO mapping failed for object 0x{0:x4}/{1:x2}\nplease manaully check the PDO mapping in the TX and RX PDO tabs\n as it does not agree with the mapping paramater 0x{2:x4}/{3:x2}\nThis can occur if you edit objects that are already mapped",pdoindex,pdosub, idx,sub.Subindex));
+                        MessageBox.Show(String.Format("PDO mapping failed for object 0x{0:x4}/{1:x2}\nplease manually check the PDO mapping in the TX and RX PDO tabs\n as it does not agree with the mapping parameter 0x{2:x4}/{3:x2}\nThis can occur if you edit objects that are already mapped",pdoindex,pdosub, idx,sub.Subindex));
                     }
                 }
 
@@ -579,20 +579,20 @@ namespace ODEditor
 
                 if (!eds.ods.ContainsKey(index))
                 {
-                    MessageBox.Show("Error finding communication paramaters");
+                    MessageBox.Show("Error finding communication parameters");
                     return;
                 }
 
-                //Fix me this is not strictly true, the reserved/compatability entries do not need to appear
+                //Fix me this is not strictly true, the reserved/compatibility entries do not need to appear
                 //they can just be left as gaps in the sub OD
                 if (isTXPDO && (eds.ods[index].Nosubindexes != 6 && eds.ods[index].Nosubindexes != 7))
                 {
-                    MessageBox.Show("Error with communication paramaters, manual edit required of OD");
+                    MessageBox.Show("Error with communication parameters, manual edit required of OD");
                     return;
                 }
                 if (!isTXPDO && eds.ods[index].Nosubindexes != 3)
                 {
-                    MessageBox.Show("Error with communication paramaters, manual edit required of OD");
+                    MessageBox.Show("Error with communication parameters, manual edit required of OD");
                     return;
                 }
 

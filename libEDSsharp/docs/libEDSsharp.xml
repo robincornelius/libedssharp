@@ -6,7 +6,7 @@
     <members>
         <member name="M:libEDSsharp.CanOpenNodeExporter.getflags(libEDSsharp.ODentry)">
             <summary>
-            Get the CanOpenNode specific flags, these flags are used internally in CanOpenNode to determine details about the obejct variable
+            Get the CanOpenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
             </summary>
             <param name="od">An odentry to access</param>
             <returns>byte containing the flag value</returns>
@@ -34,7 +34,7 @@
         <member name="T:libEDSsharp.ODentry.Odtype">
             <summary>
             Used when writing out objects to know if we are writing the normal or the module parts out
-            Two module parts subext and fixed are availiable.
+            Two module parts subext and fixed are available.
             </summary>
         </member>
         <member name="M:libEDSsharp.ODentry.#ctor">
@@ -44,7 +44,7 @@
         </member>
         <member name="M:libEDSsharp.ODentry.#ctor(System.String,System.UInt16,libEDSsharp.DataType,System.String,libEDSsharp.EDSsharp.AccessType,libEDSsharp.PDOMappingType)">
             <summary>
-            ODentry constructor for a siple VAR type
+            ODentry constructor for a simple VAR type
             </summary>
             <param name="parameter_name">Name of Object Dictionary Entry</param>
             <param name="index">Index of object in object dictionary</param>
@@ -67,7 +67,7 @@
         </member>
         <member name="M:libEDSsharp.ODentry.#ctor(System.String,System.UInt16,System.Byte)">
             <summary>
-            ODEntry constuctor for array subobjects
+            ODEntry constructor for array subobjects
             </summary>
             <param name="parameter_name"></param>
             <param name="index"></param>
@@ -75,14 +75,14 @@
         </member>
         <member name="M:libEDSsharp.ODentry.ToString">
             <summary>
-            Provide a simple string representation of the object, only parameters index, no subindexes/subindex paramaeter name and data type are included
+            Provide a simple string representation of the object, only parameters index, no subindexes/subindex parameter name and data type are included
             Useful for debug and also appears in debugger when you inspect this object
             </summary>
             <returns>string summary of object</returns>
         </member>
         <member name="M:libEDSsharp.ODentry.Formatoctetstring(System.String)">
             <summary>
-            If data type is an octect string we must remove all spaces when writing out to a EDS/DCF file
+            If data type is an octet string we must remove all spaces when writing out to a EDS/DCF file
             </summary>
             <param name="value">Value to be processed</param>
             <returns>value if not octet string or value with spaces removed if octet string</returns>
@@ -97,8 +97,8 @@
         </member>
         <member name="M:libEDSsharp.ODentry.Paramater_cname">
             <summary>
-            Returns a c compatable string that represents the name of the object, - is replaced with _
-            words seperated by a space are replaced with _ for a seperator eg ONE TWO becomes ONE_TWO
+            Returns a c compatible string that represents the name of the object, - is replaced with _
+            words separated by a space are replaced with _ for a separator eg ONE TWO becomes ONE_TWO
             </summary>
             <returns></returns>
         </member>
@@ -115,8 +115,8 @@
         </member>
         <member name="M:libEDSsharp.EDSsharp.ApplyimplicitPDO">
             <summary>
-            This function scans the PDO list and comparese it to NrOfRXPDO and NrOfTXPDO
-            if these do not match in count then implict PDOs are present and they are
+            This function scans the PDO list and compares it to NrOfRXPDO and NrOfTXPDO
+            if these do not match in count then implicit PDOs are present and they are
             filled in with default values from the lowest possible index
             </summary>
         </member>

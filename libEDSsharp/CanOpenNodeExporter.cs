@@ -15,7 +15,7 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
  
     Copyright(c) 2016 Robin Cornelius <robin.cornelius@gmail.com>
-    based heavly on the files CO_OD.h and CO_OD.c from CanOpenNode which are
+    based heavily on the files CO_OD.h and CO_OD.c from CanOpenNode which are
     Copyright(c) 2010 - 2016 Janez Paternoster
 */
 
@@ -73,9 +73,9 @@ namespace libEDSsharp
             compatfixed = false;
 
 
-            // Handle the TPDO communication paramaters in a special way, because of
+            // Handle the TPDO communication parameters in a special way, because of
             // sizeof(OD_TPDOCommunicationParameter_t) != sizeof(CO_TPDOCommPar_t) in CanOpen.c
-            // the existing CO_TPDOCommPar_t has a compatability entry so we must export one regardless
+            // the existing CO_TPDOCommPar_t has a compatibility entry so we must export one regardless
             // of if its in the OD or not
 
             for (UInt16 idx = 0x1800; idx < 0x1900; idx++)
@@ -87,7 +87,7 @@ namespace libEDSsharp
                     if (!od.Containssubindex(0x04))
                     {
                         compatfixed = true;
-                        ODentry compatability = new ODentry("compatability Entry", 0x05, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no);
+                        ODentry compatability = new ODentry("comparability Entry", 0x05, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no);
                         od.subobjects.Add(0x04, compatability);
                     }
                 }
@@ -149,9 +149,9 @@ namespace libEDSsharp
 
             //Handle special arrays
 
-            //SDO Client paramters
+            //SDO Client parameters
             specialarraysearch(0x1200, 0x127F);
-            //SDO Server Paramaters
+            //SDO Server Parameters
             specialarraysearch(0x1280, 0x12FF);
 
             //PDO Mappings and configs
@@ -277,7 +277,7 @@ namespace libEDSsharp
                 else
                 {
                     //Don't put sub indexes on record type in h file unless there are multiples of the same
-                    //in which case its not handleded here, we need a special case for the predefined special
+                    //in which case its not handled here, we need a special case for the predefined special
                     //values that arrayspecial() checks for, to generate 1 element arrays if needed
                     if (od.objecttype == ObjectType.REC)
                     {
@@ -329,7 +329,7 @@ namespace libEDSsharp
 
    (For more information see <CO_SDO.h>.)
 
-   This file is part of CANopenNode, an opensource CANopen Stack.
+   This file is part of CANopenNode, an open source CANopen Stack.
    Project home page is <https://github.com/CANopenNode/CANopenNode>.
    For more information on CANopen see <http://www.can-cia.org/>.
  
@@ -555,7 +555,7 @@ namespace libEDSsharp
    dictionary entries>
 *******************************************************************************/");
 
-            //FIXME how can we get rid of that redundandency?
+            //FIXME how can we get rid of that redundancy?
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -921,7 +921,7 @@ const CO_OD_entry_t CO_OD[");
                     nosubindexs--;
             }
 
-            //Arrays really should obey the max subindex paramater not the physical number of elements
+            //Arrays really should obey the max subindex parameter not the physical number of elements
             if (od.objecttype == ObjectType.ARRAY)
             {
                 if ((od.Getmaxsubindex() != nosubindexs))
@@ -974,7 +974,7 @@ const CO_OD_entry_t CO_OD[");
         }
 
         /// <summary>
-        /// Get the CanOpenNode specific flags, these flags are used internally in CanOpenNode to determine details about the obejct variable
+        /// Get the CanOpenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
         /// </summary>
         /// <param name="od">An odentry to access</param>
         /// <returns>byte containing the flag value</returns>
@@ -1064,11 +1064,11 @@ const CO_OD_entry_t CO_OD[");
                     od.datatype == DataType.OCTET_STRING)
                 {
                     //#149 VISIBLE_STRING and OCTET_STRING are an arrays of 8 bit values, either VISIBLE_CHAR or UNSIGNED8
-                    //and therefor are NOT multibyte
+                    //and therefor are NOT multi-byte
                 }
                 else
                 {
-                    /* variable is a multibyte value */
+                    /* variable is a multi-byte value */
                     flags |= 0x80;
                 }
             }
@@ -1323,7 +1323,7 @@ const CO_OD_entry_t CO_OD[");
 
                 if(od.Index>=0x1400 && od.Index<0x1600)
                 {
-                    count = 3; //CanOpenNode Fudging. Its only 3 paramaters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
+                    count = 3; //CanOpenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
                 returndata.AppendLine($"/*0x{od.Index:x4}*/ const CO_OD_entryRecord_t OD_record{od.Index:x4}[{count}] = {{");
@@ -1578,8 +1578,8 @@ const CO_OD_entry_t CO_OD[");
                     case '0': retval.Append('\0'); break;  // Null
                     case 'a': retval.Append('\a'); break;  // Bell
                     case 'b': retval.Append('\b'); break;  // Backspace
-                    case 'f': retval.Append('\f'); break;  // Formfeed
-                    case 'v': retval.Append('\v'); break;  // Verticle tab
+                    case 'f': retval.Append('\f'); break;  // Form feed
+                    case 'v': retval.Append('\v'); break;  // Vertical tab
                     case '\\': retval.Append('\\'); break; // Don't escape
                     default:                                 // Unrecognized, copy as-is
                         retval.Append('\\').Append(txt[jx + 1]); break;

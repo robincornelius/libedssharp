@@ -24,11 +24,11 @@ using Xml2CSharp;
 using System.Text.RegularExpressions;
 using XSDImport;
 
-/* I know i'm going to regret this
+/* I know I'm going to regret this
  * 
  * I quite like my eds class as it trys to validate the EDS using typing and enums etc
  * but i also want the XML wrappers for the CanOpenXML
- * so i'm going to make a converter outside of both classes hence this bridge
+ * so I'm going to make a converter outside of both classes hence this bridge
  * which is more code to manage ;-(
  * */
 
@@ -542,7 +542,7 @@ namespace libEDSsharp
             {
                 if (dev.Other.File != null)
                 {
-                    // CanOpenNode default project.xml conatins - for fileversion, its suspose to be a byte field according to DS306
+                    // CanOpenNode default project.xml contains - for fileversion, its suppose to be a byte field according to DS306
                     if (dev.Other.File.FileVersion == "-")
                     {
                         dev.Other.File.FileVersion = "0";
@@ -560,7 +560,7 @@ namespace libEDSsharp
 
             eds.fi.EDSVersion = "4.0";
 
-            //FIX me any other approprate defaults for eds here??
+            //FIX me any other appropriate defaults for eds here??
 
             eds.UpdatePDOcount();
 

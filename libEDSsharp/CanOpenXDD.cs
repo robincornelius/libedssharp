@@ -104,7 +104,7 @@ namespace libEDSsharp
             
 
             vendorTextDescription desc = new vendorTextDescription();
-            desc.lang = "en"; //fixme we could and should do better than just english
+            desc.lang = "en"; //fixme we could and should do better than just English
             desc.Value = od.Description;
             p.Items[1] = desc;
 
@@ -534,7 +534,7 @@ namespace libEDSsharp
             NetworkManagement.CANopenGeneralFeatures = new ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures();
 
             NetworkManagement.CANopenGeneralFeatures.bootUpSlave = eds.di.SimpleBootUpSlave;
-            //NetworkManagment.CANopenGeneralFeatures.dynamicChannels = eds.di.DynamicChannelsSupported;   //fix me count of dynamic channles not handled yet eds only has bool
+            //NetworkManagment.CANopenGeneralFeatures.dynamicChannels = eds.di.DynamicChannelsSupported;   //fix me count of dynamic channels not handled yet eds only has bool
             NetworkManagement.CANopenGeneralFeatures.granularity = eds.di.Granularity;
             NetworkManagement.CANopenGeneralFeatures.groupMessaging = eds.di.GroupMessaging;
 
@@ -577,7 +577,7 @@ namespace libEDSsharp
         {
             EDSsharp eds = new EDSsharp();
 
-            //Find Objet Dictionary entries
+            //Find Object Dictionary entries
 
            //fixme??
            // ProfileBody_DataType dt;
@@ -798,7 +798,7 @@ namespace libEDSsharp
                     {
                         eds.di.SimpleBootUpSlave = NetworkManagment.CANopenGeneralFeatures.bootUpSlave;
                         eds.di.DynamicChannelsSupported = NetworkManagment.CANopenGeneralFeatures.dynamicChannels > 0;
-                        //fix me count of dynamic channles not handled yet eds only has bool
+                        //fix me count of dynamic channels not handled yet eds only has bool
 
                         eds.di.Granularity = NetworkManagment.CANopenGeneralFeatures.granularity;
                         eds.di.GroupMessaging = NetworkManagment.CANopenGeneralFeatures.groupMessaging;
@@ -1061,7 +1061,7 @@ namespace libEDSsharp
                         }
                     }
 
-                    //fixme i think date should be tested in a seperate way
+                    //fixme i think date should be tested in a separate way
                     //as dates are supported without times
                     if (obj.fileCreationTimeSpecified)
                     {
@@ -1109,7 +1109,7 @@ namespace libEDSsharp
                             if (od == null)
                                 continue;
 
-                            //fix me defaultValue containes other stuff we might want
+                            //fix me defaultValue contains other stuff we might want
                             if (param.defaultValue != null)
                                 od.defaultvalue = param.defaultValue.value;
 

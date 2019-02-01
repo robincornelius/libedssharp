@@ -167,7 +167,7 @@ namespace libEDSsharp
                                 file.Write(string.Format("<tr> <td>0x{0:x2}</td> <td>{1}</td> <td>0x{2:x4}/0x{3:x2}</td><td>{4}</td> <td>{5}</td><td>", eds.dc.NodeId, eds.di.ProductName, index, subindex, name, size));
 
 
-                                //find all recievers here
+                                //find all receivers here
 
                                 file.Write("<table class=\"receivers\">");
 

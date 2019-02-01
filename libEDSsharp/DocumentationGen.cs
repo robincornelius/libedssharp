@@ -111,7 +111,7 @@ namespace libEDSsharp
             }
 
             file.Write("<table id=\"odentry\">");
-            write2linetableheader("Paramater", "Value");
+            write2linetableheader("Parameter", "Value");
 
             ObjectType ot = od.objecttype;
             if (ot == ObjectType.UNKNOWN && od.parent != null)

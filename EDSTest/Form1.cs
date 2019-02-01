@@ -234,7 +234,7 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Datasheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
+            odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Data sheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
 
@@ -429,7 +429,7 @@ namespace ODEditor
 
                 if(device.eds.Dirty==true)
                 {
-                    if (MessageBox.Show( "All usaved changes will be lost\n continue?", "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
+                    if (MessageBox.Show( "All unsaved changes will be lost\n continue?", "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
                         return;
                 }
 
@@ -642,7 +642,7 @@ namespace ODEditor
 
         private void addtoMRU(string path)
         {
-            // if it already exists remove it then let it readd itsself
+            // if it already exists remove it then let it re-add itself
             // so it will be promoted to the top of the list
             if (_mru.Contains(path))
                 _mru.Remove(path);

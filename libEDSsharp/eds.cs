@@ -212,7 +212,7 @@ namespace libEDSsharp
                                 break;
 
                             case "Boolean":
-                                var = section[name] == "1"; //beacuse Convert is Awesome
+                                var = section[name] == "1"; //because Convert is Awesome
                                 break;
 
                             default:
@@ -1012,7 +1012,7 @@ namespace libEDSsharp
 
         /// <summary>
         /// Used when writing out objects to know if we are writing the normal or the module parts out
-        /// Two module parts subext and fixed are availiable.
+        /// Two module parts subext and fixed are available.
         /// </summary>
         public enum Odtype
         {
@@ -1030,7 +1030,7 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// ODentry constructor for a siple VAR type
+        /// ODentry constructor for a simple VAR type
         /// </summary>
         /// <param name="parameter_name">Name of Object Dictionary Entry</param>
         /// <param name="index">Index of object in object dictionary</param>
@@ -1084,7 +1084,7 @@ namespace libEDSsharp
         
 
         /// <summary>
-        /// ODEntry constuctor for array subobjects
+        /// ODEntry constructor for array subobjects
         /// </summary>
         /// <param name="parameter_name"></param>
         /// <param name="index"></param>
@@ -1100,7 +1100,7 @@ namespace libEDSsharp
 
 
         /// <summary>
-        /// Provide a simple string representation of the object, only parameters index, no subindexes/subindex paramaeter name and data type are included
+        /// Provide a simple string representation of the object, only parameters index, no subindexes/subindex parameter name and data type are included
         /// Useful for debug and also appears in debugger when you inspect this object
         /// </summary>
         /// <returns>string summary of object</returns>
@@ -1118,7 +1118,7 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// If data type is an octect string we must remove all spaces when writing out to a EDS/DCF file
+        /// If data type is an octet string we must remove all spaces when writing out to a EDS/DCF file
         /// </summary>
         /// <param name="value">Value to be processed</param>
         /// <returns>value if not octet string or value with spaces removed if octet string</returns>
@@ -1237,8 +1237,8 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// Returns a c compatable string that represents the name of the object, - is replaced with _
-        /// words seperated by a space are replaced with _ for a seperator eg ONE TWO becomes ONE_TWO
+        /// Returns a c compatible string that represents the name of the object, - is replaced with _
+        /// words separated by a space are replaced with _ for a separator eg ONE TWO becomes ONE_TWO
         /// </summary>
         /// <returns></returns>
         public string Paramater_cname()
@@ -2097,15 +2097,15 @@ namespace libEDSsharp
 
                 if ((!ods[index].Containssubindex(4)) && ((this.di.CompactPDO & 0x08) == 0))
                 {
-                    //Fill in compatability entry
+                    //Fill in compatibility entry
 
-                    ODentry subod = new ODentry("Compatability entry", index, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, ods[index]);
+                    ODentry subod = new ODentry("Compatibility entry", index, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, ods[index]);
                     ods[index].subobjects.Add(0x04, subod);
                 }
 
                 if ((!ods[index].Containssubindex(5)) && ((this.di.CompactPDO & 0x10) == 0))
                 {
-                    //Fill in ebent timer
+                    //Fill in event timer
 
                     ODentry subod = new ODentry("Event Timer", index, DataType.UNSIGNED16, "0", AccessType.rw, PDOMappingType.no, ods[index]);
                     ods[index].subobjects.Add(0x05, subod);
@@ -2114,8 +2114,8 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// This function scans the PDO list and comparese it to NrOfRXPDO and NrOfTXPDO
-        /// if these do not match in count then implict PDOs are present and they are
+        /// This function scans the PDO list and compares it to NrOfRXPDO and NrOfTXPDO
+        /// if these do not match in count then implicit PDOs are present and they are
         /// filled in with default values from the lowest possible index
         /// </summary>
         public void ApplyimplicitPDO()
@@ -2530,7 +2530,7 @@ COB - ID
  bit 31:    0(1) - node uses(does NOT use) PDO
      
 Transmission type
- value = 0 - 240:   reciving is synchronous, process after next reception of SYNC object
+ value = 0 - 240:   receiving is synchronous, process after next reception of SYNC object
  value = 241 - 253: not used
  value = 254:     manufacturer specific
  value = 255:     asynchronous"
@@ -2565,12 +2565,12 @@ COB - ID
  bit 31:    0(1) - node uses(does NOT use) PDO
      
 Transmission type
- value = 0:       transmiting is synchronous, specification in device profile
- value = 1 - 240:   transmiting is synchronous after every N - th SYNC object
+ value = 0:       transmitting is synchronous, specification in device profile
+ value = 1 - 240:   transmitting is synchronous after every N - th SYNC object
  value = 241 - 251: not used
- value = 252 - 253: Transmited only on reception of Remote Transmission Request
+ value = 252 - 253: Transmitted only on reception of Remote Transmission Request
  value = 254:     manufacturer specific
- value = 255:     asinchronous, specification in device profile
+ value = 255:     asynchronous, specification in device profile
      
 inhibit time
  bit 0 - 15:  Minimum time between transmissions of the PDO in 100µs.Zero disables functionality.
@@ -2636,7 +2636,7 @@ mapped object  (subindex 1...8)
 
             od_mapping.objecttype = ObjectType.REC;
             od_mapping.StorageLocation = "ROM";
-            od_mapping.accesstype = AccessType.rw; //Same as default but inconsistant with ROM above
+            od_mapping.accesstype = AccessType.rw; //Same as default but inconsistent with ROM above
             od_mapping.PDOtype = PDOMappingType.no;
 
             sub = new ODentry("Number of mapped objects", (UInt16)(index + 0x200),  DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.no, od_mapping);

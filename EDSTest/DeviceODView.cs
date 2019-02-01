@@ -196,9 +196,9 @@ namespace ODEditor
 
             if(selectedobject.parent == null && selectedobject.objecttype == ObjectType.ARRAY)
             {
-                // Propogate changes through sub objects
+                // Propagate changes through sub objects
                 // We only really need to do this for PDOMapping to fix bug #13 see report
-                // on git hub for discussion why other parameters are not propogated here
+                // on git hub for discussion why other parameters are not propagated here
                 // tl;dr; Limitations of CanOpenNode object dictionary perms for sub array objects
 
                 foreach (KeyValuePair<UInt16,ODentry>kvp in selectedobject.subobjects)
@@ -227,8 +227,8 @@ namespace ODEditor
             }
 
             //If we edit a parent REC object we also need to change the storage location of subobjects
-            //this does occur implicity anyway and it also occurs during load of file but the GUI was displaying
-            //incorrect data in the shaded combobox item for storage location
+            //this does occur implicitly anyway and it also occurs during load of file but the GUI was displaying
+            //incorrect data in the shaded combo box item for storage location
             if (selectedobject.parent == null && selectedobject.objecttype == ObjectType.REC)
             {
                 foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
@@ -309,8 +309,8 @@ namespace ODEditor
                 }
             }
 
-            //Bug#25 set the combobox text to be the same as the selected item as this does not happen automaticly
-            //when the combobox is disabled
+            //Bug#25 set the combo box text to be the same as the selected item as this does not happen automatically
+            //when the combo box is disabled
             if (comboBox_datatype.SelectedItem!=null)
                 comboBox_datatype.Text = comboBox_datatype.SelectedItem.ToString();
 
@@ -371,7 +371,7 @@ namespace ODEditor
                 return; //nothing else to do at this point
             }
 
-            //protect eveything as default
+            //protect everything as default
             textBox_defaultvalue.Enabled = false;
             comboBox_accesstype.Enabled = false;
             comboBox_datatype.Enabled = false;
@@ -405,7 +405,7 @@ namespace ODEditor
                 ((od.parent.Index >=0x1600 && od.parent.Index <= 0x17ff) || (od.parent.Index >= 0x1A00 && od.parent.Index <= 0x1Bff)) &&
                 od.Subindex == 0)
             {
-                //We are allowed to edit the no sub objects for the PDO mappings as its a requirment to support dynamic PDOs
+                //We are allowed to edit the no sub objects for the PDO mappings as its a requirement to support dynamic PDOs
 
                 textBox_defaultvalue.Enabled = true;
                 comboBox_accesstype.Enabled = true;
@@ -512,7 +512,7 @@ namespace ODEditor
 
                     lvi2.SubItems.Add(subod.defaultvalue);
 
-                    //fixe me ??
+                    //fix me ??
                     lvi2.SubItems.Add(subod.PDOtype.ToString());
 
                     lvi2.Tag = subod;
@@ -1184,7 +1184,7 @@ namespace ODEditor
                     {
                         /* add string to the second to last position (before "add...") */
                         comboBox_memory.Items.Insert(comboBox_memory.Items.Count - 1, memory.name);
-                        /* add new memory location to eds backend */
+                        /* add new memory location to eds back end */
                         eds.storageLocation.Add(memory.name);
                     }
                 }

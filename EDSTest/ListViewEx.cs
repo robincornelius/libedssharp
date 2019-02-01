@@ -1,5 +1,5 @@
 ﻿/* Taken from http://www.codeproject.com/Articles/18111/Reusable-ListView-in-C-with-textbox-and-combobox */
-/* No explicit licence with code or documentation */
+/* No explicit license with code or documentation */
 
 /* ListViewEx.cs 
  * This file contains the definition of the class ListViewEx, which is a
@@ -152,7 +152,7 @@ namespace CustomListView
 
         /// <summary>
         /// This method will send LVM_GETSUBITEMRECT message to 
-        /// get the current subitem bouds of the listview
+        /// get the current subitem bounds of the listview
         /// </summary>
         /// <param name="clickPoint"></param>
         /// <returns></returns>
@@ -178,7 +178,7 @@ namespace CustomListView
                     // Add 1 because of the presence of above condition
                     this.col = index + 1;
                     {
-                        // This case happens when items in the first columnis selected.
+                        // This case happens when items in the first column is selected.
                         // So we need to set the column number explicitly
                         if (clickPoint.X < subItemRect.Left)
                         {
@@ -325,7 +325,7 @@ namespace CustomListView
                 textBox.Location = location;
                 // Set text, take it from the current listview cell
                 textBox.Text = this.Items[row].SubItems[col].Text;
-                // Shopw the text box
+                // Show the text box
                 textBox.Show();
                 textBox.Focus();
             }
@@ -346,7 +346,7 @@ namespace CustomListView
                 // Hide the controls
                 this.textBox.Visible = this.combo.Visible = false;
 
-                // If no mouse down happned in this listview, 
+                // If no mouse down happened in this listview, 
                 // no need to show anything
                 if (!mouseDown)
                 {
@@ -365,7 +365,7 @@ namespace CustomListView
                 mouseDown = false;
 
                 // Get the subitem rect at the mouse point.
-                // Remeber that the current row index and column index will also be
+                // Remember that the current row index and column index will also be
                 // Modified within the same method
                 Rectangle rect = this.GetSubItemRect(new Point(e.X, e.Y));
 
@@ -390,7 +390,7 @@ namespace CustomListView
 
                         ValidateAndAddSubItems();
 
-                        // Decide which conrol to be displayed.
+                        // Decide which control to be displayed.
                         if (this.customCells[cell] == null)
                         {
                             this.ShowTextBox(location, sz);
@@ -445,7 +445,7 @@ namespace CustomListView
             // Set the first text as the largest
             string maximum = data[0];
 
-            // Now iterate thru each string, to findout the
+            // Now iterate thru each string, to find out the
             // largest
             foreach (string text in data)
             {
@@ -461,7 +461,7 @@ namespace CustomListView
         /// <summary>
         /// For this method, we will get a Subitem. 
         /// Then we will iterate thru each of the keys and will 
-        /// check whther any key contains the given cells row/column.
+        /// check if any key contains the given cells row/column.
         /// If it is not found we will check for -1 in any one
         /// </summary>
         /// <param name="cell"></param>
@@ -482,7 +482,7 @@ namespace CustomListView
                     {
                         return key;
                     }
-                    // Entire col for a row is is  enabled for a control(Textbox/combobox)
+                    // Entire col for a row is  enabled for a control(Textbox/combobox)
                     else if (key.row == cell.row && key.col == -1)
                     {
                         return key;
@@ -523,7 +523,7 @@ namespace CustomListView
         }
 
         /// <summary>
-        /// This event handler wll set the current text in the textbox
+        /// This event handler will set the current text in the textbox
         /// as the listview's current cell's text, while the textbox 
         /// focus is lost
         /// </summary>
@@ -546,7 +546,7 @@ namespace CustomListView
         }
 
         /// <summary>
-        /// This event handler wll set the current text in the combobox
+        /// This event handler will set the current text in the combobox
         /// as the listview's current cell's text, while the combobox 
         /// selection is changed
         /// </summary>
