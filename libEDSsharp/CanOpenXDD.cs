@@ -92,8 +92,10 @@ namespace libEDSsharp
             lab.Value = od.parameter_name;
             p.Items[0] = lab;
 
-            //fixme we need to extract the denotation from the ODentry
-            //this is just an empty place holder
+
+            //FIXME we are currently writing the denotation value to both the object and the parameterList section
+            //i'm not sure why two exist
+
             denotation denot = new denotation();
             vendorTextLabel lab2 = new vendorTextLabel();
             lab2.lang = "en";
@@ -378,6 +380,8 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType), accesstype.ToString());
                 AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
 
+                AppLayer.CANopenObjectList.CANopenObject[count].denotation = od.denotation;
+
                 if (od.subobjects != null && od.subobjects.Count > 0)
                 {
                     AppLayer.CANopenObjectList.CANopenObject[count].subNumber = (byte)od.subobjects.Count;
@@ -400,6 +404,8 @@ namespace libEDSsharp
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].subIndex = bytes;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].name = subod.parameter_name;
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].objectType = (byte)subod.objecttype;
+
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].denotation = subod.denotation;
 
                         bytes = BitConverter.GetBytes((UInt16)subod.datatype);
                         Array.Reverse(bytes);
@@ -1129,7 +1135,9 @@ namespace libEDSsharp
 
                             }
 
-                            if(param.denotation!=null && param.denotation.Items.Length>0)
+                            //FIXME: if we have a denotation set for an object in the <parameterList> section but it is not set on the object
+                            //use the <parameterList> one. We may discover that this is used for something else and can be removed??
+                            if ((od.denotation==null || od.denotation=="") && param.denotation!=null && param.denotation.Items.Length>0)
                             {
                                 foreach (object item in param.denotation.Items)
                                 {
