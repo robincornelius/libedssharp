@@ -15,7 +15,7 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
   
   
-    Copyright(c) 2016 Robin Cornelius <robin.cornelius@gmail.com>
+    Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
 */
 
 using System;
