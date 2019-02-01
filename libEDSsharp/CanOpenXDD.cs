@@ -29,11 +29,58 @@ namespace libEDSsharp
 
         }
 
-        public void writeXML(string file, EDSsharp eds)
+        public List<EDSsharp> readMultiXML(string file )
         {
 
+            List<EDSsharp> edss = new List<EDSsharp>();
+
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(OpenEDSProject));
+                StreamReader reader = new StreamReader(file);
+                OpenEDSProject oep = (OpenEDSProject)serializer.Deserialize(reader);
+
+                foreach(ISO15745ProfileContainer cont in oep.ISO15745ProfileContainer)
+                {
+                    edss.Add(convert(cont));
+                }
+
+                reader.Close();
+
+                return edss;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return null;
+            }    
+        }
+
+        public void writeMultiXML(string file, List<EDSsharp> edss)
+        {
+
+            List<ISO15745ProfileContainer> devs = new List<ISO15745ProfileContainer>();
+
+            foreach (EDSsharp eds in edss)
+            {
+                ISO15745ProfileContainer dev = convert(eds);
+                devs.Add(dev);
+            }
+
+            OpenEDSProject oep = new OpenEDSProject();
+            oep.Version = "1.0";
+
+            oep.ISO15745ProfileContainer = devs;
+
+            XmlSerializer serializer = new XmlSerializer(typeof(OpenEDSProject));
+            StreamWriter writer = new StreamWriter(file);
+            serializer.Serialize(writer, oep);
+            writer.Close();
+        }
+
+        public void writeXML(string file, EDSsharp eds)
+        {
             dev = convert(eds);
-          
             XmlSerializer serializer = new XmlSerializer(typeof(ISO15745ProfileContainer));
             StreamWriter writer = new StreamWriter(file);
             serializer.Serialize(writer, dev);
@@ -838,6 +885,7 @@ namespace libEDSsharp
                     }
                 }
 
+                if (ApplicationLayers.CANopenObjectList.CANopenObject != null)
                 foreach (XSDImport.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
                 {
                     ODentry entry = new ODentry();
@@ -1177,6 +1225,15 @@ namespace libEDSsharp
 
 }
 
+[XmlRoot(ElementName = "OpenEDSProject")]
+public class OpenEDSProject
+{
+    [XmlElement(ElementName = "ISO15745ProfileContainer", Namespace = "http://www.canopen.org/xml/1.0")]
+    public List<ISO15745ProfileContainer> ISO15745ProfileContainer { get; set; }
+    [XmlAttribute(AttributeName = "version")]
+    public string Version { get; set; }
+
+}
 
 
 namespace XSDImport
