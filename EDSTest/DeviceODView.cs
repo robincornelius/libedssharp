@@ -89,6 +89,27 @@ namespace ODEditor
                     c.TextChanged += DataDirty;
                 }
             }
+
+            registerCN(splitContainer4.Panel2.Controls);
+            registerCN(groupBox1.Controls);
+
+        }
+
+
+        void registerCN(ControlCollection container)
+        {
+            foreach (Control c in container)
+            {
+                if (c is CheckBox)
+                {
+                    ((CheckBox)c).CheckedChanged += DataDirty;
+                }
+                else
+                {
+                    c.TextChanged += DataDirty;
+                }
+            }
+
         }
 
         bool updating = false;

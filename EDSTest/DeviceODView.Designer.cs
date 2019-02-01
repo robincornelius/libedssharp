@@ -56,25 +56,18 @@ namespace ODEditor
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textBox_actualvalue = new System.Windows.Forms.TextBox();
             this.textBox_lowvalue = new System.Windows.Forms.TextBox();
             this.textBox_highvalue = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.textBox_denotation = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.button_save_changes = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.comboBox_memory = new System.Windows.Forms.ComboBox();
-            this.label_index = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.checkBox_enabled = new System.Windows.Forms.CheckBox();
-            this.textBox_name = new System.Windows.Forms.TextBox();
-            this.textBox_description = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.comboBox_objecttype = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -87,6 +80,14 @@ namespace ODEditor
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.comboBox_pdomap = new System.Windows.Forms.ComboBox();
+            this.textBox_denotation = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label_index = new System.Windows.Forms.Label();
+            this.textBox_name = new System.Windows.Forms.TextBox();
+            this.textBox_description = new System.Windows.Forms.TextBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addNewObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,7 +97,6 @@ namespace ODEditor
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSubItemleaveGapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -116,9 +116,9 @@ namespace ODEditor
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenu_array.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -427,6 +427,38 @@ namespace ODEditor
             // 
             this.columnHeader14.Text = "PDO Map";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.textBox_actualvalue);
+            this.groupBox1.Controls.Add(this.textBox_lowvalue);
+            this.groupBox1.Controls.Add(this.textBox_highvalue);
+            this.groupBox1.Controls.Add(this.label18);
+            this.groupBox1.Controls.Add(this.label17);
+            this.groupBox1.Controls.Add(this.label14);
+            this.groupBox1.Controls.Add(this.button_save_changes);
+            this.groupBox1.Controls.Add(this.label16);
+            this.groupBox1.Controls.Add(this.comboBox_memory);
+            this.groupBox1.Controls.Add(this.label15);
+            this.groupBox1.Controls.Add(this.checkBox_enabled);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.comboBox_objecttype);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.comboBox_datatype);
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.checkBox_COS);
+            this.groupBox1.Controls.Add(this.comboBox_accesstype);
+            this.groupBox1.Controls.Add(this.textBox_defaultvalue);
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.label11);
+            this.groupBox1.Controls.Add(this.comboBox_pdomap);
+            this.groupBox1.Location = new System.Drawing.Point(15, 360);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(1058, 224);
+            this.groupBox1.TabIndex = 33;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Object settings";
+            // 
             // textBox_actualvalue
             // 
             this.textBox_actualvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -488,36 +520,6 @@ namespace ODEditor
             this.label14.TabIndex = 30;
             this.label14.Text = "High Value";
             // 
-            // textBox_denotation
-            // 
-            this.textBox_denotation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_denotation.Location = new System.Drawing.Point(144, 66);
-            this.textBox_denotation.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox_denotation.Name = "textBox_denotation";
-            this.textBox_denotation.Size = new System.Drawing.Size(929, 22);
-            this.textBox_denotation.TabIndex = 1;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(17, 69);
-            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(77, 17);
-            this.label13.TabIndex = 28;
-            this.label13.Text = "Denotation";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(17, 12);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 17);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Index";
-            // 
             // button_save_changes
             // 
             this.button_save_changes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -532,16 +534,6 @@ namespace ODEditor
             this.button_save_changes.UseVisualStyleBackColor = true;
             this.button_save_changes.Click += new System.EventHandler(this.button_save_changes_Click);
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(17, 39);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(45, 17);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Name";
-            // 
             // label16
             // 
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -552,16 +544,6 @@ namespace ODEditor
             this.label16.Size = new System.Drawing.Size(94, 17);
             this.label16.TabIndex = 26;
             this.label16.Text = "Memory Type";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(17, 102);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(79, 17);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "Description";
             // 
             // comboBox_memory
             // 
@@ -574,16 +556,6 @@ namespace ODEditor
             this.comboBox_memory.Size = new System.Drawing.Size(161, 24);
             this.comboBox_memory.TabIndex = 8;
             this.comboBox_memory.SelectedIndexChanged += new System.EventHandler(this.comboBox_memory_SelectedIndexChanged);
-            // 
-            // label_index
-            // 
-            this.label_index.AutoSize = true;
-            this.label_index.Location = new System.Drawing.Point(140, 12);
-            this.label_index.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label_index.Name = "label_index";
-            this.label_index.Size = new System.Drawing.Size(41, 17);
-            this.label_index.TabIndex = 4;
-            this.label_index.Text = "Index";
             // 
             // label15
             // 
@@ -606,27 +578,6 @@ namespace ODEditor
             this.checkBox_enabled.Size = new System.Drawing.Size(18, 17);
             this.checkBox_enabled.TabIndex = 23;
             this.checkBox_enabled.UseVisualStyleBackColor = true;
-            // 
-            // textBox_name
-            // 
-            this.textBox_name.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_name.Location = new System.Drawing.Point(144, 36);
-            this.textBox_name.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox_name.Name = "textBox_name";
-            this.textBox_name.Size = new System.Drawing.Size(929, 22);
-            this.textBox_name.TabIndex = 0;
-            // 
-            // textBox_description
-            // 
-            this.textBox_description.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_description.Location = new System.Drawing.Point(144, 98);
-            this.textBox_description.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox_description.Multiline = true;
-            this.textBox_description.Name = "textBox_description";
-            this.textBox_description.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_description.Size = new System.Drawing.Size(929, 256);
-            this.textBox_description.TabIndex = 2;
             // 
             // label7
             // 
@@ -759,6 +710,87 @@ namespace ODEditor
             this.comboBox_pdomap.Size = new System.Drawing.Size(161, 24);
             this.comboBox_pdomap.TabIndex = 6;
             // 
+            // textBox_denotation
+            // 
+            this.textBox_denotation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_denotation.Location = new System.Drawing.Point(144, 66);
+            this.textBox_denotation.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_denotation.Name = "textBox_denotation";
+            this.textBox_denotation.Size = new System.Drawing.Size(929, 22);
+            this.textBox_denotation.TabIndex = 1;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(17, 69);
+            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(77, 17);
+            this.label13.TabIndex = 28;
+            this.label13.Text = "Denotation";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(17, 12);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 17);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Index";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(17, 39);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(45, 17);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Name";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(17, 102);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(79, 17);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Description";
+            // 
+            // label_index
+            // 
+            this.label_index.AutoSize = true;
+            this.label_index.Location = new System.Drawing.Point(140, 12);
+            this.label_index.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_index.Name = "label_index";
+            this.label_index.Size = new System.Drawing.Size(41, 17);
+            this.label_index.TabIndex = 4;
+            this.label_index.Text = "Index";
+            // 
+            // textBox_name
+            // 
+            this.textBox_name.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_name.Location = new System.Drawing.Point(144, 36);
+            this.textBox_name.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_name.Name = "textBox_name";
+            this.textBox_name.Size = new System.Drawing.Size(929, 22);
+            this.textBox_name.TabIndex = 0;
+            // 
+            // textBox_description
+            // 
+            this.textBox_description.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox_description.Location = new System.Drawing.Point(144, 98);
+            this.textBox_description.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_description.Multiline = true;
+            this.textBox_description.Name = "textBox_description";
+            this.textBox_description.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox_description.Size = new System.Drawing.Size(929, 256);
+            this.textBox_description.TabIndex = 2;
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -834,38 +866,6 @@ namespace ODEditor
             this.removeSubItemleaveGapToolStripMenuItem.Text = "Remove sub item (leave gap)";
             this.removeSubItemleaveGapToolStripMenuItem.Click += new System.EventHandler(this.removeSubItemleaveGapToolStripMenuItem_Click);
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.textBox_actualvalue);
-            this.groupBox1.Controls.Add(this.textBox_lowvalue);
-            this.groupBox1.Controls.Add(this.textBox_highvalue);
-            this.groupBox1.Controls.Add(this.label18);
-            this.groupBox1.Controls.Add(this.label17);
-            this.groupBox1.Controls.Add(this.label14);
-            this.groupBox1.Controls.Add(this.button_save_changes);
-            this.groupBox1.Controls.Add(this.label16);
-            this.groupBox1.Controls.Add(this.comboBox_memory);
-            this.groupBox1.Controls.Add(this.label15);
-            this.groupBox1.Controls.Add(this.checkBox_enabled);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.comboBox_objecttype);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.comboBox_datatype);
-            this.groupBox1.Controls.Add(this.label12);
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.checkBox_COS);
-            this.groupBox1.Controls.Add(this.comboBox_accesstype);
-            this.groupBox1.Controls.Add(this.textBox_defaultvalue);
-            this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.label11);
-            this.groupBox1.Controls.Add(this.comboBox_pdomap);
-            this.groupBox1.Location = new System.Drawing.Point(15, 360);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1058, 224);
-            this.groupBox1.TabIndex = 33;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Object settings";
-            // 
             // DeviceODView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -897,10 +897,10 @@ namespace ODEditor
             this.splitContainer4.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
-            this.contextMenuStrip1.ResumeLayout(false);
-            this.contextMenu_array.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenu_array.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
