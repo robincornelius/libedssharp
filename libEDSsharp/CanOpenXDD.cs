@@ -381,6 +381,7 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
 
                 AppLayer.CANopenObjectList.CANopenObject[count].denotation = od.denotation;
+                AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extenstion_storagelocation = od.StorageLocation;
 
                 if (od.subobjects != null && od.subobjects.Count > 0)
                 {
@@ -873,6 +874,9 @@ namespace libEDSsharp
 
                     if (obj3.denotation != null)
                         entry.denotation = obj3.denotation;
+
+                    if (obj3.edseditor_extenstion_storagelocation != null)
+                        entry.StorageLocation = obj3.edseditor_extenstion_storagelocation;
 
                     //FIXME im not sure this is correct
                     if (obj3.objFlags != null)
@@ -2727,6 +2731,8 @@ namespace XSDImport
 
         private string denotationField;
 
+        private string edseditor_extenstion_storagelocationField;
+
         private CANopenObjectListCANopenObjectPDOmapping pDOmappingField;
 
         private bool pDOmappingFieldSpecified;
@@ -2904,6 +2910,20 @@ namespace XSDImport
             set
             {
                 this.denotationField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string edseditor_extenstion_storagelocation
+        {
+            get
+            {
+                return this.edseditor_extenstion_storagelocationField;
+            }
+            set
+            {
+                this.edseditor_extenstion_storagelocationField = value;
             }
         }
 
@@ -3184,6 +3204,7 @@ namespace XSDImport
                 this.denotationField = value;
             }
         }
+
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
