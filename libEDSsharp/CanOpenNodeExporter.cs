@@ -381,10 +381,11 @@ namespace libEDSsharp
 
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + "CO_OD.h");
 
-
+            file.WriteLine("// clang-format off");
             addGPLheader(file);
 
-            file.WriteLine("#pragma once");
+            file.WriteLine("#ifndef CO_OD_H_");
+            file.WriteLine("#define CO_OD_H_");
             file.WriteLine("");
 
             file.WriteLine(@"/*******************************************************************************
@@ -527,7 +528,7 @@ namespace libEDSsharp
 
                 file.WriteLine(string.Format("/*{0:x4}    */ typedef struct {{", kvp.Key));
                 foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value.subobjects)
-                {                   
+                {
                     string paramaterarrlen = "";
                     
                     ODentry subod = kvp2.Value;
@@ -766,7 +767,8 @@ file.WriteLine(@"/**************************************************************
                         break;
                 }
             }
-
+            file.WriteLine("#endif");
+            file.WriteLine("// clang-format on");
             file.Close();
 
         }
@@ -775,6 +777,7 @@ file.WriteLine(@"/**************************************************************
         {
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + "CO_OD.c");
 
+            file.WriteLine("// clang-format off");
             addGPLheader(file);
 
             file.WriteLine(@"#include ""CO_driver.h""
@@ -840,6 +843,7 @@ const CO_OD_entry_t CO_OD[");
             file.Write(write_od());
 
             file.WriteLine("};");
+            file.WriteLine("// clang-format on");
 
             file.Close();
         }
