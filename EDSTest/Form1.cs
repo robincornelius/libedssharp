@@ -15,7 +15,7 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
   
   
-    Copyright(c) 2016 Robin Cornelius <robin.cornelius@gmail.com>
+    Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
 */
 
 using System;
@@ -193,6 +193,8 @@ namespace ODEditor
             }
         }
 
+
+
         private void exportCanOpenNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (tabControl1.SelectedTab != null)
@@ -234,7 +236,7 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Datasheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
+            odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Data sheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
 
@@ -281,7 +283,7 @@ namespace ODEditor
                 if (eds == null)
                     return;
 
-                eds.xmlfilename = path;
+                eds.xddfilename = path;
 
                 tabControl1.TabPages.Add(eds.di.ProductName);
 
@@ -429,7 +431,7 @@ namespace ODEditor
 
                 if(device.eds.Dirty==true)
                 {
-                    if (MessageBox.Show( "All usaved changes will be lost\n continue?", "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
+                    if (MessageBox.Show( "All unsaved changes will be lost\n continue?", "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
                         return;
                 }
 
@@ -475,14 +477,14 @@ namespace ODEditor
             }
         }
 
-        private void saveProjectXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportDeviceFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (tabControl1.SelectedTab != null)
             {
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                 SaveFileDialog sfd = new SaveFileDialog();
 
-                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|Canopen XDD (*.xdd)|*.xdd";
+                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf";
 
                 sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
                 sfd.RestoreDirectory = true;
@@ -490,43 +492,86 @@ namespace ODEditor
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-
-                    switch(Path.GetExtension(sfd.FileName))
-                    {
-                        case ".eds":
-                            dv.eds.Savefile(sfd.FileName, InfoSection.Filetype.File_EDS);
-                            dv.eds.edsfilename = sfd.FileName;
-                            break;
-
-                        case ".dcf":
-                            dv.eds.Savefile(sfd.FileName, InfoSection.Filetype.File_DCF);
-                            dv.eds.dcffilename = sfd.FileName;
-                            break;
-
-                        case ".xml":
-                            Bridge b = new Bridge();
-                            Device d = b.convert(dv.eds);
-
-                            CanOpenXML coxml = new CanOpenXML();
-                            coxml.dev = d;
-
-                            coxml.writeXML(sfd.FileName);
-
-                            dv.eds.xmlfilename = sfd.FileName;
-                            dv.eds.Dirty = false;
-                            dv.dispatch_updateOD();
-                            break;
-
-                        case ".xdd":
-                            CanOpenXDD coxdd = new CanOpenXDD();
-                            coxdd.writeXML(sfd.FileName, dv.eds);
-                            break;
-
-                    }
-
-                    dv.dispatch_updateOD();
+                    dosave(dv, sfd.FileName);
                 }
             }
+        }
+
+
+        private void saveProjectXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab != null)
+            {
+                DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+
+                if (dv.eds.xddfilename!=null && dv.eds.xddfilename != "")
+                {
+                    dosave(dv, dv.eds.xddfilename);
+                }
+                else
+                {
+                    saveAsToolStripMenuItem_Click(sender, e);
+                }
+            }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab != null)
+            {
+                DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                SaveFileDialog sfd = new SaveFileDialog();
+
+                sfd.Filter = "CanOpen XDD (*.xdd)|*.xdd";
+
+                sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
+                sfd.RestoreDirectory = true;
+                sfd.FileName = Path.GetFileNameWithoutExtension(dv.eds.xmlfilename);
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    dosave(dv, sfd.FileName);                   
+                }
+            }
+
+        }
+
+
+        void dosave(DeviceView dv,string FileName)
+        {
+
+            switch (Path.GetExtension(FileName))
+            {
+                case ".eds":
+                    dv.eds.Savefile(FileName, InfoSection.Filetype.File_EDS);
+                    dv.eds.edsfilename = FileName;
+                    break;
+
+                case ".dcf":
+                    dv.eds.Savefile(FileName, InfoSection.Filetype.File_DCF);
+                    dv.eds.dcffilename = FileName;
+                    break;
+
+                case ".xml":
+                    Bridge b = new Bridge();
+                    Device d = b.convert(dv.eds);
+
+                    CanOpenXML coxml = new CanOpenXML();
+                    coxml.dev = d;
+                    coxml.writeXML(FileName);
+                    dv.eds.xmlfilename = FileName;
+                    break;
+
+                case ".xdd":
+                    CanOpenXDD coxdd = new CanOpenXDD();
+                    coxdd.writeXML(FileName, dv.eds);
+                    dv.eds.xddfilename = FileName;
+                    dv.eds.Dirty = false;
+                    break;
+            }
+
+            dv.dispatch_updateOD();
+
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -545,6 +590,8 @@ namespace ODEditor
             device.Dock = DockStyle.Fill;
 
             device.dispatch_updateOD();
+
+            network.Add(eds);
         }
 
         private void tabControl1_ControlsChanged(object sender, ControlEventArgs e)
@@ -568,6 +615,8 @@ namespace ODEditor
             documentationToolStripMenuItem.Enabled = enable;
             networkPDOToolStripMenuItem.Enabled = enable;
             saveExportAllToolStripMenuItem.Enabled = enable;
+            exportDeviceFileToolStripMenuItem.Enabled = enable;
+            saveAsToolStripMenuItem.Enabled = true;
 
         }
 
@@ -639,7 +688,7 @@ namespace ODEditor
 
         private void addtoMRU(string path)
         {
-            // if it already exists remove it then let it readd itsself
+            // if it already exists remove it then let it re-add itself
             // so it will be promoted to the top of the list
             if (_mru.Contains(path))
                 _mru.Remove(path);
@@ -684,7 +733,7 @@ namespace ODEditor
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
-            sfd.Filter = "CanOpen network XML (*.nxml)|*.nxml";
+            sfd.Filter = "CanOpen Network XDD (*.nxdd)|*.nxdd|CanOpen network XML (*.nxml)|*.nxml";
 
             sfd.InitialDirectory = Path.GetDirectoryName(networkfilename);
             sfd.RestoreDirectory = true;
@@ -692,11 +741,21 @@ namespace ODEditor
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                //dv.eds.savefile(sfd.FileName);
 
-                NetworkXML net = new NetworkXML();
-                net.writeXML(sfd.FileName, network);
-                addtoMRU(sfd.FileName);
+                switch (Path.GetExtension(sfd.FileName).ToLower())
+                {
+                    case ".nxml":
+                        NetworkXML net = new NetworkXML();
+                        net.writeXML(sfd.FileName, network);
+                        addtoMRU(sfd.FileName);
+                        break;
+
+                    case ".nxdd":
+                        CanOpenXDD xdd = new CanOpenXDD();
+                        xdd.writeMultiXML(sfd.FileName, network);
+                        break;
+
+                }
 
             }
 
@@ -706,11 +765,56 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "CanOpen network XML (*.nxml)|*.nxml";
+            odf.Filter = "CanOpen Network XDD (*.nxdd)|*.nxdd|CanOpen network XML (*.nxml)|*.nxml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
-                openNetworkfile(odf.FileName);
+                switch (Path.GetExtension(odf.FileName).ToLower())
+                {
+                    case ".nxml":
+                        openNetworkfile(odf.FileName);
+                        break;
+
+                    case ".nxdd":
+
+                        openXDDNetworkfile(odf.FileName);
+
+                        break;
+
+                }
+
+               
             }
+        }
+
+        private void openXDDNetworkfile(string file)
+        {
+            CanOpenXDD xdd = new CanOpenXDD();
+            List<EDSsharp> edss = xdd.readMultiXML(file);
+
+            if (edss == null)
+                return;
+
+            foreach (EDSsharp eds in edss)
+            {
+
+                tabControl1.TabPages.Add(eds.di.ProductName);
+
+                DeviceView device = new DeviceView();
+
+                device.eds = eds;
+                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+                device.Dock = DockStyle.Fill;
+
+                network.Add(eds);
+                eds.OnDataDirty += Eds_onDataDirty;
+
+                device.dispatch_updateOD();
+
+            }
+
+            addtoMRU(file);
+            networkfilename = file;
+
         }
 
         private void openNetworkfile(string file)
@@ -896,6 +1000,8 @@ namespace ODEditor
                     return;
                 }
 
+
+
                 if (dv.eds.fi.exportFolder == null || dv.eds.fi.exportFolder == "")
                 {
                     MessageBox.Show("Please export CO_OD.c/h at least once");
@@ -916,6 +1022,11 @@ namespace ODEditor
 
                 coxml.writeXML(dv.eds.xmlfilename);
 
+                if (dv.eds.xddfilename != null)
+                {
+                    CanOpenXDD coxdd = new CanOpenXDD();
+                    coxdd.writeXML(dv.eds.xddfilename, dv.eds);
+                }
 
                 //export EDS
                 dv.eds.Savefile(dv.eds.edsfilename, InfoSection.Filetype.File_EDS);
@@ -973,5 +1084,7 @@ namespace ODEditor
 
             }
         }
+
+
     }
 }

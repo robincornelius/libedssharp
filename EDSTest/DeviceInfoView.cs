@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
 
-    Copyright(c) 2016 Robin Cornelius <robin.cornelius@gmail.com>
+    Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
 */
 
 using System;
@@ -148,7 +148,8 @@ namespace ODEditor
 
                 eds.fi.EDSVersion = textBox_fileversion.Text;
 
-                eds.fi.ModificationDateTime = DateTime.Parse(textBox_modified_datetime.Text);
+                eds.fi.ModificationDateTime = DateTime.Now;
+                textBox_modified_datetime.Text = DateTime.Now.ToString();
 
                 eds.fi.ModifiedBy = textBox_modifiedby.Text;
 

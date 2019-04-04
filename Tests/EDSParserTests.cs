@@ -78,7 +78,7 @@ CompactSubObj=9
             ODentry od = ods[0x1003];
 
             if (od.subobjects.Count != 10)
-                throw (new Exception("parseEDSentry() CompactSubObj faield to generate children"));
+                throw (new Exception("parseEDSentry() CompactSubObj failed to generate children"));
 
             ODentry sub = od.Getsubobject(0);
 
@@ -284,10 +284,10 @@ NrOfTXPDO=7
             UpdatePDOcount();
 
             if(noexplicitrxpdos != di.NrOfRXPDO)
-                throw (new Exception("Implict RX PDO incorrect"));
+                throw (new Exception("Implicit RX PDO incorrect"));
 
             if (noexplicittxpdos != di.NrOfTXPDO)
-                throw (new Exception("Implict RT PDO incorrect"));
+                throw (new Exception("Implicit RT PDO incorrect"));
 
 
         }
