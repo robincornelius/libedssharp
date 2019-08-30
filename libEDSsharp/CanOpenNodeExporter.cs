@@ -958,7 +958,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 pdata = "0";
             }
 
-            sb.AppendLine($"{{0x{od.Index:X4}, 0x{nosubindexs:X2}, 0x{flags:X2}, {datasize}, (void*){pdata}}},");
+            sb.AppendLine($"{{0x{od.Index:X4}, 0x{nosubindexs:X2}, 0x{flags:X2}, {datasize,2:#0}, (void*){pdata}}},");
 
             if (arrayspecial(od.Index, false))
             {
