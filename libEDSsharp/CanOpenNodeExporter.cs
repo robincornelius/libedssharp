@@ -239,7 +239,7 @@ namespace libEDSsharp
                     specialarraylength = string.Format("[{0}]", od.Lengthofstring);
                 }
 
-                sb.AppendLine($"/*{od.Index:X4}      */ {od.datatype.ToString(),-15} {make_cname(od.parameter_name)}{specialarraylength};");
+                sb.AppendLine($"/*{od.Index:X4}      */ {od.datatype.ToString(),-14} {make_cname(od.parameter_name)}{specialarraylength};");
             }
             else
             {
