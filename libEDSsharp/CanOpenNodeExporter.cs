@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
- 
+
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
     based heavily on the files CO_OD.h and CO_OD.c from CanOpenNode which are
     Copyright(c) 2010 - 2016 Janez Paternoster
@@ -121,7 +121,7 @@ namespace libEDSsharp
                 openings.Add(lowest);
                 closings.Add(highest);
 
-                Console.WriteLine(string.Format("New special array detected start 0x{0:x4} end 0x{1:x4}", lowest, highest));
+                Console.WriteLine(string.Format("New special array detected start 0x{0:X4} end 0x{1:X4}", lowest, highest));
             }
         }
 
@@ -143,7 +143,7 @@ namespace libEDSsharp
                 {
                     au[name] = 1;
                 }
-                
+
             }
 
 
@@ -179,7 +179,7 @@ namespace libEDSsharp
 
                             if (kvp2.Key < lowest)
                                 lowest = kvp2.Key;
-                        
+
                         }
 
                     }
@@ -188,7 +188,7 @@ namespace libEDSsharp
                     {
                         openings.Add(lowest);
                         closings.Add(highest);
-                        Console.WriteLine(string.Format("New array detected start 0x{0:x4} end 0x{1:x4}", lowest, highest));
+                        Console.WriteLine(string.Format("New array detected start 0x{0:X4} end 0x{1:X4}", lowest, highest));
                     }
 
                 }
@@ -239,14 +239,14 @@ namespace libEDSsharp
                     specialarraylength = string.Format("[{0}]", od.Lengthofstring);
                 }
 
-                sb.AppendLine($"/*{od.Index:x4}      */ {od.datatype.ToString(),-15} {make_cname(od.parameter_name)}{specialarraylength};");
+                sb.AppendLine($"/*{od.Index:X4}      */ {od.datatype.ToString(),-15} {make_cname(od.parameter_name)}{specialarraylength};");
             }
             else
             {
                 //fixme why is this not od.datatype?
                 DataType t = eds.Getdatatype(od);
 
-                //If it not a defined type, and it probably is not for a REC, we must generate a name, this is 
+                //If it not a defined type, and it probably is not for a REC, we must generate a name, this is
                 //related to the previous code that generated the actual structures.
 
                 string objecttypewords = "";
@@ -272,7 +272,7 @@ namespace libEDSsharp
                         return "";
 
                     lastname = name;
-                    sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[{au[name]}];");
+                    sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[{au[name]}];");
                 }
                 else
                 {
@@ -283,11 +283,11 @@ namespace libEDSsharp
                     {
                         if (arrayspecial(od.Index, true))
                         {
-                            sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[1];");
+                            sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[1];");
                         }
                         else
                         {
-                            sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)};");
+                            sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)};");
                         }
                     }
                     else
@@ -306,7 +306,7 @@ namespace libEDSsharp
                             specialarraylength = string.Format("[{0}]", maxlength);
                         }
 
-                        sb.AppendLine($"/*{od.Index:x4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}{specialarraylength}[{od.Nosubindexes - 1}];");
+                        sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}{specialarraylength}[{od.Nosubindexes - 1}];");
                     }
                 }
             }
@@ -316,61 +316,60 @@ namespace libEDSsharp
 
         private void addGPLheader(StreamWriter file)
         {
-            file.WriteLine(@"/*******************************************************************************
+            file.WriteLine(@"/*
+ * CANopen Object Dictionary.
+ *
+ * This file was automatically generated with CANopenNode Object
+ * Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
+ * Object Dictionary Editor is currently an older, but functional web
+ * application. For more info see See 'Object_Dictionary_Editor/about.html' in
+ * <http://sourceforge.net/p/canopennode/code_complete/ci/master/tree/>
+ * For more information on CANopen Object Dictionary see <CO_SDO.h>.
+ *
+ * @file        CO_OD.c/CO_OD.h
+ * @author      Janez Paternoster
+ * @copyright   2010 - 2016 Janez Paternoster
+ *
+ * This file is part of CANopenNode, an opensource CANopen Stack.
+ * Project home page is <https://github.com/CANopenNode/CANopenNode>.
+ * For more information on CANopen see <http://www.can-cia.org/>.
+ *
+ * CANopenNode is free and open source software: you can redistribute
+ * it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Following clarification and special exception to the GNU General Public
+ * License is included to the distribution terms of CANopenNode:
+ *
+ * Linking this library statically or dynamically with other modules is
+ * making a combined work based on this library. Thus, the terms and
+ * conditions of the GNU General Public License cover the whole combination.
+ *
+ * As a special exception, the copyright holders of this library give
+ * you permission to link this library with independent modules to
+ * produce an executable, regardless of the license terms of these
+ * independent modules, and to copy and distribute the resulting
+ * executable under terms of your choice, provided that you also meet,
+ * for each linked independent module, the terms and conditions of the
+ * license of that module. An independent module is a module which is
+ * not derived from or based on this library. If you modify this
+ * library, you may extend this exception to your version of the
+ * library, but you are not obliged to do so. If you do not wish
+ * to do so, delete this exception statement from your version.");
 
-   File - CO_OD.c/CO_OD.h
-   CANopen Object Dictionary.
+            file.Write(" * Dictionary Editor v" + this.gitVersion);
 
-   Copyright (C) 2004-2008 Janez Paternoster
-
-   License: GNU Lesser General Public License (LGPL).
-
-   <http://canopennode.sourceforge.net>
-
-   (For more information see <CO_SDO.h>.)
-
-   This file is part of CANopenNode, an open source CANopen Stack.
-   Project home page is <https://github.com/CANopenNode/CANopenNode>.
-   For more information on CANopen see <http://www.can-cia.org/>.
- 
-   CANopenNode is free and open source software: you can redistribute
-   it and/or modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation, either version 2 of the
-   License, or (at your option) any later version.
-  
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-   GNU General Public License for more details.
-  
-   You should have received a copy of the GNU General Public License
-   along with this program. If not, see <http://www.gnu.org/licenses/>.
-  
-   Following clarification and special exception to the GNU General Public
-   License is included to the distribution terms of CANopenNode:
-  
-   Linking this library statically or dynamically with other modules is
-   making a combined work based on this library. Thus, the terms and
-   conditions of the GNU General Public License cover the whole combination.
-  
-   As a special exception, the copyright holders of this library give
-   you permission to link this library with independent modules to
-   produce an executable, regardless of the license terms of these
-   independent modules, and to copy and distribute the resulting
-   executable under terms of your choice, provided that you also meet,
-   for each linked independent module, the terms and conditions of the
-   license of that module. An independent module is a module which is
-   not derived from or based on this library. If you modify this
-   library, you may extend this exception to your version of the
-   library, but you are not obliged to do so. If you do not wish
-   to do so, delete this exception statement from your version.
- 
-   This file was automatically generated with libedssharp Object");
-            
-            file.Write("   Dictionary Editor v" + this.gitVersion);
-
-            file.WriteLine(@"   DON'T EDIT THIS FILE MANUALLY !!!!
-*******************************************************************************/
+            file.WriteLine(@" * DON'T EDIT THIS FILE MANUALLY !!!!
+ */
 
 ");
 
@@ -399,8 +398,8 @@ namespace libEDSsharp
    typedef int16_t      INTEGER16;
    typedef int32_t      INTEGER32;
    typedef int64_t      INTEGER64;
-   typedef float32_t    REAL32; 
-   typedef float64_t    REAL64; 
+   typedef float32_t    REAL32;
+   typedef float64_t    REAL64;
    typedef char_t       VISIBLE_STRING;
    typedef oChar_t      OCTET_STRING;
 
@@ -434,21 +433,21 @@ namespace libEDSsharp
             file.WriteLine(string.Format("      CreationTime: {0}", eds.fi.CreationTime));
             file.WriteLine(string.Format("      CreationDate: {0}", eds.fi.CreationDate));
             file.WriteLine(string.Format("      CreatedBy:    {0}", eds.fi.CreatedBy));
-            file.WriteLine("******************************************************************************/");
+            file.WriteLine("*******************************************************************************/");
             file.WriteLine("");
             file.WriteLine("");
 
             file.WriteLine("/*******************************************************************************");
             file.WriteLine("   DEVICE INFO:");
             file.WriteLine(string.Format("      VendorName:     {0}", eds.di.VendorName));
-            file.WriteLine(string.Format("      VendorNumber    {0}", eds.di.VendorNumber));
+            file.WriteLine(string.Format("      VendorNumber:   {0}", eds.di.VendorNumber));
             file.WriteLine(string.Format("      ProductName:    {0}", eds.di.ProductName));
             file.WriteLine(string.Format("      ProductNumber:  {0}", eds.di.ProductNumber));
-            file.WriteLine("******************************************************************************/");
+            file.WriteLine("*******************************************************************************/");
             file.WriteLine("");
             file.WriteLine("");
 
-         
+
             file.WriteLine(@"/*******************************************************************************
    FEATURES
 *******************************************************************************/");
@@ -492,6 +491,7 @@ namespace libEDSsharp
             }
 
             file.WriteLine(string.Format("  #define CO_NO_NMT_MASTER               {0}", ismaster==true?1:0));
+            file.WriteLine(string.Format("  #define CO_NO_TRACE                    0"));
             file.WriteLine("");
             file.WriteLine("");
             file.WriteLine(@"/*******************************************************************************
@@ -525,11 +525,11 @@ namespace libEDSsharp
 
                 structnamelist.Add(structname);
 
-                file.WriteLine(string.Format("/*{0:x4}    */ typedef struct {{", kvp.Key));
+                file.WriteLine(string.Format("/*{0:X4}      */ typedef struct {{", kvp.Key));
                 foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value.subobjects)
-                {                   
+                {
                     string paramaterarrlen = "";
-                    
+
                     ODentry subod = kvp2.Value;
 
                     if(subod.datatype==DataType.VISIBLE_STRING || subod.datatype==DataType.OCTET_STRING)
@@ -551,7 +551,7 @@ namespace libEDSsharp
 /*******************************************************************************
    TYPE DEFINITIONS FOR OBJECT DICTIONARY INDEXES
 
-   some of those are redundant with CO_SDO.h CO_ObjDicId_t <Common CiA301 object 
+   some of those are redundant with CO_SDO.h CO_ObjDicId_t <Common CiA301 object
    dictionary entries>
 *******************************************************************************/");
 
@@ -564,7 +564,7 @@ namespace libEDSsharp
 
                 if (od.Disabled == true)
                     continue;
-                
+
                 DataType t = eds.Getdatatype(od);
 
 
@@ -572,8 +572,8 @@ namespace libEDSsharp
                 {
                 default:
                     {
-                        file.WriteLine(string.Format("/*{0:x4} */", od.Index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
+                        file.WriteLine(string.Format("/*{0:X4} */", od.Index));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:X4}", string.Format("OD_{0:X4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
 
                         file.WriteLine("");
                     }
@@ -582,13 +582,13 @@ namespace libEDSsharp
                 case ObjectType.ARRAY:
                 case ObjectType.REC:
                     {
-                        file.WriteLine(string.Format("/*{0:x4} */", od.Index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:x4}", string.Format("OD_{0:x4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
+                        file.WriteLine(string.Format("/*{0:X4} */", od.Index));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:X4}", string.Format("OD_{0:X4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
 
                         file.WriteLine("");
 
                         //sub indexes
-                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_{0:x4}_0_{1}_maxSubIndex", od.Index, make_cname(od.parameter_name))));         
+                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_{0:X4}_0_{1}_maxSubIndex", od.Index, make_cname(od.parameter_name))));
 
                         List<string> ODSIs = new List<string>();
 
@@ -601,7 +601,7 @@ namespace libEDSsharp
                             if (kvp2.Key == 0)
                                 continue;
 
-                            string ODSI = string.Format("{0}", string.Format("OD_{0:x4}_{1}_{2}_{3}", od.Index, kvp2.Key, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+                            string ODSI = string.Format("{0}", string.Format("OD_{0:X4}_{1}_{2}_{3}", od.Index, kvp2.Key, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
 
                             if (ODSIs.Contains(ODSI))
                             {
@@ -658,7 +658,7 @@ namespace libEDSsharp
                 {
                     continue;
                 }
-                
+
                 file.Write("extern struct sCO_OD_");
                 file.Write(location);
                 file.Write(" CO_OD_");
@@ -691,7 +691,7 @@ file.WriteLine(@"/**************************************************************
                 {
                     default:
                         {
-                            file.WriteLine(string.Format("/*{0:x4}, Data Type: {1} */", od.Index, t.ToString()));
+                            file.WriteLine(string.Format("/*{0:X4}, Data Type: {1} */", od.Index, t.ToString()));
                             file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
 
                             DataType dt = od.datatype;
@@ -708,7 +708,7 @@ file.WriteLine(@"/**************************************************************
                         {
                             DataType dt = od.datatype;
 
-                            file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}, Array[{2}] */", od.Index, t.ToString(), od.Nosubindexes - 1));
+                            file.WriteLine(string.Format("/*{0:X4}, Data Type: {1}, Array[{2}] */", od.Index, t.ToString(), od.Nosubindexes - 1));
                             file.WriteLine(string.Format("        #define OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
                             file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.Nosubindexes - 1));
 
@@ -756,7 +756,7 @@ file.WriteLine(@"/**************************************************************
 
                             if (!constructed_rec_types.Contains(rectype))
                             {
-                                file.WriteLine(string.Format("/*{0:x4}, Data Type: {1}_t */", od.Index, rectype));
+                                file.WriteLine(string.Format("/*{0:X4}, Data Type: {1}_t */", od.Index, rectype));
                                 file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", rectype), loc, rectype));
                                 constructed_rec_types.Add(rectype);
                                 file.WriteLine("");
@@ -796,7 +796,7 @@ file.WriteLine(@"/**************************************************************
 
                 file.Write("/***** Definition for ");
                 file.Write(location);
-                file.WriteLine(" variables ********************************************/");
+                file.WriteLine(" variables *******************************************/");
                 file.Write("struct sCO_OD_");
                 file.Write(location);
                 file.Write(" CO_OD_");
@@ -829,12 +829,7 @@ file.WriteLine(@"/**************************************************************
             file.Write(@"/*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-const CO_OD_entry_t CO_OD[");
-            
-
-            file.Write(string.Format("{0}", enabledcount));
-
-            file.WriteLine(@"] = {
+const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 ");
 
             file.Write(write_od());
@@ -852,8 +847,8 @@ const CO_OD_entry_t CO_OD[");
 
             StringBuilder returndata = new StringBuilder();
 
-          
-         
+
+
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
@@ -865,7 +860,7 @@ const CO_OD_entry_t CO_OD[");
 
                 returndata.Append(write_od_line(od));
 
-               
+
             }
 
             return returndata.ToString();
@@ -928,7 +923,7 @@ const CO_OD_entry_t CO_OD[");
                 {
                     if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
                     {
-                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max sub-index: {2}", od.Index, nosubindexs, od.Getmaxsubindex())); 
+                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:X4} arraysize: {1} vs max sub-index: {2}", od.Index, nosubindexs, od.Getmaxsubindex()));
                     }
 
                     //0x1003 is a special case for CanOpenNode
@@ -940,7 +935,7 @@ const CO_OD_entry_t CO_OD[");
                         nosubindexs = od.Getmaxsubindex();
                     }
 
-                   
+
                 }
             }
 
@@ -949,7 +944,7 @@ const CO_OD_entry_t CO_OD[");
             if (od.objecttype == ObjectType.REC)
             {
 
-                pdata = string.Format("&OD_record{0:x4}", od.Index);
+                pdata = string.Format("&OD_record{0:X4}", od.Index);
             }
             else
             {
@@ -959,11 +954,11 @@ const CO_OD_entry_t CO_OD[");
             if ((od.objecttype == ObjectType.VAR || od.objecttype == ObjectType.ARRAY) && od.datatype == DataType.DOMAIN)
             {
                 //NB domain MUST have a data pointer of 0, can open node requires this and makes checks
-                //against null to determine this is a DOMAIN type. 
+                //against null to determine this is a DOMAIN type.
                 pdata = "0";
             }
 
-            sb.AppendLine($"{{0x{od.Index:x4}, 0x{nosubindexs:x2}, 0x{flags:x2}, {datasize}, (void*){pdata}}},");
+            sb.AppendLine($"{{0x{od.Index:X4}, 0x{nosubindexs:X2}, 0x{flags:X2}, {datasize}, (void*){pdata}}},");
 
             if (arrayspecial(od.Index, false))
             {
@@ -1013,13 +1008,13 @@ const CO_OD_entry_t CO_OD[");
             }
             */
 
-            /* some exceptions for rwr/rww. Those are entries that are always r/w via SDO transfer, 
+            /* some exceptions for rwr/rww. Those are entries that are always r/w via SDO transfer,
              * but can only be read -or- written via PDO */
             if (od.accesstype == EDSsharp.AccessType.ro
                 || od.accesstype == EDSsharp.AccessType.rw
                 || od.accesstype == EDSsharp.AccessType.rwr
                 || od.accesstype == EDSsharp.AccessType.rww
-                || od.accesstype == EDSsharp.AccessType.@const) 
+                || od.accesstype == EDSsharp.AccessType.@const)
             {
                 /* SDO server may read from the variable */
                 flags |= 0x04;
@@ -1033,19 +1028,19 @@ const CO_OD_entry_t CO_OD[");
             if (od.accesstype == EDSsharp.AccessType.wo
                 || od.accesstype == EDSsharp.AccessType.rw
                 || od.accesstype == EDSsharp.AccessType.rwr
-                || od.accesstype == EDSsharp.AccessType.rww) 
+                || od.accesstype == EDSsharp.AccessType.rww)
             {
                 /* SDO server may write to the variable */
                 flags |= 0x08;
 
-                if (od.accesstype != EDSsharp.AccessType.rwr) 
+                if (od.accesstype != EDSsharp.AccessType.rwr)
                 {
                     /* Variable is mappable for RPDO */
                     mapping |= 0x10;
                 }
             }
 
-            if (od.PDOMapping) 
+            if (od.PDOMapping)
             {
                 flags |= mapping;
             }
@@ -1126,7 +1121,7 @@ const CO_OD_entry_t CO_OD[");
             {
                 UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
                 data += eds.NodeId;
-                defaultvalue = string.Format("0x{0:x}", data);
+                defaultvalue = string.Format("0x{0:X}", data);
                 nobase = 16;
             }
 
@@ -1135,11 +1130,11 @@ const CO_OD_entry_t CO_OD[");
             {
                 case DataType.UNSIGNED24:
                 case DataType.UNSIGNED32:
-                    return String.Format("0x{0:x4}L", Convert.ToUInt32(defaultvalue, nobase));
+                    return String.Format("0x{0:X4}L", Convert.ToUInt32(defaultvalue, nobase));
 
                 case DataType.INTEGER24:
                 case DataType.INTEGER32:
-                    return String.Format("0x{0:x4}L", Convert.ToInt32(defaultvalue, nobase));
+                    return String.Format("0x{0:X4}L", Convert.ToInt32(defaultvalue, nobase));
 
                 case DataType.REAL32:
                 case DataType.REAL64:
@@ -1191,29 +1186,29 @@ const CO_OD_entry_t CO_OD[");
                     }
 
                 case DataType.INTEGER8:
-                    return String.Format("0x{0:x1}", Convert.ToSByte(defaultvalue, nobase));
+                    return String.Format("0x{0:X1}", Convert.ToSByte(defaultvalue, nobase));
 
                 case DataType.INTEGER16:
-                    return String.Format("0x{0:x2}", Convert.ToInt16(defaultvalue, nobase));
+                    return String.Format("0x{0:X2}", Convert.ToInt16(defaultvalue, nobase));
 
                 case DataType.UNSIGNED8:
-                    return String.Format("0x{0:x1}L", Convert.ToByte(defaultvalue, nobase));
+                    return String.Format("0x{0:X1}L", Convert.ToByte(defaultvalue, nobase));
 
                 case DataType.UNSIGNED16:
-                    return String.Format("0x{0:x2}", Convert.ToUInt16(defaultvalue, nobase));
+                    return String.Format("0x{0:X2}", Convert.ToUInt16(defaultvalue, nobase));
 
                 case DataType.INTEGER64:
-                    return String.Format("0x{0:x8}L", Convert.ToInt64(defaultvalue, nobase));
+                    return String.Format("0x{0:X8}L", Convert.ToInt64(defaultvalue, nobase));
 
                 case DataType.UNSIGNED64:
-                    return String.Format("0x{0:x8}L", Convert.ToUInt64(defaultvalue, nobase));
+                    return String.Format("0x{0:X8}L", Convert.ToUInt64(defaultvalue, nobase));
 
                 case DataType.TIME_DIFFERENCE:
                 case DataType.TIME_OF_DAY:
                     return String.Format("{{{0}}}", Convert.ToUInt64(defaultvalue, nobase));
-                
+
                 default:
-                    return (String.Format("{0:x}", defaultvalue));
+                    return (String.Format("{0:X}", defaultvalue));
 
             }
         }
@@ -1326,7 +1321,7 @@ const CO_OD_entry_t CO_OD[");
                     count = 3; //CanOpenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
-                returndata.AppendLine($"/*0x{od.Index:x4}*/ const CO_OD_entryRecord_t OD_record{od.Index:x4}[{count}] = {{");
+                returndata.AppendLine($"/*0x{od.Index:X4}*/ const CO_OD_entryRecord_t OD_record{od.Index:X4}[{count}] = {{");
 
                 string arrayaccess = "";
 
@@ -1375,12 +1370,12 @@ const CO_OD_entry_t CO_OD[");
 
             if (sub.datatype != DataType.DOMAIN)
             {
-                sb.AppendLine($"           {{(void*)&{"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):x2}, 0x{datasize:x} }},");
+                sb.AppendLine($"           {{(void*)&{"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
             }
             else
             {
                 //Domain type MUST have its data pointer set to 0 for CanOpenNode
-                sb.AppendLine($"           {{(void*)0, 0x{getflags(sub):x2}, 0x{datasize:x} }},");
+                sb.AppendLine($"           {{(void*)0, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
             }
 
             return sb.ToString();
@@ -1481,17 +1476,17 @@ const CO_OD_entry_t CO_OD[");
 
                 if (od.Nosubindexes == 0)
                 {
-                    sb.AppendLine($"/*{od.Index:x4}*/ {formatvaluewithdatatype(od.defaultvalue, od.datatype)},");
+                    sb.AppendLine($"/*{od.Index:X4}*/ {formatvaluewithdatatype(od.defaultvalue, od.datatype)},");
                 }
                 else
                 {
                     if (arrayspecial(od.Index, true))
                     {
-                        sb.AppendFormat("/*{0:x4}*/ {{{{", od.Index);
+                        sb.AppendFormat("/*{0:X4}*/ {{{{", od.Index);
                     }
                     else
                     {
-                        sb.AppendFormat("/*{0:x4}*/ {{", od.Index);
+                        sb.AppendFormat("/*{0:X4}*/ {{", od.Index);
                     }
 
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
@@ -1555,7 +1550,7 @@ const CO_OD_entry_t CO_OD[");
 
                 default:
                     return c.ToString();
-              
+
             }
 
         }
