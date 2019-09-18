@@ -2528,7 +2528,7 @@ COB - ID
  bit 11 - 29: set to 0 for 11 bit COB - ID
  bit 30:    0(1) - rtr are allowed(are NOT allowed) for PDO
  bit 31:    0(1) - node uses(does NOT use) PDO
-     
+
 Transmission type
  value = 0 - 240:   receiving is synchronous, process after next reception of SYNC object
  value = 241 - 253: not used
@@ -2563,7 +2563,7 @@ COB - ID
  bit 11 - 29: set to 0 for 11 bit COB - ID
  bit 30:    0(1) - rtr are allowed(are NOT allowed) for PDO
  bit 31:    0(1) - node uses(does NOT use) PDO
-     
+
 Transmission type
  value = 0:       transmitting is synchronous, specification in device profile
  value = 1 - 240:   transmitting is synchronous after every N - th SYNC object
@@ -2571,7 +2571,7 @@ Transmission type
  value = 252 - 253: Transmitted only on reception of Remote Transmission Request
  value = 254:     manufacturer specific
  value = 255:     asynchronous, specification in device profile
-     
+
 inhibit time
  bit 0 - 15:  Minimum time between transmissions of the PDO in 100µs.Zero disables functionality.
 
