@@ -486,6 +486,9 @@
         <member name="P:XSDImport.CANopenObjectListCANopenObject.denotation">
             <remarks/>
         </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.edseditor_extenstion_storagelocation">
+            <remarks/>
+        </member>
         <member name="P:XSDImport.CANopenObjectListCANopenObject.PDOmapping">
             <remarks/>
         </member>

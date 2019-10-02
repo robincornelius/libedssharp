@@ -46,7 +46,7 @@ namespace libEDSsharp
         List<UInt16> closings = new List<UInt16>();
 
 
-        public void export(string folderpath, string gitVersion, EDSsharp eds)
+        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
             this.folderpath = folderpath;
             this.gitVersion = gitVersion;
@@ -62,15 +62,15 @@ namespace libEDSsharp
 
             prewalkArrays();
 
-            export_h();
-            export_c();
+            export_h(filename);
+            export_c(filename);
 
         }
 
-        private bool compatfixed = false;
+        //private bool compatfixed = false;
         private void fixcompatentry()
         {
-            compatfixed = false;
+           // compatfixed = false;
 
 
             // Handle the TPDO communication parameters in a special way, because of
@@ -86,7 +86,7 @@ namespace libEDSsharp
 
                     if (!od.Containssubindex(0x04))
                     {
-                        compatfixed = true;
+                        //compatfixed = true;
                         ODentry compatability = new ODentry("comparability Entry", 0x05, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no);
                         od.subobjects.Add(0x04, compatability);
                     }
@@ -376,10 +376,12 @@ namespace libEDSsharp
 
         }
 
-        private void export_h()
+        private void export_h(string filename)
         {
+            if (filename == "")
+                filename = "CO_OD.c";
 
-            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + "CO_OD.h");
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename);
 
 
             addGPLheader(file);
@@ -771,16 +773,17 @@ file.WriteLine(@"/**************************************************************
 
         }
 
-        private void export_c()
+        private void export_c(string filename)
         {
-            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + "CO_OD.c");
+            if (filename == "")
+                filename =  "CO_OD.c";
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
 
             addGPLheader(file);
 
             file.WriteLine(@"#include ""CO_driver.h""
-#include ""CO_OD.h""
+#include " + filename + @".h""
 #include ""CO_SDO.h""
-
 
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES

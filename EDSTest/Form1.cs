@@ -218,7 +218,7 @@ namespace ODEditor
                     Warnings.warning_list.Clear();
 
                     CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                    cone.export(savePath, this.gitVersion, dv.eds);
+                    cone.export(savePath, Path.GetFileNameWithoutExtension(sfd.FileName), this.gitVersion, dv.eds);
 
                     if (Warnings.warning_list.Count != 0)
                     {
@@ -1036,7 +1036,7 @@ namespace ODEditor
 
                 try
                 {
-                    cone.export(dv.eds.fi.exportFolder, this.gitVersion, dv.eds);
+                    cone.export(dv.eds.fi.exportFolder, "", this.gitVersion, dv.eds);
                 }
                 catch(Exception ex)
                 {
