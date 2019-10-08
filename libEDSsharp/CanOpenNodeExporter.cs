@@ -15,7 +15,7 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
  
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
-    based heavily on the files CO_OD.h and CO_OD.c from CanOpenNode which are
+    based heavily on the files CO_OD.h and CO_OD.c from CANopenNode which are
     Copyright(c) 2010 - 2016 Janez Paternoster
 */
 
@@ -70,11 +70,11 @@ namespace libEDSsharp
         //private bool compatfixed = false;
         private void fixcompatentry()
         {
-           // compatfixed = false;
+            // compatfixed = false;
 
 
             // Handle the TPDO communication parameters in a special way, because of
-            // sizeof(OD_TPDOCommunicationParameter_t) != sizeof(CO_TPDOCommPar_t) in CanOpen.c
+            // sizeof(OD_TPDOCommunicationParameter_t) != sizeof(CO_TPDOCommPar_t) in CANopen.c
             // the existing CO_TPDOCommPar_t has a compatibility entry so we must export one regardless
             // of if its in the OD or not
 
@@ -87,8 +87,8 @@ namespace libEDSsharp
                     if (!od.Containssubindex(0x04))
                     {
                         //compatfixed = true;
-                        ODentry compatability = new ODentry("comparability Entry", 0x05, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no);
-                        od.subobjects.Add(0x04, compatability);
+                        ODentry compatibility = new ODentry("compatibility entry", idx, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no, od);
+                        od.subobjects.Add(0x04, compatibility);
                     }
                 }
             }
@@ -379,9 +379,9 @@ namespace libEDSsharp
         private void export_h(string filename)
         {
             if (filename == "")
-                filename = "CO_OD.c";
+                filename = "CO_OD";
 
-            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename);
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
 
 
             addGPLheader(file);
@@ -509,7 +509,7 @@ namespace libEDSsharp
 *******************************************************************************/");
 
             //We need to identify all the record types used and generate a struct for each one
-            //FIXME the original CanOpenNode exporter said how many items used this struct in the comments
+            //FIXME the original CANopenNode exporter said how many items used this struct in the comments
 
             List<string> structnamelist = new List<string>();
 
@@ -776,13 +776,13 @@ file.WriteLine(@"/**************************************************************
         private void export_c(string filename)
         {
             if (filename == "")
-                filename =  "CO_OD.c";
+                filename =  "CO_OD";
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
 
             addGPLheader(file);
 
             file.WriteLine(@"#include ""CO_driver.h""
-#include " + filename + @".h""
+#include """  +  filename + @".h""
 #include ""CO_SDO.h""
 
 /*******************************************************************************
@@ -929,14 +929,14 @@ const CO_OD_entry_t CO_OD[");
             {
                 if ((od.Getmaxsubindex() != nosubindexs))
                 {
-                    if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
+                    if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per CANopen specs, and ignore 0x1011 CANopenNode uses special sub indexes for eeprom resets
                     {
                         Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:x4} arraysize: {1} vs max sub-index: {2}", od.Index, nosubindexs, od.Getmaxsubindex())); 
                     }
 
-                    //0x1003 is a special case for CanOpenNode
+                    //0x1003 is a special case for CANopenNode
                     //SubIndex 0 will probably be 0 for no errors
-                    //so we cannot read that to determine max subindex size, which is required to set up CanOpenNode so we leave it alone here
+                    //so we cannot read that to determine max subindex size, which is required to set up CANopenNode so we leave it alone here
                     //as its already set to subod.count
                     if (od.Index != 0x1003)
                     {
@@ -977,7 +977,7 @@ const CO_OD_entry_t CO_OD[");
         }
 
         /// <summary>
-        /// Get the CanOpenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
+        /// Get the CANopenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
         /// </summary>
         /// <param name="od">An odentry to access</param>
         /// <returns>byte containing the flag value</returns>
@@ -1326,7 +1326,7 @@ const CO_OD_entry_t CO_OD[");
 
                 if(od.Index>=0x1400 && od.Index<0x1600)
                 {
-                    count = 3; //CanOpenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
+                    count = 3; //CANopenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
                 returndata.AppendLine($"/*0x{od.Index:x4}*/ const CO_OD_entryRecord_t OD_record{od.Index:x4}[{count}] = {{");
@@ -1382,7 +1382,7 @@ const CO_OD_entry_t CO_OD[");
             }
             else
             {
-                //Domain type MUST have its data pointer set to 0 for CanOpenNode
+                //Domain type MUST have its data pointer set to 0 for CANopenNode
                 sb.AppendLine($"           {{(void*)0, 0x{getflags(sub):x2}, 0x{datasize:x} }},");
             }
 

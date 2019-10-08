@@ -27,7 +27,7 @@ using XSDImport;
 /* I know I'm going to regret this
  * 
  * I quite like my eds class as it trys to validate the EDS using typing and enums etc
- * but i also want the XML wrappers for the CanOpenXML
+ * but i also want the XML wrappers for the CANOpenXML
  * so I'm going to make a converter outside of both classes hence this bridge
  * which is more code to manage ;-(
  * */
@@ -286,7 +286,7 @@ namespace libEDSsharp
                 }
                 else
                 {
-                    //CanOpenNode Project XML did not correctly set DataTypes for record sets
+                    //CANopenNode Project XML did not correctly set DataTypes for record sets
 
                     if (entry.Index == 0x1018)
                         entry.datatype = DataType.IDENTITY;
@@ -542,7 +542,7 @@ namespace libEDSsharp
             {
                 if (dev.Other.File != null)
                 {
-                    // CanOpenNode default project.xml contains - for fileversion, its suppose to be a byte field according to DS306
+                    // CANopenNode default project.xml contains - for fileversion, its suppose to be a byte field according to DS306
                     if (dev.Other.File.FileVersion == "-")
                     {
                         dev.Other.File.FileVersion = "0";

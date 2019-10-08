@@ -6,7 +6,7 @@
     <members>
         <member name="M:libEDSsharp.CanOpenNodeExporter.getflags(libEDSsharp.ODentry)">
             <summary>
-            Get the CanOpenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
+            Get the CANopenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
             </summary>
             <param name="od">An odentry to access</param>
             <returns>byte containing the flag value</returns>
@@ -50,7 +50,7 @@
             <param name="index">Index of object in object dictionary</param>
             <param name="datatype">Type of this objects data</param>
             <param name="defaultvalue">Default value (always set as a string)</param>
-            <param name="accesstype">Allowed CanOpen access permissions</param>
+            <param name="accesstype">Allowed CANopen access permissions</param>
             <param name="PDOMapping">Allowed PDO mapping options</param>
         </member>
         <member name="M:libEDSsharp.ODentry.#ctor(System.String,System.UInt16,libEDSsharp.DataType,System.String,libEDSsharp.EDSsharp.AccessType,libEDSsharp.PDOMappingType,libEDSsharp.ODentry)">
@@ -104,7 +104,7 @@
         </member>
         <member name="M:libEDSsharp.ODentry.Sizeofdatatype">
             <summary>
-            Return the size in bytes for the given CanOpen datatype of this object, eg the size of what ever the datatype field is set to 
+            Return the size in bytes for the given CANopen datatype of this object, eg the size of what ever the datatype field is set to 
             </summary>
             <returns>no of bytes</returns>
         </member>

@@ -992,7 +992,7 @@ namespace libEDSsharp
 
         public PDOMappingType PDOtype;
 
-        //CanOpenNode specific extra storage
+        //CANopenNode specific extra storage
         public string Label = "";
         public string Description = "";
 
@@ -1036,7 +1036,7 @@ namespace libEDSsharp
         /// <param name="index">Index of object in object dictionary</param>
         /// <param name="datatype">Type of this objects data</param>
         /// <param name="defaultvalue">Default value (always set as a string)</param>
-        /// <param name="accesstype">Allowed CanOpen access permissions</param>
+        /// <param name="accesstype">Allowed CANopen access permissions</param>
         /// <param name="PDOMapping">Allowed PDO mapping options</param>
         public ODentry(string parameter_name,UInt16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping)
         {
@@ -1252,7 +1252,7 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// Return the size in bytes for the given CanOpen datatype of this object, eg the size of what ever the datatype field is set to 
+        /// Return the size in bytes for the given CANopen datatype of this object, eg the size of what ever the datatype field is set to 
         /// </summary>
         /// <returns>no of bytes</returns>
         public int Sizeofdatatype()
