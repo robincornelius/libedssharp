@@ -187,6 +187,7 @@ namespace ODEditor
             this.listView_mandatory_objects.UseCompatibleStateImageBehavior = false;
             this.listView_mandatory_objects.View = System.Windows.Forms.View.Details;
             this.listView_mandatory_objects.SelectedIndexChanged += new System.EventHandler(this.listView_mandatory_objects_SelectedIndexChanged);
+            this.listView_mandatory_objects.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView_mandatory_objects_KeyDown);
             this.listView_mandatory_objects.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView_mandatory_objects_MouseClick);
             // 
             // columnHeader1
@@ -754,13 +755,13 @@ namespace ODEditor
             this.deleteObjectToolStripMenuItem,
             this.disableObjectToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(185, 104);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(166, 82);
             // 
             // addNewObjectToolStripMenuItem
             // 
             this.addNewObjectToolStripMenuItem.Image = global::ODEditor.Properties.Resources.action_add_16xLG;
             this.addNewObjectToolStripMenuItem.Name = "addNewObjectToolStripMenuItem";
-            this.addNewObjectToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.addNewObjectToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
             this.addNewObjectToolStripMenuItem.Text = "Add New Object";
             this.addNewObjectToolStripMenuItem.Click += new System.EventHandler(this.addNewObjectToolStripMenuItem_Click);
             // 
@@ -768,14 +769,14 @@ namespace ODEditor
             // 
             this.deleteObjectToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Remove_16xLG;
             this.deleteObjectToolStripMenuItem.Name = "deleteObjectToolStripMenuItem";
-            this.deleteObjectToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.deleteObjectToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
             this.deleteObjectToolStripMenuItem.Text = "Delete object";
             this.deleteObjectToolStripMenuItem.Click += new System.EventHandler(this.deleteObjectToolStripMenuItem_Click);
             // 
             // disableObjectToolStripMenuItem
             // 
             this.disableObjectToolStripMenuItem.Name = "disableObjectToolStripMenuItem";
-            this.disableObjectToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.disableObjectToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
             this.disableObjectToolStripMenuItem.Text = "Disable Object";
             this.disableObjectToolStripMenuItem.Click += new System.EventHandler(this.disableObjectToolStripMenuItem_Click);
             // 

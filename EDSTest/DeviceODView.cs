@@ -1387,21 +1387,46 @@ namespace ODEditor
 
         }
 
-            private void listView_manufacture_objects_KeyDown(object sender, KeyEventArgs e)
+        private void selectAllItemsInList(ListView selectedList)
         {
-            if(e.KeyCode == Keys.Delete)
+            foreach(ListViewItem item in selectedList.Items)
             {
-                deleteSelectedObjects(listView_manufacture_objects);
-                
+                item.Selected = true;
             }
+        }
+
+        private void listView_KeyDown_Handler(ListView selectedList, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+
+                case (Keys.Delete):
+                    deleteSelectedObjects(selectedList);
+                    break;
+                case (Keys.A):
+                    if (e.Modifiers == Keys.Control)
+                    {
+                        selectAllItemsInList(selectedList);
+                    }
+                    break;
+            }
+        }
+
+        private void listView_manufacture_objects_KeyDown(object sender, KeyEventArgs e)
+        {
+            listView_KeyDown_Handler(listView_manufacture_objects, e);
         }
 
         private void listView_optional_objects_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Delete)
-            {
-                deleteSelectedObjects(listView_optional_objects);
+            listView_KeyDown_Handler(listView_optional_objects, e);
+        }
 
+        private void listView_mandatory_objects_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode != Keys.Delete)
+            {
+                listView_KeyDown_Handler(listView_mandatory_objects, e);
             }
         }
     }
