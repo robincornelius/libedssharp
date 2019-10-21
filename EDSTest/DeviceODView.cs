@@ -576,7 +576,7 @@ namespace ODEditor
             if (checkdirty())
                 return;
 
-            deleteObjectToolStripMenuItem.Text = listview.SelectedItems.Count > 1 ? "Delete Objects" : "Delete Object";
+            deleteObjectToolStripMenuItem.Text = listview.SelectedItems.Count > 1 ? "&Delete Objects" : "&Delete Object";
 
             ListViewItem lvi = listview.SelectedItems[0];
 
@@ -612,7 +612,7 @@ namespace ODEditor
 
                     string objString = listview.SelectedItems.Count > 1 ? "Objects" : "Object";
                     
-                    string objEnableString = od.Disabled ? "Enable" : "Disable";
+                    string objEnableString = od.Disabled ? "&Enable" : "Disabl&e";
                     disableObjectToolStripMenuItem.Text = string.Format("{0} {1}", objEnableString, objString);
                     contextMenuStrip1.Show(Cursor.Position);
                 }
@@ -862,9 +862,8 @@ namespace ODEditor
 
         }
 
-        private void addNewObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void addNewObjectFromDialog()
         {
-
             NewIndex ni = new NewIndex(eds);
 
             if (ni.ShowDialog() == DialogResult.OK)
@@ -890,7 +889,7 @@ namespace ODEditor
                         sod.objecttype = ObjectType.VAR;
                         sod.parent = od;
                         sod.StorageLocation = "RAM";
-                        sod.defaultvalue = String.Format("{0}",ni.nosubindexes);
+                        sod.defaultvalue = String.Format("{0}", ni.nosubindexes);
                         sod.accesstype = EDSsharp.AccessType.ro;
                         sod.datatype = DataType.UNSIGNED8;
 
@@ -927,7 +926,11 @@ namespace ODEditor
 
                 populateindexlists();
             }
+        }
 
+        private void addNewObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            addNewObjectFromDialog();
         }
 
         private void disableSelectedObjects(ListView objectList)
@@ -1134,7 +1137,7 @@ namespace ODEditor
             disableSelectedObjects(selectedList);
         }
 
-        private void addSubItemToolStripMenuItem_Click(object sender, EventArgs e)
+        private void addNewSubItemFromDialog()
         {
             if (selecteditemsub.Tag != null)
             {
@@ -1190,6 +1193,11 @@ namespace ODEditor
                 validateanddisplaydata();
 
             }
+        }
+
+        private void addSubItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            addNewSubItemFromDialog();
         }
 
         private void removeSubItemToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1409,17 +1417,64 @@ namespace ODEditor
                         selectAllItemsInList(selectedList);
                     }
                     break;
+                default:
+                    break;
             }
+        }
+
+        //specialized KeyDown event handler for the object dictionary lists. 
+        //Usage: call this function before the general list KeyDown handler. If this function returns true, the keydown event was handled and the generic one should not be called (this allows default behavior to be overridden)
+        private bool listView_Objects_KeyDown_Handler(ListView selectedList, KeyEventArgs e)
+        {
+            bool keyDownHandled = false;
+            switch (e.KeyCode)
+            {
+                case (Keys.N):
+                    if (e.Modifiers == (Keys.Control | Keys.Shift))
+                    {
+                        keyDownHandled = true;
+                        addNewObjectFromDialog();
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return keyDownHandled;
+        }
+
+        private bool listView_Subindexes_KeyDown_Handler(ListView selectedList, KeyEventArgs e)
+        {
+            bool keyDownHandled = false;
+            switch (e.KeyCode)
+            {
+                case (Keys.N):
+                    if (e.Modifiers == (Keys.Control | Keys.Shift))
+                    {
+                        keyDownHandled = true;
+                        addNewSubItemFromDialog();
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return keyDownHandled;
         }
 
         private void listView_manufacture_objects_KeyDown(object sender, KeyEventArgs e)
         {
-            listView_KeyDown_Handler(listView_manufacture_objects, e);
+            if(listView_Objects_KeyDown_Handler(listView_manufacture_objects, e) == false)
+            {
+                listView_KeyDown_Handler(listView_manufacture_objects, e);
+            }
+            
         }
 
         private void listView_optional_objects_KeyDown(object sender, KeyEventArgs e)
         {
-            listView_KeyDown_Handler(listView_optional_objects, e);
+            if (listView_Objects_KeyDown_Handler(listView_optional_objects, e) == false)
+            {
+                listView_KeyDown_Handler(listView_optional_objects, e);
+            }
         }
 
         private void listView_mandatory_objects_KeyDown(object sender, KeyEventArgs e)
@@ -1428,6 +1483,19 @@ namespace ODEditor
             {
                 listView_KeyDown_Handler(listView_mandatory_objects, e);
             }
+        }
+
+        private void listViewDetails_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (listView_Subindexes_KeyDown_Handler(listView_optional_objects, e) == false)
+            {
+                listView_KeyDown_Handler(listView_optional_objects, e);
+            }
+        }
+
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            selectAllItemsInList(selectedList);
         }
     }
 

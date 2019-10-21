@@ -92,6 +92,7 @@ namespace ODEditor
             this.addNewObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu_array = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.changeMaxSubIndexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -377,6 +378,7 @@ namespace ODEditor
             this.listViewDetails.UseCompatibleStateImageBehavior = false;
             this.listViewDetails.View = System.Windows.Forms.View.Details;
             this.listViewDetails.SelectedIndexChanged += new System.EventHandler(this.listViewDetails_SelectedIndexChanged);
+            this.listViewDetails.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewDetails_KeyDown);
             this.listViewDetails.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewDetails_MouseClick);
             // 
             // columnHeader7
@@ -753,16 +755,17 @@ namespace ODEditor
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addNewObjectToolStripMenuItem,
             this.deleteObjectToolStripMenuItem,
-            this.disableObjectToolStripMenuItem});
+            this.disableObjectToolStripMenuItem,
+            this.selectAllToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(166, 82);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(166, 108);
             // 
             // addNewObjectToolStripMenuItem
             // 
             this.addNewObjectToolStripMenuItem.Image = global::ODEditor.Properties.Resources.action_add_16xLG;
             this.addNewObjectToolStripMenuItem.Name = "addNewObjectToolStripMenuItem";
             this.addNewObjectToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
-            this.addNewObjectToolStripMenuItem.Text = "Add New Object";
+            this.addNewObjectToolStripMenuItem.Text = "Add &New Object";
             this.addNewObjectToolStripMenuItem.Click += new System.EventHandler(this.addNewObjectToolStripMenuItem_Click);
             // 
             // deleteObjectToolStripMenuItem
@@ -770,15 +773,22 @@ namespace ODEditor
             this.deleteObjectToolStripMenuItem.Image = global::ODEditor.Properties.Resources.Remove_16xLG;
             this.deleteObjectToolStripMenuItem.Name = "deleteObjectToolStripMenuItem";
             this.deleteObjectToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
-            this.deleteObjectToolStripMenuItem.Text = "Delete object";
+            this.deleteObjectToolStripMenuItem.Text = "&Delete object";
             this.deleteObjectToolStripMenuItem.Click += new System.EventHandler(this.deleteObjectToolStripMenuItem_Click);
             // 
             // disableObjectToolStripMenuItem
             // 
             this.disableObjectToolStripMenuItem.Name = "disableObjectToolStripMenuItem";
             this.disableObjectToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
-            this.disableObjectToolStripMenuItem.Text = "Disable Object";
+            this.disableObjectToolStripMenuItem.Text = "Disabl&e Object";
             this.disableObjectToolStripMenuItem.Click += new System.EventHandler(this.disableObjectToolStripMenuItem_Click);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
+            this.selectAllToolStripMenuItem.Text = "Select &All";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
             // 
             // contextMenu_array
             // 
@@ -930,5 +940,6 @@ namespace ODEditor
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.ToolStripMenuItem removeSubItemleaveGapToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
     }
 }
