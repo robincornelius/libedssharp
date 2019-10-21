@@ -43,6 +43,8 @@ namespace ODEditor
         ListViewItem selecteditem;
         ListViewItem selecteditemsub;
 
+        ListView selectedList;
+
         public DeviceODView()
         {
             InitializeComponent();
@@ -548,7 +550,7 @@ namespace ODEditor
 
         private void listView_mandatory_objects_MouseClick(object sender, MouseEventArgs e)
         {
-
+            selectedList = listView_mandatory_objects;
             ListViewItem lvi = listView_mandatory_objects.SelectedItems[0];
 
             if (checkdirty())
@@ -567,11 +569,14 @@ namespace ODEditor
 
         private void list_mouseclick(ListView listview, MouseEventArgs e)
         {
+            selectedList = listview;
             if (listview.SelectedItems.Count == 0)
                 return;
 
             if (checkdirty())
                 return;
+
+            deleteObjectToolStripMenuItem.Text = listview.SelectedItems.Count > 1 ? "Delete Objects" : "Delete Object";
 
             ListViewItem lvi = listview.SelectedItems[0];
 
@@ -604,15 +609,11 @@ namespace ODEditor
                     selecteditem = lvi;
 
                     ODentry od = (ODentry)lvi.Tag;
-                    if (od.Disabled == true)
-                    {
-                        disableObjectToolStripMenuItem.Text = "Enable Object";
-                    }
-                    else
-                    {
-                        disableObjectToolStripMenuItem.Text = "Disable Object";
-                    }
 
+                    string objString = listview.SelectedItems.Count > 1 ? "Objects" : "Object";
+                    
+                    string objEnableString = od.Disabled ? "Enable" : "Disable";
+                    disableObjectToolStripMenuItem.Text = string.Format("{0} {1}", objEnableString, objString);
                     contextMenuStrip1.Show(Cursor.Position);
                 }
 
@@ -633,7 +634,7 @@ namespace ODEditor
 
         private void listView_MouseDown(ListView listview, MouseEventArgs e)
         {
-
+            selectedList = listview;
 
             ListViewHitTestInfo HI = listview.HitTest(e.Location);
             if (e.Button == MouseButtons.Right)
@@ -677,6 +678,7 @@ namespace ODEditor
 
         private void listViewDetails_MouseClick(object sender, MouseEventArgs e)
         {
+            selectedList = listViewDetails;
             ListViewItem lvi = listViewDetails.SelectedItems[0];
 
             if (listViewDetails.SelectedItems.Count == 0)
@@ -928,74 +930,208 @@ namespace ODEditor
 
         }
 
-        private void deleteObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void disableSelectedObjects(ListView objectList)
         {
-
-            ListViewItem item = selecteditem;
-
-            ODentry od = (ODentry)item.Tag;
-
-            //Check object is not used in a PDO before deleting
-
-
-            for (UInt16 idx = 0x1600; idx < 0x1a00 + 0x01ff; idx++)
+            ListView.SelectedListViewItemCollection selectedItems = objectList.SelectedItems;
+            if (selectedItems.Count > 0)
             {
-
-                //Cheat as we want to only map 1600-17FF and 1a00-1bff
-                if (idx == 0x1800)
-                    idx = 0x1a00;
-
-                if (eds.ods.ContainsKey(idx))
+                foreach (ListViewItem item in selectedItems)
                 {
-                    ODentry pdood = eds.ods[idx];
-                    for(byte subno=1;subno<pdood.Nosubindexes;subno++)
+                    ODentry od = (ODentry)item.Tag;
+
+                    eds.Dirty = true;
+                    od.Disabled = !od.Disabled;
+                    populateindexlists();
+                }
+
+                
+            }
+        }
+
+        private void deleteSelectedObjects(ListView objectList)
+        {
+            ListView.SelectedListViewItemCollection selectedItems = objectList.SelectedItems;
+            if (selectedItems.Count > 0)
+            {
+                DialogResult confirmDelete;
+
+                if(selectedItems.Count == 1)
+                {
+                    confirmDelete = MessageBox.Show("Do you really want to delete the selected item?", "Are you sure?", MessageBoxButtons.YesNo);
+                }
+                else
+                {
+                    confirmDelete = MessageBox.Show(string.Format("Do you really want to delete the selected {0} items?", selectedItems.Count), "Are you sure?", MessageBoxButtons.YesNo);
+                }
+
+                if (confirmDelete == DialogResult.Yes)
+                {
+
+
+                    foreach (ListViewItem item in selectedItems)
                     {
-                        try
+                        selecteditem = item;
+                        ODentry od = (ODentry)item.Tag;
+
+                        //Check object is not used in a PDO before deleting
+
+
+                        for (UInt16 idx = 0x1600; idx < 0x1a00 + 0x01ff; idx++)
                         {
-                            UInt16 odindex = Convert.ToUInt16(pdood.subobjects[subno].defaultvalue.Substring(0, 4), 16);
-                            if(odindex==od.Index)
+
+                            //Cheat as we want to only map 1600-17FF and 1a00-1bff
+                            if (idx == 0x1800)
+                                idx = 0x1a00;
+
+                            if (eds.ods.ContainsKey(idx))
                             {
-                                MessageBox.Show(string.Format("Cannot delete OD entry it is mapped in PDO {0:4x}", pdood.Index));
-                                return;
+                                ODentry pdood = eds.ods[idx];
+                                for (byte subno = 1; subno < pdood.Nosubindexes; subno++)
+                                {
+                                    try
+                                    {
+                                        UInt16 odindex = Convert.ToUInt16(pdood.subobjects[subno].defaultvalue.Substring(0, 4), 16);
+                                        if (odindex == od.Index)
+                                        {
+                                            MessageBox.Show(string.Format("Cannot delete OD entry it is mapped in PDO {0:4x}", pdood.Index));
+                                            return;
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        //Failed to parse the PDO
+                                    }
+                                }
+
+                                eds.Dirty = true;
+                                if (currentmodule == 0)
+                                {
+                                    eds.ods.Remove(od.Index);
+                                }
+
+                                populateindexlists();
                             }
                         }
-                        catch(Exception)
+                    }
+                }
+            }
+        }
+
+        private void deleteObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteSelectedObjects(selectedList);
+        }
+
+        private void deleteSelectedIndexes(ListView objectList, bool shiftUp)
+        {
+            ListView.SelectedListViewItemCollection selectedItems = objectList.SelectedItems;
+            if (selectedItems.Count > 0)
+            {
+                if (shiftUp == false)
+                {
+                    foreach (ListViewItem item in selectedItems)
+                    {
+                        if (item.Tag != null)
                         {
-                            //Failed to parse the PDO
+                            ODentry od = (ODentry)item.Tag;
+                            if (od.parent != null)
+                                od = od.parent;
+
+                            if (od.objecttype == ObjectType.ARRAY)
+                            {
+                                ODentry newsub = new ODentry();
+                                newsub.parent = od;
+                                newsub.datatype = od.datatype;
+                                newsub.accesstype = od.accesstype;
+                                newsub.PDOtype = od.PDOtype;
+                                newsub.objecttype = ObjectType.VAR;
+                                od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
+
+                                UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
+
+                                def++;
+                                od.subobjects[0].defaultvalue = def.ToString();
+
+
+                            }
+
+                            if (od.objecttype == ObjectType.REC)
+                            {
+                                DataType dt = od.datatype;
+
+                                NewIndex ni = new NewIndex(eds, dt, od.objecttype, od);
+
+                                if (ni.ShowDialog() == DialogResult.OK)
+                                {
+                                    ODentry newsub = new ODentry();
+                                    newsub.parent = od;
+                                    newsub.datatype = ni.dt;
+                                    newsub.accesstype = od.accesstype;
+                                    newsub.PDOtype = od.PDOtype;
+                                    newsub.objecttype = ObjectType.VAR;
+                                    newsub.parameter_name = ni.name;
+
+                                    od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
+
+                                    UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
+                                    def++;
+                                    od.subobjects[0].defaultvalue = def.ToString();
+                                }
+                            }
+
+                            eds.Dirty = true;
+                            updateselectedindexdisplay(selectedobject.Index, currentmodule);
+                            validateanddisplaydata();
+
+                        }
+
+                    }
+                }
+                else
+                {
+                    foreach (ListViewItem item in selectedItems)
+                    {
+                        if (item.Tag != null)
+                        {
+                            ODentry od = (ODentry)item.Tag;
+
+                            if (od.parent.objecttype == ObjectType.ARRAY || od.parent.objecttype == ObjectType.REC)
+                            {
+                                UInt16 count = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
+                                if (count > 0)
+                                    count--;
+                                od.parent.subobjects[0].defaultvalue = count.ToString();
+                            }
+
+                            bool success = od.parent.subobjects.Remove(od.Subindex);
+
+                            
+                            UInt16 countx = 0;
+
+                            SortedDictionary<UInt16, ODentry> newlist = new SortedDictionary<ushort, ODentry>();
+
+                            foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
+                            {
+                                ODentry sub = kvp.Value;
+                                newlist.Add(countx, sub);
+                                countx++;
+                            }
+
+                            od.parent.subobjects = newlist;
+                            
+
+                            eds.Dirty = true;
+                            updateselectedindexdisplay(selectedobject.Index, currentmodule);
+                            validateanddisplaydata();
                         }
                     }
-
-                  
-
                 }
             }
-
-
-            if (MessageBox.Show(string.Format("Really delete index 0x{0:x4} ?", od.Index), "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                eds.Dirty = true;
-                if (currentmodule == 0)
-                {
-                    eds.ods.Remove(od.Index);
-                }
-                
-                populateindexlists();
-            }
-
-
         }
 
         private void disableObjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            ListViewItem item = selecteditem;
-
-            ODentry od = (ODentry)item.Tag;
-
-            eds.Dirty = true;
-            od.Disabled = !od.Disabled;
-            populateindexlists();
-
+            disableSelectedObjects(selectedList);
         }
 
         private void addSubItemToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1058,6 +1194,7 @@ namespace ODEditor
 
         private void removeSubItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //deleteSelectedIndexes(selectedList, true);
             if (selecteditemsub.Tag != null)
             {
                 ODentry od = (ODentry)selecteditemsub.Tag;
@@ -1089,8 +1226,6 @@ namespace ODEditor
                 updateselectedindexdisplay(selectedobject.Index, currentmodule);
                 validateanddisplaydata();
             }
-
-
         }
 
         private void listView_optional_objects_SelectedIndexChanged(object sender, EventArgs e)
@@ -1135,26 +1270,6 @@ namespace ODEditor
             
         }
 
-        private void textBox_precode_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label14_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label13_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox_accessfunctionname_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void listViewDetails_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -1163,7 +1278,6 @@ namespace ODEditor
 
             if (checkdirty())
                 return;
-
 
             ListViewItem lvi = listViewDetails.SelectedItems[0];
 
@@ -1237,8 +1351,8 @@ namespace ODEditor
 
         private void removeSubItemleaveGapToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-              if (selecteditemsub.Tag != null)
+            //deleteSelectedIndexes(selectedList, false);
+            if (selecteditemsub.Tag != null)
             {
                 ODentry od = (ODentry)selecteditemsub.Tag;
 
@@ -1254,9 +1368,7 @@ namespace ODEditor
 
                 /*
                 UInt16 countx = 0;
-
                 SortedDictionary<UInt16, ODentry> newlist = new SortedDictionary<ushort, ODentry>();
-
                 foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
                 {
                     ODentry sub = kvp.Value;
@@ -1273,6 +1385,24 @@ namespace ODEditor
             }
 
 
+        }
+
+            private void listView_manufacture_objects_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Delete)
+            {
+                deleteSelectedObjects(listView_manufacture_objects);
+                
+            }
+        }
+
+        private void listView_optional_objects_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteSelectedObjects(listView_optional_objects);
+
+            }
         }
     }
 
