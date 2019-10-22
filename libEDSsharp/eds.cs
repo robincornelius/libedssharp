@@ -1197,12 +1197,12 @@ namespace libEDSsharp
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
 
-                if(HighLimit != "")
+                if(HighLimit != null && HighLimit != "")
                 {
                     writer.WriteLine(string.Format("HighLimit={0}", Formatoctetstring(HighLimit)));
                 }
 
-                if (LowLimit != "")
+                if (LowLimit != null && LowLimit != "")
                 {
                     writer.WriteLine(string.Format("LowLimit={0}", Formatoctetstring(LowLimit)));
                 }
