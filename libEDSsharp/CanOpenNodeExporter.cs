@@ -86,7 +86,7 @@ namespace libEDSsharp
 
                     if (!od.Containssubindex(0x04))
                     {
-                        compatfixed = true;
+                        //compatfixed = true;
                         ODentry compatibility = new ODentry("compatibility entry", idx, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no, od);
                         od.subobjects.Add(0x04, compatibility);
                     }
