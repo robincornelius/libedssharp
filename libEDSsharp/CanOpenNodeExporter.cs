@@ -67,12 +67,8 @@ namespace libEDSsharp
 
         }
 
-        //private bool compatfixed = false;
         private void fixcompatentry()
         {
-            // compatfixed = false;
-
-
             // Handle the TPDO communication parameters in a special way, because of
             // sizeof(OD_TPDOCommunicationParameter_t) != sizeof(CO_TPDOCommPar_t) in CANopen.c
             // the existing CO_TPDOCommPar_t has a compatibility entry so we must export one regardless
@@ -86,7 +82,6 @@ namespace libEDSsharp
 
                     if (!od.Containssubindex(0x04))
                     {
-                        //compatfixed = true;
                         ODentry compatibility = new ODentry("compatibility entry", idx, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no, od);
                         od.subobjects.Add(0x04, compatibility);
                     }
