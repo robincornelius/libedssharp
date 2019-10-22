@@ -15,7 +15,7 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
  
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
-    based heavily on the files CO_OD.h and CO_OD.c from CanOpenNode which are
+    based heavily on the files CO_OD.h and CO_OD.c from CANopenNode which are
     Copyright(c) 2010 - 2016 Janez Paternoster
 */
 
@@ -206,7 +206,7 @@ namespace libEDSsharp
             dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference = new ISO15745Reference_DataType();
             dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ISO15745Part = "1";
             dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ISO15745Edition = "1";
-            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ProfileTechnology = "Canopen";
+            dev.ISO15745Profile[0].ProfileHeader.ISO15745Reference.ProfileTechnology = "CANopen";
 
             dev.ISO15745Profile[0].ProfileBody = new ProfileBody_Device_CANopen();
 
@@ -363,7 +363,7 @@ namespace libEDSsharp
             dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference = new ISO15745Reference_DataType();
             dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference.ISO15745Part = "1";
             dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference.ISO15745Edition = "1";
-            dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference.ProfileTechnology = "Canopen";
+            dev.ISO15745Profile[1].ProfileHeader.ISO15745Reference.ProfileTechnology = "CANopen";
 
             dev.ISO15745Profile[1].ProfileBody = new ProfileBody_CommunicationNetwork_CANopen();
             ProfileBody_CommunicationNetwork_CANopen comnet = (ProfileBody_CommunicationNetwork_CANopen)dev.ISO15745Profile[1].ProfileBody;

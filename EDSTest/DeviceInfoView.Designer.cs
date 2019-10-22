@@ -208,7 +208,7 @@
             this.checkBox_canopenmanager.Name = "checkBox_canopenmanager";
             this.checkBox_canopenmanager.Size = new System.Drawing.Size(154, 21);
             this.checkBox_canopenmanager.TabIndex = 5;
-            this.checkBox_canopenmanager.Text = "Can Open manager";
+            this.checkBox_canopenmanager.Text = "CANopen manager";
             this.checkBox_canopenmanager.UseVisualStyleBackColor = false;
             // 
             // label8

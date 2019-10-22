@@ -220,7 +220,7 @@ namespace ODEditor
                 // Propagate changes through sub objects
                 // We only really need to do this for PDOMapping to fix bug #13 see report
                 // on git hub for discussion why other parameters are not propagated here
-                // tl;dr; Limitations of CanOpenNode object dictionary perms for sub array objects
+                // tl;dr; Limitations of CANopenNode object dictionary perms for sub array objects
 
                 foreach (KeyValuePair<UInt16,ODentry>kvp in selectedobject.subobjects)
                 {
@@ -1112,7 +1112,7 @@ namespace ODEditor
         {
             //Change the max subindex, it is allowed to have a different max subindex to the physical array size
             //as depending on implementation it might not be a simple array behind the scenes. Even 0x1010,0x1011 
-            //do this on their implementation in CanopenNode
+            //do this on their implementation in CANopenNode
 
             if (selecteditemsub.Tag != null)
             {
