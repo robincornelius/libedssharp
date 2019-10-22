@@ -1086,11 +1086,78 @@ namespace ODEditor
             }
         }
 
+        private bool fileTypeSupported(string fileName) //there is a better way to do this, but it's easy to copy/paste from the file open code. bigger fish to fry...
+        {
+            bool typeSupported = false;
+            if (Path.HasExtension(fileName))
+            {
+                switch (Path.GetExtension(fileName).ToLower())
+                {
+                    case ".xdd":
+                        typeSupported = true;
+                        break;
+
+                    case ".xml":
+                        typeSupported = true;
+                        break;
+
+                    case ".eds":
+                        typeSupported = true;
+                        break;
+
+                    case ".dcf":
+                        typeSupported = true;
+                        break;
+
+                    case ".nxml":
+                        typeSupported = true;
+                        break;
+
+                    case ".nxdd":
+                        typeSupported = true;
+                        break;
+
+                    default:
+                        typeSupported = false;
+                        break;
+
+                }
+            }
+
+            return typeSupported;
+
+        }
+
         private void ODEditor_MainForm_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                e.Effect = DragDropEffects.All;
+            bool unsupportedFile = false;
+            var data = e.Data.GetData(DataFormats.FileDrop);
+            if (data != null)
+            {                
+                var rawFileNames = data as string[];
+                if (rawFileNames.Length > 0)
+                {
+                    var fileNames = rawFileNames.Distinct();
+                    foreach (string fileName in fileNames)
+                    {
+                        if(fileTypeSupported(fileName) == false)
+                        {
+                            unsupportedFile = true;
+                            break;
+                        }
+                    }
+
+                }
+
+                if(unsupportedFile)
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.All;
+                }
+                
             }
                 
             else
@@ -1129,6 +1196,14 @@ namespace ODEditor
 
                             case ".dcf":
                                 openEDSfile(fileName, InfoSection.Filetype.File_DCF);
+                                break;
+
+                            case ".nxml":
+                                openNetworkfile(fileName);
+                                break;
+
+                            case ".nxdd":
+                                openXDDNetworkfile(fileName);
                                 break;
 
                             default:
