@@ -453,6 +453,8 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_SYNC                     {0}   //Associated objects: 1005-1007", noSYNC));
 
             file.WriteLine(string.Format("  #define CO_NO_EMERGENCY                {0}   //Associated objects: 1014, 1015", noEMCY));
+		
+            file.WriteLine(string.Format("  #define CO_NO_TS                       {0}   //Associated objects: 1012, 1013", noTS));
 
             file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
             file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
@@ -1393,6 +1395,7 @@ const CO_OD_entry_t CO_OD[");
         int distRXpdo = 0;
         int noSYNC = 0;
         int noEMCY = 0;
+        int noTS = 0;
 
         void countPDOS()
         {
@@ -1433,6 +1436,9 @@ const CO_OD_entry_t CO_OD[");
 
                 if (index == 0x1014)
                     noEMCY = 1;
+
+                if (index == 0x1012)
+                    noTS = 1;
             }
 
         }
