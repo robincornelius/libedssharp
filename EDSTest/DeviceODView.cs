@@ -150,8 +150,9 @@ namespace ODEditor
 
                 selectedobject.defaultvalue = textBox_defaultvalue.Text;
                 selectedobject.TPDODetectCos = checkBox_COS.Checked;
-              
-              
+                selectedobject.HighLimit = textBox_highvalue.Text;
+                selectedobject.LowLimit = textBox_lowvalue.Text;
+                selectedobject.actualvalue = textBox_actualvalue.Text;
                 DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
                 selectedobject.datatype = dt;
 

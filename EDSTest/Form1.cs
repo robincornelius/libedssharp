@@ -933,12 +933,14 @@ namespace ODEditor
                     }
 
                     string temp = dir + Path.DirectorySeparatorChar + "documentation.html";
+                    string temp2 = dir + Path.DirectorySeparatorChar + "documentation.md";
 
                     this.UseWaitCursor = true;
 
                     DocumentationGen docgen = new DocumentationGen();
                     docgen.genhtmldoc(temp, dv.eds);
-
+                    docgen.genmddoc(temp2, dv.eds);
+                    System.Diagnostics.Process.Start("file://" + temp2);
                     if (IsRunningOnMono())
                     {
                         System.Diagnostics.Process.Start("file://" + temp);
