@@ -145,7 +145,11 @@ namespace Xml2CSharp
 		public string PDOmapping { get; set; }
 		[XmlAttribute(AttributeName="defaultValue")]
 		public string DefaultValue { get; set; }
-		[XmlElement(ElementName="CANopenSubObject")]
+        [XmlAttribute(AttributeName = "highValue")]
+        public string HighValue { get; set; }
+        [XmlAttribute(AttributeName = "lowValue")]
+        public string LowValue { get; set; }
+        [XmlElement(ElementName="CANopenSubObject")]
 		public List<CANopenSubObject> CANopenSubObject { get; set; }
 		[XmlAttribute(AttributeName="subNumber")]
 		public string SubNumber { get; set; }
@@ -165,7 +169,9 @@ namespace Xml2CSharp
 		public string SubIndex { get; set; }
 		[XmlAttribute(AttributeName="name")]
 		public string Name { get; set; }
-		[XmlAttribute(AttributeName="objectType")]
+        [XmlElement(ElementName = "description")]
+        public Description Description { get; set; }
+        [XmlAttribute(AttributeName="objectType")]
 		public string ObjectType { get; set; }
 		[XmlAttribute(AttributeName="dataType")]
 		public string DataType { get; set; }
@@ -175,6 +181,10 @@ namespace Xml2CSharp
 		public string PDOmapping { get; set; }
 		[XmlAttribute(AttributeName="defaultValue")]
 		public string DefaultValue { get; set; }
+        [XmlAttribute(AttributeName = "highValue")]
+        public string HighValue { get; set; }
+        [XmlAttribute(AttributeName = "lowValue")]
+        public string LowValue { get; set; }
         [XmlAttribute(AttributeName = "TPDOdetectCOS")]
         public string TPDOdetectCOS { get; set; }
     }
