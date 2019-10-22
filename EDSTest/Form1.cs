@@ -47,9 +47,10 @@ namespace ODEditor
         {
             InitializeComponent();
             loadprofiles();
-
             insertToolStripMenuItem.Enabled = false;
         }
+
+        
 
         private void loadprofiles()
         {
@@ -1085,6 +1086,61 @@ namespace ODEditor
             }
         }
 
+        private void ODEditor_MainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.All;
+            }
+                
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+                
+        }
+
+        private void ODEditor_MainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            //throw new NotImplementedException();
+            var data = e.Data.GetData(DataFormats.FileDrop);
+            if (data != null)
+            {
+                var rawFileNames = data as string[];
+
+                if (rawFileNames.Length > 0)
+                {
+                    var fileNames = rawFileNames.Distinct();
+                    foreach (string fileName in fileNames)
+                    {
+                        switch (Path.GetExtension(fileName).ToLower())
+                        {
+                            case ".xdd":
+                                openXDDfile(fileName);
+                                break;
+
+                            case ".xml":
+                                openXMLfile(fileName);
+                                break;
+
+                            case ".eds":
+                                openEDSfile(fileName, InfoSection.Filetype.File_EDS);
+                                break;
+
+                            case ".dcf":
+                                openEDSfile(fileName, InfoSection.Filetype.File_DCF);
+                                break;
+
+                            default:
+                                break;
+
+                        }
+
+                        addtoMRU(fileName);
+                    }
+                }
+            }
+        }
 
     }
 }
