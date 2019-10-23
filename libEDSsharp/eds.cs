@@ -992,7 +992,7 @@ namespace libEDSsharp
 
         public PDOMappingType PDOtype;
 
-        //CanOpenNode specific extra storage
+        //CANopenNode specific extra storage
         public string Label = "";
         public string Description = "";
 
@@ -1036,7 +1036,7 @@ namespace libEDSsharp
         /// <param name="index">Index of object in object dictionary</param>
         /// <param name="datatype">Type of this objects data</param>
         /// <param name="defaultvalue">Default value (always set as a string)</param>
-        /// <param name="accesstype">Allowed CanOpen access permissions</param>
+        /// <param name="accesstype">Allowed CANopen access permissions</param>
         /// <param name="PDOMapping">Allowed PDO mapping options</param>
         public ODentry(string parameter_name,UInt16 index, DataType datatype, string defaultvalue, EDSsharp.AccessType accesstype, PDOMappingType PDOMapping)
         {
@@ -1197,12 +1197,12 @@ namespace libEDSsharp
                 writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
 
 
-                if(HighLimit != "")
+                if(HighLimit != null && HighLimit != "")
                 {
                     writer.WriteLine(string.Format("HighLimit={0}", Formatoctetstring(HighLimit)));
                 }
 
-                if (LowLimit != "")
+                if (LowLimit != null && LowLimit != "")
                 {
                     writer.WriteLine(string.Format("LowLimit={0}", Formatoctetstring(LowLimit)));
                 }
@@ -1252,7 +1252,7 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// Return the size in bytes for the given CanOpen datatype of this object, eg the size of what ever the datatype field is set to 
+        /// Return the size in bytes for the given CANopen datatype of this object, eg the size of what ever the datatype field is set to 
         /// </summary>
         /// <returns>no of bytes</returns>
         public int Sizeofdatatype()
@@ -2528,7 +2528,7 @@ COB - ID
  bit 11 - 29: set to 0 for 11 bit COB - ID
  bit 30:    0(1) - rtr are allowed(are NOT allowed) for PDO
  bit 31:    0(1) - node uses(does NOT use) PDO
-     
+
 Transmission type
  value = 0 - 240:   receiving is synchronous, process after next reception of SYNC object
  value = 241 - 253: not used
@@ -2563,7 +2563,7 @@ COB - ID
  bit 11 - 29: set to 0 for 11 bit COB - ID
  bit 30:    0(1) - rtr are allowed(are NOT allowed) for PDO
  bit 31:    0(1) - node uses(does NOT use) PDO
-     
+
 Transmission type
  value = 0:       transmitting is synchronous, specification in device profile
  value = 1 - 240:   transmitting is synchronous after every N - th SYNC object
@@ -2571,7 +2571,7 @@ Transmission type
  value = 252 - 253: Transmitted only on reception of Remote Transmission Request
  value = 254:     manufacturer specific
  value = 255:     asynchronous, specification in device profile
-     
+
 inhibit time
  bit 0 - 15:  Minimum time between transmissions of the PDO in 100µs.Zero disables functionality.
 

@@ -221,7 +221,7 @@ namespace ODEditor
                     Warnings.warning_list.Clear();
 
                     CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                    cone.export(savePath, this.gitVersion, dv.eds);
+                    cone.export(savePath, Path.GetFileNameWithoutExtension(sfd.FileName), this.gitVersion, dv.eds);
 
                     if (Warnings.warning_list.Count != 0)
                     {
@@ -239,7 +239,7 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CanOpen Xml Data sheet (*.xdd)|*.xdd|CanOpenNode XML (*.xml)|*.xml";
+            odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CANopen Xml Data sheet (*.xdd)|*.xdd|CANopenNode XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
 
@@ -487,7 +487,7 @@ namespace ODEditor
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                 SaveFileDialog sfd = new SaveFileDialog();
 
-                sfd.Filter = "Canopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf";
+                sfd.Filter = "CANopen Node XML (*.xml)|*.xml|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf";
 
                 sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
                 sfd.RestoreDirectory = true;
@@ -525,7 +525,7 @@ namespace ODEditor
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
                 SaveFileDialog sfd = new SaveFileDialog();
 
-                sfd.Filter = "CanOpen XDD (*.xdd)|*.xdd";
+                sfd.Filter = "CANopen XDD (*.xdd)|*.xdd";
 
                 sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.xmlfilename);
                 sfd.RestoreDirectory = true;
@@ -736,7 +736,7 @@ namespace ODEditor
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
-            sfd.Filter = "CanOpen Network XDD (*.nxdd)|*.nxdd|CanOpen network XML (*.nxml)|*.nxml";
+            sfd.Filter = "CANopen Network XDD (*.nxdd)|*.nxdd|CANopen network XML (*.nxml)|*.nxml";
 
             sfd.InitialDirectory = Path.GetDirectoryName(networkfilename);
             sfd.RestoreDirectory = true;
@@ -768,7 +768,7 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "CanOpen Network XDD (*.nxdd)|*.nxdd|CanOpen network XML (*.nxml)|*.nxml";
+            odf.Filter = "CANopen Network XDD (*.nxdd)|*.nxdd|CANopen network XML (*.nxml)|*.nxml";
             if (odf.ShowDialog() == DialogResult.OK)
             {
                 switch (Path.GetExtension(odf.FileName).ToLower())
@@ -935,12 +935,14 @@ namespace ODEditor
                     }
 
                     string temp = dir + Path.DirectorySeparatorChar + "documentation.html";
+                    string temp2 = dir + Path.DirectorySeparatorChar + "documentation.md";
 
                     this.UseWaitCursor = true;
 
                     DocumentationGen docgen = new DocumentationGen();
                     docgen.genhtmldoc(temp, dv.eds);
-
+                    docgen.genmddoc(temp2, dv.eds);
+                    System.Diagnostics.Process.Start("file://" + temp2);
                     if (IsRunningOnMono())
                     {
                         System.Diagnostics.Process.Start("file://" + temp);
@@ -970,7 +972,7 @@ namespace ODEditor
         private void saveExportAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string temp;
-            //Attempt to save EDS,XML and export the CanOpen dictionary
+            //Attempt to save EDS,XML and export the CANopen dictionary
 
             if (tabControl1.SelectedTab != null)
             {
@@ -1039,7 +1041,7 @@ namespace ODEditor
 
                 try
                 {
-                    cone.export(dv.eds.fi.exportFolder, this.gitVersion, dv.eds);
+                    cone.export(dv.eds.fi.exportFolder, "", this.gitVersion, dv.eds);
                 }
                 catch(Exception ex)
                 {
