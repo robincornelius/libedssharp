@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ODEditor_MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +56,7 @@
             this.documentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.networkPDOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -292,6 +294,9 @@
             this.tabControl1.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.tabControl1_Controlsremoved);
             this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.ODEditor_MainForm_DragDrop);
             this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.ODEditor_MainForm_DragEnter);
+            this.tabControl1.DragOver += new System.Windows.Forms.DragEventHandler(this.ODEditor_MainForm_DragOver);
+            this.tabControl1.DragLeave += new System.EventHandler(this.ODEditor_MainForm_DragLeave);
+            this.tabControl1.QueryContinueDrag += new System.Windows.Forms.QueryContinueDragEventHandler(this.ODEditor_MainForm_QueryContinueDrag);
             // 
             // ODEditor_MainForm
             // 
@@ -309,6 +314,11 @@
             this.Load += new System.EventHandler(this.ODEditor_MainForm_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ODEditor_MainForm_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ODEditor_MainForm_DragEnter);
+            this.DragOver += new System.Windows.Forms.DragEventHandler(this.ODEditor_MainForm_DragOver);
+            this.DragLeave += new System.EventHandler(this.ODEditor_MainForm_DragLeave);
+            this.QueryContinueDrag += new System.Windows.Forms.QueryContinueDragEventHandler(this.ODEditor_MainForm_QueryContinueDrag);
+            this.MouseCaptureChanged += new System.EventHandler(this.ODEditor_MainForm_Leave);
+            this.MouseLeave += new System.EventHandler(this.ODEditor_MainForm_Leave);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -344,6 +354,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripMenuItem exportDeviceFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

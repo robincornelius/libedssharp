@@ -40,6 +40,8 @@ namespace ODEditor
 
         private string gitVersion;
 
+        private string toolTipsString;   //used for holding the tooltip message for file drag and drop events
+
         public static Dictionary<UInt32, EDSsharp> TXCobMap = new Dictionary<UInt32, EDSsharp>();
         List<EDSsharp> network = new List<EDSsharp>();
 
@@ -1130,6 +1132,7 @@ namespace ODEditor
 
         private void ODEditor_MainForm_DragEnter(object sender, DragEventArgs e)
         {
+            this.Activate();
             bool unsupportedFile = false;
             var data = e.Data.GetData(DataFormats.FileDrop);
             if (data != null)
@@ -1149,7 +1152,9 @@ namespace ODEditor
 
                 }
 
-                if(unsupportedFile)
+                toolTipsString = (unsupportedFile ? "1 or more files not supported" : "Drop files here to open");
+
+                if (unsupportedFile)
                 {
                     e.Effect = DragDropEffects.None;
                 }
@@ -1157,19 +1162,42 @@ namespace ODEditor
                 {
                     e.Effect = DragDropEffects.All;
                 }
-                
+
+                enableDragDropTooltip();
+
             }
                 
             else
             {
-                e.Effect = DragDropEffects.None;
+               e.Effect = DragDropEffects.None;
+                //disableDragDropTooltip();
+                enableDragDropTooltip();
             }
                 
         }
 
+        private void enableDragDropTooltip()
+        {
+            toolTip1.Active = true;
+            toolTip1.ReshowDelay = 0;
+            toolTip1.InitialDelay = 0;
+            toolTip1.UseAnimation = false;
+            toolTip1.UseFading = false;
+            toolTip1.Show(toolTipsString, this, this.PointToClient(Cursor.Position).X, this.PointToClient(Cursor.Position).Y);
+        }
+
+        private void disableDragDropTooltip()
+        {
+            toolTip1.Active = false;
+        }
+
+        private void ODEditor_MainForm_DragLeave(object sender, EventArgs e)
+        {
+            disableDragDropTooltip();
+        }
+
         private void ODEditor_MainForm_DragDrop(object sender, DragEventArgs e)
         {
-            //throw new NotImplementedException();
             var data = e.Data.GetData(DataFormats.FileDrop);
             if (data != null)
             {
@@ -1215,7 +1243,26 @@ namespace ODEditor
                     }
                 }
             }
+            disableDragDropTooltip();
         }
 
+        private void ODEditor_MainForm_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
+        {
+            if(e.EscapePressed)
+            {
+                e.Action = DragAction.Cancel;
+                disableDragDropTooltip();
+            }
+        }
+
+        private void ODEditor_MainForm_Leave(object sender, EventArgs e)
+        {
+            disableDragDropTooltip();
+        }
+
+        private void ODEditor_MainForm_DragOver(object sender, DragEventArgs e)
+        {
+            enableDragDropTooltip();
+        }
     }
 }
