@@ -138,7 +138,6 @@ namespace libEDSsharp
                 {
                     au[name] = 1;
                 }
-
             }
 
 
@@ -174,7 +173,6 @@ namespace libEDSsharp
 
                             if (kvp2.Key < lowest)
                                 lowest = kvp2.Key;
-
                         }
 
                     }
@@ -401,7 +399,6 @@ namespace libEDSsharp
             file.WriteLine("*******************************************************************************/");
             file.WriteLine("");
             file.WriteLine("");
-
 
             file.WriteLine(@"/*******************************************************************************
    FEATURES
@@ -636,8 +633,8 @@ file.WriteLine(@"/**************************************************************
 
                 ODentry od = kvp.Value;
 
-				if (od.Disabled == true)
-					continue;
+                if (od.Disabled == true)
+                    continue;
 
                 string loc = "CO_OD_" + od.StorageLocation;
 
@@ -807,9 +804,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             StringBuilder returndata = new StringBuilder();
 
-
-
-
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
@@ -824,7 +818,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
 
             return returndata.ToString();
-
         }
 
         protected string write_od_line(ODentry od)
@@ -894,8 +887,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                     {
                         nosubindexs = od.Getmaxsubindex();
                     }
-
-
                 }
             }
 
@@ -929,7 +920,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         }
 
         /// <summary>
-        /// Get the CANopenNode specific flags, these flags are used internally in CANOpenNode to determine details about the object variable
+        /// Get the CANopenNode specific flags, these flags are used internally in CANopenNode to determine details about the object variable
         /// </summary>
         /// <param name="od">An odentry to access</param>
         /// <returns>byte containing the flag value</returns>
@@ -956,7 +947,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 default:
                     flags = 0x03;
                     break;
-
             }
 
             /*
@@ -1029,7 +1019,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
 
             return flags;
-
         }
 
         string formatvaluewithdatatype(string defaultvalue, DataType dt)
@@ -1334,7 +1323,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
             else
             {
-                //Domain type MUST have its data pointer set to 0 for CANOpenNode
+                //Domain type MUST have its data pointer set to 0 for CANopenNode
                 sb.AppendLine($"           {{(void*)0, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
             }
 
@@ -1395,7 +1384,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 if (index == 0x1012)
                     noTS = 1;
             }
-
         }
 
         bool arrayspecial(UInt16 index, bool open)
@@ -1415,7 +1403,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
 
             return false;
-
         }
 
 
@@ -1476,12 +1463,10 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                     {
                         sb.AppendLine("},");
                     }
-
                 }
             }
 
             return sb.ToString();
-
         }
     }
 
@@ -1492,7 +1477,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
     {
         public static string Escape(char c)
         {
-
             switch(c)
             {
                 case '\0':
@@ -1514,9 +1498,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 default:
                     return c.ToString();
-
             }
-
         }
 
         public static string Unescape(this string txt)
