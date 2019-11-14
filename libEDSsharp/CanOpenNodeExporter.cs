@@ -929,7 +929,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         }
 
         /// <summary>
-        /// Get the CANopenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
+        /// Get the CANopenNode specific flags, these flags are used internally in CANOpenNode to determine details about the object variable
         /// </summary>
         /// <param name="od">An odentry to access</param>
         /// <returns>byte containing the flag value</returns>
@@ -1334,7 +1334,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
             else
             {
-                //Domain type MUST have its data pointer set to 0 for CanOpenNode
+                //Domain type MUST have its data pointer set to 0 for CANOpenNode
                 sb.AppendLine($"           {{(void*)0, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
             }
 
