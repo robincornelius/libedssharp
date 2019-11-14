@@ -15,7 +15,7 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
 
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
-    based heavily on the files CO_OD.h and CO_OD.c from CanOpenNode which are
+    based heavily on the files CO_OD.h and CO_OD.c from CANopenNode which are
     Copyright(c) 2010 - 2016 Janez Paternoster
 */
 
@@ -46,7 +46,7 @@ namespace libEDSsharp
         List<UInt16> closings = new List<UInt16>();
 
 
-        public void export(string folderpath, string gitVersion, EDSsharp eds)
+        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
             this.folderpath = folderpath;
             this.gitVersion = gitVersion;
@@ -62,19 +62,15 @@ namespace libEDSsharp
 
             prewalkArrays();
 
-            export_h();
-            export_c();
+            export_h(filename);
+            export_c(filename);
 
         }
 
-        private bool compatfixed = false;
         private void fixcompatentry()
         {
-            compatfixed = false;
-
-
             // Handle the TPDO communication parameters in a special way, because of
-            // sizeof(OD_TPDOCommunicationParameter_t) != sizeof(CO_TPDOCommPar_t) in CanOpen.c
+            // sizeof(OD_TPDOCommunicationParameter_t) != sizeof(CO_TPDOCommPar_t) in CANopen.c
             // the existing CO_TPDOCommPar_t has a compatibility entry so we must export one regardless
             // of if its in the OD or not
 
@@ -86,9 +82,8 @@ namespace libEDSsharp
 
                     if (!od.Containssubindex(0x04))
                     {
-                        compatfixed = true;
-                        ODentry compatability = new ODentry("comparability Entry", 0x05, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no);
-                        od.subobjects.Add(0x04, compatability);
+                        ODentry compatibility = new ODentry("compatibility entry", idx, DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no, od);
+                        od.subobjects.Add(0x04, compatibility);
                     }
                 }
             }
@@ -314,76 +309,36 @@ namespace libEDSsharp
             return sb.ToString();
         }
 
-        private void addGPLheader(StreamWriter file)
+        private void addHeader(StreamWriter file)
         {
-            file.WriteLine(@"/*
- * CANopen Object Dictionary.
- *
- * This file was automatically generated with CANopenNode Object
- * Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
- * Object Dictionary Editor is currently an older, but functional web
- * application. For more info see See 'Object_Dictionary_Editor/about.html' in
- * <http://sourceforge.net/p/canopennode/code_complete/ci/master/tree/>
- * For more information on CANopen Object Dictionary see <CO_SDO.h>.
- *
- * @file        CO_OD.c/CO_OD.h
- * @author      Janez Paternoster
- * @copyright   2010 - 2016 Janez Paternoster
- *
- * This file is part of CANopenNode, an opensource CANopen Stack.
- * Project home page is <https://github.com/CANopenNode/CANopenNode>.
- * For more information on CANopen see <http://www.can-cia.org/>.
- *
- * CANopenNode is free and open source software: you can redistribute
- * it and/or modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * Following clarification and special exception to the GNU General Public
- * License is included to the distribution terms of CANopenNode:
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library. Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give
- * you permission to link this library with independent modules to
- * produce an executable, regardless of the license terms of these
- * independent modules, and to copy and distribute the resulting
- * executable under terms of your choice, provided that you also meet,
- * for each linked independent module, the terms and conditions of the
- * license of that module. An independent module is a module which is
- * not derived from or based on this library. If you modify this
- * library, you may extend this exception to your version of the
- * library, but you are not obliged to do so. If you do not wish
- * to do so, delete this exception statement from your version.");
+            file.WriteLine(@"/*******************************************************************************
 
-            file.Write(" * Dictionary Editor v" + this.gitVersion);
+   File - CO_OD.c/CO_OD.h
+   CANopen Object Dictionary.
 
-            file.WriteLine(@" * DON'T EDIT THIS FILE MANUALLY !!!!
- */
+   This file was automatically generated with libedssharp Object");
+
+            file.Write("   Dictionary Editor v" + this.gitVersion);
+
+            file.WriteLine(@"   DON'T EDIT THIS FILE MANUALLY !!!!
+*******************************************************************************/
 
 ");
 
         }
 
-        private void export_h()
+        private void export_h(string filename)
         {
+            if (filename == "")
+                filename = "CO_OD";
 
-            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + "CO_OD.h");
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
 
+            file.WriteLine("// clang-format off");
+            addHeader(file);
 
-            addGPLheader(file);
-
-            file.WriteLine("#pragma once");
+            file.WriteLine("#ifndef CO_OD_H_");
+            file.WriteLine("#define CO_OD_H_");
             file.WriteLine("");
 
             file.WriteLine(@"/*******************************************************************************
@@ -456,6 +411,8 @@ namespace libEDSsharp
 
             file.WriteLine(string.Format("  #define CO_NO_EMERGENCY                {0}   //Associated objects: 1014, 1015", noEMCY));
 
+            file.WriteLine(string.Format("  #define CO_NO_TS                       {0}   //Associated objects: 1012, 1013", noTS));
+
             file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
             file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
 
@@ -507,7 +464,7 @@ namespace libEDSsharp
 *******************************************************************************/");
 
             //We need to identify all the record types used and generate a struct for each one
-            //FIXME the original CanOpenNode exporter said how many items used this struct in the comments
+            //FIXME the original CANopenNode exporter said how many items used this struct in the comments
 
             List<string> structnamelist = new List<string>();
 
@@ -766,21 +723,23 @@ file.WriteLine(@"/**************************************************************
                         break;
                 }
             }
-
+            file.WriteLine("#endif");
+            file.WriteLine("// clang-format on");
             file.Close();
 
         }
 
-        private void export_c()
+        private void export_c(string filename)
         {
-            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + "CO_OD.c");
+            if (filename == "")
+                filename =  "CO_OD";
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
 
-            addGPLheader(file);
-
+            file.WriteLine("// clang-format off");
+            addHeader(file);
             file.WriteLine(@"#include ""CO_driver.h""
-#include ""CO_OD.h""
+#include """  +  filename + @".h""
 #include ""CO_SDO.h""
-
 
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
@@ -835,6 +794,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             file.Write(write_od());
 
             file.WriteLine("};");
+            file.WriteLine("// clang-format on");
 
             file.Close();
         }
@@ -921,14 +881,14 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             {
                 if ((od.Getmaxsubindex() != nosubindexs))
                 {
-                    if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per canopen specs, and ignore 0x1011 canopennode uses special sub indexes for eeprom resets
+                    if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per CANopen specs, and ignore 0x1011 CANopenNode uses special sub indexes for eeprom resets
                     {
                         Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:X4} arraysize: {1} vs max sub-index: {2}", od.Index, nosubindexs, od.Getmaxsubindex()));
                     }
 
-                    //0x1003 is a special case for CanOpenNode
+                    //0x1003 is a special case for CANopenNode
                     //SubIndex 0 will probably be 0 for no errors
-                    //so we cannot read that to determine max subindex size, which is required to set up CanOpenNode so we leave it alone here
+                    //so we cannot read that to determine max subindex size, which is required to set up CANopenNode so we leave it alone here
                     //as its already set to subod.count
                     if (od.Index != 0x1003)
                     {
@@ -969,7 +929,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         }
 
         /// <summary>
-        /// Get the CanOpenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
+        /// Get the CANopenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
         /// </summary>
         /// <param name="od">An odentry to access</param>
         /// <returns>byte containing the flag value</returns>
@@ -1318,7 +1278,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 if(od.Index>=0x1400 && od.Index<0x1600)
                 {
-                    count = 3; //CanOpenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
+                    count = 3; //CANopenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
                 returndata.AppendLine($"/*0x{od.Index:X4}*/ const CO_OD_entryRecord_t OD_record{od.Index:X4}[{count}] = {{");
@@ -1390,6 +1350,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         int distRXpdo = 0;
         int noSYNC = 0;
         int noEMCY = 0;
+        int noTS = 0;
 
         void countPDOS()
         {
@@ -1430,6 +1391,9 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 if (index == 0x1014)
                     noEMCY = 1;
+
+                if (index == 0x1012)
+                    noTS = 1;
             }
 
         }

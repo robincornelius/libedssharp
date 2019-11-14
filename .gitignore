@@ -19,3 +19,13 @@ Tests/bin/*
 *.exe
 
 
+/.vs/EDSEditor/v16/Server/sqlite3/storage.ide-wal
+/.vs/EDSEditor/v16/Server/sqlite3/storage.ide-shm
+/.vs/EDSEditor/v16/Server/sqlite3/storage.ide
+/.vs/EDSEditor/v16/Server/sqlite3/db.lock
+*.suo
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+/EDSSharp/bin/Debug
+/EDSSharp/obj/Debug

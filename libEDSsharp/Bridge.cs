@@ -27,7 +27,7 @@ using XSDImport;
 /* I know I'm going to regret this
  * 
  * I quite like my eds class as it trys to validate the EDS using typing and enums etc
- * but i also want the XML wrappers for the CanOpenXML
+ * but i also want the XML wrappers for the CANOpenXML
  * so I'm going to make a converter outside of both classes hence this bridge
  * which is more code to manage ;-(
  * */
@@ -64,6 +64,8 @@ namespace libEDSsharp
                     coo.AccessType = od.accesstype.ToString();
                     coo.DataType = string.Format("0x{0:x2}", (int)od.datatype);
                     coo.DefaultValue = od.defaultvalue;
+                    coo.HighValue = od.HighLimit;
+                    coo.LowValue = od.LowLimit;
                     coo.PDOmapping = od.PDOtype.ToString();
                     coo.TPDOdetectCOS = od.TPDODetectCos.ToString().ToLower();
                     coo.AccessFunctionPreCode = od.AccessFunctionPreCode;
@@ -85,10 +87,14 @@ namespace libEDSsharp
                             Xml2CSharp.CANopenSubObject sub = new Xml2CSharp.CANopenSubObject();
 
                             sub.Name = subod.parameter_name;
+                            sub.Description = new Xml2CSharp.Description();
+                            sub.Description.Text = subod.Description;
                             sub.ObjectType = subod.objecttype.ToString();
                             sub.AccessType = subod.accesstype.ToString();
                             sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
                             sub.DefaultValue = subod.defaultvalue;
+                            sub.HighValue = subod.HighLimit;
+                            sub.LowValue = subod.LowLimit;
                             sub.PDOmapping = subod.PDOtype.ToString();
                             sub.SubIndex = String.Format("{0:x2}", subindex);
                             sub.TPDOdetectCOS = subod.TPDODetectCos.ToString().ToLower();
@@ -286,7 +292,7 @@ namespace libEDSsharp
                 }
                 else
                 {
-                    //CanOpenNode Project XML did not correctly set DataTypes for record sets
+                    //CANopenNode Project XML did not correctly set DataTypes for record sets
 
                     if (entry.Index == 0x1018)
                         entry.datatype = DataType.IDENTITY;
@@ -317,6 +323,8 @@ namespace libEDSsharp
                 entry.objecttype = (ObjectType)Enum.Parse(typeof(ObjectType), coo.ObjectType);
 
                 entry.defaultvalue = coo.DefaultValue;
+                entry.HighLimit = coo.HighValue;
+                entry.LowLimit = coo.LowValue;
                 //entry.nosubindexes = Convert.ToInt16(coo.SubNumber);
 
                 if (coo.PDOmapping != null)
@@ -375,7 +383,12 @@ namespace libEDSsharp
                         subentry.datatype = (DataType)datatype;
                     }
 
+                    if (coosub.Description != null)
+                        subentry.Description = coosub.Description.Text; //FIXME URL/LANG
+
                     subentry.defaultvalue = coosub.DefaultValue;
+                    subentry.HighLimit = coosub.HighValue;
+                    subentry.LowLimit = coosub.LowValue;
 
                     byte subindex = Convert.ToByte(coosub.SubIndex, 16);
 
@@ -542,7 +555,7 @@ namespace libEDSsharp
             {
                 if (dev.Other.File != null)
                 {
-                    // CanOpenNode default project.xml contains - for fileversion, its suppose to be a byte field according to DS306
+                    // CANopenNode default project.xml contains - for fileversion, its suppose to be a byte field according to DS306
                     if (dev.Other.File.FileVersion == "-")
                     {
                         dev.Other.File.FileVersion = "0";
