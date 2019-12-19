@@ -452,6 +452,8 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].denotation = od.denotation;
                 AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extenstion_storagelocation = od.StorageLocation;
 
+                AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extension_notifyonchange = od.TPDODetectCos;
+
                 AppLayer.CANopenObjectList.CANopenObject[count].highLimit = od.HighLimit;
                 AppLayer.CANopenObjectList.CANopenObject[count].lowLimit = od.LowLimit;
                 AppLayer.CANopenObjectList.CANopenObject[count].actualValue = od.actualvalue;
@@ -956,6 +958,11 @@ namespace libEDSsharp
 
                         if (obj3.edseditor_extenstion_storagelocation != null)
                             entry.StorageLocation = obj3.edseditor_extenstion_storagelocation;
+
+                        if (obj3.edseditor_extension_notifyonchange != null)
+                            entry.TPDODetectCos = obj3.edseditor_extension_notifyonchange;
+
+                            
 
                         //FIXME im not sure this is correct
                         if (obj3.objFlags != null)
@@ -2823,7 +2830,9 @@ namespace XSDImport
 
         private string denotationField;
 
-        private string edseditor_extenstion_storagelocationField;
+        private string edseditor_extension_storagelocationField;
+
+        private bool edseditor_extension_notifyonchangeField;
 
         private CANopenObjectListCANopenObjectPDOmapping pDOmappingField;
 
@@ -3011,13 +3020,29 @@ namespace XSDImport
         {
             get
             {
-                return this.edseditor_extenstion_storagelocationField;
+                return this.edseditor_extension_storagelocationField;
             }
             set
             {
-                this.edseditor_extenstion_storagelocationField = value;
+                this.edseditor_extension_storagelocationField = value;
             }
         }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool edseditor_extension_notifyonchange
+        {
+            get
+            {
+                return this.edseditor_extension_notifyonchangeField;
+            }
+            set
+            {
+                this.edseditor_extension_notifyonchangeField = value;
+            }
+        }
+
+      
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]

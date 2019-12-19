@@ -40,6 +40,8 @@ namespace ODEditor
 
         private string gitVersion;
 
+        private string toolTipsString;   //used for holding the tooltip message for file drag and drop events
+
         public static Dictionary<UInt32, EDSsharp> TXCobMap = new Dictionary<UInt32, EDSsharp>();
         List<EDSsharp> network = new List<EDSsharp>();
 
@@ -1088,23 +1090,116 @@ namespace ODEditor
             }
         }
 
+        private bool fileTypeSupported(string fileName) //there is a better way to do this, but it's easy to copy/paste from the file open code. bigger fish to fry...
+        {
+            bool typeSupported = false;
+            if (Path.HasExtension(fileName))
+            {
+                switch (Path.GetExtension(fileName).ToLower())
+                {
+                    case ".xdd":
+                        typeSupported = true;
+                        break;
+
+                    case ".xml":
+                        typeSupported = true;
+                        break;
+
+                    case ".eds":
+                        typeSupported = true;
+                        break;
+
+                    case ".dcf":
+                        typeSupported = true;
+                        break;
+
+                    case ".nxml":
+                        typeSupported = true;
+                        break;
+
+                    case ".nxdd":
+                        typeSupported = true;
+                        break;
+
+                    default:
+                        typeSupported = false;
+                        break;
+
+                }
+            }
+
+            return typeSupported;
+
+        }
+
         private void ODEditor_MainForm_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                e.Effect = DragDropEffects.All;
+            this.Activate();
+            bool unsupportedFile = false;
+            var data = e.Data.GetData(DataFormats.FileDrop);
+            if (data != null)
+            {                
+                var rawFileNames = data as string[];
+                if (rawFileNames.Length > 0)
+                {
+                    var fileNames = rawFileNames.Distinct();
+                    foreach (string fileName in fileNames)
+                    {
+                        if(fileTypeSupported(fileName) == false)
+                        {
+                            unsupportedFile = true;
+                            break;
+                        }
+                    }
+
+                }
+
+                toolTipsString = (unsupportedFile ? "1 or more files not supported" : "Drop files here to open");
+
+                if (unsupportedFile)
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.All;
+                }
+
+                enableDragDropTooltip();
+
             }
                 
             else
             {
-                e.Effect = DragDropEffects.None;
+               e.Effect = DragDropEffects.None;
+                //disableDragDropTooltip();
+                enableDragDropTooltip();
             }
                 
         }
 
+        private void enableDragDropTooltip()
+        {
+            toolTip1.Active = true;
+            toolTip1.ReshowDelay = 0;
+            toolTip1.InitialDelay = 0;
+            toolTip1.UseAnimation = false;
+            toolTip1.UseFading = false;
+            toolTip1.Show(toolTipsString, this, this.PointToClient(Cursor.Position).X, this.PointToClient(Cursor.Position).Y);
+        }
+
+        private void disableDragDropTooltip()
+        {
+            toolTip1.Active = false;
+        }
+
+        private void ODEditor_MainForm_DragLeave(object sender, EventArgs e)
+        {
+            disableDragDropTooltip();
+        }
+
         private void ODEditor_MainForm_DragDrop(object sender, DragEventArgs e)
         {
-            //throw new NotImplementedException();
             var data = e.Data.GetData(DataFormats.FileDrop);
             if (data != null)
             {
@@ -1133,6 +1228,14 @@ namespace ODEditor
                                 openEDSfile(fileName, InfoSection.Filetype.File_DCF);
                                 break;
 
+                            case ".nxml":
+                                openNetworkfile(fileName);
+                                break;
+
+                            case ".nxdd":
+                                openXDDNetworkfile(fileName);
+                                break;
+
                             default:
                                 break;
 
@@ -1142,7 +1245,26 @@ namespace ODEditor
                     }
                 }
             }
+            disableDragDropTooltip();
         }
 
+        private void ODEditor_MainForm_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
+        {
+            if(e.EscapePressed)
+            {
+                e.Action = DragAction.Cancel;
+                disableDragDropTooltip();
+            }
+        }
+
+        private void ODEditor_MainForm_Leave(object sender, EventArgs e)
+        {
+            disableDragDropTooltip();
+        }
+
+        private void ODEditor_MainForm_DragOver(object sender, DragEventArgs e)
+        {
+            enableDragDropTooltip();
+        }
     }
 }
