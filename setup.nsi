@@ -61,6 +61,7 @@ Section "OpenEdsEditor" Secopeneds ;No components page, name is not important
   File EDSTest\bin\Release\EDSEditor.exe.config
   File EDSTest\bin\Release\libEDSsharp.dll
   File EDSTest\bin\Release\style.css
+  File EDSSharp\bin\Release\EDSSharp.exe
   File Index_8287_16x.ico
   File License-GPLv3.txt
   

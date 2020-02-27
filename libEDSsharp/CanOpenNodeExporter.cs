@@ -90,7 +90,7 @@ namespace libEDSsharp
 
         }
 
-        private void specialarraysearch(UInt16 start, UInt16 end)
+        private void specialarraysearch(UInt16 start, UInt16 end, string loc)
         {
             UInt16 lowest = 0xffff;
             UInt16 highest = 0x0000;
@@ -98,7 +98,7 @@ namespace libEDSsharp
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
-                if (kvp.Value.Disabled == true)
+                if (kvp.Value.Disabled == true || kvp.Value.StorageLocation != loc)
                     continue;
 
                 if (kvp.Key >= start && kvp.Key <= end)
@@ -144,17 +144,20 @@ namespace libEDSsharp
 
             //Handle special arrays
 
-            //SDO Client parameters
-            specialarraysearch(0x1200, 0x127F);
-            //SDO Server Parameters
-            specialarraysearch(0x1280, 0x12FF);
+            foreach (string loc in eds.storageLocation)
+            {
 
-            //PDO Mappings and configs
-            specialarraysearch(0x1400, 0x15FF);
-            specialarraysearch(0x1600, 0x17FF);
-            specialarraysearch(0x1800, 0x19FF);
-            specialarraysearch(0x1A00, 0x1BFF);
+                //SDO Client parameters
+                specialarraysearch(0x1200, 0x127F,loc);
+                //SDO Server Parameters
+                specialarraysearch(0x1280, 0x12FF,loc);
 
+                //PDO Mappings and configs
+                specialarraysearch(0x1400, 0x15FF,loc);
+                specialarraysearch(0x1600, 0x17FF,loc);
+                specialarraysearch(0x1800, 0x19FF,loc);
+                specialarraysearch(0x1A00, 0x1BFF,loc);
+            
             //now find opening and closing points for these arrays
             foreach (KeyValuePair<string, int> kvp in au)
             {
@@ -165,6 +168,9 @@ namespace libEDSsharp
                     UInt16 highest=0x0000;
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in eds.ods)
                     {
+
+                            if (kvp2.Value.StorageLocation != loc)
+                                continue;
 
                         string name = make_cname(kvp2.Value.parameter_name);
                         if(name==targetname)
@@ -185,6 +191,8 @@ namespace libEDSsharp
                         closings.Add(highest);
                         Console.WriteLine(string.Format("New array detected start 0x{0:x4} end 0x{1:x4}", lowest, highest));
                     }
+
+                }
 
                 }
 
