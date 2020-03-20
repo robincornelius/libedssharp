@@ -545,7 +545,7 @@ namespace libEDSsharp
             {
                 if (section.ContainsKey("CreationTime") && section.ContainsKey("CreationDate"))
                 {
-                    dtcombined = section["CreationTime"] + " " + section["CreationDate"];
+                    dtcombined = section["CreationTime"].Replace(" ","") + " " + section["CreationDate"];
                     CreationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
                 }
             }
@@ -561,7 +561,7 @@ namespace libEDSsharp
             {
                 if (section.ContainsKey("ModificationTime") && section.ContainsKey("ModificationTime"))
                 {
-                    dtcombined = section["ModificationTime"] + " " + section["ModificationDate"];
+                    dtcombined = section["ModificationTime"].Replace(" ", "") + " " + section["ModificationDate"];
                     ModificationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
                 }
             }
@@ -1229,7 +1229,7 @@ namespace libEDSsharp
                     if (!kvp.Value.ContainsKey("AccessType"))
                         throw new ParameterException("Missing required AccessType on" + section);
 
-                    string accesstype = kvp.Value["AccessType"];
+                    string accesstype = kvp.Value["AccessType"].ToLower();
 
                     if (Enum.IsDefined(typeof(AccessType), accesstype))
                     {
@@ -1513,7 +1513,8 @@ namespace libEDSsharp
         //Split on + , replace $NODEID with concrete value and add together
         public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
-          
+
+            input = input.ToUpper();
 
             if(input==null || input=="")
             {
@@ -1572,8 +1573,6 @@ namespace libEDSsharp
         //call this with the comm param index not the mapping
         public bool createPDO(bool rx,UInt16 index)
         {
-            bool status;
-
             //check if we are creating an RX PDO it is a valid index
             if (rx && (index < 0x1400 || index > 0x15ff))
                 return false;
