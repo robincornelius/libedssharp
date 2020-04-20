@@ -283,7 +283,7 @@ NrOfTXPDO=7
 
             UpdatePDOcount();
 
-            if(noexplicitrxpdos != di.NrOfRXPDO)
+            if (noexplicitrxpdos != di.NrOfRXPDO)
                 throw (new Exception("Implicit RX PDO incorrect"));
 
             if (noexplicittxpdos != di.NrOfTXPDO)
@@ -308,13 +308,42 @@ ProDucTNumbeR=test4
 
             string[] lines = testobject.Split('\n');
 
-            foreach(string line in lines)
+            foreach (string line in lines)
                 Parseline(line);
             DeviceInfo di = new DeviceInfo(eds["DeviceInfo"]);
 
         }
 
 
+        [TestMethod]
+        public void Test_datetimeparse()
+        {
 
+            SupportedObjects so = new SupportedObjects();
+            Dictionary<string, string> section = new Dictionary<string, string>();
+            section.Add("CreationTime", "9:03AM");
+            section.Add("CreationDate", "04-27-2017");
+            so.Parse(section);
+
+            so = new SupportedObjects();
+            section = new Dictionary<string, string>();
+            section.Add("CreationTime", "10:15 AM");
+            section.Add("CreationDate", "10-08-2013");
+
+            so.Parse(section);
+
+        }
+
+        [TestMethod]
+        public void Test_accesstype()
+        {
+
+            SupportedObjects so = new SupportedObjects();
+            Dictionary<string, string> section = new Dictionary<string, string>();
+            section.Add("AccessType", "RO");
+            so.Parse(section);
+
+
+        }
     }
 }
