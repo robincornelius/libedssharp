@@ -440,14 +440,25 @@ namespace libEDSsharp
                     }
                 }
 
-                AppLayer.CANopenObjectList.CANopenObject[count].dataType = bytes;
+
+                if (od.objecttype != ObjectType.ARRAY && od.objecttype != ObjectType.REC)
+                {
+                    //#209 don't set data type for array or rec objects, the subobjects hold 
+                    //the data type
+                    AppLayer.CANopenObjectList.CANopenObject[count].dataType = bytes;
+                    AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType), accesstype.ToString());
+                    AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
+
+                }
+                else
+                {
+                    AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = false;
+                }
+
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmapping = (CANopenObjectListCANopenObjectPDOmapping)Enum.Parse(typeof(CANopenObjectListCANopenObjectPDOmapping),PDOtype.ToString());
                 AppLayer.CANopenObjectList.CANopenObject[count].PDOmappingSpecified = true;
 
                 AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.Index);
-
-                AppLayer.CANopenObjectList.CANopenObject[count].accessType = (CANopenObjectListCANopenObjectAccessType)Enum.Parse(typeof(CANopenObjectListCANopenObjectAccessType), accesstype.ToString());
-                AppLayer.CANopenObjectList.CANopenObject[count].accessTypeSpecified = true;
 
                 AppLayer.CANopenObjectList.CANopenObject[count].denotation = od.denotation;
                 AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extenstion_storagelocation = od.StorageLocation;
