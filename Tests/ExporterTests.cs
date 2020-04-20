@@ -37,13 +37,13 @@ namespace Tests
 
             string test = export_one_record_type(subod, "");
 
-            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString1, 0x3e, 0x7 }," + Environment.NewLine)
+            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString1, 0x3E, 0x7 }," + Environment.NewLine)
                 throw (new Exception("export_one_record_type() error test 1"));
 
             subod = new ODentry("Test String 2", 0x01, DataType.VISIBLE_STRING, new string('*', 255), EDSsharp.AccessType.ro, PDOMappingType.optional, od);
             test = export_one_record_type(subod, "");
 
-            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString2, 0x26, 0xff }," + Environment.NewLine)
+            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString2, 0x26, 0xFF }," + Environment.NewLine)
                 throw (new Exception("export_one_record_type() error test 2"));
 
         }
