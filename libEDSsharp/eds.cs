@@ -1514,15 +1514,15 @@ namespace libEDSsharp
         public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
 
-            input = input.ToUpper();
-
             if(input==null || input=="")
             {
                 nodeidpresent = false;
                 return 0;
             }
 
-            if(input.Contains("$NODEID"))
+            input = input.ToUpper();
+
+            if (input.Contains("$NODEID"))
                 nodeidpresent = true;
             else
                 nodeidpresent = false;
