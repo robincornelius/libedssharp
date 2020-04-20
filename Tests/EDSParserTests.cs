@@ -319,34 +319,39 @@ ProDucTNumbeR=test4
         public void Test_datetimeparse()
         {
 
-            MandatoryObjects so = new MandatoryObjects();
+            FileInfo fi = new FileInfo();
             Dictionary<string, string> section = new Dictionary<string, string>();
             section.Add("CreationTime", "9:03AM");
             section.Add("CreationDate", "04-27-2017");
-            so.Parse(section);
+            fi.Parse(section);
 
-            so = new SupportedObjects();
+            fi = new FileInfo();
             section = new Dictionary<string, string>();
             section.Add("CreationTime", "10:15 AM");
             section.Add("CreationDate", "10-08-2013");
 
-            so.Parse(section);
+            fi.Parse(section);
 
         }
 
         [TestMethod]
         public void Test_accesstype()
         {
+            {
+                Dictionary<string, Dictionary<string, string>> section = new Dictionary<string, Dictionary<string, string>>();
+                section.Add("[1234]", new Dictionary<string, string>());
+                section["[1234]"].Add("AccessType", "ro");
+                KeyValuePair<string, Dictionary<string, string>> kvp = section.Single();
+                this.ParseEDSentry(kvp);
+            }
 
-            SupportedObjects so = new SupportedObjects();
-            Dictionary<string, string> section = new Dictionary<string, string>();
-            section.Add("AccessType", "RO");
-            so.Parse(section);
-
-            so = new SupportedObjects();
-            section = new Dictionary<string, string>();
-            section.Add("AccessType", "ro");
-            so.Parse(section);
+            {
+                Dictionary<string, Dictionary<string, string>> section = new Dictionary<string, Dictionary<string, string>>();
+                section.Add("[1234]", new Dictionary<string, string>());
+                section["[1234]"].Add("AccessType", "RO");
+                KeyValuePair<string, Dictionary<string, string>> kvp = section.Single();
+                this.ParseEDSentry(kvp);
+            }
 
 
         }
