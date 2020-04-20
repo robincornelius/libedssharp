@@ -202,7 +202,7 @@ namespace ODEditor
             lvi.SubItems.Add(od.parameter_name);
 
             DataType dt = od.datatype;
-            if (dt == DataType.UNKNOWN || od.parent !=null)
+            if (dt == DataType.UNKNOWN && od.parent !=null)
                 dt = od.parent.datatype;
             lvi.SubItems.Add(dt.ToString());
 

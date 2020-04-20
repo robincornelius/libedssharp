@@ -571,7 +571,7 @@ namespace libEDSsharp
             {
                 if (section.ContainsKey("CreationTime") && section.ContainsKey("CreationDate"))
                 {
-                    dtcombined = section["CreationTime"] + " " + section["CreationDate"];
+                    dtcombined = section["CreationTime"].Replace(" ","") + " " + section["CreationDate"];
                     CreationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
                 }
             }
@@ -587,7 +587,7 @@ namespace libEDSsharp
             {
                 if (section.ContainsKey("ModificationTime") && section.ContainsKey("ModificationTime"))
                 {
-                    dtcombined = section["ModificationTime"] + " " + section["ModificationDate"];
+                    dtcombined = section["ModificationTime"].Replace(" ", "") + " " + section["ModificationDate"];
                     ModificationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
                 }
             }
@@ -2443,9 +2443,9 @@ namespace libEDSsharp
                 return 0;
             }
 
-            input = input.ToUpper(); //catch all types of nodeid
+    		input = input.ToUpper();
 
-            if (input.Contains("$NODEID"))
+            if(input.Contains("$NODEID"))     
                 nodeidpresent = true;
             else
                 nodeidpresent = false;

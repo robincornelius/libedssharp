@@ -9,7 +9,7 @@ using libEDSsharp;
 namespace Tests
 {
     [TestClass]
-    public class EDSParserTests : EDSsharp
+    public class EDSParserTests : libEDSsharp.EDSsharp
     {
 
         [TestMethod]
@@ -319,7 +319,7 @@ ProDucTNumbeR=test4
         public void Test_datetimeparse()
         {
 
-            SupportedObjects so = new SupportedObjects();
+            MandatoryObjects so = new MandatoryObjects();
             Dictionary<string, string> section = new Dictionary<string, string>();
             section.Add("CreationTime", "9:03AM");
             section.Add("CreationDate", "04-27-2017");
@@ -343,7 +343,13 @@ ProDucTNumbeR=test4
             section.Add("AccessType", "RO");
             so.Parse(section);
 
+            so = new SupportedObjects();
+            section = new Dictionary<string, string>();
+            section.Add("AccessType", "ro");
+            so.Parse(section);
+
 
         }
+
     }
 }
