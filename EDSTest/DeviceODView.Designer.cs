@@ -470,28 +470,28 @@ namespace ODEditor
             // 
             this.textBox_actualvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBox_actualvalue.BackColor = System.Drawing.Color.PeachPuff;
-            this.textBox_actualvalue.Location = new System.Drawing.Point(703, 85);
+            this.textBox_actualvalue.Location = new System.Drawing.Point(723, 85);
             this.textBox_actualvalue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_actualvalue.Name = "textBox_actualvalue";
-            this.textBox_actualvalue.Size = new System.Drawing.Size(268, 22);
+            this.textBox_actualvalue.Size = new System.Drawing.Size(248, 22);
             this.textBox_actualvalue.TabIndex = 11;
             // 
             // textBox_lowvalue
             // 
             this.textBox_lowvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox_lowvalue.Location = new System.Drawing.Point(703, 53);
+            this.textBox_lowvalue.Location = new System.Drawing.Point(723, 53);
             this.textBox_lowvalue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_lowvalue.Name = "textBox_lowvalue";
-            this.textBox_lowvalue.Size = new System.Drawing.Size(268, 22);
+            this.textBox_lowvalue.Size = new System.Drawing.Size(248, 22);
             this.textBox_lowvalue.TabIndex = 10;
             // 
             // textBox_highvalue
             // 
             this.textBox_highvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox_highvalue.Location = new System.Drawing.Point(703, 20);
+            this.textBox_highvalue.Location = new System.Drawing.Point(723, 20);
             this.textBox_highvalue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox_highvalue.Name = "textBox_highvalue";
-            this.textBox_highvalue.Size = new System.Drawing.Size(268, 22);
+            this.textBox_highvalue.Size = new System.Drawing.Size(248, 22);
             this.textBox_highvalue.TabIndex = 9;
             // 
             // label18
@@ -501,9 +501,9 @@ namespace ODEditor
             this.label18.Location = new System.Drawing.Point(605, 90);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(87, 17);
+            this.label18.Size = new System.Drawing.Size(110, 17);
             this.label18.TabIndex = 32;
-            this.label18.Text = "Actual Value";
+            this.label18.Text = "ParameterValue";
             // 
             // label17
             // 
@@ -512,9 +512,9 @@ namespace ODEditor
             this.label17.Location = new System.Drawing.Point(605, 57);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(73, 17);
+            this.label17.Size = new System.Drawing.Size(62, 17);
             this.label17.TabIndex = 31;
-            this.label17.Text = "Low Value";
+            this.label17.Text = "LowLimit";
             // 
             // label14
             // 
@@ -523,9 +523,9 @@ namespace ODEditor
             this.label14.Location = new System.Drawing.Point(605, 25);
             this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(77, 17);
+            this.label14.Size = new System.Drawing.Size(66, 17);
             this.label14.TabIndex = 30;
-            this.label14.Text = "High Value";
+            this.label14.Text = "HighLimit";
             // 
             // button_save_changes
             // 
