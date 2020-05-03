@@ -736,7 +736,7 @@ file.WriteLine(@"/**************************************************************
             addHeader(file);
             file.WriteLine(@"#include ""301/CO_driver.h""
 #include """  +  filename + @".h""
-#include ""301/CO_SDO.h""
+#include ""301/CO_SDOserver.h""
 
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
