@@ -143,6 +143,10 @@ namespace libEDSsharp
 
             //Handle special arrays
 
+            specialarraysearch(0x1301, 0x1340);
+            specialarraysearch(0x1381, 0x13C0);
+
+
             //SDO Client parameters
             specialarraysearch(0x1200, 0x127F);
             //SDO Server Parameters
@@ -413,6 +417,9 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
             file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
 
+            file.WriteLine(string.Format("  #define CO_NO_GFC                      {0}   //Associated objects: 1300", noGFC));
+            file.WriteLine(string.Format("  #define CO_NO_SRDO                     {0}   //Associated objects: 1301-1341, 1381-13C0", noSRDO));
+
             int lssServer = 0;
             if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Server")
             {
@@ -428,7 +435,6 @@ namespace libEDSsharp
 
             file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
-
 
             bool ismaster = false;
             if(eds.ods.ContainsKey(0x1f80))
@@ -1340,6 +1346,8 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         int noSYNC = 0;
         int noEMCY = 0;
         int noTIME = 0;
+        int noGFC = 0;
+        int noSRDO = 0;
 
         void countPDOS()
         {
@@ -1383,6 +1391,11 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 if (index == 0x1012)
                     noTIME = 1;
+
+                if (index == 0x1300)
+                    noGFC = 1;
+                if (index >= 0x1301 && index <= 0x1340)
+                    noSRDO++;
             }
         }
 
