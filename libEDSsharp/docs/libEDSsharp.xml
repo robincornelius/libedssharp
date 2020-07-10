@@ -1,0 +1,2428 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>libEDSsharp</name>
+    </assembly>
+    <members>
+        <member name="M:libEDSsharp.CanOpenNodeExporter.getflags(libEDSsharp.ODentry)">
+            <summary>
+            Get the CANopenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
+            </summary>
+            <param name="od">An odentry to access</param>
+            <returns>byte containing the flag value</returns>
+        </member>
+        <member name="M:libEDSsharp.CanOpenNodeExporter.export_record_types">
+            <summary>
+            Export the record type objects in the CO_OD.c file
+            </summary>
+            <returns>string</returns>
+        </member>
+        <member name="M:libEDSsharp.CanOpenNodeExporter.export_one_record_type(libEDSsharp.ODentry,System.String)">
+            <summary>
+            Exports a sub object line in a record object
+            </summary>
+            <param name="sub">sub ODentry object to export</param>
+            <param name="arrayaccess">string forming current array level or empty string for none</param>
+            <returns>string forming one line of CO_OD.c record objects</returns>
+        </member>
+        <member name="P:libEDSsharp.ODentry.Index">
+            <summary>
+            The index of the object in the Object Dictionary
+            This cannot be set for child objects, if you read a child object you get the parents index
+            </summary>
+        </member>
+        <member name="T:libEDSsharp.ODentry.Odtype">
+            <summary>
+            Used when writing out objects to know if we are writing the normal or the module parts out
+            Two module parts subext and fixed are available.
+            </summary>
+        </member>
+        <member name="M:libEDSsharp.ODentry.#ctor">
+            <summary>
+            Empty object constructor
+            </summary>
+        </member>
+        <member name="M:libEDSsharp.ODentry.#ctor(System.String,System.UInt16,libEDSsharp.DataType,System.String,libEDSsharp.EDSsharp.AccessType,libEDSsharp.PDOMappingType)">
+            <summary>
+            ODentry constructor for a simple VAR type
+            </summary>
+            <param name="parameter_name">Name of Object Dictionary Entry</param>
+            <param name="index">Index of object in object dictionary</param>
+            <param name="datatype">Type of this objects data</param>
+            <param name="defaultvalue">Default value (always set as a string)</param>
+            <param name="accesstype">Allowed CANopen access permissions</param>
+            <param name="PDOMapping">Allowed PDO mapping options</param>
+        </member>
+        <member name="M:libEDSsharp.ODentry.#ctor(System.String,System.UInt16,libEDSsharp.DataType,System.String,libEDSsharp.EDSsharp.AccessType,libEDSsharp.PDOMappingType,libEDSsharp.ODentry)">
+            <summary>
+            ODConstructor useful for subobjects
+            </summary>
+            <param name="parameter_name"></param>
+            <param name="index">NOT USED</param>
+            <param name="datatype"></param>
+            <param name="defaultvalue"></param>
+            <param name="accesstype"></param>
+            <param name="PDOMapping"></param>
+            <param name="parent"></param>
+        </member>
+        <member name="M:libEDSsharp.ODentry.#ctor(System.String,System.UInt16,System.Byte)">
+            <summary>
+            ODEntry constructor for array subobjects
+            </summary>
+            <param name="parameter_name"></param>
+            <param name="index"></param>
+            <param name="nosubindex"></param>
+        </member>
+        <member name="M:libEDSsharp.ODentry.ToString">
+            <summary>
+            Provide a simple string representation of the object, only parameters index, no subindexes/subindex parameter name and data type are included
+            Useful for debug and also appears in debugger when you inspect this object
+            </summary>
+            <returns>string summary of object</returns>
+        </member>
+        <member name="M:libEDSsharp.ODentry.Formatoctetstring(System.String)">
+            <summary>
+            If data type is an octet string we must remove all spaces when writing out to a EDS/DCF file
+            </summary>
+            <param name="value">Value to be processed</param>
+            <returns>value if not octet string or value with spaces removed if octet string</returns>
+        </member>
+        <member name="M:libEDSsharp.ODentry.Write(System.IO.StreamWriter,libEDSsharp.InfoSection.Filetype,libEDSsharp.ODentry.Odtype,System.Int32)">
+            <summary>
+            Write out this Object dictionary entry to an EDS/DCF file using correct formatting
+            </summary>
+            <param name="writer">Handle to the stream writer to write to</param>
+            <param name="ft">File type being written</param>
+            
+        </member>
+        <member name="M:libEDSsharp.ODentry.Paramater_cname">
+            <summary>
+            Returns a c compatible string that represents the name of the object, - is replaced with _
+            words separated by a space are replaced with _ for a separator eg ONE TWO becomes ONE_TWO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:libEDSsharp.ODentry.Sizeofdatatype">
+            <summary>
+            Return the size in bytes for the given CANopen datatype of this object, eg the size of what ever the datatype field is set to 
+            </summary>
+            <returns>no of bytes</returns>
+        </member>
+        <member name="P:libEDSsharp.ODentry.Nosubindexes">
+            <summary>
+            This is the no of subindexes present in the object, it is NOT the maximum subobject index
+            </summary>
+        </member>
+        <member name="M:libEDSsharp.EDSsharp.ApplyimplicitPDO">
+            <summary>
+            This function scans the PDO list and compares it to NrOfRXPDO and NrOfTXPDO
+            if these do not match in count then implicit PDOs are present and they are
+            filled in with default values from the lowest possible index
+            </summary>
+        </member>
+        <member name="T:XSDImport.ISO15745ProfileContainer">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ISO15745ProfileContainer.ISO15745Profile">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ISO15745Profile">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ISO15745Profile.ProfileHeader">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ISO15745Profile.ProfileBody">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileHeader_DataType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ProfileIdentification">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ProfileRevision">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ProfileName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ProfileSource">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ProfileClassID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ProfileDate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ProfileDateSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.AdditionalInformation">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.ISO15745Reference">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHeader_DataType.IASInterfaceType">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileClassID_DataType">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.AIP">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.Process">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.InformationExchange">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.Resource">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.Device">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.CommunicationNetwork">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.Equipment">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.Human">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileClassID_DataType.Material">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ISO15745Reference_DataType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ISO15745Reference_DataType.ISO15745Part">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ISO15745Reference_DataType.ISO15745Edition">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ISO15745Reference_DataType.ProfileTechnology">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileHandle_DataType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHandle_DataType.ProfileIdentification">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHandle_DataType.ProfileRevision">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileHandle_DataType.ProfileLocation">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_DataType">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopen">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.formatName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.formatVersion">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileCreator">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileCreationDate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileCreationTime">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileCreationTimeSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileModificationDate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileModificationDateSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileModificationTime">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileModificationTimeSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileModifiedBy">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.fileVersion">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopen.supportedLanguages">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayers">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayers.identity">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayers.CANopenObjectList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayers.dummyUsage">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayers.dynamicChannels">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayers.conformanceClass">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayers.communicationEntityType">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity.vendorID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity.deviceFamily">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity.productID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity.version">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity.buildDate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity.buildDateSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersIdentity.specificationRevision">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.vendorID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorID.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorID.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.deviceFamily">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.deviceFamily.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.deviceFamily.readOnly">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.vendorTextDescription">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextDescription.lang">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextDescription.URI">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextDescription.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.vendorTextDescriptionRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextDescriptionRef.dictID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextDescriptionRef.textID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextDescriptionRef.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.vendorTextLabel">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextLabel.lang">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextLabel.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.vendorTextLabelRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextLabelRef.dictID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextLabelRef.textID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorTextLabelRef.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.productID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productID.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productID.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.version">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.version.versionType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.version.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.version.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.versionVersionType">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.versionVersionType.SW">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.versionVersionType.FW">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.versionVersionType.HW">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.specificationRevision">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.specificationRevision.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.specificationRevision.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.CANopenObjectList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectList.CANopenObject">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectList.mandatoryObjects">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectList.mandatoryObjectsSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectList.optionalObjects">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectList.optionalObjectsSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectList.manufacturerObjects">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectList.manufacturerObjectsSpecified">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.CANopenObjectListCANopenObject">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.CANopenSubObject">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.index">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.objectType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.dataType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.lowLimit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.highLimit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.accessType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.accessTypeSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.defaultValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.actualValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.denotation">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.edseditor_extenstion_storagelocation">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.PDOmapping">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.PDOmappingSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.objFlags">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.uniqueIDRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.subNumber">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.subNumberSpecified">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.subIndex">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.objectType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.dataType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.lowLimit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.highLimit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.accessType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.accessTypeSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.defaultValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.actualValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.denotation">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.PDOmapping">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.PDOmappingSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.objFlags">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.uniqueIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectAccessType">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectAccessType.ro">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectAccessType.wo">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectAccessType.rw">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectAccessType.const">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping.no">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping.default">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping.optional">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping.TPDO">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectCANopenSubObjectPDOmapping.RPDO">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.CANopenObjectListCANopenObjectAccessType">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectAccessType.ro">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectAccessType.wo">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectAccessType.rw">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectAccessType.const">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.CANopenObjectListCANopenObjectPDOmapping">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectPDOmapping.no">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectPDOmapping.default">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectPDOmapping.optional">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectPDOmapping.TPDO">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.CANopenObjectListCANopenObjectPDOmapping.RPDO">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummy.entry">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00010">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00020">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00030">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00040">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00050">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00060">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00070">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00011">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00021">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00031">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00041">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00051">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00061">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDummyEntry.Dummy00071">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.dataType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.accessType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.startIndex">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.endIndex">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.maxNumber">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.addressOffset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.bitAlignment">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannel.bitAlignmentSpecified">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannelAccessType">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannelAccessType.readOnly">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannelAccessType.writeOnly">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenApplicationLayersDynamicChannelAccessType.readWriteOutput">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagement">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagement.CANopenGeneralFeatures">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagement.CANopenMasterFeatures">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagement.deviceCommissioning">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.groupMessaging">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.dynamicChannels">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.selfStartingDevice">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.SDORequestingDevice">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.granularity">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.nrOfRxPDO">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.nrOfTxPDO">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.bootUpSlave">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.layerSettingServiceSlave">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures.bootUpMaster">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures.flyingMaster">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures.SDOManager">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures.configurationManager">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenMasterFeatures.layerSettingServiceMaster">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning.nodeID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning.nodeName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning.actualBaudRate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning.networkNumber">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning.networkName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenNetworkManagementDeviceCommissioning.CANopenManager">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayers">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayers.PhysicalLayer">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayer">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayer.baudRate">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRate.supportedBaudRate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRate.defaultValue">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRate.value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item10Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item20Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item50Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item100Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item125Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item250Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item500Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item800Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.Item1000Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateSupportedBaudRateValue.autobaudRate">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item10Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item20Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item50Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item100Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item125Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item250Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item500Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item800Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.Item1000Kbps">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_CommunicationNetwork_CANopenTransportLayersPhysicalLayerBaudRateDefaultValue.autobaudRate">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_Device_CANopen">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.DeviceIdentity">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.DeviceManager">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.DeviceFunction">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.ApplicationProcess">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.ExternalProfileHandle">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.formatName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.formatVersion">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileCreator">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileCreationDate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileCreationTime">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileCreationTimeSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileModificationDate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileModificationDateSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileModificationTime">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileModificationTimeSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileModifiedBy">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.fileVersion">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.supportedLanguages">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.deviceClass">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ProfileBody_Device_CANopen.deviceClassSpecified">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.DeviceIdentity">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.vendorName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.vendorID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.vendorText">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.deviceFamily">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.productFamily">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.productName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.productID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.productText">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.orderNumber">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.version">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.buildDate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.buildDateSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.specificationRevision">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceIdentity.instanceName">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.vendorName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorName.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorName.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.vendorText">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorText.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.vendorText.readOnly">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.productFamily">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productFamily.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productFamily.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.productName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productName.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productName.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.productText">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productText.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.productText.readOnly">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.orderNumber">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.orderNumber.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.orderNumber.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.instanceName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.instanceName.readOnly">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.instanceName.Value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.DeviceManager">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceManager.indicatorList">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.indicatorList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.indicatorList.LEDList">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.LEDList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDList.LED">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDList.combinedState">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.LED">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LED.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LED.LEDstate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LED.LEDcolors">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LED.LEDtype">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LED.LEDtypeSpecified">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.LEDstate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.state">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.LEDcolor">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.flashingPeriod">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.flashingPeriodSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.impulsWidth">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.LEDstate.numberOfImpulses">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.LEDstateState">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDstateState.on">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDstateState.off">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDstateState.flashing">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.LEDstateLEDcolor">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDstateLEDcolor.green">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDstateLEDcolor.amber">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDstateLEDcolor.red">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.LEDLEDcolors">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDLEDcolors.monocolor">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDLEDcolors.bicolor">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.LEDLEDtype">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDLEDtype.IO">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDLEDtype.device">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.LEDLEDtype.communication">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.combinedState">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.combinedState.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.combinedState.LEDstateRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.combinedStateLEDstateRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.combinedStateLEDstateRef.stateIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.DeviceFunction">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceFunction.capabilities">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceFunction.picturesList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.DeviceFunction.dictionaryList">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.capabilities">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.capabilities.characteristicsList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.capabilities.standardComplianceList">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.characteristicsList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.characteristicsList.category">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.characteristicsList.characteristic">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.characteristicsListCategory">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.characteristicsListCategory.Items">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.characteristic">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.characteristic.characteristicName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.characteristic.characteristicContent">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.characteristicName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.characteristicName.Items">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.characteristicContent">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.characteristicContent.Items">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.compliantWith">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.compliantWith.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.compliantWith.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.compliantWith.range">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.compliantWithRange">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.compliantWithRange.international">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.compliantWithRange.internal">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.picture">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.picture.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.picture.URI">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.picture.number">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.picture.numberSpecified">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.dictionary">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dictionary.file">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dictionary.lang">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dictionary.dictID">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.file">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.file.URI">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ApplicationProcess">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ApplicationProcess.dataTypeList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ApplicationProcess.functionTypeList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ApplicationProcess.functionInstanceList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ApplicationProcess.templateList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ApplicationProcess.parameterList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.ApplicationProcess.parameterGroupList">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.dataTypeList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dataTypeList.array">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dataTypeList.struct">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dataTypeList.enum">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dataTypeList.derived">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.array">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.array.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.array.subrange">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.array.Item">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.array.ItemElementName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.array.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.array.uniqueID">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.subrange">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.subrange.lowerLimit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.subrange.upperLimit">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.dataTypeIDRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dataTypeIDRef.uniqueIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ItemChoiceType">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.BITSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.BOOL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.BYTE">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.CHAR">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.DINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.DWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.INT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.LINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.LREAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.LWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.REAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.SINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.STRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.UDINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.UINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.ULINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.USINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.WORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.WSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType.dataTypeIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.struct">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.struct.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.struct.varDeclaration">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.struct.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.struct.uniqueID">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.varDeclaration">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.varDeclaration.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.varDeclaration.Item">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.varDeclaration.ItemElementName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.varDeclaration.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.varDeclaration.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.varDeclaration.size">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.varDeclaration.initialValue">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ItemChoiceType1">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.BITSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.BOOL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.BYTE">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.CHAR">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.DINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.DWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.INT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.LINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.LREAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.LWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.REAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.SINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.STRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.UDINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.UINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.ULINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.USINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.WORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.WSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType1.dataTypeIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.enum">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.enumValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.BOOL">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.BITSTRING">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.BYTE">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.CHAR">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.WORD">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.DWORD">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.LWORD">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.SINT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.INT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.DINT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.LINT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.USINT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.UINT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.UDINT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.ULINT">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.REAL">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.LREAL">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.STRING">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.WSTRING">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enum.size">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.enumValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enumValue.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.enumValue.value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.derived">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.derived.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.derived.count">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.derived.Item">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.derived.ItemElementName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.derived.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.derived.uniqueID">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.count">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.count.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.count.defaultValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.count.allowedValues">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.count.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.count.access">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.defaultValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.defaultValue.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.defaultValue.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.defaultValue.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.defaultValue.multiplier">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.allowedValues">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.allowedValues.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.allowedValues.range">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.allowedValues.templateIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.value.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.value.value1">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.value.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.value.multiplier">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.range">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.range.minValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.range.maxValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.range.step">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.rangeMinValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMinValue.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMinValue.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMinValue.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMinValue.multiplier">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.rangeMaxValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMaxValue.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMaxValue.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMaxValue.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeMaxValue.multiplier">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.rangeStep">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeStep.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeStep.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeStep.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.rangeStep.multiplier">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.countAccess">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.countAccess.const">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.countAccess.read">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.countAccess.write">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.countAccess.readWrite">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.countAccess.noAccess">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ItemChoiceType2">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.BITSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.BOOL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.BYTE">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.CHAR">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.DINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.DWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.INT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.LINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.LREAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.LWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.REAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.SINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.STRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.UDINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.UINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.ULINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.USINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.WORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.WSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType2.dataTypeIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.functionType">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionType.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionType.versionInfo">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionType.interfaceList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionType.functionInstanceList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionType.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionType.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionType.package">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.versionInfo">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.versionInfo.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.versionInfo.organization">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.versionInfo.version">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.versionInfo.author">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.versionInfo.date">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.interfaceList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.interfaceList.inputVars">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.interfaceList.outputVars">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.interfaceList.configVars">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.functionInstanceList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionInstanceList.functionInstance">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionInstanceList.connection">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.functionInstance">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionInstance.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionInstance.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionInstance.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionInstance.typeIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.connection">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.connection.source">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.connection.destination">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.connection.description">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.templateList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.templateList.parameterTemplate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.templateList.allowedValuesTemplate">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameterTemplate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.Item">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.ItemElementName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.conditionalSupport">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.actualValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.defaultValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.substituteValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.allowedValues">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.unit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.property">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.access">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.accessList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.support">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.supportSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.persistent">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.multiplier">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterTemplate.templateIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ItemChoiceType3">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.BITSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.BOOL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.BYTE">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.CHAR">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.DINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.DWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.INT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.LINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.LREAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.LWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.REAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.SINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.STRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.UDINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.UINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.ULINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.USINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.WORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.WSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ItemChoiceType3.dataTypeIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.conditionalSupport">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.conditionalSupport.paramIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.actualValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.actualValue.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.actualValue.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.actualValue.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.actualValue.multiplier">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.substituteValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.substituteValue.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.substituteValue.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.substituteValue.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.substituteValue.multiplier">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.unit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.unit.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.unit.multiplier">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.unit.unitURI">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.property">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.property.name">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.property.value">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameterTemplateAccess">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateAccess.const">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateAccess.read">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateAccess.write">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateAccess.readWrite">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateAccess.readWriteInput">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateAccess.readWriteOutput">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateAccess.noAccess">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameterTemplateSupport">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateSupport.mandatory">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateSupport.optional">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.parameterTemplateSupport.conditional">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.allowedValuesTemplate">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.allowedValuesTemplate.value">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.allowedValuesTemplate.range">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.allowedValuesTemplate.uniqueID">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameter">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.Items1">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.Items1ElementName">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.conditionalSupport">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.denotation">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.actualValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.defaultValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.substituteValue">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.allowedValues">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.unit">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.property">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.access">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.accessList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.support">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.supportSpecified">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.persistent">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.offset">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.multiplier">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameter.templateIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.variableRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.variableRef.instanceIDRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.variableRef.variableIDRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.variableRef.memberRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.variableRef.position">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.instanceIDRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.instanceIDRef.uniqueIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.variableIDRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.variableIDRef.uniqueIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.memberRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.memberRef.uniqueIDRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.memberRef.index">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.memberRef.indexSpecified">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.Items1ChoiceType">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.BITSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.BOOL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.BYTE">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.CHAR">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.DINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.DWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.INT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.LINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.LREAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.LWORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.REAL">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.SINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.STRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.UDINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.UINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.ULINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.USINT">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.WORD">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.WSTRING">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.dataTypeIDRef">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.Items1ChoiceType.variableRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.denotation">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.denotation.Items">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameterGroup">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterGroup.Items">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterGroup.parameterGroup1">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterGroup.parameterRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterGroup.uniqueID">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterGroup.kindOfAccess">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameterRef">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterRef.uniqueIDRef">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.ProfileBody_Device_CANopenDeviceClass">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_Device_CANopenDeviceClass.compact">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_Device_CANopenDeviceClass.modular">
+            <remarks/>
+        </member>
+        <member name="F:XSDImport.ProfileBody_Device_CANopenDeviceClass.configurable">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.standardComplianceList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.standardComplianceList.compliantWith">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.picturesList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.picturesList.picture">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.dictionaryList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.dictionaryList.dictionary">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.functionTypeList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.functionTypeList.functionType">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.inputVars">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.inputVars.varDeclaration">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.outputVars">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.outputVars.varDeclaration">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.configVars">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.configVars.varDeclaration">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameterList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterList.parameter">
+            <remarks/>
+        </member>
+        <member name="T:XSDImport.parameterGroupList">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.parameterGroupList.parameterGroup">
+            <remarks/>
+        </member>
+    </members>
+</doc>
