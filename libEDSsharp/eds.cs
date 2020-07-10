@@ -1596,7 +1596,6 @@ namespace libEDSsharp
 
         public void Parseline(string linex)
         {
-
             string key = "";
             string value = "";
 
@@ -1929,6 +1928,11 @@ namespace libEDSsharp
 
 
                 di = new DeviceInfo(eds["DeviceInfo"]);
+                if (eds.ContainsKey("DeviceCommissioning")) {
+                    dc = new DeviceCommissioning(eds["DeviceCommissioning"]);
+                } else {
+                    dc = new DeviceCommissioning();
+                }
 
                 foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
                 {
@@ -2195,6 +2199,7 @@ namespace libEDSsharp
             fi.Write(writer,ft);
             di.Write(writer,ft);
             du.Write(writer,ft);
+            dc.Write(writer,ft);
             c.Write(writer);
 
             if(ft == InfoSection.Filetype.File_DCF)
@@ -2211,8 +2216,8 @@ namespace libEDSsharp
             {
                 ODentry entry = kvp.Value;
 
-				if (entry.Disabled == true)
-					continue;
+                if (entry.Disabled == true)
+                    continue;
 
                 if (entry.Index == 0x1000 || entry.Index == 0x1001 || entry.Index == 0x1018)
                 {
@@ -2453,7 +2458,7 @@ namespace libEDSsharp
                 return 0;
             }
 
-    		input = input.ToUpper();
+            input = input.ToUpper();
 
             if(input.Contains("$NODEID"))     
                 nodeidpresent = true;

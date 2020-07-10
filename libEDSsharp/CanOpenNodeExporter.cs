@@ -248,7 +248,7 @@ namespace libEDSsharp
                 {
 
                     case ObjectType.REC:
-                        objecttypewords = String.Format("OD_{0}_t", make_cname(od.parameter_name));
+                        objecttypewords = String.Format("{1}OD_{0}_t", make_cname(od.parameter_name),eds.dc.NodeName);
                         break;
                     case ObjectType.ARRAY:
                         objecttypewords = t.ToString(); //this case is handled by the logic in eds.getdatatype();
@@ -404,30 +404,30 @@ namespace libEDSsharp
    FEATURES
 *******************************************************************************/");
 
-            file.WriteLine(string.Format("  #define CO_NO_SYNC                     {0}   //Associated objects: 1005-1007", noSYNC));
+            file.WriteLine(string.Format("  #define {0}CO_NO_SYNC                     {1}   //Associated objects: 1005-1007", eds.dc.NodeName,noSYNC));
 
-            file.WriteLine(string.Format("  #define CO_NO_EMERGENCY                {0}   //Associated objects: 1014, 1015", noEMCY));
+            file.WriteLine(string.Format("  #define {0}CO_NO_EMERGENCY                {1}   //Associated objects: 1014, 1015", eds.dc.NodeName,noEMCY));
 
-            file.WriteLine(string.Format("  #define CO_NO_TIME                     {0}   //Associated objects: 1012, 1013", noTIME));
+            file.WriteLine(string.Format("  #define {0}CO_NO_TIME                     {1}   //Associated objects: 1012, 1013", eds.dc.NodeName,noTIME));
 
-            file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
-            file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
+            file.WriteLine(string.Format("  #define {0}CO_NO_SDO_SERVER               {1}   //Associated objects: 1200-127F", eds.dc.NodeName,noSDOservers));
+            file.WriteLine(string.Format("  #define {0}CO_NO_SDO_CLIENT               {1}   //Associated objects: 1280-12FF", eds.dc.NodeName,noSDOclients));
 
             int lssServer = 0;
             if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Server")
             {
                 lssServer = 1;
             }
-            file.WriteLine(string.Format("  #define CO_NO_LSS_SERVER               {0}   //LSS Slave", lssServer));
+            file.WriteLine(string.Format("  #define {0}CO_NO_LSS_SERVER               {1}   //LSS Slave", eds.dc.NodeName,lssServer));
             int lssClient = 0;
             if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Client")
             {
                 lssClient = 1;
             }
-            file.WriteLine(string.Format("  #define CO_NO_LSS_CLIENT               {0}   //LSS Master", lssClient));
+            file.WriteLine(string.Format("  #define {0}CO_NO_LSS_CLIENT               {1}   //LSS Master", eds.dc.NodeName,lssClient));
 
-            file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
-            file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
+            file.WriteLine(string.Format("  #define {0}CO_NO_RPDO                     {1}   //Associated objects: 14xx, 16xx", eds.dc.NodeName,noRXpdos));
+            file.WriteLine(string.Format("  #define {0}CO_NO_TPDO                     {1}   //Associated objects: 18xx, 1Axx", eds.dc.NodeName,noTXpdos));
 
 
             bool ismaster = false;
@@ -444,8 +444,8 @@ namespace libEDSsharp
                     ismaster = true;
             }
 
-            file.WriteLine(string.Format("  #define CO_NO_NMT_MASTER               {0}", ismaster==true?1:0));
-            file.WriteLine(string.Format("  #define CO_NO_TRACE                    0"));
+            file.WriteLine(string.Format("  #define {1}CO_NO_NMT_MASTER               {0}", ismaster==true?1:0, eds.dc.NodeName));
+            file.WriteLine(string.Format("  #define {0}CO_NO_TRACE                    0", eds.dc.NodeName));
             file.WriteLine("");
             file.WriteLine("");
             file.WriteLine(@"/*******************************************************************************
@@ -472,7 +472,7 @@ namespace libEDSsharp
                 if (od.objecttype != ObjectType.REC)
                     continue;
 
-                string structname = String.Format("OD_{0}_t", make_cname(od.parameter_name));
+                string structname = String.Format("{1}OD_{0}_t", make_cname(od.parameter_name), eds.dc.NodeName);
 
                 if (structnamelist.Contains(structname))
                     continue;
@@ -589,7 +589,7 @@ namespace libEDSsharp
                 file.Write("/***** Structure for ");
                 file.Write(location);
                 file.WriteLine(" variables ********************************************/");
-                file.Write("struct sCO_OD_");
+                file.Write("struct s{0}CO_OD_",eds.dc.NodeName);
                 file.Write(location);
                 file.Write(@"{
                UNSIGNED32     FirstWord;
@@ -613,9 +613,9 @@ namespace libEDSsharp
                     continue;
                 }
 
-                file.Write("extern struct sCO_OD_");
+                file.Write("extern struct s{0}CO_OD_",eds.dc.NodeName);
                 file.Write(location);
-                file.Write(" CO_OD_");
+                file.Write(" {0}CO_OD_",eds.dc.NodeName);
                 file.Write(location);
                 file.WriteLine(@";
 ");
@@ -636,8 +636,7 @@ file.WriteLine(@"/**************************************************************
                 if (od.Disabled == true)
                     continue;
 
-                string loc = "CO_OD_" + od.StorageLocation;
-
+                string loc = eds.dc.NodeName + "CO_OD_" + od.StorageLocation;
                 DataType t = eds.Getdatatype(od);
 
 
@@ -646,13 +645,13 @@ file.WriteLine(@"/**************************************************************
                     default:
                         {
                             file.WriteLine(string.Format("/*{0:X4}, Data Type: {1} */", od.Index, t.ToString()));
-                            file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
+                            file.WriteLine(string.Format("        #define {3}{0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name),eds.dc.NodeName));
 
                             DataType dt = od.datatype;
 
                             if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                             {
-                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.Lengthofstring));
+                                file.WriteLine(string.Format("        #define {2}{0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.Lengthofstring,eds.dc.NodeName,eds.dc.NodeName));
                             }
                             file.WriteLine("");
                         }
@@ -663,9 +662,8 @@ file.WriteLine(@"/**************************************************************
                             DataType dt = od.datatype;
 
                             file.WriteLine(string.Format("/*{0:X4}, Data Type: {1}, Array[{2}] */", od.Index, t.ToString(), od.Nosubindexes - 1));
-                            file.WriteLine(string.Format("        #define OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
-                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.Nosubindexes - 1));
-
+                            file.WriteLine(string.Format("        #define {3}OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name),eds.dc.NodeName));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("{1}ODL_{0}_arrayLength", make_cname(od.parameter_name),eds.dc.NodeName), od.Nosubindexes - 1,eds.dc.NodeName));
 
                             List<string> ODAs = new List<string>();
 
@@ -678,7 +676,7 @@ file.WriteLine(@"/**************************************************************
                                 if (kvp2.Key == 0)
                                     continue;
 
-                                string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+                                string ODA = string.Format("{1}{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),eds.dc.NodeName);
 
                                 if (ODAs.Contains(ODA))
                                 {
@@ -691,11 +689,11 @@ file.WriteLine(@"/**************************************************************
                                 //so offset by one
                                 if (od.objecttype == ObjectType.ARRAY)
                                 {
-                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key - 1}{Environment.NewLine}");
+                                    ODAout += ($"        #define {string.Format("{2}ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name),eds.dc.NodeName),-51} {kvp2.Key - 1}{Environment.NewLine}");
                                 }
                                 else
                                 {
-                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key}{Environment.NewLine}");
+                                    ODAout += ($"        #define {string.Format("{2}ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name),eds.dc.NodeName),-51} {kvp2.Key}{Environment.NewLine}");
                                 }
                             }
 
@@ -711,7 +709,7 @@ file.WriteLine(@"/**************************************************************
                             if (!constructed_rec_types.Contains(rectype))
                             {
                                 file.WriteLine(string.Format("/*{0:X4}, Data Type: {1}_t */", od.Index, rectype));
-                                file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", rectype), loc, rectype));
+                                file.WriteLine(string.Format("        #define {3}{0,-51} {1}.{2}", string.Format("OD_{0}", rectype), loc, rectype,eds.dc.NodeName));
                                 constructed_rec_types.Add(rectype);
                                 file.WriteLine("");
                             }
@@ -753,9 +751,9 @@ file.WriteLine(@"/**************************************************************
                 file.Write("/***** Definition for ");
                 file.Write(location);
                 file.WriteLine(" variables *******************************************/");
-                file.Write("struct sCO_OD_");
+                file.Write("struct s{0}CO_OD_",eds.dc.NodeName);
                 file.Write(location);
-                file.Write(" CO_OD_");
+                file.Write(" {0}CO_OD_",eds.dc.NodeName);
                 file.Write(location);
                 file.Write(@" = {
            CO_OD_FIRST_LAST_WORD,
@@ -782,11 +780,10 @@ file.WriteLine(@"/**************************************************************
 
             file.Write(export_record_types());
 
-            file.Write(@"/*******************************************************************************
+            file.WriteLine(@"/*******************************************************************************
    OBJECT DICTIONARY
-*******************************************************************************/
-const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
-");
+*******************************************************************************/");
+			file.WriteLine("const CO_OD_entry_t " + eds.dc.NodeName + "CO_OD[CO_OD_NoOfElements] = {");
 
             file.Write(write_od());
 
@@ -824,7 +821,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         {
             StringBuilder sb = new StringBuilder();
 
-            string loc = "CO_OD_" + od.StorageLocation;
+            string loc = eds.dc.NodeName+"CO_OD_" + od.StorageLocation;
 
             byte flags = getflags(od);
 
@@ -895,7 +892,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             if (od.objecttype == ObjectType.REC)
             {
 
-                pdata = string.Format("&OD_record{0:X4}", od.Index);
+                pdata = string.Format("&{1}OD_record{0:X4}", od.Index,eds.dc.NodeName);
             }
             else
             {
@@ -1270,7 +1267,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                     count = 3; //CANopenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
-                returndata.AppendLine($"/*0x{od.Index:X4}*/ const CO_OD_entryRecord_t OD_record{od.Index:X4}[{count}] = {{");
+                returndata.AppendLine($"/*0x{od.Index:X4}*/ const CO_OD_entryRecord_t {eds.dc.NodeName}OD_record{od.Index:X4}[{count}] = {{");
 
                 string arrayaccess = "";
 
@@ -1319,7 +1316,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             if (sub.datatype != DataType.DOMAIN)
             {
-                sb.AppendLine($"           {{(void*)&{"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
+                sb.AppendLine($"           {{(void*)&{eds.dc.NodeName+"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
             }
             else
             {
