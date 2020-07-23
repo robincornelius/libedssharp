@@ -77,7 +77,7 @@ namespace Tests
             if (comparamOD.subobjects[6].datatype != DataType.UNSIGNED8)
                 throw new Exception("Wrong data type for Sync Start");
 
-            if (comparamOD.subobjects[1].defaultvalue != "384") //180 hex
+            if (comparamOD.subobjects[1].defaultvalue != "0x180") //180 hex
                 throw new Exception("TPDO COB wrong");
             if (comparamOD.subobjects[2].defaultvalue != "254")
                 throw new Exception("TPDO transmission type wrong");
@@ -148,7 +148,7 @@ namespace Tests
             if (comparamOD.subobjects[2].datatype != DataType.UNSIGNED8)
                 throw new Exception("Wrong data type for Transmission type");
      
-            if (comparamOD.subobjects[1].defaultvalue != "1025") //481 hex
+            if (comparamOD.subobjects[1].defaultvalue != "0x401") //481 hex
                 throw new Exception("TPDO COB wrong");
             if (comparamOD.subobjects[2].defaultvalue != "254")
                 throw new Exception("TPDO transmission type wrong");
@@ -156,33 +156,7 @@ namespace Tests
         }
 
 
-        [TestMethod]
-        public void Test_Bits()
-        {
-
-            PDOHelper pdo = new PDOHelper(this);
-
-            //configure a new slot
-            PDOSlot slot = new PDOSlot();
-            pdo.pdoslots.Add(slot);
-
-            ODentry od = new ODentry();
-
-            od.Index = 0x3000;
-            od.parameter_name = "Bit";
-            od.datatype = DataType.BOOLEAN;
-            od.PDOtype = PDOMappingType.optional;
-
-            slot.insertMapping(0, od);
-            slot.insertMapping(0, od);
-            slot.insertMapping(0, od);
-            slot.insertMapping(0, od);
-            slot.insertMapping(0, od);
-            slot.insertMapping(0, od);
-            slot.insertMapping(0, od);
-            slot.insertMapping(0, od);
-
-        }
+      
 
     }
 }

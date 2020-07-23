@@ -1315,7 +1315,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             string cname = make_cname(sub.parent.parameter_name);
 
             string subcname = make_cname(sub.parameter_name);
-            int datasize = sub.Sizeofdatatype();
+            int datasize = (int)Math.Ceiling((double)sub.Sizeofdatatype() / (double)8.0);
 
             if (sub.datatype != DataType.DOMAIN)
             {

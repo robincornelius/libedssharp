@@ -937,7 +937,8 @@ namespace libEDSsharp
             {
                 if(value==0)
                 {
-                    throw (new Exception("Object index must be set"));
+
+                    //throw (new Exception("Object index must be set"));
                 }
 
                 if(parent == null)
@@ -946,7 +947,8 @@ namespace libEDSsharp
                 }
                 else
                 {
-                    throw (new Exception("Typing to set index of a subobject"));
+
+                    //throw (new Exception("Typing to set index of a subobject"));
                 }
                
             }
