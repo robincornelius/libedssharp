@@ -46,7 +46,9 @@
     <Compile Include="CanOpenXML.cs" />
     <Compile Include="DocumentationGen.cs" />
     <Compile Include="eds.cs" />
+    <Compile Include="extensions.cs" />
     <Compile Include="NetworkPDOreport.cs" />
+    <Compile Include="PDOHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

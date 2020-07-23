@@ -344,12 +344,27 @@ namespace libEDSsharp
         }
     }
 
+    public class TypeDefinitions : SupportedObjects
+    {   
+        public TypeDefinitions() : base()
+        {
+            infoheader = "Type Definitions";
+            edssection = "TypeDefinitions";
+        }
+
+        public TypeDefinitions(Dictionary<string, string> section)
+        {
+            Parse(section);
+        }
+
+    }
+
     public class SupportedObjects
     {
 
         public Dictionary<int, int> objectlist;
         public string infoheader;
-        public string edssection;
+        public string edssection = "Supported Objects";
         public string countmsg = "SupportedObjects";
 
         public SupportedObjects()
@@ -920,6 +935,11 @@ namespace libEDSsharp
             }
             set
             {
+                if(value==0)
+                {
+                    throw (new Exception("Object index must be set"));
+                }
+
                 if(parent == null)
                 {
                     _index = value;
@@ -1066,6 +1086,7 @@ namespace libEDSsharp
             this.objecttype = ObjectType.VAR;
             this.datatype = datatype;
             this.defaultvalue = defaultvalue;
+            this.Index = index;
 
             if (accesstype >= EDSsharp.AccessType_Min && accesstype <= EDSsharp.AccessType_Max)
                 this.accesstype = accesstype;
@@ -1265,46 +1286,48 @@ namespace libEDSsharp
             switch (dt)
             {
                 case DataType.BOOLEAN:
+                    return 1;
+
                 case DataType.UNSIGNED8:
                 case DataType.INTEGER8:
-                    return 1;
+                    return 8;
 
                 case DataType.VISIBLE_STRING:
                 case DataType.OCTET_STRING:
-                    return Lengthofstring;
+                    return Lengthofstring*8;
 
                 case DataType.INTEGER16:
                 case DataType.UNSIGNED16:
                 case DataType.UNICODE_STRING:
-                    return 2;
+                    return 16; //FIXME is this corret for UNICODE_STRING seems dodgy?
 
                 case DataType.UNSIGNED24:
                 case DataType.INTEGER24:
-                    return 3;
+                    return 24;
 
                 case DataType.INTEGER32:
                 case DataType.UNSIGNED32:
                 case DataType.REAL32:
-                    return 4;
+                    return 32;
 
                 case DataType.INTEGER40:
                 case DataType.UNSIGNED40:
-                    return 5;
+                    return 40;
 
                 case DataType.INTEGER48:
                 case DataType.UNSIGNED48:
                 case DataType.TIME_DIFFERENCE:
                 case DataType.TIME_OF_DAY:
-                    return 6;
+                    return 48;
 
                 case DataType.INTEGER56:
                 case DataType.UNSIGNED56:
-                    return 7;
+                    return 56;
 
                 case DataType.INTEGER64:
                 case DataType.UNSIGNED64:
                 case DataType.REAL64:
-                    return 8;
+                    return 64;
 
                 case DataType.DOMAIN:
                     return 0;
@@ -1425,6 +1448,18 @@ namespace libEDSsharp
             return 0;
 
         }
+
+        /// <summary>
+        /// Add an existing entry as a subobject of this OD
+        /// </summary>
+        /// <param name="sub"></param>
+        /// <param name="index"></param>
+        public void addsubobject(byte index, ODentry sub)
+        {
+            sub.parent = this;
+            this.subobjects.Add(index, sub);
+        }
+
     }
 
     public class Module
@@ -1511,6 +1546,8 @@ namespace libEDSsharp
         public Dummyusage du;
         public DeviceCommissioning dc;
 
+        public TypeDefinitions td;
+
         public SupportedModules sm;
         public ConnectedModules cm;
 
@@ -1546,6 +1583,7 @@ namespace libEDSsharp
             c = new Comments();
             sm = new SupportedModules();
             cm = new ConnectedModules();
+            td = new TypeDefinitions();
 
 
             //mi = new Dictionary<ushort, ModuleInfo>();
@@ -1578,12 +1616,12 @@ namespace libEDSsharp
 
             ODentry od = new ODentry();
 
-            dummy_ods.Add(2, new ODentry("Dummy Int8", 0x002,  DataType.INTEGER8, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(3, new ODentry("Dummy Int16", 0x002, DataType.INTEGER16, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(4, new ODentry("Dummy Int32", 0x002, DataType.INTEGER32, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(5, new ODentry("Dummy UInt8", 0x002, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(6, new ODentry("Dummy UInt16", 0x002, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(7, new ODentry("Dummy UInt32", 0x002, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x002, new ODentry("Dummy Int8", 0x002,  DataType.INTEGER8, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x003, new ODentry("Dummy Int16", 0x003, DataType.INTEGER16, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x004, new ODentry("Dummy Int32", 0x004, DataType.INTEGER32, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x005, new ODentry("Dummy UInt8", 0x005, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x006, new ODentry("Dummy UInt16", 0x006, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x007, new ODentry("Dummy UInt32", 0x007, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional, null));
 
         }
 
@@ -1946,6 +1984,9 @@ namespace libEDSsharp
 
                 if(eds.ContainsKey("ManufacturerObjects"))
                     mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
+
+                if (eds.ContainsKey("TypeDefinitions"))
+                    td = new TypeDefinitions(eds["TypeDefinitions"]);
 
                 //Only DCF not EDS files
                 dc = new DeviceCommissioning();
@@ -2496,6 +2537,25 @@ namespace libEDSsharp
             }
 
             return 0;
+        }
+
+
+        public bool tryGetODEntry(UInt16 index, out ODentry od)
+        {
+            od = null;
+            if(ods.ContainsKey(index))
+            {
+                od = ods[index];
+                return true;
+            }
+
+            if(dummy_ods.ContainsKey(index))
+            {
+                od = dummy_ods[index];
+                return true;
+            }
+
+            return false;
         }
 
         //RX COM 0x1400
