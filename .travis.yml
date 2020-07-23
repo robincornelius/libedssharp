@@ -4,6 +4,6 @@ mono:
   - 3.12.0
 install:
   - nuget # lets get version number
-  - nuget restore EDSEditor.sln -Verbosity detailed -Source nuget.org
-  - nuget update EDSEditor.sln -Verbosity detailed -Source nuget.org
+  - nuget restore EDSEditor.sln -Verbosity detailed -Source https://api.nuget.org/v3/index.json
+  - nuget update EDSEditor.sln -Verbosity detailed -Source https://api.nuget.org/v3/index.json
   
