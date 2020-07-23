@@ -1632,7 +1632,7 @@ namespace libEDSsharp
 
         protected string sectionname = "";
 
-        public void Parseline(string linex)
+        public void Parseline(string linex,int no)
         {
 
             string key = "";
@@ -1658,6 +1658,15 @@ namespace libEDSsharp
                 {
                     Group g = m.Groups[1];
                     sectionname = g.ToString();
+
+                    if (!eds.ContainsKey(sectionname))
+                    {
+                        eds.Add(sectionname, new Dictionary<string, string>());
+                    }
+                    else
+                    {
+                        Warnings.warning_list.Add(string.Format("EDS Error on Line {0} : Duplicate section [{1}] ", no,sectionname));
+                    }
                 }
             }
 
@@ -1674,26 +1683,41 @@ namespace libEDSsharp
                     value = m.Groups[2].ToString();
                     value = value.TrimEnd(' ','\t','\n','\r');
 
+                    //not sure how we actually get here with out a section being in the dictionary already..
+                    //suspect this is dead code.
                     if (!eds.ContainsKey(sectionname))
                     {
                         eds.Add(sectionname, new Dictionary<string, string>());
                     }
-
+            
                     if (custom_extension == false)
                     {
-                        eds[sectionname].Add(key, value);
+                        try
+                        {
+                            eds[sectionname].Add(key, value);
+                        }
+                        catch(Exception e)
+                        {
+                            Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate key \"{0}\" value \"{1}\" in section [{2}]", key,value,sectionname, no));
+                        }
                     }
                     else
                     //Only allow our own extensions to populate the key/value pair
                     {
                         if (key == "StorageLocation" || key == "LSS_Type" || key== "TPDODetectCos")
                         {
-                            eds[sectionname].Add(key, value);
+                            try
+                            {
+                                eds[sectionname].Add(key, value);
+                            }
+                            catch(Exception e)
+                            {
+                                Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate custom key \"{0}\" value \"{1}\" in section [{2}]", key, value, sectionname, no));
+                            }
                         }
                     }
                 }
             }
-
         }
 
         public void ParseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
@@ -1960,9 +1984,11 @@ namespace libEDSsharp
 
             //try
             {
+                int lineno = 1;
                 foreach (string linex in File.ReadLines(filename))
                 {
-                    Parseline(linex);
+                    Parseline(linex,lineno);
+                    lineno++;
                 }
 
 
