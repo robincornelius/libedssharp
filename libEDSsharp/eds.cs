@@ -154,7 +154,7 @@ namespace libEDSsharp
             File_DCF
         }
 
-        public virtual void Parse(Dictionary<string, string> section)
+        public virtual void Parse(Dictionary<string, string> section,string sectionname)
         {
 
             this.section = section;
@@ -516,7 +516,7 @@ namespace libEDSsharp
 
         public Dummyusage(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
     }
 
@@ -566,7 +566,7 @@ namespace libEDSsharp
 
         public FileInfo(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
 
         public FileInfo()
@@ -576,10 +576,10 @@ namespace libEDSsharp
         }
 
 
-        override public void Parse(Dictionary<string, string> section)
+        override public void Parse(Dictionary<string, string> section, string sectionname)
         {
 
-            base.Parse(section);
+            base.Parse(section,edssection);
 
             string dtcombined = "";
             try
@@ -594,7 +594,7 @@ namespace libEDSsharp
             {
                 if (e is System.FormatException)
                 {
-                    Warnings.warning_list.Add(String.Format("Unable to parse DateTime {0} for CreationTime, not in DS306 format", dtcombined));
+                    Warnings.warning_list.Add(String.Format("EDS Error: Section [{1}] Unable to parse DateTime {0} for CreationTime, not in DS306 format", dtcombined,sectionname));
                 }
             }
 
@@ -610,7 +610,7 @@ namespace libEDSsharp
             {
                 if (e is System.FormatException)
                 {
-                    Warnings.warning_list.Add(String.Format("Unable to parse DateTime {0} for ModificationTime, not in DS306 format", dtcombined));
+                    Warnings.warning_list.Add(String.Format("EDS Error: Section [{1}] Unable to parse DateTime {0} for ModificationTime, not in DS306 format", dtcombined, sectionname));
                 }
             }
 
@@ -703,7 +703,7 @@ namespace libEDSsharp
 
         public DeviceInfo(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
     }
 
@@ -719,7 +719,7 @@ namespace libEDSsharp
 
         public DeviceCommissioning(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
 
         [DcfExport]
@@ -758,7 +758,7 @@ namespace libEDSsharp
 
         public SupportedModules(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
 
        
@@ -868,7 +868,7 @@ namespace libEDSsharp
 
         public ModuleInfo(Dictionary<string, string> section, UInt16 moduleindex) : this (moduleindex)
         {
-            Parse(section);
+            Parse(section,edssection);
         }
     }
 
@@ -1532,6 +1532,7 @@ namespace libEDSsharp
         }
 
         protected Dictionary<string, Dictionary<string, string>> eds;
+        protected Dictionary<string, int> sectionlinenos;
         public SortedDictionary<UInt16, ODentry> ods;
         public SortedDictionary<UInt16, ODentry> dummy_ods;
 
@@ -1980,8 +1981,6 @@ namespace libEDSsharp
                 dcffilename = filename;
             }
 
-
-
             //try
             {
                 int lineno = 1;
@@ -1990,7 +1989,6 @@ namespace libEDSsharp
                     Parseline(linex,lineno);
                     lineno++;
                 }
-
 
                 di = new DeviceInfo(eds["DeviceInfo"]);
 
@@ -2018,7 +2016,7 @@ namespace libEDSsharp
                 dc = new DeviceCommissioning();
                 if(eds.ContainsKey("DeviceCommissioning"))
                 {
-                    dc.Parse(eds["DeviceCommissioning"]);
+                    dc.Parse(eds["DeviceCommissioning"],"DeviceCommissioning");
                     edsfilename = fi.LastEDS;
                 }
                 
