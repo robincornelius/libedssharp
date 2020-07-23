@@ -181,7 +181,7 @@ namespace libEDSsharp
 
             file.WriteLine($"Granularity: {eds.di.Granularity}");
             file.WriteLine();
-            file.WriteLine("Supported Baudrates:");
+            file.WriteLine("Supported Baud rates:");
             file.WriteLine();
 
             file.WriteLine($"- [{(eds.di.BaudRate_1000 ? "x" : " ")}] 1000 kBit/s");
@@ -261,7 +261,7 @@ namespace libEDSsharp
             }
             file.WriteLine();
            
-            write2linetableheadermd("Paramater", "Value");
+            write2linetableheadermd("Parameter", "Value");
 
             ObjectType ot = od.objecttype;
             if (ot == ObjectType.UNKNOWN && od.parent != null)
