@@ -3,4 +3,7 @@ solution: EDSEditor.sln
 mono:
   - 3.12.0
 install:
-  - nuget restore EDSEditor.sln
+  - nuget # lets get version number
+  - nuget restore src/EDSEditor.sln -Verbosity detailed
+  - nuget update src/EDSEditor.sln -Verbosity detailed
+  
