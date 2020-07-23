@@ -2,7 +2,7 @@ language: csharp
 mono:
   - 3.12.0
 install: 
-  - sudo update-ca-certificates
+  - sudo mozroots --import --sync
   - nuget # lets get version number
   - nuget restore EDSEditor.sln -Verbosity detailed -Source https://api.nuget.org/v3/index.json
   - nuget update EDSEditor.sln -Verbosity detailed -Source https://api.nuget.org/v3/index.json
