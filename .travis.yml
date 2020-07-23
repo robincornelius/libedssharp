@@ -1,6 +1,6 @@
 language: csharp
 solution: EDSEditor.sln
 mono:
-  - latest
   - 3.12.0
-  - 3.10.0
+install:
+  - nuget restore EDSEditor.sln
