@@ -8,6 +8,7 @@ deploy:
   github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
   keep_history: true
   target_branch: gh-pages
+  directory: $TRAVIS_BUILD_DIR
   on:
     branch: xdd
     
