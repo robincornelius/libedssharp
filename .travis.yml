@@ -4,7 +4,9 @@ mono:
   - 6.10.0
 
 before_deploy:
-- zip -r $TRAVIS_BUILD_DIR/build/OpenEDSEditor-latest.zip $TRAVIS_BUILD_DIR/EDSTest/bin/Release/*
+- cd $TRAVIS_BUILD_DIR/EDSTest/bin/Release/
+- zip -r $TRAVIS_BUILD_DIR/build/OpenEDSEditor-latest.zip *
+- cd $TRAVIS_BUILD_DIR
 
 deploy:
   provider: pages
