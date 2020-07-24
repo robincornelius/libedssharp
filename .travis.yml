@@ -2,5 +2,12 @@ language: csharp
 solution: EDSEditor.sln
 mono:
   - 6.10.0
- 
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  keep_history: true
+  on:
+    branch: gh_pages
+    
   
