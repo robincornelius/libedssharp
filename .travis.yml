@@ -10,6 +10,6 @@ deploy:
   target_branch: gh-pages
   local_dir: build
   on:
-    branch: gh_pages
+    branch: xdd
     
   
