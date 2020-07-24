@@ -4,7 +4,7 @@ mono:
   - 6.10.0
 
 before_deploy:
-- rm .gitignore
+- zip -r $TRAVIS_BUILD_DIR/build/OpenEDSEditor-latest.zip $TRAVIS_BUILD_DIR/EDSTest/bin/Release/*
 
 deploy:
   provider: pages
@@ -12,7 +12,8 @@ deploy:
   github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
   keep_history: false
   target_branch: gh-pages
-  directory: $TRAVIS_BUILD_DIR
+  directory: $TRAVIS_BUILD_DIR/build/
+
   on:
     branch: xdd
     
