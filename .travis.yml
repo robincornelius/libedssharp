@@ -2,11 +2,15 @@ language: csharp
 solution: EDSEditor.sln
 mono:
   - 6.10.0
+
+before_deploy:
+- rm .gitignore
+
 deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  keep_history: true
+  keep_history: false
   target_branch: gh-pages
   directory: $TRAVIS_BUILD_DIR
   on:

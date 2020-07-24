@@ -1,8 +1,4 @@
 
-THIS BRANCH IS OBSOLETE PLEASE USE xdd branch
-
-
-
 A C# CanOpen EDS (Electronic Data Sheet) library and GUI editor
 
 This application is designed to load/save/edit and create EDS/DCF/XDC file for 
