@@ -1,6 +1,6 @@
 language: csharp
+solution: EDSEditor.sln
 mono:
-  - 3.12.0
-install: 
-  -  dotnet restore
+  - 6.10.0
+ 
   
