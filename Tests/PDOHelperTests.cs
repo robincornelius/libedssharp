@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using libEDSsharp;
 
 namespace Tests
 {
-    [TestClass]
     public class PDOHelperTests : libEDSsharp.EDSsharp
     {
 
-        [TestMethod]
+        [Fact]
         public void Test_TPDO()
         {
 
@@ -90,7 +85,7 @@ namespace Tests
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_RPDO()
         {
 

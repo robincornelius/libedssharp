@@ -1,13 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using libEDSsharp;
 
 namespace Tests
 {
-    [TestClass]
+    
     public class ExporterTests : CanOpenNodeExporter
     {
-        [TestMethod]
+        [Fact]
         public void Test_cname_conversion()
         {
 
@@ -21,7 +21,7 @@ namespace Tests
                 throw (new Exception("make_cname Conversion error"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_record_objects()
         {
 
@@ -48,7 +48,7 @@ namespace Tests
 
         }
 
-        [TestMethod]
+        [Fact]
         public void TestArrays()
         {
 
@@ -87,7 +87,7 @@ namespace Tests
         /// <summary>
         /// Check we can override maxsub index correctly
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestArrayNoEntries()
         {
             eds = new EDSsharp

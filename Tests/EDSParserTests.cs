@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using libEDSsharp;
 
 namespace Tests
 {
-    [TestClass]
     public class EDSParserTests : libEDSsharp.EDSsharp
     {
 
-        [TestMethod]
+        [Fact]
         public void Test_parser()
         {
 
@@ -57,7 +55,7 @@ namespace Tests
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_CompactSubObj()
         {
 
@@ -172,7 +170,7 @@ CompactSubObj=9
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_var_object_loader()
         {
 
@@ -204,7 +202,7 @@ CompactSubObj=9
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_array_object_loader()
         {
 
@@ -228,7 +226,7 @@ CompactSubObj=9
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_compact_array_object_loader()
         {
 
@@ -260,7 +258,7 @@ CompactSubObj=9
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Test_implicit_PDOS()
         {
 
@@ -293,7 +291,7 @@ NrOfTXPDO=7
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Test_keyname_case()
         {
 
@@ -315,7 +313,7 @@ ProDucTNumbeR=test4
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Test_datetimeparse()
         {
 
@@ -334,7 +332,7 @@ ProDucTNumbeR=test4
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_accesstype()
         {
             {
