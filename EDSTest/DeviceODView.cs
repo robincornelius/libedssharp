@@ -1319,7 +1319,7 @@ namespace ODEditor
 
         private void comboBox_memory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox_memory.SelectedItem.ToString() == "Add...")
+            if (comboBox_memory.SelectedItem!=null && comboBox_memory.SelectedItem.ToString() == "Add...")
             {
                 NewMemoryType memory = new NewMemoryType();
                 if (memory.ShowDialog() == DialogResult.OK)

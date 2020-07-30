@@ -867,7 +867,7 @@ file.WriteLine(@"/**************************************************************
             byte flags = getflags(od);
 
             DataType t = eds.Getdatatype(od);
-            int datasize = od.Sizeofdatatype();
+            int datasize = (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
 
             string odf;
 
@@ -1039,7 +1039,7 @@ file.WriteLine(@"/**************************************************************
               flags |=0x40;
             }
 
-            int datasize = od.Sizeofdatatype();
+            int datasize = (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
 
             if (datasize > 1)
             {
@@ -1061,7 +1061,6 @@ file.WriteLine(@"/**************************************************************
 
         string formatvaluewithdatatype(string defaultvalue, DataType dt)
         {
-//			Console.WriteLine("xx "+defaultvalue+" yy "+dt);
             int nobase = 10;
             bool nodeidreplace = false;
 
@@ -1354,7 +1353,7 @@ file.WriteLine(@"/**************************************************************
             string cname = make_cname(sub.parent.parameter_name);
 
             string subcname = make_cname(sub.parameter_name);
-            int datasize = sub.Sizeofdatatype();
+            int datasize = (int)Math.Ceiling((double)sub.Sizeofdatatype() / (double)8.0);
 
             if (sub.datatype != DataType.DOMAIN)
             {

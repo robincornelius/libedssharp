@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using libEDSsharp;
 
 namespace Tests
 {
-    [TestClass]
     public class EDSParserTests : libEDSsharp.EDSsharp
     {
 
-        [TestMethod]
+        [Fact]
         public void Test_parser()
         {
 
@@ -29,7 +27,7 @@ namespace Tests
             {
                 eds.Clear();
                 sectionname = "Tests";
-                Parseline(teststring);
+                Parseline(teststring,0);
 
                 if (!eds["Tests"].ContainsKey("ParameterName"))
                     throw (new Exception("Parser key detection error on string \"" + teststring + "\""));
@@ -48,7 +46,7 @@ namespace Tests
             string[] lines = testobject.Split('\n');
 
             foreach (string line in lines)
-                Parseline(line);
+                Parseline(line,0);
 
             foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
             {
@@ -57,7 +55,7 @@ namespace Tests
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_CompactSubObj()
         {
 
@@ -172,7 +170,7 @@ CompactSubObj=9
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_var_object_loader()
         {
 
@@ -204,7 +202,7 @@ CompactSubObj=9
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_array_object_loader()
         {
 
@@ -228,7 +226,7 @@ CompactSubObj=9
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_compact_array_object_loader()
         {
 
@@ -260,7 +258,7 @@ CompactSubObj=9
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Test_implicit_PDOS()
         {
 
@@ -293,7 +291,7 @@ NrOfTXPDO=7
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Test_keyname_case()
         {
 
@@ -309,13 +307,13 @@ ProDucTNumbeR=test4
             string[] lines = testobject.Split('\n');
 
             foreach (string line in lines)
-                Parseline(line);
+                Parseline(line,0);
             DeviceInfo di = new DeviceInfo(eds["DeviceInfo"]);
 
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Test_datetimeparse()
         {
 
@@ -323,18 +321,18 @@ ProDucTNumbeR=test4
             Dictionary<string, string> section = new Dictionary<string, string>();
             section.Add("CreationTime", "9:03AM");
             section.Add("CreationDate", "04-27-2017");
-            fi.Parse(section);
+            fi.Parse(section,"FileInfo");
 
             fi = new FileInfo();
             section = new Dictionary<string, string>();
             section.Add("CreationTime", "10:15 AM");
             section.Add("CreationDate", "10-08-2013");
 
-            fi.Parse(section);
+            fi.Parse(section,"FileInfo");
 
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_accesstype()
         {
             {

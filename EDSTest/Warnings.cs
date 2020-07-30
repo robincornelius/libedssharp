@@ -19,8 +19,13 @@ namespace ODEditor
 
             foreach(string s in Warnings.warning_list)
             {
-                textBox1.AppendText(s+"\r\n\r\n");
+                textBox1.AppendText(s+"\r\n");
             }
+        }
+
+        private void button_close_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

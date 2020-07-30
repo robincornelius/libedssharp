@@ -1,8 +1,4 @@
 
-THIS BRANCH IS OBSOLETE PLEASE USE xdd branch
-
-
-
 A C# CanOpen EDS (Electronic Data Sheet) library and GUI editor
 
 This application is designed to load/save/edit and create EDS/DCF/XDC file for 
@@ -42,6 +38,9 @@ Releases
 
 If you would like to try a pre compiled version, then head over to the 
 [releases page!](https://github.com/robincornelius/libedssharp/releases)
+
+If you want to try the latest and greatest version from the development tip then it can be found here
+[latest auto build!](https://github.com/robincornelius/libedssharp/blob/gh-pages/build/OpenEDSEditor-latest.zip)
 
 Current Features
 

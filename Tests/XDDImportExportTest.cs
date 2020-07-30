@@ -1,14 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using libEDSsharp;
 
 namespace Tests
 {
-    [TestClass]
     public class XddImportExportTest : CanOpenNodeExporter
     {
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestImportExportVar()
         {
 
@@ -47,7 +46,7 @@ namespace Tests
         }
 
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestImportExportRecord()
         {
 
@@ -104,7 +103,7 @@ namespace Tests
 
         }
 
-        [TestMethod]
+        [Fact]
         public void TestImportExportArray()
         {
 

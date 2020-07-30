@@ -6,7 +6,7 @@
     <members>
         <member name="M:libEDSsharp.CanOpenNodeExporter.getflags(libEDSsharp.ODentry)">
             <summary>
-            Get the CANopenNode specific flags, these flags are used internally in CanOpenNode to determine details about the object variable
+            Get the CANopenNode specific flags, these flags are used internally in CANopenNode to determine details about the object variable
             </summary>
             <param name="od">An odentry to access</param>
             <returns>byte containing the flag value</returns>
@@ -113,11 +113,35 @@
             This is the no of subindexes present in the object, it is NOT the maximum subobject index
             </summary>
         </member>
+        <member name="M:libEDSsharp.ODentry.addsubobject(System.Byte,libEDSsharp.ODentry)">
+            <summary>
+            Add an existing entry as a subobject of this OD
+            </summary>
+            <param name="sub"></param>
+            <param name="index"></param>
+        </member>
         <member name="M:libEDSsharp.EDSsharp.ApplyimplicitPDO">
             <summary>
             This function scans the PDO list and compares it to NrOfRXPDO and NrOfTXPDO
             if these do not match in count then implicit PDOs are present and they are
             filled in with default values from the lowest possible index
+            </summary>
+        </member>
+        <member name="M:libEDSsharp.PDOHelper.buildmappingsfromlists">
+            <summary>
+            Rebuild the communication and mapping paramaters from the
+            lists the PDOhelper currently has. These live in the list pdoslots
+            </summary>
+        </member>
+        <member name="M:libEDSsharp.PDOHelper.addPDOslot(System.UInt16)">
+            <summary>
+            Add a PDO slot as set by index
+            </summary>
+            <param name="configindex"></param>
+        </member>
+        <member name="M:libEDSsharp.PDOHelper.findPDOslotgap(System.Boolean)">
+            <summary>
+            This finds a gap in the PDO slots
             </summary>
         </member>
         <member name="T:XSDImport.ISO15745ProfileContainer">
@@ -489,6 +513,9 @@
         <member name="P:XSDImport.CANopenObjectListCANopenObject.edseditor_extenstion_storagelocation">
             <remarks/>
         </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObject.edseditor_extension_notifyonchange">
+            <remarks/>
+        </member>
         <member name="P:XSDImport.CANopenObjectListCANopenObject.PDOmapping">
             <remarks/>
         </member>
@@ -508,6 +535,9 @@
             <remarks/>
         </member>
         <member name="T:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject">
+            <remarks/>
+        </member>
+        <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.edseditor_extension_notifyonchange">
             <remarks/>
         </member>
         <member name="P:XSDImport.CANopenObjectListCANopenObjectCANopenSubObject.subIndex">
