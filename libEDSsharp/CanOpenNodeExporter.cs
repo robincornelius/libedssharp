@@ -335,10 +335,11 @@ namespace libEDSsharp
             file.WriteLine("// clang-format off");
             addHeader(file);
 
-            file.WriteLine("#ifndef CO_OD_H_");
-            file.WriteLine("#define CO_OD_H_");
+            file.WriteLine("#ifndef CO_OD_"+filename+"_H_");
+            file.WriteLine("#define CO_OD_"+filename+"_H_");
             file.WriteLine("");
-
+            file.WriteLine("#include \"CO_consts.h\"");
+            file.WriteLine("");
             file.WriteLine(@"/*******************************************************************************
    CANopen DATA TYPES
 *******************************************************************************/
@@ -361,24 +362,21 @@ namespace libEDSsharp
    #endif
 
    typedef domain_t     DOMAIN;
-
-#ifndef timeOfDay_t
-    typedef union {
-        unsigned long long ullValue;
-        struct {
-            unsigned long ms:28;
-            unsigned reserved:4;
-            unsigned days:16;
-            unsigned reserved2:16;
-        };
-    }timeOfDay_t;
+/*******************************************************************************
+   Defines for controlling the destination of ram/rom/eprom SECTIONS.
+*******************************************************************************/
+#ifndef CO_PREFIX_ROM
+	#define CO_PREFIX_ROM
 #endif
-
-    typedef timeOfDay_t TIME_OF_DAY;
-    typedef timeOfDay_t TIME_DIFFERENCE;
-
+#ifndef CO_PREFIX_RAM
+	#define CO_PREFIX_RAM
+#endif
+#ifndef CO_PREFIX_EEPROM
+	#define CO_PREFIX_EEPROM
+#endif
 ");
 
+            file.WriteLine(string.Format("extern const CO_consts_t {0}CO_Consts;", eds.dc.NodeName));
             file.WriteLine("/*******************************************************************************");
             file.WriteLine("   FILE INFO:");
             file.WriteLine(string.Format("      FileName:     {0}", eds.fi.FileName));
@@ -452,7 +450,8 @@ namespace libEDSsharp
    OBJECT DICTIONARY
 *******************************************************************************/");
 
-            file.WriteLine(string.Format("   #define CO_OD_NoOfElements             {0}", enabledcount));
+            file.WriteLine(string.Format("   #define {0}CO_OD_NoOfElements             {1}", eds.dc.NodeName, enabledcount));
+			file.WriteLine("extern const CO_OD_entry_t " + eds.dc.NodeName + "CO_OD["+eds.dc.NodeName+"CO_OD_NoOfElements];");
             file.WriteLine("");
             file.WriteLine("");
 
@@ -613,7 +612,7 @@ namespace libEDSsharp
                     continue;
                 }
 
-                file.Write("extern struct s{0}CO_OD_",eds.dc.NodeName);
+                file.Write("extern CO_PREFIX_{1} struct s{0}CO_OD_",eds.dc.NodeName,location);
                 file.Write(location);
                 file.Write(" {0}CO_OD_",eds.dc.NodeName);
                 file.Write(location);
@@ -733,14 +732,56 @@ file.WriteLine(@"/**************************************************************
             file.WriteLine("// clang-format off");
             addHeader(file);
             file.WriteLine(@"#include ""CO_driver.h""
-#include """  +  filename + @".h""
 #include ""CO_SDO.h""
-
+#include """  +  filename + @".h""
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
 *******************************************************************************/
 
 ");
+			file.WriteLine("const CO_consts_t "+ eds.dc.NodeName + "CO_Consts = {");
+            file.WriteLine(string.Format("  .NO_SYNC = {0}CO_NO_SYNC,              //Associated objects: 1005-1007", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_EMERGENCY = {0}CO_NO_EMERGENCY,         //Associated objects: 1014, 1015", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_TIME = {0}CO_NO_TIME,              //Associated objects: 1012, 1013", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_SDO_SERVER = {0}CO_NO_SDO_SERVER,        //Associated objects: 1200-127F", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_SDO_CLIENT = {0}CO_NO_SDO_CLIENT,        //Associated objects: 1280-12FF", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_LSS_SERVER = {0}CO_NO_LSS_SERVER,        //LSS Slave", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_LSS_CLIENT = {0}CO_NO_LSS_CLIENT,        //LSS Master", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_RPDO = {0}CO_NO_RPDO,              //Associated objects: 14xx, 16xx", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_TPDO = {0}CO_NO_TPDO,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_NMT_MASTER = {0}CO_NO_NMT_MASTER,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
+//            file.WriteLine(string.Format("  .NO_TRACE = {0}CO_NO_TRACE,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
+			if (eds.ods.ContainsKey(0x1016)) { //Errorregister
+            	file.WriteLine(string.Format("  .consumerHeartbeatTime_arrayLength = {0}ODL_consumerHeartbeatTime_arrayLength,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
+			} else {
+            	file.WriteLine(string.Format("  .consumerHeartbeatTime_arrayLength = 0,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
+			}
+            file.WriteLine(string.Format("  .OD_NoOfElements = {0}CO_OD_NoOfElements,", eds.dc.NodeName));
+			if (eds.ods.ContainsKey(0x1800))
+            {
+				file.WriteLine(string.Format("  .sizeof_OD_TPDOCommunicationParameter = sizeof({0}OD_TPDOCommunicationParameter_t),", eds.dc.NodeName));
+            	file.WriteLine(string.Format("  .sizeof_OD_TPDOMappingParameter = sizeof({0}OD_TPDOMappingParameter_t),", eds.dc.NodeName));
+			} else {
+				file.WriteLine(string.Format("  .sizeof_OD_TPDOCommunicationParameter = 0,", eds.dc.NodeName));
+            	file.WriteLine(string.Format("  .sizeof_OD_TPDOMappingParameter = 0,", eds.dc.NodeName));
+			}
+            file.WriteLine(string.Format("  .sizeof_OD_RPDOCommunicationParameter = sizeof({0}OD_RPDOCommunicationParameter_t),", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .sizeof_OD_RPDOMappingParameter = sizeof({0}OD_RPDOMappingParameter_t),", eds.dc.NodeName));
+			if (eds.ods.ContainsKey(0x1001)) { //Errorregister
+	            file.WriteLine(string.Format("  .errorRegister = &{0}OD_errorRegister,", eds.dc.NodeName));
+			} else  {
+	            file.WriteLine(string.Format("  .errorRegister = NULL,", eds.dc.NodeName));
+			}
+			if (eds.ods.ContainsKey(0x1003)) { //Errorregister
+				file.WriteLine(string.Format("  .preDefinedErrorField = &{0}OD_preDefinedErrorField[0],", eds.dc.NodeName));
+				file.WriteLine(string.Format("  .preDefinedErrorFieldSize = {0}ODL_preDefinedErrorField_arrayLength", eds.dc.NodeName));
+			} else {
+				file.WriteLine(string.Format("  .preDefinedErrorField = NULL,", eds.dc.NodeName));
+				file.WriteLine(string.Format("  .preDefinedErrorFieldSize = 0", eds.dc.NodeName));
+			}
+			file.WriteLine("};");
+			file.WriteLine("");
+
             foreach (string location in eds.storageLocation)
             {
                 if (location == "Unused")
@@ -751,7 +792,7 @@ file.WriteLine(@"/**************************************************************
                 file.Write("/***** Definition for ");
                 file.Write(location);
                 file.WriteLine(" variables *******************************************/");
-                file.Write("struct s{0}CO_OD_",eds.dc.NodeName);
+                file.Write("CO_PREFIX_{1} struct s{0}CO_OD_",eds.dc.NodeName,location);
                 file.Write(location);
                 file.Write(" {0}CO_OD_",eds.dc.NodeName);
                 file.Write(location);
@@ -783,7 +824,7 @@ file.WriteLine(@"/**************************************************************
             file.WriteLine(@"/*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/");
-			file.WriteLine("const CO_OD_entry_t " + eds.dc.NodeName + "CO_OD[CO_OD_NoOfElements] = {");
+			file.WriteLine("const CO_OD_entry_t " + eds.dc.NodeName + "CO_OD[" + eds.dc.NodeName + "CO_OD_NoOfElements] = {");
 
             file.Write(write_od());
 
@@ -1020,6 +1061,7 @@ file.WriteLine(@"/**************************************************************
 
         string formatvaluewithdatatype(string defaultvalue, DataType dt)
         {
+//			Console.WriteLine("xx "+defaultvalue+" yy "+dt);
             int nobase = 10;
             bool nodeidreplace = false;
 
