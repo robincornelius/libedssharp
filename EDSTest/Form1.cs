@@ -1137,7 +1137,7 @@ namespace ODEditor
             this.Activate();
             bool unsupportedFile = false;
             var data = e.Data.GetData(DataFormats.FileDrop);
-            if (data != null)
+            if (data != null && data.GetType()==typeof(String))
             {                
                 var rawFileNames = data as string[];
                 if (rawFileNames.Length > 0)

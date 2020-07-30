@@ -154,7 +154,7 @@ namespace libEDSsharp
             File_DCF
         }
 
-        public virtual void Parse(Dictionary<string, string> section)
+        public virtual void Parse(Dictionary<string, string> section,string sectionname)
         {
 
             this.section = section;
@@ -344,12 +344,27 @@ namespace libEDSsharp
         }
     }
 
+    public class TypeDefinitions : SupportedObjects
+    {   
+        public TypeDefinitions() : base()
+        {
+            infoheader = "Type Definitions";
+            edssection = "TypeDefinitions";
+        }
+
+        public TypeDefinitions(Dictionary<string, string> section)
+        {
+            Parse(section);
+        }
+
+    }
+
     public class SupportedObjects
     {
 
         public Dictionary<int, int> objectlist;
         public string infoheader;
-        public string edssection;
+        public string edssection = "Supported Objects";
         public string countmsg = "SupportedObjects";
 
         public SupportedObjects()
@@ -501,7 +516,7 @@ namespace libEDSsharp
 
         public Dummyusage(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
     }
 
@@ -551,7 +566,7 @@ namespace libEDSsharp
 
         public FileInfo(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
 
         public FileInfo()
@@ -561,10 +576,10 @@ namespace libEDSsharp
         }
 
 
-        override public void Parse(Dictionary<string, string> section)
+        override public void Parse(Dictionary<string, string> section, string sectionname)
         {
 
-            base.Parse(section);
+            base.Parse(section,edssection);
 
             string dtcombined = "";
             try
@@ -579,7 +594,7 @@ namespace libEDSsharp
             {
                 if (e is System.FormatException)
                 {
-                    Warnings.warning_list.Add(String.Format("Unable to parse DateTime {0} for CreationTime, not in DS306 format", dtcombined));
+                    Warnings.warning_list.Add(String.Format("EDS Error: Section [{1}] Unable to parse DateTime {0} for CreationTime, not in DS306 format", dtcombined,sectionname));
                 }
             }
 
@@ -595,7 +610,7 @@ namespace libEDSsharp
             {
                 if (e is System.FormatException)
                 {
-                    Warnings.warning_list.Add(String.Format("Unable to parse DateTime {0} for ModificationTime, not in DS306 format", dtcombined));
+                    Warnings.warning_list.Add(String.Format("EDS Error: Section [{1}] Unable to parse DateTime {0} for ModificationTime, not in DS306 format", dtcombined, sectionname));
                 }
             }
 
@@ -688,7 +703,7 @@ namespace libEDSsharp
 
         public DeviceInfo(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
     }
 
@@ -704,7 +719,7 @@ namespace libEDSsharp
 
         public DeviceCommissioning(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
 
         [DcfExport]
@@ -743,7 +758,7 @@ namespace libEDSsharp
 
         public SupportedModules(Dictionary<string, string> section) : this()
         {
-            Parse(section);
+            Parse(section,edssection);
         }
 
        
@@ -853,7 +868,7 @@ namespace libEDSsharp
 
         public ModuleInfo(Dictionary<string, string> section, UInt16 moduleindex) : this (moduleindex)
         {
-            Parse(section);
+            Parse(section,edssection);
         }
     }
 
@@ -920,13 +935,20 @@ namespace libEDSsharp
             }
             set
             {
+                if(value==0)
+                {
+
+                    //throw (new Exception("Object index must be set"));
+                }
+
                 if(parent == null)
                 {
                     _index = value;
                 }
                 else
                 {
-                    throw (new Exception("Typing to set index of a subobject"));
+
+                    //throw (new Exception("Typing to set index of a subobject"));
                 }
                
             }
@@ -1066,6 +1088,7 @@ namespace libEDSsharp
             this.objecttype = ObjectType.VAR;
             this.datatype = datatype;
             this.defaultvalue = defaultvalue;
+            this.Index = index;
 
             if (accesstype >= EDSsharp.AccessType_Min && accesstype <= EDSsharp.AccessType_Max)
                 this.accesstype = accesstype;
@@ -1265,46 +1288,48 @@ namespace libEDSsharp
             switch (dt)
             {
                 case DataType.BOOLEAN:
+                    return 1;
+
                 case DataType.UNSIGNED8:
                 case DataType.INTEGER8:
-                    return 1;
+                    return 8;
 
                 case DataType.VISIBLE_STRING:
                 case DataType.OCTET_STRING:
-                    return Lengthofstring;
+                    return Lengthofstring*8;
 
                 case DataType.INTEGER16:
                 case DataType.UNSIGNED16:
                 case DataType.UNICODE_STRING:
-                    return 2;
+                    return 16; //FIXME is this corret for UNICODE_STRING seems dodgy?
 
                 case DataType.UNSIGNED24:
                 case DataType.INTEGER24:
-                    return 3;
+                    return 24;
 
                 case DataType.INTEGER32:
                 case DataType.UNSIGNED32:
                 case DataType.REAL32:
-                    return 4;
+                    return 32;
 
                 case DataType.INTEGER40:
                 case DataType.UNSIGNED40:
-                    return 5;
+                    return 40;
 
                 case DataType.INTEGER48:
                 case DataType.UNSIGNED48:
                 case DataType.TIME_DIFFERENCE:
                 case DataType.TIME_OF_DAY:
-                    return 6;
+                    return 48;
 
                 case DataType.INTEGER56:
                 case DataType.UNSIGNED56:
-                    return 7;
+                    return 56;
 
                 case DataType.INTEGER64:
                 case DataType.UNSIGNED64:
                 case DataType.REAL64:
-                    return 8;
+                    return 64;
 
                 case DataType.DOMAIN:
                     return 0;
@@ -1425,6 +1450,18 @@ namespace libEDSsharp
             return 0;
 
         }
+
+        /// <summary>
+        /// Add an existing entry as a subobject of this OD
+        /// </summary>
+        /// <param name="sub"></param>
+        /// <param name="index"></param>
+        public void addsubobject(byte index, ODentry sub)
+        {
+            sub.parent = this;
+            this.subobjects.Add(index, sub);
+        }
+
     }
 
     public class Module
@@ -1497,6 +1534,7 @@ namespace libEDSsharp
         }
 
         protected Dictionary<string, Dictionary<string, string>> eds;
+        protected Dictionary<string, int> sectionlinenos;
         public SortedDictionary<UInt16, ODentry> ods;
         public SortedDictionary<UInt16, ODentry> dummy_ods;
 
@@ -1510,6 +1548,8 @@ namespace libEDSsharp
         public Comments c;
         public Dummyusage du;
         public DeviceCommissioning dc;
+
+        public TypeDefinitions td;
 
         public SupportedModules sm;
         public ConnectedModules cm;
@@ -1546,6 +1586,7 @@ namespace libEDSsharp
             c = new Comments();
             sm = new SupportedModules();
             cm = new ConnectedModules();
+            td = new TypeDefinitions();
 
 
             //mi = new Dictionary<ushort, ModuleInfo>();
@@ -1578,12 +1619,12 @@ namespace libEDSsharp
 
             ODentry od = new ODentry();
 
-            dummy_ods.Add(2, new ODentry("Dummy Int8", 0x002,  DataType.INTEGER8, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(3, new ODentry("Dummy Int16", 0x002, DataType.INTEGER16, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(4, new ODentry("Dummy Int32", 0x002, DataType.INTEGER32, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(5, new ODentry("Dummy UInt8", 0x002, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(6, new ODentry("Dummy UInt16", 0x002, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional, null));
-            dummy_ods.Add(7, new ODentry("Dummy UInt32", 0x002, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x002, new ODentry("Dummy Int8", 0x002,  DataType.INTEGER8, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x003, new ODentry("Dummy Int16", 0x003, DataType.INTEGER16, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x004, new ODentry("Dummy Int32", 0x004, DataType.INTEGER32, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x005, new ODentry("Dummy UInt8", 0x005, DataType.UNSIGNED8, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x006, new ODentry("Dummy UInt16", 0x006, DataType.UNSIGNED16, "0", AccessType.ro, PDOMappingType.optional, null));
+            dummy_ods.Add(0x007, new ODentry("Dummy UInt32", 0x007, DataType.UNSIGNED32, "0", AccessType.ro, PDOMappingType.optional, null));
 
         }
 
@@ -1594,7 +1635,7 @@ namespace libEDSsharp
 
         protected string sectionname = "";
 
-        public void Parseline(string linex)
+        public void Parseline(string linex,int no)
         {
 
             string key = "";
@@ -1620,6 +1661,15 @@ namespace libEDSsharp
                 {
                     Group g = m.Groups[1];
                     sectionname = g.ToString();
+
+                    if (!eds.ContainsKey(sectionname))
+                    {
+                        eds.Add(sectionname, new Dictionary<string, string>());
+                    }
+                    else
+                    {
+                        Warnings.warning_list.Add(string.Format("EDS Error on Line {0} : Duplicate section [{1}] ", no,sectionname));
+                    }
                 }
             }
 
@@ -1636,26 +1686,41 @@ namespace libEDSsharp
                     value = m.Groups[2].ToString();
                     value = value.TrimEnd(' ','\t','\n','\r');
 
+                    //not sure how we actually get here with out a section being in the dictionary already..
+                    //suspect this is dead code.
                     if (!eds.ContainsKey(sectionname))
                     {
                         eds.Add(sectionname, new Dictionary<string, string>());
                     }
-
+            
                     if (custom_extension == false)
                     {
-                        eds[sectionname].Add(key, value);
+                        try
+                        {
+                            eds[sectionname].Add(key, value);
+                        }
+                        catch(Exception e)
+                        {
+                            Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate key \"{0}\" value \"{1}\" in section [{2}]", key,value,sectionname, no));
+                        }
                     }
                     else
                     //Only allow our own extensions to populate the key/value pair
                     {
                         if (key == "StorageLocation" || key == "LSS_Type" || key== "TPDODetectCos")
                         {
-                            eds[sectionname].Add(key, value);
+                            try
+                            {
+                                eds[sectionname].Add(key, value);
+                            }
+                            catch(Exception e)
+                            {
+                                Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate custom key \"{0}\" value \"{1}\" in section [{2}]", key, value, sectionname, no));
+                            }
                         }
                     }
                 }
             }
-
         }
 
         public void ParseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
@@ -1918,15 +1983,14 @@ namespace libEDSsharp
                 dcffilename = filename;
             }
 
-
-
             //try
             {
+                int lineno = 1;
                 foreach (string linex in File.ReadLines(filename))
                 {
-                    Parseline(linex);
+                    Parseline(linex,lineno);
+                    lineno++;
                 }
-
 
                 di = new DeviceInfo(eds["DeviceInfo"]);
 
@@ -1947,11 +2011,14 @@ namespace libEDSsharp
                 if(eds.ContainsKey("ManufacturerObjects"))
                     mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
 
+                if (eds.ContainsKey("TypeDefinitions"))
+                    td = new TypeDefinitions(eds["TypeDefinitions"]);
+
                 //Only DCF not EDS files
                 dc = new DeviceCommissioning();
                 if(eds.ContainsKey("DeviceCommissioning"))
                 {
-                    dc.Parse(eds["DeviceCommissioning"]);
+                    dc.Parse(eds["DeviceCommissioning"],"DeviceCommissioning");
                     edsfilename = fi.LastEDS;
                 }
                 
@@ -2496,6 +2563,25 @@ namespace libEDSsharp
             }
 
             return 0;
+        }
+
+
+        public bool tryGetODEntry(UInt16 index, out ODentry od)
+        {
+            od = null;
+            if(ods.ContainsKey(index))
+            {
+                od = ods[index];
+                return true;
+            }
+
+            if(dummy_ods.ContainsKey(index))
+            {
+                od = dummy_ods[index];
+                return true;
+            }
+
+            return false;
         }
 
         //RX COM 0x1400

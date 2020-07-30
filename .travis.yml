@@ -1,0 +1,22 @@
+language: csharp
+solution: EDSEditor.sln
+mono:
+  - 6.10.0
+
+before_deploy:
+- cd $TRAVIS_BUILD_DIR/EDSTest/bin/Release/
+- zip -r $TRAVIS_BUILD_DIR/build/OpenEDSEditor-latest.zip *
+- cd $TRAVIS_BUILD_DIR
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  keep_history: false
+  target_branch: gh-pages
+  directory: $TRAVIS_BUILD_DIR/build/
+
+  on:
+    branch: xdd
+    
+  
