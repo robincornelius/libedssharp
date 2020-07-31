@@ -194,7 +194,7 @@ namespace Tests
             prewalkArrays();
 
             string test = write_od_line(od);
-            if (test != "{ 0x2000, 0x00, 0x86, 4, (void*)&CO_OD_RAM.testINT32},\r\n" + Environment.NewLine)
+            if (test != "{0x2000, 0x00, 0x86,  4, (void*)&CO_OD_RAM.testINT32}," + Environment.NewLine)
                 throw (new Exception("write_od_line() returning wrong data length"));
 
            if((getflags(od2) & 0x80) == 0x80)
