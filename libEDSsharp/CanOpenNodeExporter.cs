@@ -829,7 +829,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             byte flags = getflags(od);
 
             DataType t = eds.Getdatatype(od);
-            int datasize = od.Sizeofdatatype();
+            int datasize = (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
 
             string odf;
 
@@ -1001,7 +1001,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
               flags |=0x40;
             }
 
-            int datasize = od.Sizeofdatatype();
+            int datasize = (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
 
             if (datasize > 1)
             {
