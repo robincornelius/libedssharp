@@ -740,9 +740,9 @@ file.WriteLine(@"/**************************************************************
 
             file.WriteLine("// clang-format off");
             addHeader(file);
-            file.WriteLine(@"#include ""CO_driver.h""
+            file.WriteLine(@"#include ""301/CO_driver.h""
 #include """  +  filename + @".h""
-#include ""CO_SDO.h""
+#include ""301/CO_SDOserver.h""
 
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
