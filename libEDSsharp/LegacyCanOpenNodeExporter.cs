@@ -29,7 +29,7 @@ using System.IO;
 
 namespace libEDSsharp
 {
-    public class CanOpenNodeExporter : IExporter
+    public class LegacyCanOpenNodeExporter : IExporter
     {
 
         private string folderpath;
@@ -930,7 +930,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         /// </summary>
         /// <param name="od">An odentry to access</param>
         /// <returns>byte containing the flag value</returns>
-        public byte getflags(ODentry od)
+        byte getflags(ODentry od)
         {
             byte flags = 0;
             byte mapping = 0; //mapping flags, if pdo is enabled
@@ -1482,10 +1482,5 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             return sb.ToString();
         }
     }
-
-
-
-
-   
 
 }
