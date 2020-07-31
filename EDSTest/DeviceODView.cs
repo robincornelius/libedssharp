@@ -426,7 +426,8 @@ namespace ODEditor
             }
 
             if (od.parent.objecttype == ObjectType.REC &&
-                ((od.parent.Index >=0x1600 && od.parent.Index <= 0x17ff) || (od.parent.Index >= 0x1A00 && od.parent.Index <= 0x1Bff)) &&
+                ((od.parent.Index >=0x1600 && od.parent.Index <= 0x17ff) || (od.parent.Index >= 0x1A00 && od.parent.Index <= 0x1Bff)
+                || (od.parent.Index >= 0x1381 && od.parent.Index <= 0x13C0)) &&
                 od.Subindex == 0)
             {
                 //We are allowed to edit the no sub objects for the PDO mappings as its a requirement to support dynamic PDOs
