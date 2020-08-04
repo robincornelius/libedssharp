@@ -224,7 +224,14 @@ namespace ODEditor
 
                     IExporter exporter = ExporterFactory.getExporter(type);
 
-                    exporter.export(savePath, Path.GetFileNameWithoutExtension(sfd.FileName), this.gitVersion, dv.eds);
+                    try
+                    {
+                        exporter.export(savePath, Path.GetFileNameWithoutExtension(sfd.FileName), this.gitVersion, dv.eds);
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show("Export failed see detailed reason below :-\n" + ex.ToString());
+                    }
 
                     if (Warnings.warning_list.Count != 0)
                     {

@@ -1029,78 +1029,80 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
         string formatvaluewithdatatype(string defaultvalue, DataType dt)
         {
-            int nobase = 10;
-            bool nodeidreplace = false;
-
-            if (defaultvalue == null || defaultvalue == "")
+            try
             {
-                //No default value, we better supply one for sensible data types
-                if (dt == DataType.VISIBLE_STRING ||
-                    dt == DataType.OCTET_STRING ||
-                    dt == DataType.UNKNOWN ||
-                    dt == DataType.UNICODE_STRING)
+                int nobase = 10;
+                bool nodeidreplace = false;
+
+                if (defaultvalue == null || defaultvalue == "")
                 {
-                    return "";
+                    //No default value, we better supply one for sensible data types
+                    if (dt == DataType.VISIBLE_STRING ||
+                        dt == DataType.OCTET_STRING ||
+                        dt == DataType.UNKNOWN ||
+                        dt == DataType.UNICODE_STRING)
+                    {
+                        return "";
+                    }
+
+                    Console.WriteLine("Warning assuming a 0 default");
+                    defaultvalue = "0";
                 }
 
-                Console.WriteLine("Warning assuming a 0 default");
-                defaultvalue = "0";
-            }
+                if (defaultvalue.Contains("$NODEID"))
+                {
+                    defaultvalue = defaultvalue.Replace("$NODEID", "");
+                    defaultvalue = defaultvalue.Replace("+", "");
+                    nodeidreplace = true;
+                }
 
-            if (defaultvalue.Contains("$NODEID"))
-            {
-                defaultvalue = defaultvalue.Replace("$NODEID", "");
-                defaultvalue = defaultvalue.Replace("+", "");
-                nodeidreplace = true;
-            }
+                String pat = @"^0[xX][0-9a-fA-FL]+";
 
-            String pat = @"^0[xX][0-9a-fA-FL]+";
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 16;
+                    defaultvalue = defaultvalue.Replace("L", "");
+                }
 
-            Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-            Match m = r.Match(defaultvalue);
-            if (m.Success)
-            {
-                nobase = 16;
-                defaultvalue = defaultvalue.Replace("L", "");
-            }
+                pat = @"^0[0-7]+";
+                r = new Regex(pat, RegexOptions.IgnoreCase);
+                m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 8;
+                }
 
-            pat = @"^0[0-7]+";
-            r = new Regex(pat, RegexOptions.IgnoreCase);
-            m = r.Match(defaultvalue);
-            if (m.Success)
-            {
-                nobase = 8;
-            }
-
-            if (nodeidreplace)
-            {
-                UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
-                data += eds.NodeId;
-                defaultvalue = string.Format("0x{0:X}", data);
-                nobase = 16;
-            }
+                if (nodeidreplace)
+                {
+                    UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
+                    data += eds.NodeId;
+                    defaultvalue = string.Format("0x{0:X}", data);
+                    nobase = 16;
+                }
 
 
-            switch (dt)
-            {
-                case DataType.UNSIGNED24:
-                case DataType.UNSIGNED32:
-                    return String.Format("0x{0:X4}L", Convert.ToUInt32(defaultvalue, nobase));
+                switch (dt)
+                {
+                    case DataType.UNSIGNED24:
+                    case DataType.UNSIGNED32:
+                        return String.Format("0x{0:X4}L", Convert.ToUInt32(defaultvalue, nobase));
 
-                case DataType.INTEGER24:
-                case DataType.INTEGER32:
-                    return String.Format("0x{0:X4}L", Convert.ToInt32(defaultvalue, nobase));
+                    case DataType.INTEGER24:
+                    case DataType.INTEGER32:
+                        return String.Format("0x{0:X4}L", Convert.ToInt32(defaultvalue, nobase));
 
-                case DataType.REAL32:
-                case DataType.REAL64:
-                    return (String.Format("{0}", defaultvalue));
+                    case DataType.REAL32:
+                    case DataType.REAL64:
+                        return (String.Format("{0}", defaultvalue));
 
 
-                //fix me this looks wrong
-                case DataType.UNICODE_STRING:
-                    return (String.Format("'{0}'", defaultvalue));
+                    //fix me this looks wrong
+                    case DataType.UNICODE_STRING:
+                        return (String.Format("'{0}'", defaultvalue));
 
-                case DataType.VISIBLE_STRING:
+                    case DataType.VISIBLE_STRING:
                     {
 
                         ASCIIEncoding a = new ASCIIEncoding();
@@ -1123,7 +1125,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                     }
 
 
-                case DataType.OCTET_STRING:
+                    case DataType.OCTET_STRING:
                     {
                         string[] bits = defaultvalue.Split(' ');
                         string octet = "{";
@@ -1140,31 +1142,37 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                         return octet;
                     }
 
-                case DataType.INTEGER8:
-                    return String.Format("0x{0:X1}", Convert.ToSByte(defaultvalue, nobase));
+                    case DataType.INTEGER8:
+                        return String.Format("0x{0:X1}", Convert.ToSByte(defaultvalue, nobase));
 
-                case DataType.INTEGER16:
-                    return String.Format("0x{0:X2}", Convert.ToInt16(defaultvalue, nobase));
+                    case DataType.INTEGER16:
+                        return String.Format("0x{0:X2}", Convert.ToInt16(defaultvalue, nobase));
 
-                case DataType.UNSIGNED8:
-                    return String.Format("0x{0:X1}L", Convert.ToByte(defaultvalue, nobase));
+                    case DataType.UNSIGNED8:
+                        return String.Format("0x{0:X1}L", Convert.ToByte(defaultvalue, nobase));
 
-                case DataType.UNSIGNED16:
-                    return String.Format("0x{0:X2}", Convert.ToUInt16(defaultvalue, nobase));
+                    case DataType.UNSIGNED16:
+                        return String.Format("0x{0:X2}", Convert.ToUInt16(defaultvalue, nobase));
 
-                case DataType.INTEGER64:
-                    return String.Format("0x{0:X8}L", Convert.ToInt64(defaultvalue, nobase));
+                    case DataType.INTEGER64:
+                        return String.Format("0x{0:X8}L", Convert.ToInt64(defaultvalue, nobase));
 
-                case DataType.UNSIGNED64:
-                    return String.Format("0x{0:X8}L", Convert.ToUInt64(defaultvalue, nobase));
+                    case DataType.UNSIGNED64:
+                        return String.Format("0x{0:X8}L", Convert.ToUInt64(defaultvalue, nobase));
 
-                case DataType.TIME_DIFFERENCE:
-                case DataType.TIME_OF_DAY:
-                    return String.Format("{{{0}}}", Convert.ToUInt64(defaultvalue, nobase));
+                    case DataType.TIME_DIFFERENCE:
+                    case DataType.TIME_OF_DAY:
+                        return String.Format("{{{0}}}", Convert.ToUInt64(defaultvalue, nobase));
 
-                default:
-                    return (String.Format("{0:X}", defaultvalue));
+                    default:
+                        return (String.Format("{0:X}", defaultvalue));
 
+                }
+            }
+            catch(Exception e)
+            {
+                Warnings.warning_list.Add(String.Format("Error converting value {0} to type {1}", defaultvalue, dt.ToString()));
+                return "";
             }
         }
 
