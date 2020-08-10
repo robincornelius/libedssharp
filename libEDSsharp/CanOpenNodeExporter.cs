@@ -731,9 +731,14 @@ file.WriteLine(@"/**************************************************************
 
             file.WriteLine("// clang-format off");
             addHeader(file);
+			file.WriteLine("#ifdef NEW_DIRECTORY_STRUCTURE");
+            file.WriteLine(@"#include ""301/CO_driver.h""
+#include ""301/CO_SDOserver.h""");
+			file.WriteLine(@"#else /*NEW_DIRECTORY_STRUCTURE*/");
             file.WriteLine(@"#include ""CO_driver.h""
-#include ""CO_SDO.h""
-#include """  +  filename + @".h""
+#include ""CO_SDO.h""");
+			file.WriteLine("#endif /*NEW_DIRECTORY_STRUCTURE*/");
+			file.WriteLine(@"#include """  +  filename + @".h""
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
 *******************************************************************************/
