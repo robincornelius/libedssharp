@@ -156,5 +156,53 @@ namespace Tests
 
 
         }
+
+        /// <summary>
+        /// Check size of objects is correct
+        /// </summary>
+        [Fact]
+        public void TestExportSizes()
+        {
+
+            ODentry od = new ODentry
+            {
+                objecttype = ObjectType.VAR,
+                datatype = DataType.INTEGER32,
+                parameter_name = "Test INT32",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x2000
+            };
+
+            
+            ODentry od2 = new ODentry
+            {
+                objecttype = ObjectType.VAR,
+                datatype = DataType.UNSIGNED8,
+                parameter_name = "Test UINT8",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x2001
+            };
+
+            eds = new EDSsharp
+            {
+                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
+            };
+
+            eds.ods.Add(0x2000, od);
+            eds.ods.Add(0x2001, od2);
+
+            prewalkArrays();
+
+            string test = write_od_line(od);
+            if (test != "{0x2000, 0x00, 0x86,  4, (void*)&CO_OD_RAM.testINT32}," + Environment.NewLine)
+                throw (new Exception("write_od_line() returning wrong data length"));
+
+           if((getflags(od2) & 0x80) == 0x80)
+           {
+                throw (new Exception("Multi byte flag set for single byte"));
+           }
+
+        }
+
     }
 }

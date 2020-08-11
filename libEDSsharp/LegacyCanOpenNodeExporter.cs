@@ -29,7 +29,7 @@ using System.IO;
 
 namespace libEDSsharp
 {
-    public class CanOpenNodeExporter : IExporter
+    public class LegacyCanOpenNodeExporter : IExporter
     {
 
         private string folderpath;
@@ -252,7 +252,7 @@ namespace libEDSsharp
                 {
 
                     case ObjectType.REC:
-                        objecttypewords = String.Format("{1}OD_{0}_t", make_cname(od.parameter_name),eds.dc.NodeName);
+                        objecttypewords = String.Format("OD_{0}_t", make_cname(od.parameter_name));
                         break;
                     case ObjectType.ARRAY:
                         objecttypewords = t.ToString(); //this case is handled by the logic in eds.getdatatype();
@@ -339,11 +339,10 @@ namespace libEDSsharp
             file.WriteLine("// clang-format off");
             addHeader(file);
 
-            file.WriteLine("#ifndef CO_OD_"+filename+"_H_");
-            file.WriteLine("#define CO_OD_"+filename+"_H_");
+            file.WriteLine("#ifndef CO_OD_H_");
+            file.WriteLine("#define CO_OD_H_");
             file.WriteLine("");
-            file.WriteLine("#include \"CO_consts.h\"");
-            file.WriteLine("");
+
             file.WriteLine(@"/*******************************************************************************
    CANopen DATA TYPES
 *******************************************************************************/
@@ -366,21 +365,24 @@ namespace libEDSsharp
    #endif
 
    typedef domain_t     DOMAIN;
-/*******************************************************************************
-   Defines for controlling the destination of ram/rom/eprom SECTIONS.
-*******************************************************************************/
-#ifndef CO_PREFIX_ROM
-	#define CO_PREFIX_ROM
+
+#ifndef timeOfDay_t
+    typedef union {
+        unsigned long long ullValue;
+        struct {
+            unsigned long ms:28;
+            unsigned reserved:4;
+            unsigned days:16;
+            unsigned reserved2:16;
+        };
+    }timeOfDay_t;
 #endif
-#ifndef CO_PREFIX_RAM
-	#define CO_PREFIX_RAM
-#endif
-#ifndef CO_PREFIX_EEPROM
-	#define CO_PREFIX_EEPROM
-#endif
+
+    typedef timeOfDay_t TIME_OF_DAY;
+    typedef timeOfDay_t TIME_DIFFERENCE;
+
 ");
 
-            file.WriteLine(string.Format("extern const CO_consts_t {0}CO_Consts;", eds.dc.NodeName));
             file.WriteLine("/*******************************************************************************");
             file.WriteLine("   FILE INFO:");
             file.WriteLine(string.Format("      FileName:     {0}", eds.fi.FileName));
@@ -406,32 +408,33 @@ namespace libEDSsharp
    FEATURES
 *******************************************************************************/");
 
-            file.WriteLine(string.Format("  #define {0}CO_NO_SYNC                     {1}   //Associated objects: 1005-1007", eds.dc.NodeName,noSYNC));
+            file.WriteLine(string.Format("  #define CO_NO_SYNC                     {0}   //Associated objects: 1005-1007", noSYNC));
 
-            file.WriteLine(string.Format("  #define {0}CO_NO_EMERGENCY                {1}   //Associated objects: 1014, 1015", eds.dc.NodeName,noEMCY));
+            file.WriteLine(string.Format("  #define CO_NO_EMERGENCY                {0}   //Associated objects: 1014, 1015", noEMCY));
 
-            file.WriteLine(string.Format("  #define {0}CO_NO_TIME                     {1}   //Associated objects: 1012, 1013", eds.dc.NodeName,noTIME));
+            file.WriteLine(string.Format("  #define CO_NO_TIME                     {0}   //Associated objects: 1012, 1013", noTIME));
 
-            file.WriteLine(string.Format("  #define {0}CO_NO_SDO_SERVER               {1}   //Associated objects: 1200-127F", eds.dc.NodeName,noSDOservers));
-            file.WriteLine(string.Format("  #define {0}CO_NO_SDO_CLIENT               {1}   //Associated objects: 1280-12FF", eds.dc.NodeName,noSDOclients));
+            file.WriteLine(string.Format("  #define CO_NO_SDO_SERVER               {0}   //Associated objects: 1200-127F", noSDOservers));
+            file.WriteLine(string.Format("  #define CO_NO_SDO_CLIENT               {0}   //Associated objects: 1280-12FF", noSDOclients));
+
+            file.WriteLine(string.Format("  #define CO_NO_GFC                      {0}   //Associated objects: 1300", noGFC));
+            file.WriteLine(string.Format("  #define CO_NO_SRDO                     {0}   //Associated objects: 1301-1341, 1381-13C0", noSRDO));
 
             int lssServer = 0;
             if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Server")
             {
                 lssServer = 1;
             }
-            file.WriteLine(string.Format("  #define {0}CO_NO_LSS_SERVER               {1}   //LSS Slave", eds.dc.NodeName,lssServer));
+            file.WriteLine(string.Format("  #define CO_NO_LSS_SERVER               {0}   //LSS Slave", lssServer));
             int lssClient = 0;
             if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Client")
             {
                 lssClient = 1;
             }
-            file.WriteLine(string.Format("  #define {0}CO_NO_LSS_CLIENT               {1}   //LSS Master", eds.dc.NodeName,lssClient));
+            file.WriteLine(string.Format("  #define CO_NO_LSS_CLIENT               {0}   //LSS Master", lssClient));
 
-            file.WriteLine(string.Format("  #define {0}CO_NO_RPDO                     {1}   //Associated objects: 14xx, 16xx", eds.dc.NodeName,noRXpdos));
-            file.WriteLine(string.Format("  #define {0}CO_NO_TPDO                     {1}   //Associated objects: 18xx, 1Axx", eds.dc.NodeName,noTXpdos));
-            file.WriteLine(string.Format("  #define {0}CO_NO_SRDO                     {1}   //Associated objects: 1301 - 1340", eds.dc.NodeName,noSRDO));
-            file.WriteLine(string.Format("  #define {0}CO_NO_GFC                      {1}   //Associated objects: 1300", eds.dc.NodeName,noGFC));
+            file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
+            file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 
             bool ismaster = false;
             if(eds.ods.ContainsKey(0x1f80))
@@ -447,16 +450,15 @@ namespace libEDSsharp
                     ismaster = true;
             }
 
-            file.WriteLine(string.Format("  #define {1}CO_NO_NMT_MASTER               {0}", ismaster==true?1:0, eds.dc.NodeName));
-            file.WriteLine(string.Format("  #define {0}CO_NO_TRACE                    0", eds.dc.NodeName));
+            file.WriteLine(string.Format("  #define CO_NO_NMT_MASTER               {0}", ismaster==true?1:0));
+            file.WriteLine(string.Format("  #define CO_NO_TRACE                    0"));
             file.WriteLine("");
             file.WriteLine("");
             file.WriteLine(@"/*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/");
 
-            file.WriteLine(string.Format("   #define {0}CO_OD_NoOfElements             {1}", eds.dc.NodeName, enabledcount));
-			file.WriteLine("extern const CO_OD_entry_t " + eds.dc.NodeName + "CO_OD["+eds.dc.NodeName+"CO_OD_NoOfElements];");
+            file.WriteLine(string.Format("   #define CO_OD_NoOfElements             {0}", enabledcount));
             file.WriteLine("");
             file.WriteLine("");
 
@@ -476,7 +478,7 @@ namespace libEDSsharp
                 if (od.objecttype != ObjectType.REC)
                     continue;
 
-                string structname = String.Format("{1}OD_{0}_t", make_cname(od.parameter_name), eds.dc.NodeName);
+                string structname = String.Format("OD_{0}_t", make_cname(od.parameter_name));
 
                 if (structnamelist.Contains(structname))
                     continue;
@@ -593,7 +595,7 @@ namespace libEDSsharp
                 file.Write("/***** Structure for ");
                 file.Write(location);
                 file.WriteLine(" variables ********************************************/");
-                file.Write("struct s{0}CO_OD_",eds.dc.NodeName);
+                file.Write("struct sCO_OD_");
                 file.Write(location);
                 file.Write(@"{
                UNSIGNED32     FirstWord;
@@ -617,9 +619,9 @@ namespace libEDSsharp
                     continue;
                 }
 
-                file.Write("extern CO_PREFIX_{1} struct s{0}CO_OD_",eds.dc.NodeName,location);
+                file.Write("extern struct sCO_OD_");
                 file.Write(location);
-                file.Write(" {0}CO_OD_",eds.dc.NodeName);
+                file.Write(" CO_OD_");
                 file.Write(location);
                 file.WriteLine(@";
 ");
@@ -640,7 +642,8 @@ file.WriteLine(@"/**************************************************************
                 if (od.Disabled == true)
                     continue;
 
-                string loc = eds.dc.NodeName + "CO_OD_" + od.StorageLocation;
+                string loc = "CO_OD_" + od.StorageLocation;
+
                 DataType t = eds.Getdatatype(od);
 
 
@@ -649,13 +652,13 @@ file.WriteLine(@"/**************************************************************
                     default:
                         {
                             file.WriteLine(string.Format("/*{0:X4}, Data Type: {1} */", od.Index, t.ToString()));
-                            file.WriteLine(string.Format("        #define {3}{0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name),eds.dc.NodeName));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
 
                             DataType dt = od.datatype;
 
                             if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                             {
-                                file.WriteLine(string.Format("        #define {2}{0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.Lengthofstring,eds.dc.NodeName,eds.dc.NodeName));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.Lengthofstring));
                             }
                             file.WriteLine("");
                         }
@@ -666,8 +669,9 @@ file.WriteLine(@"/**************************************************************
                             DataType dt = od.datatype;
 
                             file.WriteLine(string.Format("/*{0:X4}, Data Type: {1}, Array[{2}] */", od.Index, t.ToString(), od.Nosubindexes - 1));
-                            file.WriteLine(string.Format("        #define {3}OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name),eds.dc.NodeName));
-                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("{1}ODL_{0}_arrayLength", make_cname(od.parameter_name),eds.dc.NodeName), od.Nosubindexes - 1,eds.dc.NodeName));
+                            file.WriteLine(string.Format("        #define OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.Nosubindexes - 1));
+
 
                             List<string> ODAs = new List<string>();
 
@@ -680,7 +684,7 @@ file.WriteLine(@"/**************************************************************
                                 if (kvp2.Key == 0)
                                     continue;
 
-                                string ODA = string.Format("{1}{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),eds.dc.NodeName);
+                                string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)));
 
                                 if (ODAs.Contains(ODA))
                                 {
@@ -693,11 +697,11 @@ file.WriteLine(@"/**************************************************************
                                 //so offset by one
                                 if (od.objecttype == ObjectType.ARRAY)
                                 {
-                                    ODAout += ($"        #define {string.Format("{2}ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name),eds.dc.NodeName),-51} {kvp2.Key - 1}{Environment.NewLine}");
+                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key - 1}{Environment.NewLine}");
                                 }
                                 else
                                 {
-                                    ODAout += ($"        #define {string.Format("{2}ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name),eds.dc.NodeName),-51} {kvp2.Key}{Environment.NewLine}");
+                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key}{Environment.NewLine}");
                                 }
                             }
 
@@ -713,7 +717,7 @@ file.WriteLine(@"/**************************************************************
                             if (!constructed_rec_types.Contains(rectype))
                             {
                                 file.WriteLine(string.Format("/*{0:X4}, Data Type: {1}_t */", od.Index, rectype));
-                                file.WriteLine(string.Format("        #define {3}{0,-51} {1}.{2}", string.Format("OD_{0}", rectype), loc, rectype,eds.dc.NodeName));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", rectype), loc, rectype));
                                 constructed_rec_types.Add(rectype);
                                 file.WriteLine("");
                             }
@@ -736,60 +740,15 @@ file.WriteLine(@"/**************************************************************
 
             file.WriteLine("// clang-format off");
             addHeader(file);
-            file.WriteLine(@"#include ""301/CO_driver.h""
+            file.WriteLine(@"#include ""CO_driver.h""
 #include """  +  filename + @".h""
-#include ""301/CO_SDOserver.h""
+#include ""CO_SDO.h""
 
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
 *******************************************************************************/
 
 ");
-			file.WriteLine("const CO_consts_t "+ eds.dc.NodeName + "CO_Consts = {");
-            file.WriteLine(string.Format("  .NO_SYNC = {0}CO_NO_SYNC,              //Associated objects: 1005-1007", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_EMERGENCY = {0}CO_NO_EMERGENCY,         //Associated objects: 1014, 1015", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_TIME = {0}CO_NO_TIME,              //Associated objects: 1012, 1013", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_SDO_SERVER = {0}CO_NO_SDO_SERVER,        //Associated objects: 1200-127F", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_SDO_CLIENT = {0}CO_NO_SDO_CLIENT,        //Associated objects: 1280-12FF", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_LSS_SERVER = {0}CO_NO_LSS_SERVER,        //LSS Slave", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_LSS_CLIENT = {0}CO_NO_LSS_CLIENT,        //LSS Master", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_RPDO = {0}CO_NO_RPDO,              //Associated objects: 14xx, 16xx", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_TPDO = {0}CO_NO_TPDO,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_SRDO = {0}CO_NO_SRDO,              //Associated objects: 1301 - 1340", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_TPDO = {0}CO_NO_GFC,               //Associated objects: 1300", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_NMT_MASTER = {0}CO_NO_NMT_MASTER,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
-//            file.WriteLine(string.Format("  .NO_TRACE = {0}CO_NO_TRACE,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
-			if (eds.ods.ContainsKey(0x1016)) { //Errorregister
-            	file.WriteLine(string.Format("  .consumerHeartbeatTime_arrayLength = {0}ODL_consumerHeartbeatTime_arrayLength,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
-			} else {
-            	file.WriteLine(string.Format("  .consumerHeartbeatTime_arrayLength = 0,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
-			}
-            file.WriteLine(string.Format("  .OD_NoOfElements = {0}CO_OD_NoOfElements,", eds.dc.NodeName));
-			if (eds.ods.ContainsKey(0x1800))
-            {
-				file.WriteLine(string.Format("  .sizeof_OD_TPDOCommunicationParameter = sizeof({0}OD_TPDOCommunicationParameter_t),", eds.dc.NodeName));
-            	file.WriteLine(string.Format("  .sizeof_OD_TPDOMappingParameter = sizeof({0}OD_TPDOMappingParameter_t),", eds.dc.NodeName));
-			} else {
-				file.WriteLine(string.Format("  .sizeof_OD_TPDOCommunicationParameter = 0,", eds.dc.NodeName));
-            	file.WriteLine(string.Format("  .sizeof_OD_TPDOMappingParameter = 0,", eds.dc.NodeName));
-			}
-            file.WriteLine(string.Format("  .sizeof_OD_RPDOCommunicationParameter = sizeof({0}OD_RPDOCommunicationParameter_t),", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .sizeof_OD_RPDOMappingParameter = sizeof({0}OD_RPDOMappingParameter_t),", eds.dc.NodeName));
-			if (eds.ods.ContainsKey(0x1001)) { //Errorregister
-	            file.WriteLine(string.Format("  .errorRegister = &{0}OD_errorRegister,", eds.dc.NodeName));
-			} else  {
-	            file.WriteLine(string.Format("  .errorRegister = NULL,", eds.dc.NodeName));
-			}
-			if (eds.ods.ContainsKey(0x1003)) { //Errorregister
-				file.WriteLine(string.Format("  .preDefinedErrorField = &{0}OD_preDefinedErrorField[0],", eds.dc.NodeName));
-				file.WriteLine(string.Format("  .preDefinedErrorFieldSize = {0}ODL_preDefinedErrorField_arrayLength", eds.dc.NodeName));
-			} else {
-				file.WriteLine(string.Format("  .preDefinedErrorField = NULL,", eds.dc.NodeName));
-				file.WriteLine(string.Format("  .preDefinedErrorFieldSize = 0", eds.dc.NodeName));
-			}
-			file.WriteLine("};");
-			file.WriteLine("");
-
             foreach (string location in eds.storageLocation)
             {
                 if (location == "Unused")
@@ -800,9 +759,9 @@ file.WriteLine(@"/**************************************************************
                 file.Write("/***** Definition for ");
                 file.Write(location);
                 file.WriteLine(" variables *******************************************/");
-                file.Write("CO_PREFIX_{1} struct s{0}CO_OD_",eds.dc.NodeName,location);
+                file.Write("struct sCO_OD_");
                 file.Write(location);
-                file.Write(" {0}CO_OD_",eds.dc.NodeName);
+                file.Write(" CO_OD_");
                 file.Write(location);
                 file.Write(@" = {
            CO_OD_FIRST_LAST_WORD,
@@ -829,10 +788,11 @@ file.WriteLine(@"/**************************************************************
 
             file.Write(export_record_types());
 
-            file.WriteLine(@"/*******************************************************************************
+            file.Write(@"/*******************************************************************************
    OBJECT DICTIONARY
-*******************************************************************************/");
-			file.WriteLine("const CO_OD_entry_t " + eds.dc.NodeName + "CO_OD[" + eds.dc.NodeName + "CO_OD_NoOfElements] = {");
+*******************************************************************************/
+const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
+");
 
             file.Write(write_od());
 
@@ -870,7 +830,7 @@ file.WriteLine(@"/**************************************************************
         {
             StringBuilder sb = new StringBuilder();
 
-            string loc = eds.dc.NodeName+"CO_OD_" + od.StorageLocation;
+            string loc = "CO_OD_" + od.StorageLocation;
 
             byte flags = getflags(od);
 
@@ -941,7 +901,7 @@ file.WriteLine(@"/**************************************************************
             if (od.objecttype == ObjectType.REC)
             {
 
-                pdata = string.Format("&{1}OD_record{0:X4}", od.Index,eds.dc.NodeName);
+                pdata = string.Format("&OD_record{0:X4}", od.Index);
             }
             else
             {
@@ -970,7 +930,7 @@ file.WriteLine(@"/**************************************************************
         /// </summary>
         /// <param name="od">An odentry to access</param>
         /// <returns>byte containing the flag value</returns>
-        public byte getflags(ODentry od)
+        byte getflags(ODentry od)
         {
             byte flags = 0;
             byte mapping = 0; //mapping flags, if pdo is enabled
@@ -1071,78 +1031,78 @@ file.WriteLine(@"/**************************************************************
         {
             try
             {
-            int nobase = 10;
-            bool nodeidreplace = false;
+                int nobase = 10;
+                bool nodeidreplace = false;
 
-            if (defaultvalue == null || defaultvalue == "")
-            {
-                //No default value, we better supply one for sensible data types
-                if (dt == DataType.VISIBLE_STRING ||
-                    dt == DataType.OCTET_STRING ||
-                    dt == DataType.UNKNOWN ||
-                    dt == DataType.UNICODE_STRING)
+                if (defaultvalue == null || defaultvalue == "")
                 {
-                    return "";
+                    //No default value, we better supply one for sensible data types
+                    if (dt == DataType.VISIBLE_STRING ||
+                        dt == DataType.OCTET_STRING ||
+                        dt == DataType.UNKNOWN ||
+                        dt == DataType.UNICODE_STRING)
+                    {
+                        return "";
+                    }
+
+                    Console.WriteLine("Warning assuming a 0 default");
+                    defaultvalue = "0";
                 }
 
-                Console.WriteLine("Warning assuming a 0 default");
-                defaultvalue = "0";
-            }
+                if (defaultvalue.Contains("$NODEID"))
+                {
+                    defaultvalue = defaultvalue.Replace("$NODEID", "");
+                    defaultvalue = defaultvalue.Replace("+", "");
+                    nodeidreplace = true;
+                }
 
-            if (defaultvalue.Contains("$NODEID"))
-            {
-                defaultvalue = defaultvalue.Replace("$NODEID", "");
-                defaultvalue = defaultvalue.Replace("+", "");
-                nodeidreplace = true;
-            }
+                String pat = @"^0[xX][0-9a-fA-FL]+";
 
-            String pat = @"^0[xX][0-9a-fA-FL]+";
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 16;
+                    defaultvalue = defaultvalue.Replace("L", "");
+                }
 
-            Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-            Match m = r.Match(defaultvalue);
-            if (m.Success)
-            {
-                nobase = 16;
-                defaultvalue = defaultvalue.Replace("L", "");
-            }
+                pat = @"^0[0-7]+";
+                r = new Regex(pat, RegexOptions.IgnoreCase);
+                m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 8;
+                }
 
-            pat = @"^0[0-7]+";
-            r = new Regex(pat, RegexOptions.IgnoreCase);
-            m = r.Match(defaultvalue);
-            if (m.Success)
-            {
-                nobase = 8;
-            }
-
-            if (nodeidreplace)
-            {
-                UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
-                data += eds.NodeId;
-                defaultvalue = string.Format("0x{0:X}", data);
-                nobase = 16;
-            }
+                if (nodeidreplace)
+                {
+                    UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
+                    data += eds.NodeId;
+                    defaultvalue = string.Format("0x{0:X}", data);
+                    nobase = 16;
+                }
 
 
-            switch (dt)
-            {
-                case DataType.UNSIGNED24:
-                case DataType.UNSIGNED32:
-                    return String.Format("0x{0:X4}L", Convert.ToUInt32(defaultvalue, nobase));
+                switch (dt)
+                {
+                    case DataType.UNSIGNED24:
+                    case DataType.UNSIGNED32:
+                        return String.Format("0x{0:X4}L", Convert.ToUInt32(defaultvalue, nobase));
 
-                case DataType.INTEGER24:
-                case DataType.INTEGER32:
-                    return String.Format("0x{0:X4}L", Convert.ToInt32(defaultvalue, nobase));
+                    case DataType.INTEGER24:
+                    case DataType.INTEGER32:
+                        return String.Format("0x{0:X4}L", Convert.ToInt32(defaultvalue, nobase));
 
-                case DataType.REAL32:
-                case DataType.REAL64:
-                    return (String.Format("{0}", defaultvalue));
+                    case DataType.REAL32:
+                    case DataType.REAL64:
+                        return (String.Format("{0}", defaultvalue));
 
 
-                //fix me this looks wrong
-                case DataType.UNICODE_STRING:
-                    return (String.Format("'{0}'", defaultvalue));
+                    //fix me this looks wrong
+                    case DataType.UNICODE_STRING:
+                        return (String.Format("'{0}'", defaultvalue));
 
-                case DataType.VISIBLE_STRING:
+                    case DataType.VISIBLE_STRING:
                     {
 
                         ASCIIEncoding a = new ASCIIEncoding();
@@ -1165,7 +1125,7 @@ file.WriteLine(@"/**************************************************************
                     }
 
 
-                case DataType.OCTET_STRING:
+                    case DataType.OCTET_STRING:
                     {
                         string[] bits = defaultvalue.Split(' ');
                         string octet = "{";
@@ -1182,34 +1142,34 @@ file.WriteLine(@"/**************************************************************
                         return octet;
                     }
 
-                case DataType.INTEGER8:
-                    return String.Format("0x{0:X1}", Convert.ToSByte(defaultvalue, nobase));
+                    case DataType.INTEGER8:
+                        return String.Format("0x{0:X1}", Convert.ToSByte(defaultvalue, nobase));
 
-                case DataType.INTEGER16:
-                    return String.Format("0x{0:X2}", Convert.ToInt16(defaultvalue, nobase));
+                    case DataType.INTEGER16:
+                        return String.Format("0x{0:X2}", Convert.ToInt16(defaultvalue, nobase));
 
-                case DataType.UNSIGNED8:
-                    return String.Format("0x{0:X1}L", Convert.ToByte(defaultvalue, nobase));
+                    case DataType.UNSIGNED8:
+                        return String.Format("0x{0:X1}L", Convert.ToByte(defaultvalue, nobase));
 
-                case DataType.UNSIGNED16:
-                    return String.Format("0x{0:X2}", Convert.ToUInt16(defaultvalue, nobase));
+                    case DataType.UNSIGNED16:
+                        return String.Format("0x{0:X2}", Convert.ToUInt16(defaultvalue, nobase));
 
-                case DataType.INTEGER64:
-                    return String.Format("0x{0:X8}L", Convert.ToInt64(defaultvalue, nobase));
+                    case DataType.INTEGER64:
+                        return String.Format("0x{0:X8}L", Convert.ToInt64(defaultvalue, nobase));
 
-                case DataType.UNSIGNED64:
-                    return String.Format("0x{0:X8}L", Convert.ToUInt64(defaultvalue, nobase));
+                    case DataType.UNSIGNED64:
+                        return String.Format("0x{0:X8}L", Convert.ToUInt64(defaultvalue, nobase));
 
-                case DataType.TIME_DIFFERENCE:
-                case DataType.TIME_OF_DAY:
-                    return String.Format("{{{0}}}", Convert.ToUInt64(defaultvalue, nobase));
+                    case DataType.TIME_DIFFERENCE:
+                    case DataType.TIME_OF_DAY:
+                        return String.Format("{{{0}}}", Convert.ToUInt64(defaultvalue, nobase));
 
-                default:
-                    return (String.Format("{0:X}", defaultvalue));
+                    default:
+                        return (String.Format("{0:X}", defaultvalue));
 
+                }
             }
-        }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Warnings.warning_list.Add(String.Format("Error converting value {0} to type {1}", defaultvalue, dt.ToString()));
                 return "";
@@ -1324,7 +1284,7 @@ file.WriteLine(@"/**************************************************************
                     count = 3; //CANopenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
-                returndata.AppendLine($"/*0x{od.Index:X4}*/ const CO_OD_entryRecord_t {eds.dc.NodeName}OD_record{od.Index:X4}[{count}] = {{");
+                returndata.AppendLine($"/*0x{od.Index:X4}*/ const CO_OD_entryRecord_t OD_record{od.Index:X4}[{count}] = {{");
 
                 string arrayaccess = "";
 
@@ -1373,7 +1333,7 @@ file.WriteLine(@"/**************************************************************
 
             if (sub.datatype != DataType.DOMAIN)
             {
-                sb.AppendLine($"           {{(void*)&{eds.dc.NodeName+"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
+                sb.AppendLine($"           {{(void*)&{"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
             }
             else
             {
@@ -1531,9 +1491,4 @@ file.WriteLine(@"/**************************************************************
         }
     }
 
-
-
-
-
-    
 }

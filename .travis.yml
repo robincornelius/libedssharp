@@ -4,6 +4,7 @@ mono:
   - 6.10.0
 
 before_deploy:
+- cp $TRAVIS_BUILD_DIR/EDSSharp/bin/Release/EDSSharp.* $TRAVIS_BUILD_DIR/EDSTest/bin/Release/
 - cd $TRAVIS_BUILD_DIR/EDSTest/bin/Release/
 - zip -r $TRAVIS_BUILD_DIR/build/OpenEDSEditor-latest.zip *
 - cd $TRAVIS_BUILD_DIR

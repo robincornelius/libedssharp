@@ -49,18 +49,26 @@ namespace EDSSharp
                     string infile = argskvp["--infile"];
                     string outfile = argskvp["--outfile"];
 
+                    ExporterFactory.Exporter type = ExporterFactory.Exporter.CANOPENNODE_LEGACY; //sensible default
+
+                    if (argskvp["--type"] == "CanOpenNodeLegacy")
+                        type = ExporterFactory.Exporter.CANOPENNODE_LEGACY;
+
+                    if (argskvp["--type"] == "CanOpenNodeV2")
+                        type = ExporterFactory.Exporter.CANOPENNODE_V2;
+
                     switch (Path.GetExtension(infile).ToLower())
                     {
                         case ".xdd":
-                            openXDDfile(infile, outfile);
+                            openXDDfile(infile, outfile,type);
                             break;
 
                         case ".xml":
-                            openXMLfile(infile,outfile);
+                            openXMLfile(infile,outfile,type);
                             break;
 
                         case ".eds":
-                            openEDSfile(infile, outfile,InfoSection.Filetype.File_EDS);
+                            openEDSfile(infile, outfile,InfoSection.Filetype.File_EDS,type);
                             break;
 
 
@@ -80,16 +88,16 @@ namespace EDSSharp
             }
         }
 
-        private static void openEDSfile(string infile, string outfile, InfoSection.Filetype ft)
+        private static void openEDSfile(string infile, string outfile, InfoSection.Filetype ft, ExporterFactory.Exporter exporttype)
         {
           
             eds.Loadfile(infile);
 
-            exportCOOD(outfile);
+            exportCOOD(outfile,exporttype);
 
         }
 
-        private static void exportCOOD(string outpath)
+        private static void exportCOOD(string outpath,ExporterFactory.Exporter type)
         {
 
             outpath = Path.GetFullPath(outpath);
@@ -100,8 +108,9 @@ namespace EDSSharp
 
             Warnings.warning_list.Clear();
 
-            CanOpenNodeExporter cone = new CanOpenNodeExporter();
-            cone.export(savePath, Path.GetFileNameWithoutExtension(outpath), gitversion, eds);
+            IExporter exporter = ExporterFactory.getExporter(type);
+
+            exporter.export(savePath, Path.GetFileNameWithoutExtension(outpath), gitversion, eds);
 
             foreach(string warning in Warnings.warning_list)
             {
@@ -110,7 +119,7 @@ namespace EDSSharp
 
         }
 
-        private static void openXMLfile(string path,string outpath)
+        private static void openXMLfile(string path,string outpath,ExporterFactory.Exporter exportertype)
         {
 
             CanOpenXML coxml = new CanOpenXML();
@@ -121,11 +130,11 @@ namespace EDSSharp
             eds = b.convert(coxml.dev);
             eds.xmlfilename = path;
 
-            exportCOOD(outpath);
+            exportCOOD(outpath,exportertype);
 
         }
 
-        private static void openXDDfile(string path, string outpath)
+        private static void openXDDfile(string path, string outpath,ExporterFactory.Exporter exportertype)
         {
             CanOpenXDD coxml = new CanOpenXDD();
             eds = coxml.readXML(path);
@@ -134,7 +143,7 @@ namespace EDSSharp
                 return;
 
             eds.xddfilename = path;
-            exportCOOD(outpath);
+            exportCOOD(outpath,exportertype);
         }
     }
 }

@@ -32,6 +32,7 @@ improving the code
 	* s-fuchs 
 	* martinwag 
 	* trojanobelix
+	* many others...
 
 Releases
 --------
@@ -40,7 +41,7 @@ If you would like to try a pre compiled version, then head over to the
 [releases page!](https://github.com/robincornelius/libedssharp/releases)
 
 If you want to try the latest and greatest version from the development tip then it can be found here
-[latest auto build!](https://github.com/robincornelius/libedssharp/blob/gh-pages/build/OpenEDSEditor-latest.zip)
+[latest auto build!](https://github.com/robincornelius/libedssharp/raw/gh-pages/build/OpenEDSEditor-latest.zip) this version is auto built on travis-ci using mono 6.10.0 for the last build log please see [build log](https://travis-ci.org/github/robincornelius/libedssharp)
 
 Current Features
 

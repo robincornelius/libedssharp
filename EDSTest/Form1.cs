@@ -220,8 +220,18 @@ namespace ODEditor
 
                     Warnings.warning_list.Clear();
 
-                    CanOpenNodeExporter cone = new CanOpenNodeExporter();
-                    cone.export(savePath, Path.GetFileNameWithoutExtension(sfd.FileName), this.gitVersion, dv.eds);
+                    ExporterFactory.Exporter type = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
+
+                    IExporter exporter = ExporterFactory.getExporter(type);
+
+                    try
+                    {
+                        exporter.export(savePath, Path.GetFileNameWithoutExtension(sfd.FileName), this.gitVersion, dv.eds);
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show("Export failed see detailed reason below :-\n" + ex.ToString());
+                    }
 
                     if (Warnings.warning_list.Count != 0)
                     {
@@ -1037,7 +1047,8 @@ namespace ODEditor
                 dv.eds.Savefile(dv.eds.edsfilename, InfoSection.Filetype.File_EDS);
 
                 //export CO_OD.c and CO_OD.h
-                CanOpenNodeExporter cone = new CanOpenNodeExporter();
+                ExporterFactory.Exporter type = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
+                IExporter cone = ExporterFactory.getExporter(type);
 
                 try
                 {
@@ -1265,6 +1276,12 @@ namespace ODEditor
         private void ODEditor_MainForm_DragOver(object sender, DragEventArgs e)
         {
             enableDragDropTooltip();
+        }
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Preferences p = new Preferences();
+            p.ShowDialog();
         }
     }
 }
