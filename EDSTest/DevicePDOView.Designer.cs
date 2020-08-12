@@ -316,7 +316,7 @@
             this.listView_TXCOBmap.Location = new System.Drawing.Point(21, 313);
             this.listView_TXCOBmap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.listView_TXCOBmap.Name = "listView_TXCOBmap";
-            this.listView_TXCOBmap.Size = new System.Drawing.Size(1329, 377);
+            this.listView_TXCOBmap.Size = new System.Drawing.Size(1800, 377);
             this.listView_TXCOBmap.TabIndex = 2;
             this.listView_TXCOBmap.UseCompatibleStateImageBehavior = false;
             this.listView_TXCOBmap.View = System.Windows.Forms.View.Details;

@@ -888,7 +888,10 @@ namespace ODEditor
 
             if (IsRunningOnMono())
             {
-                System.Diagnostics.Process.Start("file://"+temp);
+				if (System.IO.File.Exists("/usr/bin/google-chrome"))
+				    System.Diagnostics.Process.Start("/usr/bin/google-chrome","file://"+temp);
+				else
+				    System.Diagnostics.Process.Start("file://"+temp);
             }
             else
             {
@@ -920,7 +923,6 @@ namespace ODEditor
         {
             try
             {
-
                 Warnings.warning_list.Clear();
 
                 if (tabControl1.SelectedTab != null)
@@ -952,10 +954,16 @@ namespace ODEditor
                     DocumentationGen docgen = new DocumentationGen();
                     docgen.genhtmldoc(temp, dv.eds);
                     docgen.genmddoc(temp2, dv.eds);
-                    System.Diagnostics.Process.Start("file://" + temp2);
+                    if (System.IO.File.Exists("/usr/bin/google-chrome"))
+                        System.Diagnostics.Process.Start("/usr/bin/google-chrome", "file://" + temp2);
+					else
+                        System.Diagnostics.Process.Start("file://" + temp2);
                     if (IsRunningOnMono())
                     {
-                        System.Diagnostics.Process.Start("file://" + temp);
+                        if (System.IO.File.Exists("/usr/bin/google-chrome"))
+                             System.Diagnostics.Process.Start("/usr/bin/google-chrome","file://" + temp);
+						else
+                             System.Diagnostics.Process.Start("file://" + temp);
                     }
                     else
                     {

@@ -3,9 +3,7 @@
 /EDSTest/obj
 /EDSTest/bin
 /Cia306Tester/obj
-/libEDSsharp/bin
 /*.suo
-/libEDSsharp/obj
 /EDSTest/obj/Release
 /EDSTest/bin/Release
 /.vs/EDSTest/v14/*.suo
@@ -23,3 +21,4 @@ edseditor-Setup.exe
 /Backup
 /SourceGrid_4.21
 /packages/
+

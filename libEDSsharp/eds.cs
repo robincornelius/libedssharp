@@ -2262,6 +2262,7 @@ namespace libEDSsharp
             fi.Write(writer,ft);
             di.Write(writer,ft);
             du.Write(writer,ft);
+            dc.Write(writer,ft);
             c.Write(writer);
 
             if(ft == InfoSection.Filetype.File_DCF)
