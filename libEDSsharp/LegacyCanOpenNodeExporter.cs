@@ -45,6 +45,10 @@ namespace libEDSsharp
         List<UInt16> openings = new List<UInt16>();
         List<UInt16> closings = new List<UInt16>();
 
+        private byte maxRXmappingsize = 0;
+        private byte maxTXmappingsize = 0;
+        ODentry maxRXmappingsOD = null;
+        ODentry maxTXmappingsOD = null;
 
         public void export(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
@@ -191,6 +195,39 @@ namespace libEDSsharp
                 }
 
             }
+
+            //Find maximum no entries in a mapping config to define an appropriate array
+            maxRXmappingsize = 0;
+            maxTXmappingsize = 0;
+
+            for (ushort x = 0x1600; x < 0x1800; x++)
+            {
+                if (eds.ods.ContainsKey(x))
+                {
+                    byte maxcount = EDSsharp.ConvertToByte(eds.ods[x].subobjects[0].defaultvalue);
+
+                    if (maxcount > maxRXmappingsize)
+                    {
+                        maxRXmappingsize = maxcount;
+                        maxRXmappingsOD = eds.ods[x];
+                    }
+                }
+            }
+
+            for (ushort x = 0x1a00; x < 0x1c00; x++)
+            {
+                if (eds.ods.ContainsKey(x))
+                {
+                    byte maxcount = EDSsharp.ConvertToByte(eds.ods[x].subobjects[0].defaultvalue);
+
+                    if (maxcount > maxTXmappingsize)
+                    {
+                        maxTXmappingsize = maxcount;
+                        maxTXmappingsOD = eds.ods[x];
+                    }
+                }
+            }
+
         }
 
         string lastname = "";
@@ -484,6 +521,22 @@ namespace libEDSsharp
                     continue;
 
                 structnamelist.Add(structname);
+
+
+                // we need to search the mappings to find the largest or this will not generate correctly
+                // as can opennode only has 1 structure defined for all mappings see #220
+
+                if (kvp.Key > 0x1600 || kvp.Key < 0x1800)
+                {
+                    //switch the OD entry to the largest
+                    od = maxRXmappingsOD;
+                }
+
+                if (kvp.Key > 0x1A00 || kvp.Key < 0x1C00)
+                {
+                    //switch the OD entry to the largest
+                    od = maxTXmappingsOD;
+                }
 
                 file.WriteLine(string.Format("/*{0:X4}      */ typedef struct {{", kvp.Key));
                 foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value.subobjects)
