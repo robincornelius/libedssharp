@@ -3,8 +3,9 @@ solution: EDSEditor.sln
 mono:
   - 6.10.0
 
-slack: canopennode:$SLACK
-
+notifications:
+  slack: canopennode:$SLACK
+  
 before_deploy:
 - cp $TRAVIS_BUILD_DIR/EDSSharp/bin/Release/EDSSharp.* $TRAVIS_BUILD_DIR/EDSTest/bin/Release/
 - cd $TRAVIS_BUILD_DIR/EDSTest/bin/Release/
