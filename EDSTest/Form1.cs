@@ -50,6 +50,7 @@ namespace ODEditor
             InitializeComponent();
             loadprofiles();
             insertToolStripMenuItem.Enabled = false;
+            Warnings.warning_mask = Properties.Settings.Default.WarningMask;
         }
 
         
@@ -192,7 +193,7 @@ namespace ODEditor
             if (Warnings.warning_list.Count != 0)
             {
                 WarningsFrm frm = new WarningsFrm();
-                frm.ShowDialog();
+                frm.Show();
             }
         }
 
@@ -236,7 +237,7 @@ namespace ODEditor
                     if (Warnings.warning_list.Count != 0)
                     {
                         WarningsFrm frm = new WarningsFrm();
-                        frm.ShowDialog();
+                        frm.Show();
                     }
 
                     dv.dispatch_updateOD();
@@ -322,7 +323,7 @@ namespace ODEditor
             if (Warnings.warning_list.Count != 0)
             {
                 WarningsFrm frm = new WarningsFrm();
-                frm.ShowDialog();
+                frm.Show();
             }
 
 
@@ -370,7 +371,7 @@ namespace ODEditor
             if (Warnings.warning_list.Count != 0)
             {
                 WarningsFrm frm = new WarningsFrm();
-                frm.ShowDialog();
+                frm.Show();
             }
 
         }
@@ -975,7 +976,7 @@ namespace ODEditor
             if (Warnings.warning_list.Count != 0)
             {
                 WarningsFrm frm = new WarningsFrm();
-                frm.ShowDialog();
+                frm.Show();
             }
         }
 
@@ -1065,7 +1066,7 @@ namespace ODEditor
                 if (Warnings.warning_list.Count != 0)
                 {
                     WarningsFrm frm = new WarningsFrm();
-                    frm.ShowDialog();
+                    frm.Show();
                 }
 
 

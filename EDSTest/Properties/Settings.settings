@@ -5,5 +5,8 @@
     <Setting Name="ExporterType" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="WarningMask" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">65535</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

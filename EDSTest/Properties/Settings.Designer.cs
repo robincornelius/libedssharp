@@ -34,5 +34,17 @@ namespace ODEditor.Properties {
                 this["ExporterType"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("65535")]
+        public uint WarningMask {
+            get {
+                return ((uint)(this["WarningMask"]));
+            }
+            set {
+                this["WarningMask"] = value;
+            }
+        }
     }
 }

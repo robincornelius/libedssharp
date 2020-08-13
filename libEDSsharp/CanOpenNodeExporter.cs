@@ -29,6 +29,7 @@ using System.IO;
 
 namespace libEDSsharp
 {
+
     public class CanOpenNodeExporter : IExporter
     {
 
@@ -38,7 +39,7 @@ namespace libEDSsharp
 
         private int enabledcount = 0;
 
-        //    Dictionary<DataType, defstruct> defstructs = new Dictionary<DataType, defstruct>();
+        Dictionary<UInt32, string> acceptable_canopen_names = new Dictionary<uint, string>();
 
         //Used for array tracking
         Dictionary<string, int> au = new Dictionary<string, int>();
@@ -50,6 +51,38 @@ namespace libEDSsharp
         ODentry maxRXmappingsOD=null;
         ODentry maxTXmappingsOD=null;
 
+        public void prepareCanOpenNames()
+        {
+            acceptable_canopen_names.Add(0x101800, "identity");
+           
+            acceptable_canopen_names.Add(0x140000, "RPDOCommunicationParameter");
+            acceptable_canopen_names.Add(0x160000, "RPDOMappingParameter");
+            acceptable_canopen_names.Add(0x180000, "TPDOCommunicationParameter");
+            acceptable_canopen_names.Add(0x1a0000, "TPDOMappingParameter");
+
+            acceptable_canopen_names.Add(0x100500, "COB_ID_SYNCMessage");
+
+
+
+            acceptable_canopen_names.Add(0x101801, "vendorID");
+            acceptable_canopen_names.Add(0x101802, "productCode");
+            acceptable_canopen_names.Add(0x101803, "revisionNumber");
+            acceptable_canopen_names.Add(0x101804, "serialNumber");
+
+            acceptable_canopen_names.Add(0x120000, "SDOServerParameter");
+            acceptable_canopen_names.Add(0x120001, "COB_IDClientToServer");
+            acceptable_canopen_names.Add(0x120002, "COB_IDServerToClient");
+
+            acceptable_canopen_names.Add(0x128000, "SDOClientParameter");
+            acceptable_canopen_names.Add(0x128001, "COB_IDClientToServer");
+            acceptable_canopen_names.Add(0x128002, "COB_IDServerToClient");
+
+            
+
+
+
+        }
+
 
         public void export(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
@@ -59,6 +92,8 @@ namespace libEDSsharp
 
 
             enabledcount = eds.GetNoEnabledObjects();
+
+            prepareCanOpenNames();
 
             countPDOS();
 
@@ -134,7 +169,7 @@ namespace libEDSsharp
                 if (od.Disabled == true)
                     continue;
 
-                string name = make_cname(od.parameter_name);
+                string name = make_cname(od.parameter_name,od);
                 if (au.ContainsKey(name))
                 {
                     au[name]++;
@@ -174,7 +209,7 @@ namespace libEDSsharp
                     foreach (KeyValuePair<UInt16, ODentry> kvp2 in eds.ods)
                     {
 
-                        string name = make_cname(kvp2.Value.parameter_name);
+                        string name = make_cname(kvp2.Value.parameter_name,kvp2.Value);
                         if(name==targetname)
                         {
                             if (kvp2.Key > highest)
@@ -273,7 +308,7 @@ namespace libEDSsharp
 
                     if (od.Lengthofstring == 0)
                     {
-                        Warnings.warning_list.Add(string.Format(" Object 0x{0:x4}/{1:x2} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index, od.Subindex));
+                         Warnings.AddWarning(string.Format(" Object 0x{0:x4}/{1:x2} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index, od.Subindex),Warnings.warning_class.WARNING_STRING);
                         specialarraylength = "[1]";
                     }
                     else
@@ -282,7 +317,7 @@ namespace libEDSsharp
                     }
                 }
 
-                sb.AppendLine($"/*{od.Index:X4}      */ {od.datatype.ToString(),-14} {make_cname(od.parameter_name)}{specialarraylength};");
+                sb.AppendLine($"/*{od.Index:X4}      */ {od.datatype.ToString(),-14} {make_cname(od.parameter_name,od)}{specialarraylength};");
             }
             else
             {
@@ -298,7 +333,7 @@ namespace libEDSsharp
                 {
 
                     case ObjectType.REC:
-                        objecttypewords = String.Format("OD_{0}_t", make_cname(od.parameter_name));
+                        objecttypewords = String.Format("OD_{0}_t", make_cname(od.parameter_name,od));
                         break;
                     case ObjectType.ARRAY:
                         objecttypewords = t.ToString(); //this case is handled by the logic in eds.getdatatype();
@@ -308,14 +343,14 @@ namespace libEDSsharp
                         break;
                 }
 
-                string name = make_cname(od.parameter_name);
+                string name = make_cname(od.parameter_name,od);
                 if (au[name] > 1)
                 {
                     if (lastname == name)
                         return "";
 
                     lastname = name;
-                    sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[{au[name]}];");
+                    sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name,od)}[{au[name]}];");
                 }
                 else
                 {
@@ -326,11 +361,11 @@ namespace libEDSsharp
                     {
                         if (arrayspecial(od.Index, true))
                         {
-                            sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}[1];");
+                            sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name,od)}[1];");
                         }
                         else
                         {
-                            sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)};");
+                            sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name,od)};");
                         }
                     }
                     else
@@ -348,7 +383,7 @@ namespace libEDSsharp
 
                             if (maxlength == 0)
                             {
-                                Warnings.warning_list.Add(string.Format(" Object children of 0x{0:x4} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index));
+                                 Warnings.AddWarning(string.Format(" Object children of 0x{0:x4} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index),Warnings.warning_class.WARNING_STRING);
                                 maxlength = 1;
                             }
 
@@ -356,7 +391,7 @@ namespace libEDSsharp
                             specialarraylength = string.Format("[{0}]", maxlength);
                         }
 
-                        sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name)}{specialarraylength}[{od.Nosubindexes - 1}];");
+                        sb.AppendLine($"/*{od.Index:X4}      */ {objecttypewords,-15} {make_cname(od.parameter_name,od)}{specialarraylength}[{od.Nosubindexes - 1}];");
                     }
                 }
             }
@@ -531,7 +566,7 @@ namespace libEDSsharp
                 if (od.objecttype != ObjectType.REC)
                     continue;
 
-                string structname = String.Format("OD_{0}_t", make_cname(od.parameter_name));
+                string structname = String.Format("OD_{0}_t", make_cname(od.parameter_name,od));
 
                 if (structnamelist.Contains(structname))
                     continue;
@@ -561,13 +596,13 @@ namespace libEDSsharp
                     string paramaterarrlen = "";
                     ODentry subod = kvp2.Value;
 
-                    string proposedname = make_cname(subod.parameter_name);
+                    string proposedname = make_cname(subod.parameter_name,subod);
 
                     int suffix=1;
                     while (structmemberlist.Contains(proposedname))
                     {
-                        Warnings.warning_list.Add(string.Format("Error in 0x{0:x4}/{1:x2}Duplicate struct entry name",subod.Index,subod.Subindex));
-                        proposedname = make_cname(subod.parameter_name) + suffix.ToString();
+                        Warnings.AddWarning(string.Format("STRUCT WARNING; in 0x{0:x4}/{1:x2} Duplicate struct entry name, it has been auto numbered",subod.Index,subod.Subindex),Warnings.warning_class.WARNING_STRUCT);
+                        proposedname = make_cname(subod.parameter_name,subod) + suffix.ToString();
                         suffix++;
                     }
 
@@ -614,7 +649,7 @@ namespace libEDSsharp
                 default:
                     {
                         file.WriteLine(string.Format("/*{0:X4} */", od.Index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:X4}", string.Format("OD_{0:X4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:X4}", string.Format("OD_{0:X4}_{1}", od.Index, make_cname(od.parameter_name,od)), od.Index, t.ToString()));
 
                         file.WriteLine("");
                     }
@@ -624,12 +659,12 @@ namespace libEDSsharp
                 case ObjectType.REC:
                     {
                         file.WriteLine(string.Format("/*{0:X4} */", od.Index));
-                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:X4}", string.Format("OD_{0:X4}_{1}", od.Index, make_cname(od.parameter_name)), od.Index, t.ToString()));
+                        file.WriteLine(string.Format("        #define {0,-51} 0x{1:X4}", string.Format("OD_{0:X4}_{1}", od.Index, make_cname(od.parameter_name,od)), od.Index, t.ToString()));
 
                         file.WriteLine("");
 
                         //sub indexes
-                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_{0:X4}_0_{1}_maxSubIndex", od.Index, make_cname(od.parameter_name))));
+                        file.WriteLine(string.Format("        #define {0,-51} 0", string.Format("OD_{0:X4}_0_{1}_maxSubIndex", od.Index, make_cname(od.parameter_name,od))));
 
                         List<string> ODSIs = new List<string>();
 
@@ -642,7 +677,7 @@ namespace libEDSsharp
                             if (kvp2.Key == 0)
                                 continue;
 
-                            string ODSI = string.Format("{0}", string.Format("OD_{0:X4}_{1}_{2}_{3}", od.Index, kvp2.Key, make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+                            string ODSI = string.Format("{0}", string.Format("OD_{0:X4}_{1}_{2}_{3}", od.Index, kvp2.Key, make_cname(od.parameter_name,od), make_cname(sub.parameter_name,sub)));
 
                             if (ODSIs.Contains(ODSI))
                             {
@@ -733,13 +768,13 @@ file.WriteLine(@"/**************************************************************
                     default:
                         {
                             file.WriteLine(string.Format("/*{0:X4}, Data Type: {1} */", od.Index, t.ToString()));
-                            file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name)), loc, make_cname(od.parameter_name)));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}.{2}", string.Format("OD_{0}", make_cname(od.parameter_name,od)), loc, make_cname(od.parameter_name,od)));
 
                             DataType dt = od.datatype;
 
                             if (dt == DataType.OCTET_STRING || dt == DataType.VISIBLE_STRING)
                             {
-                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name)), od.Lengthofstring));
+                                file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_stringLength", make_cname(od.parameter_name,od)), od.Lengthofstring));
                             }
                             file.WriteLine("");
                         }
@@ -750,8 +785,8 @@ file.WriteLine(@"/**************************************************************
                             DataType dt = od.datatype;
 
                             file.WriteLine(string.Format("/*{0:X4}, Data Type: {1}, Array[{2}] */", od.Index, t.ToString(), od.Nosubindexes - 1));
-                            file.WriteLine(string.Format("        #define OD_{0,-48} {1}.{2}", make_cname(od.parameter_name), loc, make_cname(od.parameter_name)));
-                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name)), od.Nosubindexes - 1));
+                            file.WriteLine(string.Format("        #define OD_{0,-48} {1}.{2}", make_cname(od.parameter_name,od), loc, make_cname(od.parameter_name,od)));
+                            file.WriteLine(string.Format("        #define {0,-51} {1}", string.Format("ODL_{0}_arrayLength", make_cname(od.parameter_name,od)), od.Nosubindexes - 1));
 
 
                             List<string> ODAs = new List<string>();
@@ -765,7 +800,7 @@ file.WriteLine(@"/**************************************************************
                                 if (kvp2.Key == 0)
                                     continue;
 
-                                string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)));
+                                string ODA = string.Format("{0}", string.Format("ODA_{0}_{1}", make_cname(od.parameter_name,od), make_cname(sub.parameter_name,sub)));
 
                                 if (ODAs.Contains(ODA))
                                 {
@@ -778,11 +813,11 @@ file.WriteLine(@"/**************************************************************
                                 //so offset by one
                                 if (od.objecttype == ObjectType.ARRAY)
                                 {
-                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key - 1}{Environment.NewLine}");
+                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name,od), make_cname(sub.parameter_name,sub)),-51} {kvp2.Key - 1}{Environment.NewLine}");
                                 }
                                 else
                                 {
-                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name), make_cname(sub.parameter_name)),-51} {kvp2.Key}{Environment.NewLine}");
+                                    ODAout += ($"        #define {string.Format("ODA_{0}_{1}", make_cname(od.parameter_name,od), make_cname(sub.parameter_name,sub)),-51} {kvp2.Key}{Environment.NewLine}");
                                 }
                             }
 
@@ -793,7 +828,7 @@ file.WriteLine(@"/**************************************************************
 
                     case ObjectType.REC:
                         {
-                            string rectype = make_cname(od.parameter_name);
+                            string rectype = make_cname(od.parameter_name,od);
 
                             if (!constructed_rec_types.Contains(rectype))
                             {
@@ -963,7 +998,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 {
                     if (od.Index != 0x1003 && od.Index != 0x1011)//ignore 0x1003, it is a special case as per CANopen specs, and ignore 0x1011 CANopenNode uses special sub indexes for eeprom resets
                     {
-                        Warnings.warning_list.Add(String.Format("Subindex discrepancy on object 0x{0:X4} arraysize: {1} vs max sub-index: {2}", od.Index, nosubindexs, od.Getmaxsubindex()));
+                         Warnings.AddWarning(String.Format("Subindex discrepancy on object 0x{0:X4} arraysize: {1} vs max sub-index: {2}", od.Index, nosubindexs, od.Getmaxsubindex()));
                     }
 
                     //0x1003 is a special case for CANopenNode
@@ -986,7 +1021,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
             else
             {
-                pdata = string.Format("&{0}.{1}{2}", loc, make_cname(od.parameter_name), array);
+                pdata = string.Format("&{0}.{1}{2}", loc, make_cname(od.parameter_name,od), array);
             }
 
             if ((od.objecttype == ObjectType.VAR || od.objecttype == ObjectType.ARRAY) && od.datatype == DataType.DOMAIN)
@@ -1256,7 +1291,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
             catch(Exception e)
             {
-                Warnings.warning_list.Add(String.Format("Error converting value {0} to type {1}", defaultvalue, dt.ToString()));
+                 Warnings.AddWarning(String.Format("Error converting value {0} to type {1}", defaultvalue, dt.ToString()),Warnings.warning_class.WARNING_BUILD);
                 return "";
             }
         }
@@ -1295,7 +1330,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             return method.Invoke(null, null) as string;
         }
 
-       protected string make_cname(string name)
+       protected string make_cname(string name,ODentry entry)
        {
             if (name == null)
                 return null;
@@ -1337,6 +1372,34 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
             else
                 output = output.ToLower(); //single character
+
+
+            UInt32 key = (UInt32)((entry.Index << 8) + entry.Subindex );
+
+            if ((entry.Index >= 0x1200) && (entry.Index < 0x1280))
+                key = (UInt32)((0x1200 << 8) + entry.Subindex);
+
+            if ((entry.Index >= 0x1280) && (entry.Index < 0x1300))
+                key = (UInt32)((0x1280 << 8) + entry.Subindex);
+
+            if ((entry.Index >= 0x1400) && (entry.Index < 0x1600))
+                key = (UInt32)((0x1400 <<8) + entry.Subindex);
+
+            if ((entry.Index >= 0x1600) && (entry.Index < 0x1800))
+                key = (UInt32)((0x1600 << 8) + entry.Subindex);
+
+            if ((entry.Index >= 0x1800) && (entry.Index < 0x1a00))
+                key = (UInt32)((0x1800 << 8) + entry.Subindex);
+
+            if ((entry.Index >= 0x1a00) && (entry.Index < 0x1c00))
+                key = (UInt32)((0x1a00 << 8) + entry.Subindex);
+
+            if (acceptable_canopen_names.ContainsKey(key))
+            {
+                string newname = acceptable_canopen_names[key];
+                 Warnings.AddWarning(string.Format("Warning: index 0x{0:x4}/{1:x2} correcting name for CanOpenNode compatibility from {2} to {3}", entry.Index, entry.Subindex, output, newname),Warnings.warning_class.WARNING_RENAME);
+                output = newname;
+            }
 
             return output;
         }
@@ -1412,9 +1475,9 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             StringBuilder sb = new StringBuilder();
 
-            string cname = make_cname(sub.parent.parameter_name);
+            string cname = make_cname(sub.parent.parameter_name,sub.parent);
 
-            string subcname = make_cname(sub.parameter_name);
+            string subcname = make_cname(sub.parameter_name,sub);
             int datasize = (int)Math.Ceiling((double)sub.Sizeofdatatype() / (double)8.0);
 
             if (sub.datatype != DataType.DOMAIN)
@@ -1448,6 +1511,79 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             noRXpdos = 0;
             noTXpdos = 0;
 
+            //feature tests for default CanOpenNode build
+            //if you have a custom CanOpen.c then you may not require all these features
+
+            //check the SYNC feature
+            int checkfeature = 0;
+            if (eds.ods.ContainsKey(0x1005))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1006))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1007))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1019))
+                checkfeature++;
+            if (checkfeature == 4)
+            {
+                noSYNC = 1;
+            }
+            else
+            {
+                 Warnings.AddWarning("BUILD WARNING, required objects for SYNC are not present 0x1005,0x1006,0x1007,0x1019",Warnings.warning_class.WARNING_BUILD);
+            }
+
+            //EMCY
+            checkfeature = 0;
+            if (eds.ods.ContainsKey(0x1003))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1014))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1015))
+                checkfeature++;
+            if (checkfeature == 3)
+            {
+                noEMCY = 1;
+            }
+            else
+            {
+                 Warnings.AddWarning("BUILD WARNING, required objects for EMCY are not present 0x1003,0x1014,0x1015",Warnings.warning_class.WARNING_BUILD);
+            }
+
+            //TIME
+            checkfeature = 0;
+            if (eds.ods.ContainsKey(0x1012))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1013))
+                checkfeature++;
+            if (checkfeature == 2)
+            {
+                noTIME = 1;
+            }
+            else
+            {
+               //TIME is optional
+            }
+
+            //NMT CLIENT
+            checkfeature = 0;
+            if (eds.ods.ContainsKey(0x1f80))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1029))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1017))
+                checkfeature++;
+            if (eds.ods.ContainsKey(0x1001))
+                checkfeature++;
+            if (checkfeature == 4)
+            {
+                //NMT Client is not optional
+            }
+            else
+            {
+                Warnings.AddWarning("BUILD WARNING, required objects for NMT Client are not present 0x1001,0x1017,0x1029",Warnings.warning_class.WARNING_BUILD);
+            }
+
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 UInt16 index = kvp.Key;
@@ -1477,17 +1613,9 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                     noSDOclients++;
                 }
 
-                if (index == 0x1005)
-                    noSYNC = 1;
-
-                if (index == 0x1014)
-                    noEMCY = 1;
-
-                if (index == 0x1012)
-                    noTIME = 1;
-
                 if (index == 0x1300)
                     noGFC = 1;
+
                 if (index >= 0x1301 && index <= 0x1340)
                     noSRDO++;
             }

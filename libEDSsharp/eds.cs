@@ -2841,10 +2841,6 @@ mapped object  (subindex 1...8)
             }
         }
 
-        public static class Warnings
-        {
-            public static List<string> warning_list = new List<string>();
-
-        }
+      
 
  }

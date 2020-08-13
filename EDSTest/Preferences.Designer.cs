@@ -32,6 +32,11 @@
             this.comboBox_exporter = new System.Windows.Forms.ComboBox();
             this.button_save = new System.Windows.Forms.Button();
             this.button_close = new System.Windows.Forms.Button();
+            this.checkBox_genericwarning = new System.Windows.Forms.CheckBox();
+            this.checkBox_renamewarning = new System.Windows.Forms.CheckBox();
+            this.checkBox_buildwarning = new System.Windows.Forms.CheckBox();
+            this.checkBox_stringwarning = new System.Windows.Forms.CheckBox();
+            this.checkBox_structwarning = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -71,11 +76,67 @@
             this.button_close.UseVisualStyleBackColor = true;
             this.button_close.Click += new System.EventHandler(this.button_close_Click);
             // 
+            // checkBox_genericwarning
+            // 
+            this.checkBox_genericwarning.AutoSize = true;
+            this.checkBox_genericwarning.Location = new System.Drawing.Point(98, 104);
+            this.checkBox_genericwarning.Name = "checkBox_genericwarning";
+            this.checkBox_genericwarning.Size = new System.Drawing.Size(182, 21);
+            this.checkBox_genericwarning.TabIndex = 4;
+            this.checkBox_genericwarning.Text = "Show Generic Warnings";
+            this.checkBox_genericwarning.UseVisualStyleBackColor = true;
+            this.checkBox_genericwarning.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // checkBox_renamewarning
+            // 
+            this.checkBox_renamewarning.AutoSize = true;
+            this.checkBox_renamewarning.Location = new System.Drawing.Point(98, 131);
+            this.checkBox_renamewarning.Name = "checkBox_renamewarning";
+            this.checkBox_renamewarning.Size = new System.Drawing.Size(185, 21);
+            this.checkBox_renamewarning.TabIndex = 5;
+            this.checkBox_renamewarning.Text = "Show Rename Warnings";
+            this.checkBox_renamewarning.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_buildwarning
+            // 
+            this.checkBox_buildwarning.AutoSize = true;
+            this.checkBox_buildwarning.Location = new System.Drawing.Point(98, 158);
+            this.checkBox_buildwarning.Name = "checkBox_buildwarning";
+            this.checkBox_buildwarning.Size = new System.Drawing.Size(163, 21);
+            this.checkBox_buildwarning.TabIndex = 6;
+            this.checkBox_buildwarning.Text = "Show Build Warnings";
+            this.checkBox_buildwarning.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_stringwarning
+            // 
+            this.checkBox_stringwarning.AutoSize = true;
+            this.checkBox_stringwarning.Location = new System.Drawing.Point(98, 185);
+            this.checkBox_stringwarning.Name = "checkBox_stringwarning";
+            this.checkBox_stringwarning.Size = new System.Drawing.Size(169, 21);
+            this.checkBox_stringwarning.TabIndex = 7;
+            this.checkBox_stringwarning.Text = "Show String Warnings";
+            this.checkBox_stringwarning.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_structwarning
+            // 
+            this.checkBox_structwarning.AutoSize = true;
+            this.checkBox_structwarning.Location = new System.Drawing.Point(98, 212);
+            this.checkBox_structwarning.Name = "checkBox_structwarning";
+            this.checkBox_structwarning.Size = new System.Drawing.Size(169, 21);
+            this.checkBox_structwarning.TabIndex = 8;
+            this.checkBox_structwarning.Text = "Show Struct Warnings";
+            this.checkBox_structwarning.UseVisualStyleBackColor = true;
+            // 
             // Preferences
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.checkBox_structwarning);
+            this.Controls.Add(this.checkBox_stringwarning);
+            this.Controls.Add(this.checkBox_buildwarning);
+            this.Controls.Add(this.checkBox_renamewarning);
+            this.Controls.Add(this.checkBox_genericwarning);
             this.Controls.Add(this.button_close);
             this.Controls.Add(this.button_save);
             this.Controls.Add(this.comboBox_exporter);
@@ -93,5 +154,10 @@
         private System.Windows.Forms.ComboBox comboBox_exporter;
         private System.Windows.Forms.Button button_save;
         private System.Windows.Forms.Button button_close;
+        private System.Windows.Forms.CheckBox checkBox_genericwarning;
+        private System.Windows.Forms.CheckBox checkBox_renamewarning;
+        private System.Windows.Forms.CheckBox checkBox_buildwarning;
+        private System.Windows.Forms.CheckBox checkBox_stringwarning;
+        private System.Windows.Forms.CheckBox checkBox_structwarning;
     }
 }
