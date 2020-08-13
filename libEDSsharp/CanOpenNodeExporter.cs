@@ -270,7 +270,16 @@ namespace libEDSsharp
                 string specialarraylength = "";
                 if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING || od.datatype == DataType.UNICODE_STRING)
                 {
-                    specialarraylength = string.Format("[{0}]", od.Lengthofstring);
+
+                    if (od.Lengthofstring == 0)
+                    {
+                        Warnings.warning_list.Add(string.Format(" Object 0x{0:x4}/{1:x2} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index, od.Subindex));
+                        specialarraylength = "[1]";
+                    }
+                    else
+                    {
+                        specialarraylength = string.Format("[{0}]", od.Lengthofstring);
+                    }
                 }
 
                 sb.AppendLine($"/*{od.Index:X4}      */ {od.datatype.ToString(),-14} {make_cname(od.parameter_name)}{specialarraylength};");
@@ -336,6 +345,13 @@ namespace libEDSsharp
                                 if (sub.Lengthofstring> maxlength)
                                     maxlength = sub.Lengthofstring;
                             }
+
+                            if (maxlength == 0)
+                            {
+                                Warnings.warning_list.Add(string.Format(" Object children of 0x{0:x4} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index));
+                                maxlength = 1;
+                            }
+
 
                             specialarraylength = string.Format("[{0}]", maxlength);
                         }
@@ -537,19 +553,32 @@ namespace libEDSsharp
                     od = maxTXmappingsOD;
                 }
 
+                List<string> structmemberlist = new List<string>();
+
                 file.WriteLine(string.Format("/*{0:X4}      */ typedef struct {{", kvp.Key));
                 foreach (KeyValuePair<UInt16, ODentry> kvp2 in kvp.Value.subobjects)
                 {
                     string paramaterarrlen = "";
-
                     ODentry subod = kvp2.Value;
 
-                    if(subod.datatype==DataType.VISIBLE_STRING || subod.datatype==DataType.OCTET_STRING)
+                    string proposedname = make_cname(subod.parameter_name);
+
+                    int suffix=1;
+                    while (structmemberlist.Contains(proposedname))
+                    {
+                        Warnings.warning_list.Add(string.Format("Error in 0x{0:x4}/{1:x2}Duplicate struct entry name",subod.Index,subod.Subindex));
+                        proposedname = make_cname(subod.parameter_name) + suffix.ToString();
+                        suffix++;
+                    }
+
+                    structmemberlist.Add(proposedname);
+
+                    if (subod.datatype==DataType.VISIBLE_STRING || subod.datatype==DataType.OCTET_STRING)
                     {
                         paramaterarrlen = String.Format("[{0}]", subod.Lengthofstring);
                     }
 
-                    file.WriteLine(string.Format("               {0,-15}{1}{2};", subod.datatype.ToString(), make_cname(subod.parameter_name),paramaterarrlen));
+                    file.WriteLine(string.Format("               {0,-15}{1}{2};", subod.datatype.ToString(), proposedname,paramaterarrlen));
 
                 }
 
@@ -888,7 +917,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             DataType t = eds.Getdatatype(od);
             int datasize = (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
-
+  
             string odf;
 
             if (od.AccessFunctionName != null)
@@ -1079,7 +1108,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             return flags;
         }
 
-        string formatvaluewithdatatype(string defaultvalue, DataType dt)
+        string formatvaluewithdatatype(string defaultvalue, DataType dt, bool fixstring=false)
         {
             try
             {
@@ -1094,6 +1123,10 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                         dt == DataType.UNKNOWN ||
                         dt == DataType.UNICODE_STRING)
                     {
+
+                        if (fixstring == true)
+                            return "'X'";
+
                         return "";
                     }
 
@@ -1333,7 +1366,8 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 if(od.Index>=0x1400 && od.Index<0x1600)
                 {
-                    count = 3; //CANopenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
+                    //what is this doing for us?
+                    //count = 3; //CANopenNode Fudging. Its only 3 parameters for RX PDOS in the c code despite being a PDO_COMMUNICATION_PARAMETER
                 }
 
                 returndata.AppendLine($"/*0x{od.Index:X4}*/ const CO_OD_entryRecord_t OD_record{od.Index:X4}[{count}] = {{");
@@ -1500,7 +1534,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 if (od.Nosubindexes == 0)
                 {
-                    sb.AppendLine($"/*{od.Index:X4}*/ {formatvaluewithdatatype(od.defaultvalue, od.datatype)},");
+                    sb.AppendLine($"/*{od.Index:X4}*/ {formatvaluewithdatatype(od.defaultvalue, od.datatype,true)},");
                 }
                 else
                 {
@@ -1522,7 +1556,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                         if ((od.objecttype==ObjectType.ARRAY) && kvp2.Key == 0)
                             continue;
 
-                        sb.Append(formatvaluewithdatatype(sub.defaultvalue, dt));
+                        sb.Append(formatvaluewithdatatype(sub.defaultvalue, dt,true));
 
                         if (od.subobjects.Keys.Last() != kvp2.Key)
                             sb.Append(", ");
