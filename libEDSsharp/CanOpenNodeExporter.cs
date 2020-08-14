@@ -756,7 +756,7 @@ file.WriteLine(@"/**************************************************************
             file.WriteLine(string.Format("  .NO_RPDO = {0}CO_NO_RPDO,              //Associated objects: 14xx, 16xx", eds.dc.NodeName));
             file.WriteLine(string.Format("  .NO_TPDO = {0}CO_NO_TPDO,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
             file.WriteLine(string.Format("  .NO_SRDO = {0}CO_NO_SRDO,              //Associated objects: 1301 - 1340", eds.dc.NodeName));
-            file.WriteLine(string.Format("  .NO_TPDO = {0}CO_NO_GFC,               //Associated objects: 1300", eds.dc.NodeName));
+            file.WriteLine(string.Format("  .NO_GFC = {0}CO_NO_GFC,               //Associated objects: 1300", eds.dc.NodeName));
             file.WriteLine(string.Format("  .NO_NMT_MASTER = {0}CO_NO_NMT_MASTER,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
 //            file.WriteLine(string.Format("  .NO_TRACE = {0}CO_NO_TRACE,              //Associated objects: 18xx, 1Axx", eds.dc.NodeName));
 			if (eds.ods.ContainsKey(0x1016)) { //Errorregister
