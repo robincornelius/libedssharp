@@ -83,46 +83,51 @@ namespace libEDSsharp
 
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
 
-            //export structs
-
-            List<string> structnamelist = new List<string>();
-
-            //start of main OD struct
-            file.Write("typedef struct {");
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (string location in eds.storageLocation)
             {
-                ODentry od = kvp.Value;
-  
-                switch(od.objecttype)
-                {
-                    case ObjectType.VAR:
-                        file.Write(string.Format("    {0} x{1:x4}_{2};",get_c_data_type(od.datatype),od.Index,make_cname(od)));
-                        break;
-
-                    case ObjectType.ARRAY:
-                        file.Write(string.Format("    {0} x{1:x4}_{2}[{3}];", get_c_data_type(od.datatype), od.Index, make_cname(od),od.Nosubindexes));
-                        break;
-
-                    case ObjectType.REC:
-                        file.Write("    struct {");
-                        foreach(ODentry subod in od.subobjects.Values)
-                        {
-                            file.Write(string.Format("        {0} {1};", get_c_data_type(od.datatype), make_cname(od)));
-                        }
-                        
-                        file.Write(string.Format("    }} {0}",make_cname(od)));
-                        break;                   
-                       
-                }
-
+                generate_main_OD_struct(file, location);
             }
-
-            file.Write("} ODxyz_0_t"); //fixme static name
 
             file.Close();
         }
 
+        public void generate_main_OD_struct(StreamWriter file, string location)
+        {
+
+            //start of main OD struct
+            file.WriteLine("typedef struct {");
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
+                ODentry od = kvp.Value;
+
+                if (od.StorageLocation != location)
+                    continue;
+
+                switch (od.objecttype)
+                {
+                    case ObjectType.VAR:
+                        file.WriteLine(string.Format("    {0} x{1:x4}_{2};", get_c_data_type(od.datatype), od.Index, make_cname(od)));
+                        break;
+
+                    case ObjectType.ARRAY:
+                        file.WriteLine(string.Format("    {0} x{1:x4}_{2}[{3}];", get_c_data_type(od.datatype), od.Index, make_cname(od), od.Nosubindexes));
+                        break;
+
+                    case ObjectType.REC:
+                        file.WriteLine("    struct {");
+                        foreach (ODentry subod in od.subobjects.Values)
+                        {
+                            file.WriteLine(string.Format("        {0} {1};", get_c_data_type(od.datatype), make_cname(od)));
+                        }
+
+                        file.WriteLine(string.Format("    }} {0}", make_cname(od)));
+                        break;
+                }
+
+            }
+            file.WriteLine(string.Format("}} OD_{0}_0_t",location)); //fixme static name
+        }
 
         /// <summary>
         /// Export the c file
