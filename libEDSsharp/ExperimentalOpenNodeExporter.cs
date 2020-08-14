@@ -37,6 +37,13 @@ namespace libEDSsharp
         private string gitVersion;
         protected EDSsharp eds;
 
+        /// <summary>
+        /// export the current data set in the Experimental CanOpen Node format
+        /// </summary>
+        /// <param name="folderpath"></param>
+        /// <param name="filename"></param>
+        /// <param name="gitVersion"></param>
+        /// <param name="eds"></param>
         public void export(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
             this.folderpath = folderpath;
@@ -45,6 +52,185 @@ namespace libEDSsharp
 
             //New stub to handle new ODInterface export!
 
+            export_h(filename);
+            export_c(filename);
+
+
+        }
+
+        /// <summary>
+        /// Export the header file
+        /// </summary>
+        /// <param name="filename"></param>
+        public void export_h(string filename)
+        {
+            /*
+             * typedef struct {
+                uint32_t x1000_deviceType;
+                uint8_t x1001_errorRegister;
+                struct {
+                    uint8_t maxSubIndex;
+                    uint32_t vendorID;
+                    uint32_t productCode;
+                    uint32_t revisionNumber;
+                    uint32_t serialNumber;
+                } x1018_identity;
+            } ODxyz_0_t;
+            */
+
+            if (filename == "")
+                filename = "CO_OD";
+
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
+
+            //export structs
+
+            List<string> structnamelist = new List<string>();
+
+            //start of main OD struct
+            file.Write("typedef struct {");
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
+                ODentry od = kvp.Value;
+  
+                switch(od.objecttype)
+                {
+                    case ObjectType.VAR:
+                        file.Write(string.Format("    {0} x{1:x4}_{2};",get_c_data_type(od.datatype),od.Index,make_cname(od)));
+                        break;
+
+                    case ObjectType.ARRAY:
+                        file.Write(string.Format("    {0} x{1:x4}_{2}[{3}];", get_c_data_type(od.datatype), od.Index, make_cname(od),od.Nosubindexes));
+                        break;
+
+                    case ObjectType.REC:
+                        file.Write("    struct {");
+                        foreach(ODentry subod in od.subobjects.Values)
+                        {
+                            file.Write(string.Format("        {0} {1};", get_c_data_type(od.datatype), make_cname(od)));
+                        }
+                        
+                        file.Write(string.Format("    }} {0}",make_cname(od)));
+                        break;                   
+                       
+                }
+
+            }
+
+            file.Write("} ODxyz_0_t"); //fixme static name
+
+            file.Close();
+        }
+
+
+        /// <summary>
+        /// Export the c file
+        /// </summary>
+        /// <param name="filename"></param>
+        public void export_c(string filename)
+        {
+            if (filename == "")
+                filename = "CO_OD";
+
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
+
+
+
+            file.Close();
+        }
+
+
+        /// <summary>
+        /// Take a paramater name from the object dictionary and make it acceptable
+        /// for use in c variables/structs etc
+        /// </summary>
+        /// <param name="entry">string, name to convert</param>
+        /// <returns>string</returns>
+        protected string make_cname(ODentry entry)
+        {
+            string name = entry.parameter_name;
+
+            if (name == null)
+                return null;
+
+            if (name == "")
+                return "";
+
+            Regex splitter = new Regex(@"[\W]+");
+
+            var bits = splitter.Split(name).Where(s => s != String.Empty);
+
+            string output = "";
+
+            char lastchar = ' ';
+            foreach (string s in bits)
+            {
+                if (Char.IsUpper(lastchar) && Char.IsUpper(s.First()))
+                    output += "_";
+
+                if (s.Length > 1)
+                {
+                    output += char.ToUpper(s[0]) + s.Substring(1);
+                }
+                else
+                {
+                    output += s;
+                }
+
+                if (output.Length > 0)
+                    lastchar = output.Last();
+
+            }
+
+            if (output.Length > 1)
+            {
+                if (Char.IsLower(output[1]))
+                    output = Char.ToLower(output[0]) + output.Substring(1);
+            }
+            else
+                output = output.ToLower(); //single character
+
+            //Do we need to apply the canopennode acceptable names filter here to prevent bad OD setup breaking
+            //compile?
+
+            return output;
+        }
+
+        /// <summary>
+        /// Choose the correct c data type based on CANOPEN type
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        string get_c_data_type(DataType dt)
+        {
+            //TODO finish this list
+            switch(dt)
+            {
+                default:
+                    return "BROKEN EXPORTER";
+
+                case DataType.INTEGER8:
+                    return "int8_t";
+                case DataType.INTEGER16:
+                    return "int16_t";
+                case DataType.INTEGER24:
+                    return "int24_t"; //help really?
+                case DataType.INTEGER32:
+                    return "int32_t";
+
+                case DataType.UNSIGNED8:
+                    return "uint8_t";
+                case DataType.UNSIGNED16:
+                    return "uint16_t";
+                case DataType.UNSIGNED24:
+                    return "uint24_t"; //really?
+                case DataType.UNSIGNED32:
+                    return "uint32_t";
+
+
+
+            }
 
         }
 
