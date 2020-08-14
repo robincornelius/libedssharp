@@ -77,9 +77,7 @@ namespace libEDSsharp
             acceptable_canopen_names.Add(0x128001, "COB_IDClientToServer");
             acceptable_canopen_names.Add(0x128002, "COB_IDServerToClient");
 
-            
-
-
+            acceptable_canopen_names.Add(0x102900, "errorBehavior");
 
         }
 
@@ -1581,7 +1579,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
             else
             {
-                Warnings.AddWarning("BUILD WARNING, required objects for NMT Client are not present 0x1001,0x1017,0x1029",Warnings.warning_class.WARNING_BUILD);
+                Warnings.AddWarning("BUILD WARNING, required objects for NMT Client are not present 0x1f80,0x1029,0x1017,0x1001",Warnings.warning_class.WARNING_BUILD);
             }
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)

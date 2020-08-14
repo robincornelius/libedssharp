@@ -12,6 +12,7 @@ namespace libEDSsharp
         {
             CANOPENNODE_LEGACY = 0,
             CANOPENNODE_V2 = 1,
+            CANOPENNODE_EXPERIMENTAL = 2,
         }
 
         public static IExporter getExporter(Exporter ex = Exporter.CANOPENNODE_LEGACY)
@@ -27,6 +28,10 @@ namespace libEDSsharp
 
                 case Exporter.CANOPENNODE_V2:
                      exporter = new CanOpenNodeExporter();
+                    break;
+
+                case Exporter.CANOPENNODE_EXPERIMENTAL:
+                    exporter = new ExperimentalCanOpenNodeExporter();
                     break;
             }
             

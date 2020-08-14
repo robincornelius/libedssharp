@@ -249,6 +249,8 @@ namespace ODEditor
         private void openCanOpenNodeXMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+            Warnings.warning_list.Clear();
+
             OpenFileDialog odf = new OpenFileDialog();
             odf.Filter = "All supported files (*.eds;*.xml;*.xdd;*.dcf)|*.eds;*.xml;*.xdd;*.dcf|Electronic Data Sheets (*.eds)|*.eds|Device Configuration Files (*.dcf)|*.dcf|CANopen Xml Data sheet (*.xdd)|*.xdd|CANopenNode XML (*.xml)|*.xml";
             if (odf.ShowDialog() == DialogResult.OK)
