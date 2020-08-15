@@ -52,13 +52,11 @@ namespace libEDSsharp
             this.gitVersion = gitVersion;
             this.eds = eds;
 
-            //New stub to handle new ODInterface export!
-
             export_h(filename,odname);
             export_c(filename,odname);
-
-
         }
+
+        #region h_exporter
 
         /// <summary>
         /// Export the header file
@@ -97,6 +95,8 @@ DON'T EDIT THIS FILE MANUALLY !!!!
                 generate_main_OD_struct(file, location,odname);
             }
 
+            generate_attribute_array(file, odname);
+
             file.WriteLine(@"
 /*
 *******************************************************************************
@@ -122,18 +122,15 @@ DON'T EDIT THIS FILE MANUALLY !!!!
 */
 ");
 
-            /*
-#define ODxyz_1000_deviceType &ODxyz.list[0]
-#define ODxyz_1001_errorRegister &ODxyz.list[1]
-#define ODxyz_1018_identity &ODxyz.list[2]
-*/
-
-            
-
-
             file.Close();
         }
 
+        /// <summary>
+        /// Main struct for OD data variables
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="location"></param>
+        /// <param name="odname"></param>
         public void generate_main_OD_struct(StreamWriter file, string location,string odname)
         {
 
@@ -159,14 +156,28 @@ DON'T EDIT THIS FILE MANUALLY !!!!
                 if (od.StorageLocation != location)
                     continue;
 
+                string charsize = "";
+
                 switch (od.objecttype)
                 {
                     case ObjectType.VAR:
-                        file.WriteLine(string.Format("    {0} x{1:x4}_{2};", get_c_data_type(od.datatype), od.Index, make_cname(od)));
+
+                        charsize = "";
+
+                        if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.UNICODE_STRING || od.datatype == DataType.OCTET_STRING)
+                            charsize = string.Format("[{0}]", od.Lengthofstring);
+
+                        file.WriteLine(string.Format("    {0} x{1:x4}_{2}{3};", get_c_data_type(od.datatype), od.Index, make_cname(od),charsize));
                         break;
 
                     case ObjectType.ARRAY:
-                        file.WriteLine(string.Format("    {0} x{1:x4}_{2}[{3}];", get_c_data_type(od.datatype), od.Index, make_cname(od), od.Nosubindexes));
+
+                        charsize = "";
+
+                        if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.UNICODE_STRING || od.datatype == DataType.OCTET_STRING)
+                            charsize = string.Format("[{0}]", od.Lengthofstring);
+
+                        file.WriteLine(string.Format("    {0} x{1:x4}_{2}[{3}]{4};", get_c_data_type(od.datatype), od.Index, make_cname(od), od.Nosubindexes,charsize));
                         break;
 
                     case ObjectType.REC:
@@ -181,7 +192,12 @@ DON'T EDIT THIS FILE MANUALLY !!!!
                             file.WriteLine("    struct {");
                             foreach (ODentry subod in od.subobjects.Values)
                             {
-                                file.WriteLine(string.Format("        {0} {1};", get_c_data_type(subod.datatype), make_cname(subod)));
+                                charsize = "";
+
+                                if (subod.datatype == DataType.VISIBLE_STRING || subod.datatype == DataType.UNICODE_STRING || subod.datatype == DataType.OCTET_STRING)
+                                    charsize = string.Format("[{0}]", subod.Lengthofstring);
+
+                                file.WriteLine(string.Format("        {0} {1}{2};", get_c_data_type(subod.datatype), make_cname(subod),charsize));
                             }
 
                             file.WriteLine(string.Format("    }} {0}", make_cname(od)));
@@ -192,6 +208,57 @@ DON'T EDIT THIS FILE MANUALLY !!!!
             }
             file.WriteLine(string.Format("}} OD_{0}_{1}_t;",location,odname)); //fixme static name
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="location"></param>
+        /// <param name="odname"></param>
+        public void generate_attribute_array(StreamWriter file,string odname)
+        {
+
+
+            file.WriteLine(string.Format(@"
+/*
+*******************************************************************************
+   Main attribute structure for Object Dictionary
+*******************************************************************************
+*/
+            "));
+
+            file.WriteLine("typedef struct {");
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
+                ODentry od = kvp.Value;
+
+                if (od.Disabled == true)
+                    continue;
+
+                switch(od.objecttype)
+                {
+                    case ObjectType.VAR:
+                    case ObjectType.ARRAY:
+                        file.WriteLine(string.Format("    OD_obj_var_t o_{0:x4}_{1};",od.Index,make_cname(od)));
+                        break;
+
+                    case ObjectType.REC:
+                        foreach(ODentry subod in od.subobjects.Values)
+                        {
+                            file.WriteLine(string.Format("    OD_obj_var_t o_{0:x4}_{1};", subod.Index, make_cname(subod)));
+                        }
+                        break;
+
+
+                }
+
+            }
+
+            file.WriteLine(string.Format("}} OD_{0}_objs_t;",odname));
+
+        }
+
 
         /// <summary>
         /// Generate the structs that are used
@@ -232,7 +299,12 @@ DON'T EDIT THIS FILE MANUALLY !!!!
                 file.WriteLine("typedef struct {");
                 foreach (ODentry subod in od.subobjects.Values)
                 {
-                    file.WriteLine(string.Format("    {0} {1};", get_c_data_type(subod.datatype), make_cname(subod)));
+                    string charsize = "";
+
+                    if (subod.datatype == DataType.VISIBLE_STRING || subod.datatype == DataType.UNICODE_STRING || subod.datatype == DataType.OCTET_STRING)
+                        charsize = string.Format("[{0}]", subod.Lengthofstring);
+
+                    file.WriteLine(string.Format("    {0} {1}{2};", get_c_data_type(subod.datatype), make_cname(subod),charsize));
                 }
 
                 //Keep a record of generated struct names so we can reuse them in main OD struct
@@ -245,11 +317,17 @@ DON'T EDIT THIS FILE MANUALLY !!!!
         }
 
 
-            /// <summary>
-            /// Export the c file
-            /// </summary>
-            /// <param name="filename"></param>
-            public void export_c(string filename,string odname)
+
+
+        #endregion
+
+        #region c_exporter
+
+        /// <summary>
+        /// Export the c file
+        /// </summary>
+        /// <param name="filename"></param>
+        public void export_c(string filename,string odname)
             {
 
             if (filename == "")
@@ -276,6 +354,15 @@ DON'T EDIT THIS FILE MANUALLY !!!!
 #include ""{1}.h""
 
 ", this.gitVersion,filename));
+
+
+            foreach (string location in eds.storageLocation)
+            {
+                if (location == "Unused")
+                    continue;
+
+                file.WriteLine("OD_{0}_{1}_t OD_{2}_{1};", location, odname, location);
+            }
 
 
             file.WriteLine(@"
@@ -318,11 +405,13 @@ DON'T EDIT THIS FILE MANUALLY !!!!
 
                         case ObjectType.REC:
 
-                            file.WriteLine("    .x{0:x4}_.{1} = {{", od.Index, make_cname(od));
+                            file.WriteLine("    .x{0:x4}_{1} = {{", od.Index, make_cname(od));
 
                             foreach (ODentry subod in od.subobjects.Values)
                             {
-                                file.WriteLine("        {1} = {2},", subod.Index, make_cname(subod), formatvaluewithdatatype(subod.defaultvalue, subod.datatype));
+                                //Is this all that is required here?
+                                if(subod.datatype != DataType.DOMAIN)
+                                    file.WriteLine("        .{1} = {2},", subod.Index, make_cname(subod), formatvaluewithdatatype(subod.defaultvalue, subod.datatype));
                             }
 
                             file.WriteLine("},");
@@ -336,6 +425,13 @@ DON'T EDIT THIS FILE MANUALLY !!!!
                 file.WriteLine("};\n\n");
             }
 
+            export_c_params(file,odname);
+
+            file.Close();
+        }
+
+        public void export_c_params(StreamWriter file,string odname)
+        {
             file.WriteLine(@"
 /*
 *******************************************************************************
@@ -344,13 +440,88 @@ DON'T EDIT THIS FILE MANUALLY !!!!
 */
 ");
 
+            file.WriteLine(String.Format("static const OD_{0}_objs_t OD{0}_objs = {{",odname));
 
+            foreach (ODentry od in eds.ods.Values)
+            {
+                if (od.Disabled == true)
+                    continue;
 
+                if(od.objecttype == ObjectType.VAR || od.objecttype == ObjectType.ARRAY)
+                    writeODattributes(file,od,odname);
 
+                if(od.objecttype == ObjectType.REC)
+                {
+                    foreach(ODentry subod in od.subobjects.Values)
+                    {
+                        writeODattributes(file, subod,odname);
+                    }
+                }
 
-            file.Close();
+            }
+            file.WriteLine("};");
         }
 
+        void writeODattributes(StreamWriter file, ODentry od,string odname)
+        {
+            file.WriteLine(string.Format("    .o_{0:x4}_{1} = {{", od.Index, make_cname(od)));
+
+            //&ODxyz_0.x1000_deviceType
+
+            string paramName = "";
+            //if this is a rect the data is accessed via the parent
+            if(od.parent!=null && od.parent.objecttype == ObjectType.REC)
+            {
+                paramName = string.Format("x{0:x4}_{1}.{2}",od.parent.Index,make_cname(od.parent),make_cname(od));
+            }
+            else
+            {
+                paramName = string.Format("x{0:x4}_{1}",od.Index,make_cname(od));
+            }
+
+            file.WriteLine(string.Format("        .data = &OD_{0}_{1}.{2},", od.StorageLocation, odname, paramName));
+
+            List<string> attributes = new List<string>();
+
+            if (od.accesstype == EDSsharp.AccessType.rw)
+                attributes.Add("ODA_SDO_RW");
+
+            if (od.accesstype == EDSsharp.AccessType.ro)
+                attributes.Add("ODA_SDO_R");
+
+            if (od.accesstype == EDSsharp.AccessType.wo)
+                attributes.Add("ODA_SDO_W");
+
+            if (od.Sizeofdatatype() > 8)
+                attributes.Add("ODA_MB");
+
+            if (od.Sizeofdatatype() == 0)
+                attributes.Add("ODA_NOINIT");
+
+            //Need to scan the OD to see if we haev the variable mapped in to a TX PDO
+            //or a RX PDO
+
+            //we currently have no support for SRDO in the object dictionary editor
+
+            String att = "";
+            bool first = true;
+            foreach (string s in attributes)
+            {
+                att += string.Format("{1} {0} ", s, first == true ? "" : "|");
+                first = false;
+            }
+
+            file.WriteLine(string.Format("        .attribute = {0},", att));
+            file.WriteLine(string.Format("        .dataLength = {0},", od.Sizeofdatatype() / 8));
+            file.WriteLine("},");
+
+
+        }
+
+
+        #endregion
+
+        #region helper_functions
 
         /// <summary>
         /// Take a paramater name from the object dictionary and make it acceptable
@@ -478,6 +649,15 @@ DON'T EDIT THIS FILE MANUALLY !!!!
         }
 
 
+        /// <summary>
+        /// Produce an appropriate value for including in the C file that represents the defaultvalue in the datatype
+        /// This function will encapsulate strings for use with char_t types other variables it will print in the correct
+        /// foramt.
+        /// </summary>
+        /// <param name="defaultvalue"></param>
+        /// <param name="dt"></param>
+        /// <param name="fixstring"></param>
+        /// <returns></returns>
         string formatvaluewithdatatype(string defaultvalue, DataType dt, bool fixstring = false)
         {
             try
@@ -631,6 +811,7 @@ DON'T EDIT THIS FILE MANUALLY !!!!
             }
         }
 
+        #endregion
 
     }
 }
