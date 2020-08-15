@@ -37,6 +37,8 @@ namespace libEDSsharp
         private string gitVersion;
         protected EDSsharp eds;
 
+        Dictionary<UInt16, String> defstructnames = new Dictionary<ushort, string>();
+
         /// <summary>
         /// export the current data set in the Experimental CanOpen Node format
         /// </summary>
@@ -83,6 +85,8 @@ namespace libEDSsharp
 
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
 
+            generate_defstructs_for_records(file);
+
             foreach (string location in eds.storageLocation)
             {
                 generate_main_OD_struct(file, location);
@@ -94,12 +98,24 @@ namespace libEDSsharp
         public void generate_main_OD_struct(StreamWriter file, string location)
         {
 
+
+            file.WriteLine(string.Format(@"
+/*
+*******************************************************************************
+   Main object dictionary structure for storage location {0}
+*******************************************************************************
+*/
+",location));
+
             //start of main OD struct
             file.WriteLine("typedef struct {");
 
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
+
+                if (od.Disabled == true)
+                    continue;
 
                 if (od.StorageLocation != location)
                     continue;
@@ -115,14 +131,23 @@ namespace libEDSsharp
                         break;
 
                     case ObjectType.REC:
-                        file.WriteLine("    struct {");
-                        foreach (ODentry subod in od.subobjects.Values)
-                        {
-                            file.WriteLine(string.Format("        {0} {1};", get_c_data_type(od.datatype), make_cname(od)));
-                        }
 
-                        file.WriteLine(string.Format("    }} {0}", make_cname(od)));
-                        break;
+                        if (defstructnames.ContainsKey(od.Index))
+                        {
+                            file.WriteLine(string.Format("    {0} x{1:x4}_{2};", defstructnames[od.Index], od.Index,make_cname(od)));
+                        }
+                        else
+                        {
+                            //I'm not quite sure why the struct is not already defined, this might be unused code.
+                            file.WriteLine("    struct {");
+                            foreach (ODentry subod in od.subobjects.Values)
+                            {
+                                file.WriteLine(string.Format("        {0} {1};", get_c_data_type(subod.datatype), make_cname(subod)));
+                            }
+
+                            file.WriteLine(string.Format("    }} {0}", make_cname(od)));
+                        }
+                        break;                      
                 }
 
             }
@@ -130,10 +155,62 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// Export the c file
+        /// Generate the structs that are used
         /// </summary>
-        /// <param name="filename"></param>
-        public void export_c(string filename)
+        public void generate_defstructs_for_records(StreamWriter file)
+        {
+
+            file.WriteLine(@"
+/*
+*******************************************************************************
+   Structure definitions for record objects
+*******************************************************************************
+*/
+");
+
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            {
+                ODentry od = kvp.Value;
+
+                if (od.Disabled == true)
+                    continue;
+
+                if (od.objecttype != ObjectType.REC)
+                    continue;
+
+                string structname = string.Format("{0}_t", make_cname(od));
+
+                // fixme we need to do better that just looking at the same
+                // the records may have different content in which case we have a
+                // problem to deal with
+                if (defstructnames.ContainsValue(structname))
+                {
+                    defstructnames.Add(od.Index, structname);
+                    continue;
+                }
+
+                file.WriteLine("struct {");
+                foreach (ODentry subod in od.subobjects.Values)
+                {
+                    file.WriteLine(string.Format("    {0} {1};", get_c_data_type(subod.datatype), make_cname(subod)));
+                }
+
+                //Keep a record of generated struct names so we can reuse them in main OD struct
+                defstructnames.Add(od.Index, structname);
+
+                file.WriteLine(string.Format("    }} {0}\n",structname ));
+
+            }
+
+        }
+
+
+            /// <summary>
+            /// Export the c file
+            /// </summary>
+            /// <param name="filename"></param>
+            public void export_c(string filename)
         {
             if (filename == "")
                 filename = "CO_OD";
@@ -212,28 +289,60 @@ namespace libEDSsharp
             //TODO finish this list
             switch(dt)
             {
-                default:
-                    return "BROKEN EXPORTER";
-
                 case DataType.INTEGER8:
                     return "int8_t";
                 case DataType.INTEGER16:
                     return "int16_t";
                 case DataType.INTEGER24:
-                    return "int24_t"; //help really?
                 case DataType.INTEGER32:
                     return "int32_t";
+                case DataType.INTEGER40:
+                case DataType.INTEGER48:
+                case DataType.INTEGER56:
+                case DataType.INTEGER64:
+                    return "int64_t";
 
                 case DataType.UNSIGNED8:
                     return "uint8_t";
                 case DataType.UNSIGNED16:
                     return "uint16_t";
                 case DataType.UNSIGNED24:
-                    return "uint24_t"; //really?
                 case DataType.UNSIGNED32:
                     return "uint32_t";
+                case DataType.UNSIGNED40:
+                case DataType.UNSIGNED48:
+                case DataType.UNSIGNED56:
+                case DataType.UNSIGNED64:
+                    return "uint64_t";
+
+                case DataType.BOOLEAN:
+                    return "bool_t";
+
+                case DataType.REAL32:
+                    return "float";
+
+                case DataType.REAL64:
+                    return "double";
 
 
+                case DataType.OCTET_STRING:
+                    return "ochar_t";
+
+                case DataType.VISIBLE_STRING:
+                    return "char_t";
+
+                case DataType.DOMAIN:
+                    return "// DOMAIN";
+
+                //TODO these datatypes
+                case DataType.UNICODE_STRING:
+                case DataType.TIME_DIFFERENCE:
+                case DataType.TIME_OF_DAY:
+               
+                case DataType.IDENTITY:
+
+                default:
+                    return "BROKEN EXPORTER";
 
             }
 
