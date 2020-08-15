@@ -50,7 +50,7 @@ namespace libEDSsharp
         ODentry maxRXmappingsOD = null;
         ODentry maxTXmappingsOD = null;
 
-        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds)
+        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds, string odname)
         {
             this.folderpath = folderpath;
             this.gitVersion = gitVersion;

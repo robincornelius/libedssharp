@@ -8,6 +8,6 @@ namespace libEDSsharp
 {
     public interface IExporter
     {
-        void export(string folderpath, string filename, string gitVersion, EDSsharp eds);
+        void export(string folderpath, string filename, string gitVersion, EDSsharp eds , string odname="xyz");
     }
 }

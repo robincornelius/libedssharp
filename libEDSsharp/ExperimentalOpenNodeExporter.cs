@@ -46,7 +46,7 @@ namespace libEDSsharp
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
         /// <param name="eds"></param>
-        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds)
+        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds,string odname)
         {
             this.folderpath = folderpath;
             this.gitVersion = gitVersion;
@@ -54,8 +54,8 @@ namespace libEDSsharp
 
             //New stub to handle new ODInterface export!
 
-            export_h(filename);
-            export_c(filename);
+            export_h(filename,odname);
+            export_c(filename,odname);
 
 
         }
@@ -64,38 +64,77 @@ namespace libEDSsharp
         /// Export the header file
         /// </summary>
         /// <param name="filename"></param>
-        public void export_h(string filename)
+        public void export_h(string filename,string odname)
         {
-            /*
-             * typedef struct {
-                uint32_t x1000_deviceType;
-                uint8_t x1001_errorRegister;
-                struct {
-                    uint8_t maxSubIndex;
-                    uint32_t vendorID;
-                    uint32_t productCode;
-                    uint32_t revisionNumber;
-                    uint32_t serialNumber;
-                } x1018_identity;
-            } ODxyz_0_t;
-            */
 
             if (filename == "")
                 filename = "CO_OD";
 
+            filename = string.Format("{0}_{1}", filename,odname);
+
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
+
+            file.WriteLine(string.Format(@"
+/*
+*******************************************************************************
+ CANopen Object Dictionary.
+
+   This file was automatically generated with 
+   libedssharp Object`Dictionary Editor v{0}
+
+DON'T EDIT THIS FILE MANUALLY !!!!
+*******************************************************************************
+*/
+",this.gitVersion));
 
             generate_defstructs_for_records(file);
 
             foreach (string location in eds.storageLocation)
             {
-                generate_main_OD_struct(file, location);
+                if (location == "Unused")
+                    continue;
+
+                generate_main_OD_struct(file, location,odname);
             }
+
+            file.WriteLine(@"
+/*
+*******************************************************************************
+   Externs
+*******************************************************************************
+*/
+");
+
+            foreach (string location in eds.storageLocation)
+            {
+                if (location == "Unused")
+                    continue;
+
+
+                file.WriteLine("extern OD_{0}_{1}_t OD_{2}_{1};",location,odname,location);
+            }
+
+            file.WriteLine(@"
+/*
+*******************************************************************************
+   Defines
+*******************************************************************************
+*/
+");
+
+            /*
+#define ODxyz_1000_deviceType &ODxyz.list[0]
+#define ODxyz_1001_errorRegister &ODxyz.list[1]
+#define ODxyz_1018_identity &ODxyz.list[2]
+*/
+
+            
+
 
             file.Close();
         }
 
-        public void generate_main_OD_struct(StreamWriter file, string location)
+        public void generate_main_OD_struct(StreamWriter file, string location,string odname)
         {
 
 
@@ -105,7 +144,7 @@ namespace libEDSsharp
    Main object dictionary structure for storage location {0}
 *******************************************************************************
 */
-",location));
+            ",location));
 
             //start of main OD struct
             file.WriteLine("typedef struct {");
@@ -151,7 +190,7 @@ namespace libEDSsharp
                 }
 
             }
-            file.WriteLine(string.Format("}} OD_{0}_0_t",location)); //fixme static name
+            file.WriteLine(string.Format("}} OD_{0}_{1}_t;",location,odname)); //fixme static name
         }
 
         /// <summary>
@@ -190,7 +229,7 @@ namespace libEDSsharp
                     continue;
                 }
 
-                file.WriteLine("struct {");
+                file.WriteLine("typedef struct {");
                 foreach (ODentry subod in od.subobjects.Values)
                 {
                     file.WriteLine(string.Format("    {0} {1};", get_c_data_type(subod.datatype), make_cname(subod)));
@@ -199,7 +238,7 @@ namespace libEDSsharp
                 //Keep a record of generated struct names so we can reuse them in main OD struct
                 defstructnames.Add(od.Index, structname);
 
-                file.WriteLine(string.Format("    }} {0}\n",structname ));
+                file.WriteLine(string.Format("    }} {0};\n",structname ));
 
             }
 
@@ -210,12 +249,102 @@ namespace libEDSsharp
             /// Export the c file
             /// </summary>
             /// <param name="filename"></param>
-            public void export_c(string filename)
-        {
+            public void export_c(string filename,string odname)
+            {
+
             if (filename == "")
                 filename = "CO_OD";
 
+            filename = string.Format("{0}_{1}", filename, odname);
+
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
+
+            file.WriteLine(string.Format(@"
+/*
+*******************************************************************************
+ CANopen Object Dictionary.
+
+   This file was automatically generated with 
+   libedssharp Object`Dictionary Editor v{0}
+
+DON'T EDIT THIS FILE MANUALLY !!!!
+*******************************************************************************
+*/
+
+#define OD_DEFINITION
+#include ""301/CO_ODinterface.h""
+#include ""{1}.h""
+
+", this.gitVersion,filename));
+
+
+            file.WriteLine(@"
+/*
+*******************************************************************************
+   Default values
+*******************************************************************************
+*/
+");
+
+
+            foreach (string location in eds.storageLocation)
+            {
+
+                if (location == "Unused")
+                    continue;
+
+                file.WriteLine("OD_{0}_{1}_t OD_{2}_{1} = {{", location, odname, location);
+
+                foreach (ODentry od in eds.ods.Values)
+                {
+                    if (od.Disabled == true)
+                        continue;
+
+                    if (od.StorageLocation != location)
+                        continue;
+
+                    switch(od.objecttype)
+                    {
+                        case ObjectType.VAR:
+                            file.WriteLine("    .x{0:x4}_{1} = {2},", od.Index, make_cname(od), formatvaluewithdatatype(od.defaultvalue,od.datatype));
+                            break;
+
+                        case ObjectType.ARRAY:
+                            for(int x=1;x<od.subobjects.Count;x++)
+                            {
+                                file.WriteLine("    .x{0:x4}_{1}[{2}] = {3},", od.Index, make_cname(od),x-1, formatvaluewithdatatype(od.defaultvalue, od.datatype));
+                            }
+                            break;
+
+                        case ObjectType.REC:
+
+                            file.WriteLine("    .x{0:x4}_.{1} = {{", od.Index, make_cname(od));
+
+                            foreach (ODentry subod in od.subobjects.Values)
+                            {
+                                file.WriteLine("        {1} = {2},", subod.Index, make_cname(subod), formatvaluewithdatatype(subod.defaultvalue, subod.datatype));
+                            }
+
+                            file.WriteLine("},");
+
+                            break;
+
+                    }
+
+                }
+
+                file.WriteLine("};\n\n");
+            }
+
+            file.WriteLine(@"
+/*
+*******************************************************************************
+   Dictionary Configuration
+*******************************************************************************
+*/
+");
+
+
 
 
 
@@ -346,6 +475,160 @@ namespace libEDSsharp
 
             }
 
+        }
+
+
+        string formatvaluewithdatatype(string defaultvalue, DataType dt, bool fixstring = false)
+        {
+            try
+            {
+                int nobase = 10;
+                bool nodeidreplace = false;
+
+                if (defaultvalue == null || defaultvalue == "")
+                {
+                    //No default value, we better supply one for sensible data types
+                    if (dt == DataType.VISIBLE_STRING ||
+                        dt == DataType.OCTET_STRING ||
+                        dt == DataType.UNKNOWN ||
+                        dt == DataType.UNICODE_STRING)
+                    {
+
+                        if (fixstring == true)
+                            return "'X'";
+
+                        return "";
+                    }
+
+                    Console.WriteLine("Warning assuming a 0 default");
+                    defaultvalue = "0";
+                }
+
+                if (defaultvalue.Contains("$NODEID"))
+                {
+                    defaultvalue = defaultvalue.Replace("$NODEID", "");
+                    defaultvalue = defaultvalue.Replace("+", "");
+                    nodeidreplace = true;
+                }
+
+                String pat = @"^0[xX][0-9a-fA-FL]+";
+
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 16;
+                    defaultvalue = defaultvalue.Replace("L", "");
+                }
+
+                pat = @"^0[0-7]+";
+                r = new Regex(pat, RegexOptions.IgnoreCase);
+                m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 8;
+                }
+
+                if (nodeidreplace)
+                {
+                    UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
+                    data += eds.NodeId;
+                    defaultvalue = string.Format("0x{0:X}", data);
+                    nobase = 16;
+                }
+
+
+                switch (dt)
+                {
+                    case DataType.UNSIGNED24:
+                    case DataType.UNSIGNED32:
+                        return String.Format("0x{0:X4}L", Convert.ToUInt32(defaultvalue, nobase));
+
+                    case DataType.INTEGER24:
+                    case DataType.INTEGER32:
+                        return String.Format("0x{0:X4}L", Convert.ToInt32(defaultvalue, nobase));
+
+                    case DataType.REAL32:
+                    case DataType.REAL64:
+                        return (String.Format("{0}", defaultvalue));
+
+
+                    //fix me this looks wrong
+                    case DataType.UNICODE_STRING:
+                        return (String.Format("'{0}'", defaultvalue));
+
+                    case DataType.VISIBLE_STRING:
+                    {
+
+                        ASCIIEncoding a = new ASCIIEncoding();
+                        string unescape = StringUnescape.Unescape(defaultvalue);
+                        char[] chars = unescape.ToCharArray();
+
+                        string array = "{";
+
+                        foreach (char c in chars)
+                        {
+
+                            array += "'" + StringUnescape.Escape(c) + "', ";
+                        }
+
+                        array = array.Substring(0, array.Length - 2);
+
+                        array += "}";
+                        return array;
+
+                    }
+
+
+                    case DataType.OCTET_STRING:
+                    {
+                        string[] bits = defaultvalue.Split(' ');
+                        string octet = "{";
+                        foreach (string s in bits)
+                        {
+                            octet += formatvaluewithdatatype(s, DataType.UNSIGNED8);
+
+                            if (!object.ReferenceEquals(s, bits.Last()))
+                            {
+                                octet += ", ";
+                            }
+                        }
+                        octet += "}";
+                        return octet;
+                    }
+
+                    case DataType.INTEGER8:
+                        return String.Format("0x{0:X1}", Convert.ToSByte(defaultvalue, nobase));
+
+                    case DataType.INTEGER16:
+                        return String.Format("0x{0:X2}", Convert.ToInt16(defaultvalue, nobase));
+
+                    case DataType.UNSIGNED8:
+                        return String.Format("0x{0:X1}L", Convert.ToByte(defaultvalue, nobase));
+
+                    case DataType.UNSIGNED16:
+                        return String.Format("0x{0:X2}", Convert.ToUInt16(defaultvalue, nobase));
+
+                    case DataType.INTEGER64:
+                        return String.Format("0x{0:X8}L", Convert.ToInt64(defaultvalue, nobase));
+
+                    case DataType.UNSIGNED64:
+                        return String.Format("0x{0:X8}L", Convert.ToUInt64(defaultvalue, nobase));
+
+                    case DataType.TIME_DIFFERENCE:
+                    case DataType.TIME_OF_DAY:
+                        return String.Format("{{{0}}}", Convert.ToUInt64(defaultvalue, nobase));
+
+                    default:
+                        return (String.Format("{0:X}", defaultvalue));
+
+                }
+            }
+            catch (Exception e)
+            {
+                Warnings.AddWarning(String.Format("Error converting value {0} to type {1}", defaultvalue, dt.ToString()), Warnings.warning_class.WARNING_BUILD);
+                return "";
+            }
         }
 
 
