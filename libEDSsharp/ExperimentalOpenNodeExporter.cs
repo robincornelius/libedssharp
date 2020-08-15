@@ -427,6 +427,8 @@ DON'T EDIT THIS FILE MANUALLY !!!!
 
             export_c_params(file,odname);
 
+            write_final_OD(file, odname);
+
             file.Close();
         }
 
@@ -440,7 +442,18 @@ DON'T EDIT THIS FILE MANUALLY !!!!
 */
 ");
 
-            file.WriteLine(String.Format("static const OD_{0}_objs_t OD{0}_objs = {{",odname));
+            file.WriteLine(String.Format("static const OD_{0}_objs_t OD_{0}_objs = {{",odname));
+
+            int noentries = 0;
+            foreach (ODentry od in eds.ods.Values)
+            {
+                if (od.Disabled == true)
+                    continue;
+
+                noentries++;
+            }
+
+            file.WriteLine(string.Format("{0} , {{", noentries));
 
             foreach (ODentry od in eds.ods.Values)
             {
@@ -459,7 +472,7 @@ DON'T EDIT THIS FILE MANUALLY !!!!
                 }
 
             }
-            file.WriteLine("};");
+            file.WriteLine("}};");
         }
 
         void writeODattributes(StreamWriter file, ODentry od,string odname)
@@ -479,7 +492,15 @@ DON'T EDIT THIS FILE MANUALLY !!!!
                 paramName = string.Format("x{0:x4}_{1}",od.Index,make_cname(od));
             }
 
-            file.WriteLine(string.Format("        .data = &OD_{0}_{1}.{2},", od.StorageLocation, odname, paramName));
+
+            if(od.datatype==DataType.DOMAIN)
+            {
+                file.WriteLine(string.Format("        .data = NULL,"));
+            }
+            else
+            {
+                file.WriteLine(string.Format("        .data = &OD_{0}_{1}.{2},", od.StorageLocation, odname, paramName));
+            }
 
             List<string> attributes = new List<string>();
 
@@ -498,7 +519,7 @@ DON'T EDIT THIS FILE MANUALLY !!!!
             if (od.Sizeofdatatype() == 0)
                 attributes.Add("ODA_NOINIT");
 
-            //Need to scan the OD to see if we haev the variable mapped in to a TX PDO
+            //Need to scan the OD to see if we have the variable mapped in to a TX PDO
             //or a RX PDO
 
             //we currently have no support for SRDO in the object dictionary editor
@@ -518,6 +539,58 @@ DON'T EDIT THIS FILE MANUALLY !!!!
 
         }
 
+        void write_final_OD(StreamWriter file,string odname)
+        {
+
+            /*const OD_t ODxyz = {
+    3, {
+    {0x1000, 0, 0, ODT_VAR, &ODxyz_objs.o_1000_deviceType},
+    {0x1001, 0, 1, ODT_EVAR, &ODxyz_objs.o_1001_errorRegister},
+    {0x1018, 4, 0, ODT_REC, &ODxyz_objs.o_1018_identity},
+    {0x0000, 0, 0, 0, NULL}
+}};*/
+
+            file.WriteLine(@"
+/*
+*******************************************************************************
+   Object Dictionary
+*******************************************************************************
+*/
+");
+
+            file.WriteLine(string.Format("const OD_t OD_{0} = {{",odname));
+
+            foreach(ODentry od in eds.ods.Values)
+            {
+                if (od.Disabled == true)
+                    continue;
+
+                //fixme todo storagegroup not implemented
+                byte storageGroup = 0;
+
+                //fixme/todo extended objects
+                string ObjectType;
+                switch(od.objecttype)
+                {
+                    case libEDSsharp.ObjectType.VAR:
+                    default:
+                        ObjectType = "ODT_VAR";
+                        break;
+                    case libEDSsharp.ObjectType.REC:
+                        ObjectType = "ODT_REC";
+                        break;
+                    case libEDSsharp.ObjectType.ARRAY:
+                        ObjectType = "ODT_ARR";
+                        break;
+
+                }
+
+                file.WriteLine(string.Format("{{0x{0:x4}, {1}, {2} ,{3}, &OD_{4}_objs.o_{5:x4}_{6} }},",od.Index,od.Getmaxsubindex(),storageGroup,ObjectType,odname,od.Index,make_cname(od)));
+
+            }
+
+            file.WriteLine("}};");
+        }
 
         #endregion
 
