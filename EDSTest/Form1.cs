@@ -204,11 +204,12 @@ namespace ODEditor
             if (tabControl1.SelectedTab != null)
             {
                 DeviceView dv = (DeviceView)tabControl1.SelectedTab.Controls[0];
+                ExporterFactory.Exporter type = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
 
                 SaveFileDialog sfd = new SaveFileDialog();
                 sfd.CheckFileExists = false;
 
-                sfd.FileName = "CO_OD.c";
+                sfd.FileName = (type == ExporterFactory.Exporter.CANOPENNODE_V3) ? "OD" : "CO_OD.c";
                 sfd.InitialDirectory = dv.eds.fi.exportFolder;
                 sfd.RestoreDirectory = true;
 
@@ -221,13 +222,12 @@ namespace ODEditor
 
                     Warnings.warning_list.Clear();
 
-                    ExporterFactory.Exporter type = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
-
                     IExporter exporter = ExporterFactory.getExporter(type);
 
                     try
                     {
-                        exporter.export(savePath, Path.GetFileNameWithoutExtension(sfd.FileName), this.gitVersion, dv.eds);
+                        string baseFileName = Path.GetFileNameWithoutExtension(sfd.FileName);
+                        exporter.export(savePath, baseFileName, this.gitVersion, dv.eds, baseFileName);
                     }
                     catch(Exception ex)
                     {
