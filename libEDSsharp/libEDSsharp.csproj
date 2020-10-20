@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridge.cs" />
-    <Compile Include="ExperimentalOpenNodeExporter.cs" />
+    <Compile Include="CanOpenNodeExporter_V3.cs" />
     <Compile Include="ExporterFactory.cs" />
     <Compile Include="IExporter.cs" />
     <Compile Include="LegacyCanOpenNodeExporter.cs" />

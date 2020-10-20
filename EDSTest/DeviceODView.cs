@@ -73,6 +73,8 @@ namespace ODEditor
             comboBox_memory.Items.Add("Add...");
 
             comboBox_pdomap.Items.Add("no");
+            comboBox_pdomap.Items.Add("TPDO");
+            comboBox_pdomap.Items.Add("RPDO");
             comboBox_pdomap.Items.Add("optional");
 
             listView_mandatory_objects.DoubleBuffering(true);
