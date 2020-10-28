@@ -57,15 +57,15 @@ Section "OpenEdsEditor" Secopeneds ;No components page, name is not important
   SetOutPath $INSTDIR
   
   ; Put file there
-  File EDSTest\bin\Release\EDSEditor.exe
-  File EDSTest\bin\Release\EDSEditor.exe.config
-  File EDSTest\bin\Release\libEDSsharp.dll
-  File EDSTest\bin\Release\style.css
+  File EDSEditorGUI\bin\Release\EDSEditor.exe
+  File EDSEditorGUI\bin\Release\EDSEditor.exe.config
+  File EDSEditorGUI\bin\Release\libEDSsharp.dll
+  File EDSEditorGUI\bin\Release\style.css
   File Index_8287_16x.ico
   File License-GPLv3.txt
   
   SetOutPath $INSTDIR\Profiles
-  File EDSTest\Profiles\*
+  File EDSEditorGUI\Profiles\*
    
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\OpenEDSEditor"
