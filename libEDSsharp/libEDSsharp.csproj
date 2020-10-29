@@ -41,10 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridge.cs" />
-    <Compile Include="CanOpenNodeExporter_V3.cs" />
+    <Compile Include="CanOpenNodeExporter_V4.cs" />
     <Compile Include="ExporterFactory.cs" />
     <Compile Include="IExporter.cs" />
-    <Compile Include="LegacyCanOpenNodeExporter.cs" />
     <Compile Include="CanOpenNodeExporter.cs" />
     <Compile Include="CanOpenXDD.cs" />
     <Compile Include="CanOpenXML.cs" />

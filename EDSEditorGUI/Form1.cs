@@ -209,7 +209,7 @@ namespace ODEditor
                 SaveFileDialog sfd = new SaveFileDialog();
                 sfd.CheckFileExists = false;
 
-                sfd.FileName = (type == ExporterFactory.Exporter.CANOPENNODE_V3) ? "OD" : "CO_OD.c";
+                sfd.FileName = (type == ExporterFactory.Exporter.CANOPENNODE_V4) ? "OD" : "CO_OD.c";
                 sfd.InitialDirectory = dv.eds.fi.exportFolder;
                 sfd.RestoreDirectory = true;
 

@@ -28,8 +28,10 @@ using System.IO;
 
 namespace libEDSsharp
 {
-
-    public class CanOpenNodeExporter_V3 : IExporter
+    /// <summary>
+    /// Exporter for CanOpenNode_V3
+    /// </summary>
+    public class CanOpenNodeExporter_V4 : IExporter
     {
         private string odname;
 
@@ -46,12 +48,13 @@ namespace libEDSsharp
         private SortedDictionary<string, UInt16> ODCnt;
 
         /// <summary>
-        /// export the current data set in the CanOpen Node format V3
+        /// export the current data set in the CanOpen Node format V4
         /// </summary>
         /// <param name="folderpath"></param>
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
         /// <param name="eds"></param>
+        /// <param name="odname"></param>
         public void export(string folderpath, string filename, string gitVersion, EDSsharp eds, string odname)
         {
             this.odname = odname;
@@ -105,6 +108,7 @@ namespace libEDSsharp
                         case 0x1003:
                         case 0x1012:
                         case 0x1014:
+                        case 0x1017:
                         case 0x1200:
                             extIO = true;
                             Warnings.AddWarning($"Error in 0x{indexH}: extIO must be enabled for this object!", Warnings.warning_class.WARNING_BUILD);
@@ -124,7 +128,7 @@ namespace libEDSsharp
                 string odObjectType = "";
                 int subEntriesCount = 0;
 
-                /* object type specific data */
+                /* ODStorage and ODObjs - object type specific */
                 switch (od.objecttype)
                 {
                     case ObjectType.VAR:
@@ -385,7 +389,9 @@ namespace libEDSsharp
         /// <param name="folderpath"></param>
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
-        public void Export_h(string folderpath, string filename, string gitVersion, FileInfo fi, DeviceInfo di)
+        /// <param name="fi"></param>
+        /// <param name="di"></param>
+        private void Export_h(string folderpath, string filename, string gitVersion, FileInfo fi, DeviceInfo di)
         {
 
             if (filename == "")
@@ -483,7 +489,7 @@ namespace libEDSsharp
         /// <param name="folderpath"></param>
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
-        public void Export_c(string folderpath, string filename, string gitVersion)
+        private void Export_c(string folderpath, string filename, string gitVersion)
             {
 
             if (filename == "")
@@ -503,7 +509,11 @@ namespace libEDSsharp
 
 #define OD_DEFINITION
 #include ""301/CO_ODinterface.h""
-#include ""{1}.h""", gitVersion, filename));
+#include ""{1}.h""
+
+#if CO_VERSION_MAJOR < 4
+#error This Object dictionary is compatible with CANopenNode V4.0 and above!
+#endif", gitVersion, filename));
 
             file.WriteLine(@"
 /*******************************************************************************

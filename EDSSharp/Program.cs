@@ -54,8 +54,8 @@ namespace EDSSharp
                     if (argskvp["--type"] == "CanOpenNodeLegacy")
                         type = ExporterFactory.Exporter.CANOPENNODE_LEGACY;
 
-                    if (argskvp["--type"] == "CanOpenNodeV2")
-                        type = ExporterFactory.Exporter.CANOPENNODE_V2;
+                    if (argskvp["--type"] == "CanOpenNodeV4")
+                        type = ExporterFactory.Exporter.CANOPENNODE_V4;
 
                     switch (Path.GetExtension(infile).ToLower())
                     {

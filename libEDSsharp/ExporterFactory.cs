@@ -11,8 +11,7 @@ namespace libEDSsharp
         public enum Exporter
         {
             CANOPENNODE_LEGACY = 0,
-            CANOPENNODE_V2 = 1,
-            CANOPENNODE_V3 = 2,
+            CANOPENNODE_V4 = 1,
         }
 
         public static IExporter getExporter(Exporter ex = Exporter.CANOPENNODE_LEGACY)
@@ -23,15 +22,11 @@ namespace libEDSsharp
             {
                 default:
                 case Exporter.CANOPENNODE_LEGACY:
-                    exporter = new LegacyCanOpenNodeExporter();
+                    exporter = new CanOpenNodeExporter();
                     break;
 
-                case Exporter.CANOPENNODE_V2:
-                     exporter = new CanOpenNodeExporter();
-                    break;
-
-                case Exporter.CANOPENNODE_V3:
-                    exporter = new CanOpenNodeExporter_V3();
+                case Exporter.CANOPENNODE_V4:
+                    exporter = new CanOpenNodeExporter_V4();
                     break;
             }
             

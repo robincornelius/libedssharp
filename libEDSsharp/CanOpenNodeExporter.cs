@@ -854,9 +854,19 @@ file.WriteLine(@"/**************************************************************
 
             file.WriteLine("// clang-format off");
             addHeader(file);
-            file.WriteLine(@"#include ""301/CO_driver.h""
-#include """  +  filename + @".h""
-#include ""301/CO_SDOserver.h""
+            file.WriteLine(@"#ifdef CO_V2
+ #include ""301/CO_driver.h""
+ #include """  +  filename + @".h""
+ #include ""301/CO_SDOserver.h""
+#else
+ #include ""CO_driver.h""
+ #include """ + filename + @".h""
+ #include ""CO_SDOserver.h""
+#endif
+
+#if CO_VERSION_MAJOR >= 4
+#error This Object dictionary is not compatible with CANopenNode V4.0!
+#endif
 
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
@@ -1392,9 +1402,10 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             if ((entry.Index >= 0x1a00) && (entry.Index < 0x1c00))
                 key = (UInt32)((0x1a00 << 8) + entry.Subindex);
 
-            if (acceptable_canopen_names.ContainsKey(key))
+            if (acceptable_canopen_names.ContainsKey(key) && !(entry.parent != null && entry.Subindex == 0))
             {
                 string newname = acceptable_canopen_names[key];
+                if (output != newname)
                  Warnings.AddWarning(string.Format("Warning: index 0x{0:x4}/{1:x2} correcting name for CanOpenNode compatibility from {2} to {3}", entry.Index, entry.Subindex, output, newname),Warnings.warning_class.WARNING_RENAME);
                 output = newname;
             }
