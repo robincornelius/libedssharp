@@ -51,10 +51,7 @@ namespace EDSSharp
 
                     ExporterFactory.Exporter type = ExporterFactory.Exporter.CANOPENNODE_LEGACY; //sensible default
 
-                    if (argskvp["--type"] == "CanOpenNodeLegacy")
-                        type = ExporterFactory.Exporter.CANOPENNODE_LEGACY;
-
-                    if (argskvp["--type"] == "CanOpenNodeV4")
+                    if (argskvp["--type"].IndexOf("4") > 0)
                         type = ExporterFactory.Exporter.CANOPENNODE_V4;
 
                     switch (Path.GetExtension(infile).ToLower())
@@ -79,7 +76,7 @@ namespace EDSSharp
                 }
                 else
                 {
-                    Console.WriteLine("Usage EDSEditor --type CanOpenNode --infile file.[xdd|eds|xml] --outfile CO_OD.c");
+                    Console.WriteLine("Usage EDSEditor --type [CanOpenNode|CanOpenNodeV4] --infile file.[xdd|eds|xml] --outfile [CO_OD.c|OD]");
                 }
             }
             catch(Exception e)
@@ -99,6 +96,7 @@ namespace EDSSharp
 
         private static void exportCOOD(string outpath,ExporterFactory.Exporter type)
         {
+            string odname = outpath;
 
             outpath = Path.GetFullPath(outpath);
 
@@ -110,7 +108,7 @@ namespace EDSSharp
 
             IExporter exporter = ExporterFactory.getExporter(type);
 
-            exporter.export(savePath, Path.GetFileNameWithoutExtension(outpath), gitversion, eds);
+            exporter.export(savePath, Path.GetFileNameWithoutExtension(outpath), gitversion, eds, odname);
 
             foreach(string warning in Warnings.warning_list)
             {
@@ -128,21 +126,27 @@ namespace EDSSharp
             Bridge b = new Bridge();
 
             eds = b.convert(coxml.dev);
-            eds.xmlfilename = path;
 
+            eds.projectFilename = path;
             exportCOOD(outpath,exportertype);
 
         }
 
         private static void openXDDfile(string path, string outpath,ExporterFactory.Exporter exportertype)
         {
-            CanOpenXDD coxml = new CanOpenXDD();
-            eds = coxml.readXML(path);
+            CanOpenXDD_1_1 coxml_1_1 = new CanOpenXDD_1_1();
+            eds = coxml_1_1.ReadXML(path);
 
             if (eds == null)
-                return;
+            {
+                CanOpenXDD coxml = new CanOpenXDD();
+                eds = coxml.readXML(path);
 
-            eds.xddfilename = path;
+                if (eds == null)
+                    return;
+            }
+
+            eds.projectFilename = path;
             exportCOOD(outpath,exportertype);
         }
     }

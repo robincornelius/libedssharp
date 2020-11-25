@@ -20,14 +20,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Reflection;
+using CanOpenXSD_1_1;
 
- 
 namespace libEDSsharp
 {
 
@@ -80,29 +78,6 @@ namespace libEDSsharp
         REC = 9,
     }
 
-    //Additional Info for CANOpenNode c and h generation
-    public class StorageLocation : List<string>
-    {
-        public StorageLocation()
-        {
-            /* those are the values used in CANopenNode, starting at index "1".
-             * Don't change the indexes, they are also used as binary flags */
-            Add("Unused");
-            Add("ROM");
-            Add("RAM");
-            Add("EEPROM");
-        }
-
-        new public void Add(string item)
-        {
-            /* we check if the storage location already exists */
-            if ( ! Contains(item))
-            {
-                base.Add(item);
-            }
-        }
-    }
-
     public enum PDOMappingType
     {
         no=0,
@@ -112,7 +87,132 @@ namespace libEDSsharp
         @default=4,
     }
 
- 
+    public enum AccessSDO
+    {
+        no,
+        ro,
+        wo,
+        rw
+    }
+
+    public enum AccessPDO
+    {
+        no,
+        t,
+        r,
+        tr
+    }
+
+    public enum AccessSRDO
+    {
+        no = 0,
+        tx = 1,
+        rx = 2,
+        trx = 3
+    }
+
+    /// <summary>
+    /// Custom properties for OD entry or sub-entry, which are saved into xdd file v1.1
+    /// </summary>
+    public class CustomProperties
+    {
+        public bool CO_disabled = false;  // If true, object is completelly skipped by CANopenNode exporters, etc.
+        public string CO_countLabel = "";
+        public string CO_storageGroup = "RAM";
+        public bool CO_extensionIO = false;
+        public bool CO_flagsPDO = false;
+        public AccessSRDO CO_accessSRDO = AccessSRDO.no;
+        public UInt32 CO_stringLengthMin = 0;
+
+        public CustomProperties Clone()
+        {
+            return new CustomProperties
+            {
+                CO_disabled = CO_disabled,
+                CO_countLabel = CO_countLabel,
+                CO_storageGroup = CO_storageGroup,
+                CO_extensionIO = CO_extensionIO,
+                CO_flagsPDO = CO_flagsPDO,
+                CO_accessSRDO = CO_accessSRDO,
+                CO_stringLengthMin = CO_stringLengthMin
+            };
+        }
+
+        public void OdeXdd(property[] properties)
+        {
+            if (properties != null)
+            {
+                foreach (property prop in properties)
+                {
+                    switch (prop.name)
+                    {
+                        case "CO_disabled": CO_disabled = prop.value == "true"; break;
+                        case "CO_countLabel": CO_countLabel = prop.value ?? ""; break;
+                        case "CO_storageGroup": CO_storageGroup = prop.value ?? ""; break;
+                        case "CO_extensionIO": CO_extensionIO = prop.value == "true"; break;
+                        case "CO_flagsPDO": CO_flagsPDO = prop.value == "true"; break;
+                        case "CO_accessSRDO":
+                            try { CO_accessSRDO = (AccessSRDO)Enum.Parse(typeof(AccessSRDO), prop.value); }
+                            catch (Exception) { CO_accessSRDO = AccessSRDO.no; }
+                            break;
+                        case "CO_stringLengthMin":
+                            try { CO_stringLengthMin = Convert.ToUInt16(prop.value); }
+                            catch (Exception) { CO_stringLengthMin = 0; }
+                            break;
+                    }
+                }
+            }
+        }
+
+        public property[] OdeXdd()
+        {
+            var props = new List<property>();
+
+            if (CO_disabled)
+                props.Add(new property { name = "CO_disabled", value = "true" });
+            if (CO_countLabel != "")
+                props.Add(new property { name = "CO_countLabel", value = CO_countLabel });
+            if (CO_storageGroup != "RAM")
+                props.Add(new property { name = "CO_storageGroup", value = CO_storageGroup });
+            if (CO_extensionIO)
+                props.Add(new property { name = "CO_extensionIO", value = "true" });
+            if (CO_flagsPDO)
+                props.Add(new property { name = "CO_flagsPDO", value = "true" });
+
+            return props.ToArray();
+        }
+
+        public property[] SubOdeXdd()
+        {
+            var props = new List<property>();
+
+            if (CO_accessSRDO != AccessSRDO.no)
+                props.Add(new property { name = "CO_accessSRDO", value = CO_accessSRDO.ToString() });
+            if (CO_stringLengthMin != 0)
+                props.Add(new property { name = "CO_stringLengthMin", value = CO_stringLengthMin.ToString() });
+
+            return props.ToArray();
+        }
+    }
+
+    /// <summary>
+    /// List of multiple CO_storageGroup strings available in project
+    /// </summary>
+    public class CO_storageGroups : List<string>
+    {
+        public CO_storageGroups()
+        {
+            Add("RAM"); // default value
+        }
+
+        public new void Add(string item)
+        {
+            if (!Contains(item))
+            {
+                base.Add(item);
+            }
+        }
+    }
 
     public class EdsExport : Attribute
     {
@@ -522,10 +622,11 @@ namespace libEDSsharp
 
     public class FileInfo : InfoSection
     {
+        // Only for internal usage, use Path.GetFileName(eds.projectFilename) instead.
         [EdsExport]
-        public string FileName="";//=example_objdict.eds
+        public string FileName="";
         [EdsExport]
-        public byte FileVersion;//=1
+        public string FileVersion="";
         [EdsExport]
         public byte FileRevision;//=1
 
@@ -641,31 +742,33 @@ namespace libEDSsharp
         [EdsExport]
         public string VendorName="";
         [EdsExport]
-        public UInt32 VendorNumber;
+        public string VendorNumber="";
 
         [EdsExport]
         public string ProductName="";
         [EdsExport]
-        public UInt32 ProductNumber;
+        public string ProductNumber="";
         [EdsExport]
         public UInt32 RevisionNumber;
 
         [EdsExport]
-        public bool BaudRate_10;
+        public bool BaudRate_10 = true;
         [EdsExport]
-        public bool BaudRate_20;
+        public bool BaudRate_20 = true;
         [EdsExport]
-        public bool BaudRate_50;
+        public bool BaudRate_50 = true;
         [EdsExport]
-        public bool BaudRate_125;
+        public bool BaudRate_125 = true;
         [EdsExport]
-        public bool BaudRate_250;
+        public bool BaudRate_250 = true;
         [EdsExport]
-        public bool BaudRate_500;
+        public bool BaudRate_500 = true;
         [EdsExport]
-        public bool BaudRate_800;
+        public bool BaudRate_800 = true;
         [EdsExport]
-        public bool BaudRate_1000;
+        public bool BaudRate_1000 = true;
+
+        public bool BaudRate_auto = false;
 
         [EdsExport]
         public bool SimpleBootUpMaster;
@@ -673,7 +776,7 @@ namespace libEDSsharp
         public bool SimpleBootUpSlave;
 
         [EdsExport]
-        public byte Granularity;
+        public byte Granularity = 8;
         [EdsExport]
         public bool DynamicChannelsSupported;
 
@@ -692,8 +795,7 @@ namespace libEDSsharp
         [EdsExport]
         public bool LSS_Supported;
 
-        [EdsExport(commentonly=true)] //comment only, not supported by eds
-        public string LSS_Type = "Server";
+        public bool LSS_Master;
 
         public DeviceInfo()
         {
@@ -726,7 +828,7 @@ namespace libEDSsharp
         public byte NodeId = 0;
 
         [DcfExport(maxlength = 246)]
-        public string NodeName; //Max 246 characters
+        public string NodeName = ""; //Max 246 characters
 
         [DcfExport]
         public UInt16 BaudRate;
@@ -735,7 +837,7 @@ namespace libEDSsharp
         public UInt32 NetNumber;
 
         [DcfExport(maxlength = 243)]
-        public string NetworkName; //Max 243 characters
+        public string NetworkName = ""; //Max 243 characters
 
         [DcfExport]
         public bool CANopenManager;  //1 = CANopen manager, 0 or missing = not the manager
@@ -916,7 +1018,6 @@ namespace libEDSsharp
 
     public class ODentry
     {
-
         private UInt16 _index;
 
         /// <summary>
@@ -961,11 +1062,11 @@ namespace libEDSsharp
         public string denotation = "";
 
         [EdsExport]
-        public ObjectType objecttype;
+        public ObjectType objecttype = ObjectType.UNKNOWN;
         [EdsExport]
-        public DataType datatype;
+        public DataType datatype = DataType.UNKNOWN;
         [EdsExport]
-        public EDSsharp.AccessType accesstype;
+        public EDSsharp.AccessType accesstype = EDSsharp.AccessType.UNKNOWN;
 
         [EdsExport]
         public string defaultvalue = "";
@@ -1005,22 +1106,14 @@ namespace libEDSsharp
         [EdsExport]
         public byte ObjExtend = 0;
 
-        public PDOMappingType PDOtype;
+        public PDOMappingType PDOtype = PDOMappingType.no;
 
-        //CANopenNode specific extra storage
         public string Label = "";
         public string Description = "";
-
-        public string StorageLocation = "RAM";
         public SortedDictionary<UInt16, ODentry> subobjects = new SortedDictionary<UInt16, ODentry>();
         public ODentry parent = null;
 
-        public string AccessFunctionName = "";
-        public string AccessFunctionPreCode ="";
-
-        public bool Disabled = false;
-
-        public bool TPDODetectCos = false;
+        public CustomProperties prop = new CustomProperties();
 
         //XDD Extensions//
         public string uniqueID;
@@ -1114,6 +1207,36 @@ namespace libEDSsharp
             this.objecttype = ObjectType.VAR;     
         }
 
+        /// <summary>
+        /// Make a deep clone of this ODentry
+        /// </summary>
+        /// <returns></returns>
+        public ODentry Clone(ODentry newParent = null)
+        {
+            ODentry newOd = new ODentry
+            {
+                parent = newParent,
+                parameter_name = parameter_name,
+                denotation = denotation,
+                objecttype = objecttype,
+                datatype = datatype,
+                accesstype = accesstype,
+                PDOtype = PDOtype,
+                defaultvalue = defaultvalue,
+                LowLimit = LowLimit,
+                HighLimit = HighLimit,
+                actualvalue = actualvalue,
+                Label = Label,
+                Description = Description,
+                subobjects = new SortedDictionary<UInt16, ODentry>(),
+                prop = prop.Clone()
+            };
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in subobjects)
+                newOd.subobjects.Add(kvp.Key, kvp.Value.Clone(newOd));
+
+            return newOd;
+        }
 
         /// <summary>
         /// Provide a simple string representation of the object, only parameters index, no subindexes/subindex parameter name and data type are included
@@ -1131,6 +1254,206 @@ namespace libEDSsharp
             {
                 return String.Format("{0:x4}/{1} : {2} : {3}", Index, Subindex, parameter_name, datatype);
             }
+        }
+
+        public string ObjectTypeString()
+        {
+            switch (objecttype)
+            {
+                default:
+                case ObjectType.VAR: return "VAR";
+                case ObjectType.ARRAY: return "ARRAY";
+                case ObjectType.REC: return "RECORD";
+            }
+        }
+
+        public void ObjectTypeString(string objectType)
+        {
+            switch (objectType)
+            {
+                default:
+                case "VAR": this.objecttype = ObjectType.VAR; break;
+                case "ARRAY": this.objecttype = ObjectType.ARRAY; break;
+                case "RECORD": this.objecttype = ObjectType.REC; break;
+            }
+        }
+
+        public AccessSDO AccessSDO()
+        {
+            EDSsharp.AccessType accType = accesstype;
+            if (accType == EDSsharp.AccessType.UNKNOWN && parent != null && parent.objecttype == ObjectType.ARRAY)
+                accType = parent.accesstype;
+
+            switch (accType)
+            {
+                default:
+                    return libEDSsharp.AccessSDO.no;
+                case EDSsharp.AccessType.ro:
+                case EDSsharp.AccessType.@const:
+                    return libEDSsharp.AccessSDO.ro;
+                case EDSsharp.AccessType.wo:
+                    return libEDSsharp.AccessSDO.wo;
+                case EDSsharp.AccessType.rw:
+                case EDSsharp.AccessType.rwr:
+                case EDSsharp.AccessType.rww:
+                    return libEDSsharp.AccessSDO.rw;
+            }
+        }
+
+        public void AccessSDO(AccessSDO accessSDO, AccessPDO accessPDO)
+        {
+            switch (accessSDO)
+            {
+                default:
+                    accesstype = EDSsharp.AccessType.UNKNOWN;
+                    break;
+                case libEDSsharp.AccessSDO.ro:
+                    accesstype = EDSsharp.AccessType.ro;
+                    break;
+                case libEDSsharp.AccessSDO.wo:
+                    accesstype = EDSsharp.AccessType.wo;
+                    break;
+                case libEDSsharp.AccessSDO.rw:
+                    if (accessPDO == libEDSsharp.AccessPDO.r)
+                        accesstype = EDSsharp.AccessType.rwr;
+                    else if (accessPDO == libEDSsharp.AccessPDO.t)
+                        accesstype = EDSsharp.AccessType.rww;
+                    else
+                        accesstype = EDSsharp.AccessType.rw;
+                    break;
+            }
+        }
+
+        public AccessPDO AccessPDO()
+        {
+            EDSsharp.AccessType accType = accesstype;
+            if (accType == EDSsharp.AccessType.UNKNOWN && parent != null && parent.objecttype == ObjectType.ARRAY)
+                accType = parent.accesstype;
+
+            if (PDOtype == PDOMappingType.RPDO || accType == EDSsharp.AccessType.rwr)
+                return libEDSsharp.AccessPDO.r;
+            else if (PDOtype == PDOMappingType.TPDO || accType == EDSsharp.AccessType.rww)
+                return libEDSsharp.AccessPDO.t;
+            if (PDOtype == PDOMappingType.optional || PDOtype == PDOMappingType.@default)
+                return libEDSsharp.AccessPDO.tr;
+            else
+                return libEDSsharp.AccessPDO.no;
+        }
+
+        public void AccessPDO(AccessPDO accessPDO)
+        {
+            switch (accessPDO)
+            {
+                default:
+                    PDOtype = PDOMappingType.no;
+                    break;
+                case libEDSsharp.AccessPDO.r:
+                    PDOtype = PDOMappingType.RPDO;
+                    break;
+                case libEDSsharp.AccessPDO.t:
+                    PDOtype = PDOMappingType.TPDO;
+                    break;
+                case libEDSsharp.AccessPDO.tr:
+                    PDOtype = PDOMappingType.optional;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Duplicate current sub entry and add it to parent
+        /// </summary>
+        /// <returns>true on successfull addition</returns>
+        public ODentry AddSubEntry()
+        {
+            ODentry baseObject = parent == null ? this : parent;
+
+            if (baseObject.objecttype == ObjectType.VAR)
+                return null;
+
+            ODentry lastSubOd = baseObject.subobjects.Values.Last();
+            ODentry originalOd = null;
+            ODentry newOd;
+            UInt16 maxSubIndex = 1;
+            UInt16 lastSubIndex = 1;
+
+            // create new or clone existing sub od
+            if (lastSubOd == null || lastSubOd.Subindex < 1)
+            {
+                newOd = new ODentry
+                {
+                    parent = baseObject,
+                    parameter_name = "item",
+                    objecttype = ObjectType.VAR,
+                    datatype = DataType.UNSIGNED32
+                };
+            }
+            else
+            {
+                originalOd = (parent != null && this.Subindex > 0) ? this : lastSubOd;
+                newOd = originalOd.Clone(originalOd.parent);
+                maxSubIndex = EDSsharp.ConvertToUInt16(baseObject.subobjects[0].defaultvalue);
+                lastSubIndex = lastSubOd.Subindex;
+            }
+
+            // insert new sub od
+            SortedDictionary<UInt16, ODentry> newSubObjects = new SortedDictionary<ushort, ODentry>();
+            UInt16 newSubIndex = 0;
+            foreach (ODentry subOd in baseObject.subobjects.Values)
+            {
+                if (subOd.Subindex > newSubIndex)
+                    newSubIndex = subOd.Subindex;
+
+                newSubObjects.Add(newSubIndex++, subOd);
+
+                if (originalOd == subOd)
+                    newSubObjects.Add(newSubIndex++, newOd);
+            }
+            if (originalOd == null)
+                newSubObjects.Add(newSubIndex++, newOd);
+
+            baseObject.subobjects = newSubObjects;
+
+            // Write maxSubIndex to first sub index
+            if (maxSubIndex > 0 && maxSubIndex == lastSubIndex && baseObject.subobjects.Count > 0)
+            {
+                baseObject.subobjects[0].defaultvalue = string.Format("0x{0:X2}", newSubIndex - 1);
+            }
+
+            return newOd;
+        }
+
+        /// <summary>
+        /// Remove current sub entry
+        /// </summary>
+        /// <param name="renumber">Renumber subentries</param>
+        /// <returns>true on successfull removal</returns>
+        public bool RemoveSubEntry(bool renumber)
+        {
+            if (parent != null && (parent.objecttype == ObjectType.ARRAY || parent.objecttype == ObjectType.REC))
+            {
+                UInt16 maxSubIndex = EDSsharp.ConvertToUInt16(parent.subobjects[0].defaultvalue);
+                UInt16 lastSubIndex = parent.subobjects.Values.Last().Subindex;
+
+                parent.subobjects.Remove(Subindex);
+
+                if (renumber)
+                {
+                    SortedDictionary<UInt16, ODentry> newSubObjects = new SortedDictionary<ushort, ODentry>();
+                    UInt16 subIndex = 0;
+                    foreach (ODentry subOd in parent.subobjects.Values)
+                        newSubObjects.Add(subIndex++, subOd);
+                    parent.subobjects = newSubObjects;
+                }
+
+                // Write maxSubIndex to first sub index
+                if (maxSubIndex > 0 && maxSubIndex == lastSubIndex && parent.subobjects.Count > 0)
+                {
+                    parent.subobjects[0].defaultvalue = string.Format("0x{0:X2}", parent.subobjects.Values.Last().Subindex);
+                }
+
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -1192,7 +1515,7 @@ namespace libEDSsharp
             }
 
             writer.WriteLine(string.Format("ObjectType=0x{0:X}", (int)objecttype));
-            writer.WriteLine(string.Format(";StorageLocation={0}",StorageLocation));
+            writer.WriteLine(string.Format(";StorageLocation={0}", prop.CO_storageGroup));
 
             if (objecttype == ObjectType.ARRAY)
             {
@@ -1233,7 +1556,7 @@ namespace libEDSsharp
 
                 writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
 
-                if (TPDODetectCos == true)
+                if (prop.CO_flagsPDO == true)
                 {
                     writer.WriteLine(";TPDODetectCos=1");
                 }
@@ -1511,12 +1834,27 @@ namespace libEDSsharp
         public const AccessType AccessType_Max = AccessType.@const;
 
 
-        //This is the last file name used for this eds/xml file and is not
-        //the same as filename within the FileInfo structure.
-        public string edsfilename = null;
-        public string dcffilename = null;
-        public string xmlfilename = null;
-        public string xddfilename = null;
+        // File name of the opened project. Multiple file types are possible
+        // for opened project file, but project is always saved as xdd_v1.1
+        // Filename within the FileInfo structure has only limited usage.
+        public string projectFilename = "";
+        // File name, when project is opened in xdd_v1.1 or project is saved
+        public string xddfilename_1_1 = "";
+        // File names for exported files
+        public string xddfilenameStripped = "";
+        public string edsfilename = "";
+        public string dcffilename = "";
+        public string ODfilename = "";
+        public string ODfileVersion = "";
+        public string mdfilename = "";
+        public string xmlfilename = ""; // old format
+        public string xddfilename_1_0 = ""; // old format
+
+        //This is memorized, when XDD v1.1 is opened. It keeps all elements
+        //from original XDD file, which are not handled by libedesharp, so
+        //they will be preserved, when the file will be saved.
+        //Object dictionary parameters are not stored here.
+        public ISO15745ProfileContainer xddTemplate = null;
 
         //property to indicate unsaved data;
         private bool _dirty;
@@ -1538,7 +1876,7 @@ namespace libEDSsharp
         public SortedDictionary<UInt16, ODentry> ods;
         public SortedDictionary<UInt16, ODentry> dummy_ods;
 
-        public StorageLocation storageLocation = new StorageLocation();
+        public CO_storageGroups CO_storageGroups = new CO_storageGroups();
 
         public FileInfo fi;
         public DeviceInfo di;
@@ -1603,7 +1941,7 @@ namespace libEDSsharp
             fi.EDSVersionMajor = 4;
             fi.EDSVersionMinor = 0;
 
-            fi.FileVersion = 1;
+            fi.FileVersion = "1";
             fi.FileRevision = 1;
 
             fi.CreationDateTime = DateTime.Now;
@@ -1628,12 +1966,65 @@ namespace libEDSsharp
 
         }
 
-        public void Setdirty()
-        {
-
-        }
-
         protected string sectionname = "";
+
+        /// <summary>
+        /// Verify PDO mapping parameters in Object Dictionary. Every mapped OD entry must exist and mapping must be allowed
+        /// </summary>
+        /// <returns>List of error strings, empty if no errors found.</returns>
+        public List<string> VerifyPDOMapping()
+        {
+            List<string> mappingErrors = new List<string>();
+
+            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
+            {
+                int indexPdo = kvp.Key;
+                if (!((indexPdo >= 0x1600 && indexPdo < 0x1800) || (indexPdo >= 0x1A00 && indexPdo < 0x1C00)))
+                    continue;
+
+                string PDO = indexPdo < 0x1800 ? "RPDO" : "TPDO";
+
+                ODentry odPdo = kvp.Value;
+                for (byte subIdxPdo = 1; subIdxPdo < odPdo.subobjects.Count; subIdxPdo++)
+                {
+                    UInt32 mapVal;
+                    try { mapVal = (UInt32)new System.ComponentModel.UInt32Converter().ConvertFromString(odPdo.subobjects[subIdxPdo].defaultvalue); }
+                    catch (Exception) { continue; }
+
+                    UInt16 mapIdx = (UInt16)(mapVal >> 16);
+                    UInt16 mapSub = (UInt16)((mapVal >> 8) & 0xFF);
+
+                    if (mapIdx < 0x1000)
+                        continue;
+
+                    bool missing = true;
+                    AccessPDO accessPDO = AccessPDO.no;
+                    if (ods.ContainsKey(mapIdx))
+                    {
+                        ODentry od = ods[mapIdx];
+                        if (!od.prop.CO_disabled)
+                        {
+                            if (od.objecttype == ObjectType.VAR)
+                            {
+                                missing = false;
+                                accessPDO = od.AccessPDO();
+                            }
+                            else if (od.subobjects.ContainsKey(mapSub))
+                            {
+                                missing = false;
+                                accessPDO = od.subobjects[mapSub].AccessPDO();
+                            }
+                        }
+                    }
+                    if (missing)
+                        mappingErrors.Add($"{PDO} 0x{indexPdo:X4},0x{subIdxPdo:X2}: missing OD entry 0x{mapIdx:X4},0x{mapSub:X2}");
+                    else if (accessPDO == AccessPDO.no || (PDO == "RPDO" && accessPDO == AccessPDO.t) || (PDO == "TPDO" && accessPDO == AccessPDO.r))
+                        mappingErrors.Add($"{PDO} 0x{indexPdo:X4},0x{subIdxPdo:X2}: not mappable OD entry 0x{mapIdx:X4},0x{mapSub:X2}");
+                }
+            }
+
+            return mappingErrors;
+        }
 
         public void Parseline(string linex,int no)
         {
@@ -1699,7 +2090,7 @@ namespace libEDSsharp
                         {
                             eds[sectionname].Add(key, value);
                         }
-                        catch(Exception e)
+                        catch(Exception)
                         {
                             Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate key \"{0}\" value \"{1}\" in section [{2}]", key,value,sectionname, no));
                         }
@@ -1707,13 +2098,13 @@ namespace libEDSsharp
                     else
                     //Only allow our own extensions to populate the key/value pair
                     {
-                        if (key == "StorageLocation" || key == "LSS_Type" || key== "TPDODetectCos")
+                        if (key == "StorageLocation" || key== "TPDODetectCos")
                         {
                             try
                             {
                                 eds[sectionname].Add(key, value);
                             }
-                            catch(Exception e)
+                            catch(Exception)
                             {
                                 Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate custom key \"{0}\" value \"{1}\" in section [{2}]", key, value, sectionname, no));
                             }
@@ -1802,7 +2193,7 @@ namespace libEDSsharp
                 //Access Type
                 if(kvp.Value.ContainsKey("StorageLocation"))
                 {
-                    od.StorageLocation = kvp.Value["StorageLocation"];
+                    od.prop.CO_storageGroup = kvp.Value["StorageLocation"];
                 }
 
                 if (kvp.Value.ContainsKey("TPDODetectCos"))
@@ -1810,10 +2201,10 @@ namespace libEDSsharp
                     string test = kvp.Value["TPDODetectCos"].ToLower();
                     if (test == "1" || test == "true")
                     {
-                        od.TPDODetectCos = true;                     
+                        od.prop.CO_flagsPDO = true;
                     }
                     else
-                        od.TPDODetectCos = false; 
+                        od.prop.CO_flagsPDO = false;
                 }
 
                 if (kvp.Value.ContainsKey("Count"))
@@ -1972,7 +2363,8 @@ namespace libEDSsharp
         public void Loadfile(string filename)
         {
 
-            
+            projectFilename = filename;
+
             if (Path.GetExtension(filename).ToLower() == ".eds")
             {
                 edsfilename = filename;
@@ -2278,7 +2670,7 @@ namespace libEDSsharp
             {
                 ODentry entry = kvp.Value;
 
-				if (entry.Disabled == true)
+				if (entry.prop.CO_disabled == true)
 					continue;
 
                 if (entry.Index == 0x1000 || entry.Index == 0x1001 || entry.Index == 0x1018)
@@ -2500,10 +2892,10 @@ namespace libEDSsharp
             foreach(KeyValuePair<UInt16,ODentry> kvp in ods)
             {
                 ODentry od = kvp.Value;
-                if(od.Disabled==false && od.Index >= 0x1400 && od.Index < 0x1600)
+                if(od.prop.CO_disabled == false && od.Index >= 0x1400 && od.Index < 0x1600)
                     di.NrOfRXPDO++;
 
-                if(od.Disabled==false && od.Index >= 0x1800 && od.Index < 0x1A00)
+                if(od.prop.CO_disabled == false && od.Index >= 0x1800 && od.Index < 0x1A00)
                     di.NrOfTXPDO++;
 
             }
@@ -2615,7 +3007,6 @@ namespace libEDSsharp
             {
                 od_comparam = new ODentry("RPDO communication parameter", index, 0)
                 {
-                    AccessFunctionName = "CO_ODF_RPDOcom",
                     Description = @"0x1400 - 0x15FF RPDO communication parameter
 max sub-index
 
@@ -2634,7 +3025,6 @@ Transmission type
 
                 od_mapping = new ODentry("RPDO mapping parameter", (UInt16)(index + 0x200), 0)
                 {
-                    AccessFunctionName = "CO_ODF_RPDOmap",
                     Description = @"0x1600 - 0x17FF RPDO mapping parameter (To change mapping, 'Number of mapped objects' must be set to 0)
 Number of mapped objects
 
@@ -2650,7 +3040,6 @@ mapped object  (subindex 1...8)
             {
                 od_comparam = new ODentry("TPDO communication parameter", index, 0)
                 {
-                    AccessFunctionName = "CO_ODF_TPDOcom",
                     Description = @"0x1800 - 0x19FF TPDO communication parameter
 max sub-index
 
@@ -2682,7 +3071,6 @@ SYNC start value
 
                 od_mapping = new ODentry("TPDO mapping parameter", (UInt16)(index + 0x200), 0)
                 {
-                    AccessFunctionName = "CO_ODF_TPDOmap",
                     Description = @"0x1A00 - 0x1BFF TPDO mapping parameter. (To change mapping, 'Number of mapped objects' must be set to 0).
 Number of mapped objects
 
@@ -2694,7 +3082,7 @@ mapped object  (subindex 1...8)
             }
 
             od_comparam.objecttype = ObjectType.REC;
-            od_comparam.StorageLocation = "ROM";
+            od_comparam.prop.CO_storageGroup = "ROM";
             od_comparam.accesstype = AccessType.ro;
             od_comparam.PDOtype = PDOMappingType.no;
 
@@ -2731,7 +3119,7 @@ mapped object  (subindex 1...8)
             }
 
             od_mapping.objecttype = ObjectType.REC;
-            od_mapping.StorageLocation = "ROM";
+            od_mapping.prop.CO_storageGroup = "ROM";
             od_mapping.accesstype = AccessType.rw; //Same as default but inconsistent with ROM above
             od_mapping.PDOtype = PDOMappingType.no;
 
@@ -2806,7 +3194,7 @@ mapped object  (subindex 1...8)
             int enabledcount = 0;
             foreach (ODentry od in ods.Values)
             {
-                if (od.Disabled == false)
+                if (od.prop.CO_disabled == false)
                 {
                     enabledcount++;
 
@@ -2814,7 +3202,7 @@ mapped object  (subindex 1...8)
                     {
                         foreach(ODentry sub in od.subobjects.Values)
                         {
-                            if (od.Disabled == false)
+                            if (od.prop.CO_disabled == false)
                             {
                                 enabledcount++;
                             }

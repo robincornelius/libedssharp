@@ -15,1491 +15,697 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
 
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
+    Copyright(c) 2020 Janez Paternoster
 */
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using libEDSsharp;
 using System.Reflection;
 using System.Text.RegularExpressions;
-
+using libEDSsharp;
 
 namespace ODEditor
 {
 
     public partial class DeviceODView : MyTabUserControl
     {
-        public EDSsharp eds = null;
+        EDSsharp eds = null;
 
-        ODentry selectedobject;
-        ODentry lastselectedobject;
-        ListViewItem selecteditem;
-        ListViewItem selecteditemsub;
-
+        ODentry selectedObject;
+        ODentry lastSelectedObject;
         ListView selectedList;
+        bool justUpdating = false;
+        readonly bool CANopenNodeV4;
 
         public DeviceODView()
         {
+            ExporterFactory.Exporter type = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
+            CANopenNodeV4 = (type == ExporterFactory.Exporter.CANOPENNODE_V4);
+
             InitializeComponent();
 
- 
-
-            foreach (DataType foo in Enum.GetValues(typeof(DataType)))
+            if (CANopenNodeV4)
             {
-                comboBox_datatype.Items.Add(foo.ToString());
-            }
+                comboBox_dataType.Items.Add("BOOLEAN");
+                comboBox_dataType.Items.Add("INTEGER8");
+                comboBox_dataType.Items.Add("INTEGER16");
+                comboBox_dataType.Items.Add("INTEGER32");
+                comboBox_dataType.Items.Add("INTEGER64");
+                comboBox_dataType.Items.Add("UNSIGNED8");
+                comboBox_dataType.Items.Add("UNSIGNED16");
+                comboBox_dataType.Items.Add("UNSIGNED32");
+                comboBox_dataType.Items.Add("UNSIGNED64");
+                comboBox_dataType.Items.Add("REAL32");
+                comboBox_dataType.Items.Add("REAL64");
+                comboBox_dataType.Items.Add("VISIBLE_STRING");
+                comboBox_dataType.Items.Add("OCTET_STRING");
+                comboBox_dataType.Items.Add("UNICODE_STRING");
+                comboBox_dataType.Items.Add("DOMAIN");
 
-            foreach (ObjectType foo in Enum.GetValues(typeof(ObjectType)))
-            {
-                comboBox_objecttype.Items.Add(foo.ToString());
-            }
+                comboBox_objectType.Items.Add("VAR");
+                comboBox_objectType.Items.Add("ARRAY");
+                comboBox_objectType.Items.Add("RECORD");
 
-            foreach (EDSsharp.AccessType foo in Enum.GetValues(typeof(EDSsharp.AccessType)))
-            {
-                comboBox_accesstype.Items.Add(foo.ToString());
-            }
+                foreach (AccessSDO foo in Enum.GetValues(typeof(AccessSDO)))
+                    comboBox_accessSDO.Items.Add(foo.ToString());
 
-            comboBox_accesstype.Items.Add("0x1003 rw/ro");
-            comboBox_accesstype.Items.Add("0x1010 const/rw");
-            comboBox_accesstype.Items.Add("0x1010 const/ro");
-
-            comboBox_memory.Items.Add("Add...");
-
-            comboBox_pdomap.Items.Add("no");
-            comboBox_pdomap.Items.Add("TPDO");
-            comboBox_pdomap.Items.Add("RPDO");
-            comboBox_pdomap.Items.Add("optional");
-
-            listView_mandatory_objects.DoubleBuffering(true);
-            listView_manufacture_objects.DoubleBuffering(true);
-            listView_optional_objects.DoubleBuffering(true);
-            listViewDetails.DoubleBuffering(true);
-
-            foreach(Control c in splitContainer4.Panel2.Controls)
-            {
-                if (c is CheckBox)
-                {
-                    ((CheckBox)c).CheckedChanged += DataDirty;
-                }
-                else
-                {
-                    c.TextChanged += DataDirty;
-                }
-            }
-
-            registerCN(splitContainer4.Panel2.Controls);
-            registerCN(groupBox1.Controls);
-
-        }
-
-
-        void registerCN(ControlCollection container)
-        {
-            foreach (Control c in container)
-            {
-                if (c is CheckBox)
-                {
-                    ((CheckBox)c).CheckedChanged += DataDirty;
-                }
-                else
-                {
-                    c.TextChanged += DataDirty;
-                }
-            }
-
-        }
-
-        bool updating = false;
-
-        private void DataDirty(object sender, EventArgs e)
-        {
-            if (updating == true)
-                return;
-
-            button_save_changes.BackColor = Color.Red;
-
-
-        }
-
-        private void button_save_changes_Click(object sender, EventArgs e)
-        {
-            if (selectedobject == null)
-                return;
-
-            eds.Dirty = true;
-
-            button_save_changes.BackColor = default(Color);
-
-            //Allow everything to be updated and control what is allowed via enable/disable for the control
-
-            selectedobject.parameter_name = textBox_name.Text;
-            selectedobject.Description = textBox_description.Text;
-            selectedobject.defaultvalue = textBox_defaultvalue.Text;
-            selectedobject.denotation = textBox_denotation.Text;
-            selectedobject.HighLimit = textBox_highvalue.Text;
-            selectedobject.LowLimit = textBox_lowvalue.Text;
-            selectedobject.actualvalue = textBox_actualvalue.Text;
-
-            if (!(selectedobject.parent != null && selectedobject.parent.objecttype == ObjectType.ARRAY))
-            {
-
-                selectedobject.defaultvalue = textBox_defaultvalue.Text;
-                selectedobject.TPDODetectCos = checkBox_COS.Checked;
-                selectedobject.HighLimit = textBox_highvalue.Text;
-                selectedobject.LowLimit = textBox_lowvalue.Text;
-                selectedobject.actualvalue = textBox_actualvalue.Text;
-                DataType dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
-                selectedobject.datatype = dt;
-
-
-                switch(comboBox_accesstype.SelectedItem.ToString())
-                {
-                    case "0x1003 rw/ro":
-                        selectedobject.accesstype = EDSsharp.AccessType.rw;
-
-                        foreach(KeyValuePair <UInt16,ODentry> kvp in selectedobject.subobjects)
-                        {
-                            ODentry od = kvp.Value;
-                            UInt16 subindex = kvp.Key;
-
-                            if (subindex == 0)
-                                od.accesstype = EDSsharp.AccessType.rw;
-                            else
-                                od.accesstype = EDSsharp.AccessType.ro;
-
-                        }
-
-                        break;
-
-                    case "0x1010 const/rw":
-                        foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
-                        {
-                            ODentry od = kvp.Value;
-                            UInt16 subindex = kvp.Key;
-
-                            if (subindex == 0)
-                                od.accesstype = EDSsharp.AccessType.@const;
-                            else
-                                od.accesstype = EDSsharp.AccessType.rw;
-                        }
-                        break;
-
-                    case "0x1010 const/ro":
-                        foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
-                        {
-                            ODentry od = kvp.Value;
-                            UInt16 subindex = kvp.Key;
-                            if (subindex == 0)
-                                od.accesstype = EDSsharp.AccessType.@const;
-                            else
-                                od.accesstype = EDSsharp.AccessType.ro;
-                        }
-                        break;
-
-                    default:
-                        EDSsharp.AccessType at = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accesstype.SelectedItem.ToString());
-                        selectedobject.accesstype = at;
-                        break;
-
-                }
-                
-         
-
-                selectedobject.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_pdomap.SelectedItem.ToString());
-
-                selectedobject.Disabled = !checkBox_enabled.Checked;
-
-                selectedobject.StorageLocation = comboBox_memory.SelectedItem.ToString();
-
-            }
-
-            if(selectedobject.parent == null && selectedobject.objecttype == ObjectType.ARRAY)
-            {
-                // Propagate changes through sub objects
-                // We only really need to do this for PDOMapping to fix bug #13 see report
-                // on git hub for discussion why other parameters are not propagated here
-                // tl;dr; Limitations of CANopenNode object dictionary perms for sub array objects
-
-                foreach (KeyValuePair<UInt16,ODentry>kvp in selectedobject.subobjects)
-                {
-                    ODentry subod = kvp.Value;
-                    UInt16 subindex = kvp.Key;
-
-                    subod.PDOtype = selectedobject.PDOtype;
-                    switch(comboBox_accesstype.SelectedItem.ToString())
-                    {
-                        case "0x1003 rw/ro":
-                        case "0x1010 const/rw":
-                        case "0x1010 const/ro":
-                            break;
-
-                        default:
-                            if (subindex != 0)
-                                subod.accesstype = selectedobject.accesstype;
-                            break;
-
-                    }
-
-                    if (kvp.Key != 0)
-                        subod.datatype = selectedobject.datatype;
-                }
-            }
-
-            //If we edit a parent REC object we also need to change the storage location of subobjects
-            //this does occur implicitly anyway and it also occurs during load of file but the GUI was displaying
-            //incorrect data in the shaded combo box item for storage location
-            if (selectedobject.parent == null && selectedobject.objecttype == ObjectType.REC)
-            {
-                foreach (KeyValuePair<UInt16, ODentry> kvp in selectedobject.subobjects)
-                {
-                    ODentry subod = kvp.Value;
-                    subod.StorageLocation = selectedobject.StorageLocation;
-                }
-            }
-
-
-            updateselectedindexdisplay(selectedobject.Index, currentmodule);
-            validateanddisplaydata();
-
-            populateindexlists(); 
-
-        }
-
-        public void updatedetailslist()
-        {
-            if (selectedobject == null)
-                return;
-
-            updateselectedindexdisplay(selectedobject.Index, currentmodule);
-        }
-
-        public void validateanddisplaydata()
-        {
-
-
-            if (selectedobject == null)
-                return;
-
-            lastselectedobject = selectedobject;
-
-            updating = true;
-
-
-            ODentry od = (ODentry)selectedobject;
-
-
-            if (currentmodule == 0)
-            {
-                label_index.Text = string.Format("0x{0:x4}", od.Index);
+                foreach (AccessPDO foo in Enum.GetValues(typeof(AccessPDO)))
+                    comboBox_accessPDO.Items.Add(foo.ToString());
             }
             else
             {
-                label_index.Text = string.Format("0x{0:x4} in module {1} -- {2}", od.Index,currentmodule,eds.modules[currentmodule].mi.ProductName);
+                foreach (DataType foo in Enum.GetValues(typeof(DataType)))
+                    comboBox_dataType.Items.Add(foo.ToString());
+                foreach (ObjectType foo in Enum.GetValues(typeof(ObjectType)))
+                    comboBox_objectType.Items.Add(foo.ToString());
+                foreach (EDSsharp.AccessType foo in Enum.GetValues(typeof(EDSsharp.AccessType)))
+                    comboBox_accessSDO.Items.Add(foo.ToString());
+
+                comboBox_accessSDO.Items.Add("0x1003 rw/ro");
+                comboBox_accessSDO.Items.Add("0x1010 const/rw");
+                comboBox_accessSDO.Items.Add("0x1010 const/ro");
+
+                comboBox_accessPDO.Items.Add("no");
+                comboBox_accessPDO.Items.Add("optional");
             }
 
-            textBox_name.Text = od.parameter_name;
-            textBox_denotation.Text = od.denotation;
+            foreach (AccessSRDO foo in Enum.GetValues(typeof(AccessSRDO)))
+                comboBox_accessSRDO.Items.Add(foo.ToString());
 
-            comboBox_accesstype.SelectedItem = od.accesstype.ToString();
+            // other elements may be added in PopulateObjectLists()
+            comboBox_countLabel.Items.Add("");
+            comboBox_countLabel.Items.Add("Add...");
+            comboBox_countLabel.SelectedIndexChanged += new System.EventHandler(this.ComboBox_countLabel_Add);
+            comboBox_storageGroup.Items.Add("Add...");
+            comboBox_storageGroup.SelectedIndexChanged += new System.EventHandler(this.ComboBox_storageGroup_Add);
 
-            if (od.datatype != DataType.UNKNOWN)
-            {
-                comboBox_datatype.SelectedItem = od.datatype.ToString();
-            }
-            else
-            {
-                if (od.objecttype == ObjectType.REC)
-                {
-                    if (od.subobjects.Count >= 2)
-                    {
-                        // BUG #70 Select the first non subindex count entry, note this may not be key[1] so we are using an ordinal hack
-                        // to retrieve it.
-                        // Whilst this will likely work forever, there is nothing stopping the implementation from being
-                        // changed in the future and causing your code which uses this to break in horrible ways. You have been warned
-
-                        comboBox_datatype.SelectedItem = od.subobjects.ElementAt(1).Value.datatype.ToString();
-                    }
-
-                }
-                else
-                {
-                    if(od.parent!=null)
-                        comboBox_datatype.SelectedItem = od.parent.datatype ;
-                }
-            }
-
-            //Bug#25 set the combo box text to be the same as the selected item as this does not happen automatically
-            //when the combo box is disabled
-            if (comboBox_datatype.SelectedItem!=null)
-                comboBox_datatype.Text = comboBox_datatype.SelectedItem.ToString();
-
-            comboBox_objecttype.SelectedItem = od.objecttype.ToString();
-
-            if (od.Description == null)
-                textBox_description.Text = "";
-            else
-                textBox_description.Text = Regex.Replace(od.Description, "(?<!\r)\n", "\r\n");
-
-            comboBox_pdomap.SelectedItem = od.PDOtype.ToString();
-
-            checkBox_COS.Checked = od.TPDODetectCos;
-          
-            checkBox_enabled.Checked = !od.Disabled;
-
-            comboBox_memory.SelectedItem = od.StorageLocation;
-
-            checkBox_enabled.Enabled = true;
-            comboBox_memory.Enabled = true;
-
-            textBox_defaultvalue.Enabled = true;
-            textBox_actualvalue.Enabled = true;
-            textBox_highvalue.Enabled = true;
-            textBox_lowvalue.Enabled = true;
-
-
-            comboBox_accesstype.Enabled = true;
-            comboBox_datatype.Enabled = true;
-            comboBox_objecttype.Enabled = false;
-            comboBox_pdomap.Enabled = true;
-
-            textBox_defaultvalue.Text = od.defaultvalue;
-
-            textBox_actualvalue.Text = od.actualvalue;
-            textBox_highvalue.Text = od.HighLimit;
-            textBox_lowvalue.Text = od.LowLimit;
-
-            checkBox_COS.Enabled = true;
-            checkBox_enabled.Enabled = true;
-
-            if (od.parent == null)
-            {
-                //if we are a parent REC then 
-                if (od.objecttype == ObjectType.REC)
-                {
-                    comboBox_accesstype.Enabled = false;
-                    comboBox_pdomap.Enabled = false;
-                    checkBox_COS.Enabled = false;
-                    comboBox_datatype.Enabled = false;
-                    textBox_defaultvalue.Enabled = false;
-                    textBox_actualvalue.Enabled = false;
-                    textBox_highvalue.Enabled = false;
-                    textBox_lowvalue.Enabled = false;
-                }
-
-                updating = false;
-                return; //nothing else to do at this point
-            }
-
-            //protect everything as default
-            textBox_defaultvalue.Enabled = false;
-            comboBox_accesstype.Enabled = false;
-            comboBox_datatype.Enabled = false;
-            comboBox_objecttype.Enabled = false;
-            comboBox_pdomap.Enabled = false;
-            checkBox_enabled.Checked = false;
-            comboBox_memory.Enabled = false;
-            checkBox_COS.Enabled = false;
-            checkBox_enabled.Enabled = false;
-          
-            checkBox_enabled.Checked = !od.parent.Disabled;
-
-            if (od.parent.objecttype == ObjectType.ARRAY && od.Subindex != 0)
-            {
-                textBox_defaultvalue.Enabled = true;
-                checkBox_COS.Checked = od.parent.TPDODetectCos;
-
-            }
-
-            if (od.parent.objecttype == ObjectType.REC && od.Subindex != 0)
-            {
-                textBox_defaultvalue.Enabled = true;
-                comboBox_datatype.Enabled = true;
-                comboBox_pdomap.Enabled = true;
-                comboBox_accesstype.Enabled = true;
-                checkBox_COS.Enabled = true;
-
-            }
-
-            if (od.parent.objecttype == ObjectType.REC &&
-                ((od.parent.Index >=0x1600 && od.parent.Index <= 0x17ff) || (od.parent.Index >= 0x1A00 && od.parent.Index <= 0x1Bff)
-                || (od.parent.Index >= 0x1381 && od.parent.Index <= 0x13C0)) &&
-                od.Subindex == 0)
-            {
-                //We are allowed to edit the no sub objects for the PDO mappings as its a requirement to support dynamic PDOs
-
-                textBox_defaultvalue.Enabled = true;
-                comboBox_accesstype.Enabled = true;
-            }
-
-            updating = false;
-
-            return;
+            listView_communication_objects.DoubleBuffering(true);
+            listView_deviceProfile_objects.DoubleBuffering(true);
+            listView_manufacturer_objects.DoubleBuffering(true);
+            listView_subObjects.DoubleBuffering(true);
         }
 
-
-
-        ODentry selectedindexod = null;
-        UInt16 currentmodule = 0;
-
-        private void updateselectedindexdisplay(UInt16 index,UInt16 mod)
+        private bool Checkdirty()
         {
+            if (button_saveChanges.BackColor == Color.Red)
+            {
+                if (lastSelectedObject != null && MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:X4}/{1:X2}.\nDo you wish to switch object and loose your changes?", lastSelectedObject.Index, lastSelectedObject.Subindex), "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    return true;
+                }
+                button_saveChanges.BackColor = default;
+            }
 
-         
-            selectedindexod = getOD(index,mod);
-            currentmodule = mod;
-
-            updateselectedindexdisplay();
+            return false;
         }
 
-        public void updateselectedindexdisplay()
+        private void ComboBoxSet(ComboBox comboBox, string item)
         {
-            
-            listViewDetails.Items.Clear();
+            if (item == null)
+                item = "";
 
-            if (selectedindexod == null)
+            if (!comboBox.Items.Contains(item))
+                comboBox.Items.Add(item);
+
+            comboBox.SelectedItem = item;
+        }
+
+        public void PopulateObjectLists(EDSsharp eds_target)
+        {
+            if (eds_target == null)
                 return;
 
-            ODentry od = selectedindexod;
+            eds = eds_target;
+
+            doUpdateDeviceInfo();
+            doUpdatePDOs();
+
+            /* save scroll positions */
+            int listview_communication_position = 0;
+            int listview_manufacturer_position = 0;
+            int listview_deviceProfile_position = 0;
+
+            if (listView_communication_objects.TopItem != null)
+                listview_communication_position = listView_communication_objects.TopItem.Index;
+            if (listView_manufacturer_objects.TopItem != null)
+                listview_manufacturer_position = listView_manufacturer_objects.TopItem.Index;
+            if (listView_deviceProfile_objects.TopItem != null)
+                listview_deviceProfile_position = listView_deviceProfile_objects.TopItem.Index;
+
+            /* prevent flickering */
+            listView_communication_objects.BeginUpdate();
+            listView_manufacturer_objects.BeginUpdate();
+            listView_deviceProfile_objects.BeginUpdate();
+
+            listView_communication_objects.Items.Clear();
+            listView_manufacturer_objects.Items.Clear();
+            listView_deviceProfile_objects.Items.Clear();
+
+            foreach (ODentry od in eds.ods.Values)
+            {
+                UInt16 index = od.Index;
+                ListViewItem lvi = new ListViewItem(new string[] {
+                    string.Format("0x{0:X4}", index),
+                    od.parameter_name
+                });
+
+                lvi.Tag = od;
+                if (selectedObject != null && index == selectedObject.Index)
+                    lvi.Selected = true;
+                if (od.prop.CO_disabled == true)
+                    lvi.ForeColor = Color.LightGray;
+
+                if (index <= 0x1000 || index < 0x2000)
+                    listView_communication_objects.Items.Add(lvi);
+                else if (index >= 0x2000 && index < 0x6000)
+                    listView_manufacturer_objects.Items.Add(lvi);
+                else
+                    listView_deviceProfile_objects.Items.Add(lvi);
+
+                string countLabel = od.prop.CO_countLabel;
+                if (!comboBox_countLabel.Items.Contains(countLabel))
+                    comboBox_countLabel.Items.Insert(comboBox_countLabel.Items.Count - 1, countLabel);
+
+                string storageGroup = od.prop.CO_storageGroup;
+                if (!comboBox_storageGroup.Items.Contains(storageGroup))
+                    comboBox_storageGroup.Items.Insert(comboBox_storageGroup.Items.Count - 1, storageGroup);
+            }
+
+            listView_communication_objects.EndUpdate();
+            listView_manufacturer_objects.EndUpdate();
+            listView_deviceProfile_objects.EndUpdate();
+
+            /* reset scroll position and selection */
+            if (listview_communication_position != 0 && listView_communication_objects.Items.Count > 0)
+                listView_communication_objects.TopItem = listView_communication_objects.Items[listview_communication_position];
+            if (listview_manufacturer_position != 0 && listView_manufacturer_objects.Items.Count > 0)
+                listView_manufacturer_objects.TopItem = listView_manufacturer_objects.Items[listview_manufacturer_position];
+            if (listview_deviceProfile_position != 0 && listView_deviceProfile_objects.Items.Count > 0)
+                listView_deviceProfile_objects.TopItem = listView_deviceProfile_objects.Items[listview_deviceProfile_position];
+        }
+
+        public void PopulateSubList()
+        {
+            listView_subObjects.Items.Clear();
+
+            if (selectedObject == null)
+                return;
+
+            ODentry od = selectedObject.parent == null ? selectedObject : selectedObject.parent;
 
             if (od.objecttype == ObjectType.VAR)
             {
-                ListViewItem lvi = new ListViewItem(" ");
-                lvi.SubItems.Add(od.parameter_name);
-                lvi.SubItems.Add(od.objecttype.ToString());
-                lvi.SubItems.Add(od.datatype.ToString());
-                lvi.SubItems.Add(od.accesstype.ToString());
-                lvi.SubItems.Add(od.defaultvalue);
-                lvi.SubItems.Add(od.PDOMapping.ToString());
+                ListViewItem lvi = new ListViewItem(new string[] {
+                    " ", // subindex
+                    od.parameter_name,
+                    od.ObjectTypeString(),
+                    od.datatype.ToString(),
+                    od.AccessSDO().ToString(),
+                    od.AccessPDO().ToString(),
+                    od.prop.CO_accessSRDO.ToString(),
+                    od.defaultvalue
+                });
                 lvi.Tag = od;
-
-                listViewDetails.Items.Add(lvi);
+                listView_subObjects.Items.Add(lvi);
             }
-
-            if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
+            else if (od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.REC)
             {
-                ListViewItem lvi = new ListViewItem(" ");
-                lvi.SubItems.Add(od.parameter_name);
-
-                lvi.SubItems.Add(od.objecttype.ToString());
-
-                if (od.objecttype == ObjectType.ARRAY)
-                {
-                    if (od.subobjects.Count > 1)
-                    {
-                        lvi.SubItems.Add(od.datatype.ToString());
-                    }
-                    else
-                    {
-                        lvi.SubItems.Add(" -- ");
-                    }
-
-                    lvi.SubItems.Add(od.accesstype.ToString());
-                    lvi.SubItems.Add("");
-                    lvi.SubItems.Add(od.PDOMapping.ToString());
-                }
-
+                ListViewItem lvi = new ListViewItem(new string[]{
+                    " ",
+                    od.parameter_name,
+                    od.ObjectTypeString()
+                });
                 lvi.Tag = od;
-
-                listViewDetails.Items.Add(lvi);
+                listView_subObjects.Items.Add(lvi);
 
                 foreach (KeyValuePair<UInt16, ODentry> kvp in od.subobjects)
                 {
                     ODentry subod = kvp.Value;
                     int subindex = kvp.Key;
 
-                    ListViewItem lvi2 = new ListViewItem(string.Format("{0:x}", subindex));
-                    lvi2.SubItems.Add(subod.parameter_name);
-                    lvi2.SubItems.Add(subod.objecttype.ToString());
-
-
-                    if (subod.datatype == DataType.UNKNOWN || (od.objecttype == ObjectType.ARRAY && subindex != 0))
-                    {
-                        lvi2.SubItems.Add(" -- ");
-                    }
-                    else
-                    {
-                        lvi2.SubItems.Add(subod.datatype.ToString());
-                    }
-
-                    if (subod.accesstype == EDSsharp.AccessType.UNKNOWN)
-                    {
-                        lvi2.SubItems.Add(" -- ");
-                    }
-                    else
-                    {
-                        lvi2.SubItems.Add(subod.accesstype.ToString());
-                    }
-
-                    lvi2.SubItems.Add(subod.defaultvalue);
-
-                    //fix me ??
-                    lvi2.SubItems.Add(subod.PDOtype.ToString());
-
+                    ListViewItem lvi2 = new ListViewItem(new string[] {
+                        string.Format("0x{0:X2}", subindex),
+                        subod.parameter_name,
+                        subod.ObjectTypeString(),
+                        (subod.datatype != DataType.UNKNOWN) ? subod.datatype.ToString() : od.datatype.ToString(),
+                        subod.AccessSDO().ToString(),
+                        subod.AccessPDO().ToString(),
+                        subod.prop.CO_accessSRDO.ToString(),
+                        subod.defaultvalue
+                    });
                     lvi2.Tag = subod;
-
-                    listViewDetails.Items.Add(lvi2);
-
+                    listView_subObjects.Items.Add(lvi2);
                 }
+            }
+        }
 
+        public void PopulateObject()
+        {
+            justUpdating = true;
+            lastSelectedObject = selectedObject;
+
+            if (selectedObject == null)
+            {
+                textBox_index.Text = "";
+                textBox_subIndex.Text = "";
+                textBox_name.Text = "";
+                textBox_denotation.Text = "";
+                textBox_description.Text = "";
+                justUpdating = false;
+                return;
             }
 
-        }
+            ODentry od = selectedObject;
 
-        private void listView_mandatory_objects_MouseClick(object sender, MouseEventArgs e)
-        {
-            selectedList = listView_mandatory_objects;
-            ListViewItem lvi = listView_mandatory_objects.SelectedItems[0];
+            textBox_index.Text = string.Format("0x{0:X4}", od.Index);
+            textBox_name.Text = od.parameter_name;
+            textBox_denotation.Text = od.denotation;
+            textBox_description.Text = (od.Description == null) ? "" : Regex.Replace(od.Description, "(?<!\r)\n", "\r\n");
 
-            if (checkdirty())
-                return;
+            comboBox_objectType.SelectedItem = od.ObjectTypeString();
 
-            UInt16 idx = Convert.ToUInt16(lvi.Text, 16);
-            updateselectedindexdisplay(idx, currentmodule);
-
-            selectedobject = eds.ods[idx];
-            validateanddisplaydata();
-
-            listView_mandatory_objects.HideSelection = false;
-            listView_manufacture_objects.HideSelection = true;
-            listView_optional_objects.HideSelection = true;
-        }
-
-        private void list_mouseclick(ListView listview, MouseEventArgs e)
-        {
-            selectedList = listview;
-            if (listview.SelectedItems.Count == 0)
-                return;
-
-            if (checkdirty())
-                return;
-
-            deleteObjectToolStripMenuItem.Text = listview.SelectedItems.Count > 1 ? "&Delete Objects" : "&Delete Object";
-
-            ListViewItem lvi = listview.SelectedItems[0];
-
-            currentmodule = 0;
-
-            UInt16 idx;
-            if (lvi.Text.Contains('('))
+            if (od.objecttype == ObjectType.VAR)
             {
-                int i = 1+lvi.Text.IndexOf(' ');
-                string id = lvi.Text.Substring(i, lvi.Text.Length - i);
-                idx = Convert.ToUInt16(id, 16);
+                comboBox_dataType.Enabled = true;
+                comboBox_accessSDO.Enabled = true;
+                comboBox_accessPDO.Enabled = true;
+                comboBox_accessSRDO.Enabled = true;
 
-                string mods = lvi.Text.Substring(1, i - 3);
+                textBox_defaultValue.Enabled = true;
+                textBox_actualValue.Enabled = true;
+                textBox_highLimit.Enabled = true;
+                textBox_lowLimit.Enabled = true;
+                textBox_stringLengthMin.Enabled = true;
 
-                currentmodule = Convert.ToUInt16(mods, 10);
+                string dataType = (od.datatype == DataType.UNKNOWN && od.parent != null)
+                                ? od.parent.datatype.ToString()
+                                : od.datatype.ToString();
+                ComboBoxSet(comboBox_dataType, dataType);
+                comboBox_accessSDO.SelectedItem = od.AccessSDO().ToString();
+                comboBox_accessPDO.SelectedItem = od.AccessPDO().ToString();
+                comboBox_accessSRDO.SelectedItem = od.prop.CO_accessSRDO.ToString();
 
+                textBox_defaultValue.Text = od.defaultvalue;
+                textBox_actualValue.Text = od.actualvalue;
+                textBox_highLimit.Text = od.HighLimit;
+                textBox_lowLimit.Text = od.LowLimit;
+                textBox_stringLengthMin.Text = od.prop.CO_stringLengthMin.ToString();
             }
             else
             {
-                idx = Convert.ToUInt16(lvi.Text, 16);
+                comboBox_dataType.SelectedItem = null;
+                comboBox_accessSDO.SelectedItem = null;
+                comboBox_accessPDO.SelectedItem = null;
+                comboBox_accessSRDO.SelectedItem = null;
+
+                textBox_defaultValue.Text = "";
+                textBox_actualValue.Text = "";
+                textBox_highLimit.Text = "";
+                textBox_lowLimit.Text = "";
+                textBox_stringLengthMin.Text = "";
+
+                comboBox_dataType.Enabled = false;
+                comboBox_accessSDO.Enabled = false;
+                comboBox_accessPDO.Enabled = false;
+                comboBox_accessSRDO.Enabled = false;
+
+                textBox_defaultValue.Enabled = false;
+                textBox_actualValue.Enabled = false;
+                textBox_highLimit.Enabled = false;
+                textBox_lowLimit.Enabled = false;
+                textBox_stringLengthMin.Enabled = false;
             }
 
-            if (e.Button == MouseButtons.Right)
+            ODentry odBase;
+            if (od.parent == null)
             {
-                if (currentmodule != 0)
-                    return;
-
-                if (listview.FocusedItem.Bounds.Contains(e.Location) == true)
-                {
-                    selecteditem = lvi;
-
-                    ODentry od = (ODentry)lvi.Tag;
-
-                    string objString = listview.SelectedItems.Count > 1 ? "Objects" : "Object";
-                    
-                    string objEnableString = od.Disabled ? "&Enable" : "Disabl&e";
-                    disableObjectToolStripMenuItem.Text = string.Format("{0} {1}", objEnableString, objString);
-                    contextMenuStrip1.Show(Cursor.Position);
-                }
-
-                return;
+                odBase = od;
+                textBox_subIndex.Text = "";
+                comboBox_countLabel.Enabled = true;
+                comboBox_storageGroup.Enabled = true;
+                checkBox_enabled.Enabled = true;
+                checkBox_ioExtension.Enabled = true;
+                checkBox_pdoFlags.Enabled = true;
+            }
+            else
+            {
+                odBase = od.parent;
+                textBox_subIndex.Text = string.Format("0x{0:X2}", od.Subindex);
+                comboBox_countLabel.Enabled = false;
+                comboBox_storageGroup.Enabled = false;
+                checkBox_enabled.Enabled = false;
+                checkBox_ioExtension.Enabled = false;
+                checkBox_pdoFlags.Enabled = false;
             }
 
-            updateselectedindexdisplay(idx, currentmodule);
+            ComboBoxSet(comboBox_countLabel, odBase.prop.CO_countLabel);
+            ComboBoxSet(comboBox_storageGroup, odBase.prop.CO_storageGroup);
+            checkBox_enabled.Checked = !odBase.prop.CO_disabled;
+            checkBox_ioExtension.Checked = odBase.prop.CO_extensionIO;
+            checkBox_pdoFlags.Checked = odBase.prop.CO_flagsPDO;
 
-            selectedobject = getOD(idx, currentmodule);
-
-            validateanddisplaydata();
-
-            listView_mandatory_objects.HideSelection = true;
-            listView_manufacture_objects.HideSelection = true;
-            listView_optional_objects.HideSelection = true;
-            listview.HideSelection = false;
+            justUpdating = false;
+            return;
         }
 
-        private void listView_MouseDown(ListView listview, MouseEventArgs e)
+        private void DataDirty(object sender, EventArgs e)
         {
-            selectedList = listview;
+            if (!justUpdating)
+                button_saveChanges.BackColor = Color.Red;
+        }
 
-            ListViewHitTestInfo HI = listview.HitTest(e.Location);
-            if (e.Button == MouseButtons.Right)
+        private void Button_saveChanges_Click(object sender, EventArgs e)
+        {
+            if (selectedObject == null)
+                return;
+
+            eds.Dirty = true;
+            button_saveChanges.BackColor = default;
+            ODentry od = selectedObject;
+
+            od.parameter_name = textBox_name.Text;
+            od.denotation = textBox_denotation.Text;
+            od.Description = textBox_description.Text;
+            od.ObjectTypeString(od.parent == null ? comboBox_objectType.SelectedItem.ToString() : "VAR");
+
+            if (od.objecttype == ObjectType.VAR)
             {
-                if (HI.Location == ListViewHitTestLocations.None)
+                // dataType
+                try
                 {
-                    deleteObjectToolStripMenuItem.Enabled = false;
-                    disableObjectToolStripMenuItem.Enabled = false;
-                    contextMenuStrip1.Show(Cursor.Position);
+                    od.datatype = (DataType)Enum.Parse(typeof(DataType), comboBox_dataType.SelectedItem.ToString());
+                }
+                catch (Exception) {
+                    od.datatype = DataType.UNKNOWN;
+                }
+
+                AccessSDO accessSDO;
+                try
+                {
+                    accessSDO = (AccessSDO)Enum.Parse(typeof(AccessSDO), comboBox_accessSDO.SelectedItem.ToString());
+                }
+                catch (Exception) {
+                    accessSDO = AccessSDO.ro;
+                }
+
+                AccessPDO accessPDO;
+                try
+                {
+                    accessPDO = (AccessPDO)Enum.Parse(typeof(AccessPDO), comboBox_accessPDO.SelectedItem.ToString());
+                }
+                catch (Exception)
+                {
+                    accessPDO = AccessPDO.no;
+                }
+
+                od.AccessSDO(accessSDO, accessPDO);
+                od.AccessPDO(accessPDO);
+
+                // CO_accessSRDO
+                try
+                {
+                    od.prop.CO_accessSRDO = (AccessSRDO)Enum.Parse(typeof(AccessSRDO), comboBox_accessSRDO.SelectedItem.ToString());
+                }
+                catch (Exception)
+                {
+                    od.prop.CO_accessSRDO = AccessSRDO.no;
+                }
+
+                od.defaultvalue = textBox_defaultValue.Text;
+                od.actualvalue = textBox_actualValue.Text;
+                od.HighLimit = textBox_highLimit.Text;
+                od.LowLimit = textBox_lowLimit.Text;
+
+                // CO_stringLengthMin
+                if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING)
+                {
+                    try
+                    {
+                        od.prop.CO_stringLengthMin = (uint)new System.ComponentModel.UInt32Converter().ConvertFromString(textBox_stringLengthMin.Text);
+                    }
+                    catch (Exception)
+                    {
+                        od.prop.CO_stringLengthMin = 0;
+                    }
                 }
                 else
                 {
-                    deleteObjectToolStripMenuItem.Enabled = true;
-                    disableObjectToolStripMenuItem.Enabled = true;
+                    od.prop.CO_stringLengthMin = 0;
+                }
+
+                // some propeties in all array sub elements (and base element) must be equal
+                if (od.parent != null && od.parent.objecttype == ObjectType.ARRAY && od.Subindex > 0)
+                {
+                    foreach (ODentry subod in od.parent.subobjects.Values)
+                    {
+                        if (subod.Subindex > 0)
+                        {
+                            subod.datatype = od.datatype;
+                            subod.accesstype = od.accesstype;
+                            subod.PDOtype = od.PDOtype;
+                            subod.prop.CO_accessSRDO = od.prop.CO_accessSRDO;
+                        }
+                    }
+                    od.parent.datatype = od.datatype;
+                    od.parent.accesstype = od.accesstype;
+                    od.parent.PDOtype = od.PDOtype;
+                    od.parent.prop.CO_accessSRDO = od.prop.CO_accessSRDO;
                 }
             }
+
+            if (od.parent == null)
+            {
+                od.prop.CO_countLabel = comboBox_countLabel.SelectedItem.ToString();
+                od.prop.CO_storageGroup = comboBox_storageGroup.SelectedItem.ToString();
+                od.prop.CO_disabled = !checkBox_enabled.Checked;
+                od.prop.CO_extensionIO = checkBox_ioExtension.Checked;
+                od.prop.CO_flagsPDO = checkBox_pdoFlags.Checked;
+            }
+
+            PopulateObjectLists(eds);
+            PopulateSubList();
+            PopulateObject();
         }
 
-        private void listView_optionalobjects_MouseClick(object sender, MouseEventArgs e)
+        private void ListView_objects_MouseClick(object sender, MouseEventArgs e)
         {
-            list_mouseclick(listView_optional_objects, e);
+            ListView listview = (ListView)sender;
+            ODentry od = listview.SelectedItems.Count > 0 ? (ODentry)listview.SelectedItems[0].Tag : null;
+
+            if ((od != selectedObject || e.Button == MouseButtons.Right) && !Checkdirty())
+            {
+                selectedList = listview;
+                selectedObject = od;
+
+                if (e.Button == MouseButtons.Right)
+                {
+                    contextMenu_object.Show(Cursor.Position);
+                }
+
+                PopulateObject();
+                PopulateSubList();
+            }
+            listView_communication_objects.HideSelection = true;
+            listView_deviceProfile_objects.HideSelection = true;
+            listView_manufacturer_objects.HideSelection = true;
         }
 
-
-        private void listView_manufacture_objects_MouseDown(object sender, MouseEventArgs e)
+        private void ListView_objects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            listView_MouseDown(listView_manufacture_objects, e);
+            ListView_objects_MouseClick(sender, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
         }
 
-
-        private void listView_manufacture_objects_MouseClick(object sender, MouseEventArgs e)
+        private void ListView_objects_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            list_mouseclick(listView_manufacture_objects, e);
+            ((ListView)sender).SelectedItems.Clear();
+            ListView_objects_MouseClick(sender, new MouseEventArgs(MouseButtons.Right, 0, 0, 0, 0));
         }
 
-
-        private void listView_optional_objects_MouseDown(object sender, MouseEventArgs e)
+        private void ListView_subObjects_MouseClick(object sender, MouseEventArgs e)
         {
-            listView_MouseDown(listView_optional_objects, e);
-        }
-
-        private void listViewDetails_MouseClick(object sender, MouseEventArgs e)
-        {
-            selectedList = listViewDetails;
-            ListViewItem lvi = listViewDetails.SelectedItems[0];
-
-            if (listViewDetails.SelectedItems.Count == 0)
+            if (listView_subObjects.SelectedItems.Count == 0)
                 return;
 
-            if (checkdirty())
-                return;
+            ODentry od = (ODentry)listView_subObjects.SelectedItems[0].Tag;
 
-            selecteditemsub = lvi;
-
-            ODentry od = (ODentry)lvi.Tag;
-
-            if (e.Button == MouseButtons.Right)
+            if ((od != selectedObject || e.Button == MouseButtons.Right) && !Checkdirty())
             {
-                ODentry parent = od;
-                if (od.parent != null)
-                    parent = od.parent;
-
-                if (parent.objecttype == ObjectType.ARRAY || parent.objecttype == ObjectType.REC)
+                if (e.Button == MouseButtons.Right)
                 {
-                    if (od.Subindex == 0 || od.parent == null)
-                    {
-                        contextMenu_array.Items[2].Enabled = false;
-                    }
-                    else
-                    {
-                        contextMenu_array.Items[2].Enabled = true;
-                    }
+                    ODentry parent = od.parent == null ? od : od.parent;
 
-                    //Only show the special subindex adjust menu for subindex 0 of arrays
-                    if((od.parent!=null) && (parent.objecttype == ObjectType.ARRAY) && (od.Subindex==0))
+                    if (parent.objecttype == ObjectType.ARRAY || parent.objecttype == ObjectType.REC)
                     {
-                        contextMenu_array.Items[0].Enabled = true;
-                        contextMenu_array.Items[0].Visible = true;
-                    }
-                    else
-                    {
-                        contextMenu_array.Items[0].Enabled = false;
-                        contextMenu_array.Items[0].Visible = false;
-                    }
+                        contextMenu_subObject_removeSubItemToolStripMenuItem.Enabled = od.Subindex > 0 && od.parent != null;
+                        contextMenu_subObject_removeSubItemLeaveGapToolStripMenuItem.Enabled = parent.objecttype == ObjectType.REC && od.Subindex > 0 && od.parent != null;
 
-                    if (listViewDetails.FocusedItem.Bounds.Contains(e.Location) == true)
-                    {
-                        contextMenu_array.Show(Cursor.Position);
+                        if (listView_subObjects.FocusedItem.Bounds.Contains(e.Location) == true)
+                        {
+                            contextMenu_subObject.Show(Cursor.Position);
+                        }
                     }
-
                 }
+                selectedObject = od;
+                PopulateObject();
             }
-
-            selectedobject = od;
-            validateanddisplaydata();
-
         }
 
-        public void populatememorytypes()
+        private void ListView_subObjects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (eds == null)
-                return;
+            ListView_subObjects_MouseClick(sender, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
+        }
 
-            foreach (string location in eds.storageLocation)
+        private void ComboBox_countLabel_Add(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+
+            if (comboBox.SelectedItem != null && comboBox.SelectedItem.ToString() == "Add...")
             {
-                if (location == "Unused")
+                NewItem dialog = new NewItem("Add Count Label");
+                if (dialog.ShowDialog() == DialogResult.OK && comboBox.FindStringExact(dialog.name) == -1)
                 {
-                    continue;
-                }
-
-                /* add string to the second to last position (before "add...") */
-                /* Ensuring that it does not already exist */
-                if (!comboBox_memory.Items.Contains(location.ToString()))
-                {
-                    comboBox_memory.Items.Insert(comboBox_memory.Items.Count - 1, location.ToString());
+                    comboBox.Items.Insert(comboBox.Items.Count - 1, dialog.name);
+                    comboBox.SelectedItem = dialog.name;
                 }
             }
         }
-        
-        public void populateindexlists()
+
+        private void ComboBox_storageGroup_Add(object sender, EventArgs e)
         {
+            ComboBox comboBox = (ComboBox)sender;
 
-            if (eds == null)
-                return;
-
-            doUpdateDeviceInfo();
-            doUpdatePDOs();
-
-            /* save scroll positions */
-            int listview_mandatory_position = 0;
-            int listview_manufacture_position = 0;
-            int listview_optional_position = 0;
-
-            if (listView_mandatory_objects.TopItem != null)
-                listview_mandatory_position = listView_mandatory_objects.TopItem.Index;
-            if (listView_manufacture_objects.TopItem != null)
-                listview_manufacture_position = listView_manufacture_objects.TopItem.Index;
-            if (listView_optional_objects.TopItem != null)
-                listview_optional_position = listView_optional_objects.TopItem.Index;
-
-            /* prevent flickering */
-            listView_mandatory_objects.BeginUpdate();
-            listView_manufacture_objects.BeginUpdate();
-            listView_optional_objects.BeginUpdate();
-
-            listView_mandatory_objects.Items.Clear();
-            listView_manufacture_objects.Items.Clear();
-            listView_optional_objects.Items.Clear();
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            if (comboBox.SelectedItem!=null && comboBox.SelectedItem.ToString() == "Add...")
             {
-
-
-                UInt16 index = kvp.Value.Index;
-                ListViewItem lvi = new ListViewItem(string.Format("0x{0:x4}", kvp.Value.Index));
-                lvi.SubItems.Add(kvp.Value.parameter_name);
-                lvi.Tag = kvp.Value;
-                if (selectedobject != null)
-                    if (index == selectedobject.Index)
-                        lvi.Selected = true;
-
-                if (kvp.Value.Disabled == true)
-                    lvi.ForeColor = Color.LightGray;
-
-                if (index == 0x1000 || index == 0x1001 || index == 0x1018)
+                NewItem dialog = new NewItem("Add Storage Group");
+                if (dialog.ShowDialog() == DialogResult.OK && comboBox.FindStringExact(dialog.name) == -1)
                 {
-                    listView_mandatory_objects.Items.Add(lvi);
-                }
-                else if (index >= 0x2000 && index < 0x6000)
-                {
-                    listView_manufacture_objects.Items.Add(lvi);
-                }
-                else
-                {
-                    listView_optional_objects.Items.Add(lvi);
-                }
-
-            }
-
-
-          
-            foreach (libEDSsharp.Module m in eds.modules.Values)
-            {
-                foreach (KeyValuePair<UInt16, ODentry> kvp in m.modulesubext)
-                {
-
-                
-                    UInt16 index = kvp.Value.Index;
-                    ListViewItem lvi = new ListViewItem(string.Format("({0}) 0x{1:x4}", m.moduleindex,kvp.Value.Index));
-                    lvi.SubItems.Add(kvp.Value.parameter_name);
-                    lvi.Tag = kvp.Value;
-                    if (selectedobject != null)
-                        if (index == selectedobject.Index)
-                            lvi.Selected = true;
-
-                    lvi.ForeColor = Color.Blue;
-
-                    if (index >= 0x2000 && index < 0x6000)
-                    {
-                        listView_manufacture_objects.Items.Add(lvi);
-                    }
-                    else
-                    {
-                        listView_optional_objects.Items.Add(lvi);
-                    }
-
+                    comboBox.Items.Insert(comboBox.Items.Count - 1, dialog.name);
+                    comboBox.SelectedItem = dialog.name;
+                    /* add new dialog location to eds back end */
+                    eds.CO_storageGroups.Add(dialog.name);
                 }
             }
-
-
-
-
-            listView_mandatory_objects.EndUpdate();
-            listView_manufacture_objects.EndUpdate();
-            listView_optional_objects.EndUpdate();
-
-            /* reset scroll position and selection */
-            if (listview_mandatory_position != 0 && listView_mandatory_objects.Items.Count > 0)
-                listView_mandatory_objects.TopItem = listView_mandatory_objects.Items[listview_mandatory_position];
-            if (listview_manufacture_position != 0 && listView_manufacture_objects.Items.Count > 0)
-                listView_manufacture_objects.TopItem = listView_manufacture_objects.Items[listview_manufacture_position];
-            if (listview_optional_position != 0 && listView_optional_objects.Items.Count > 0)
-                listView_optional_objects.TopItem = listView_optional_objects.Items[listview_optional_position];
-
-
         }
 
-        private void addNewObjectFromDialog()
+        private void ContextMenu_object_clone_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewIndex ni = new NewIndex(eds);
+            var srcObjects = new SortedDictionary<UInt16, ODentry>();
+            foreach (ListViewItem item in selectedList.SelectedItems)
+            {
+                ODentry od = (ODentry)item.Tag;
+                srcObjects.Add(od.Index, od);
+            }
+
+            if (srcObjects.Count > 0)
+            {
+                InsertObjects insObjForm = new InsertObjects(eds, srcObjects, "1");
+
+                if (insObjForm.ShowDialog() == DialogResult.OK)
+                {
+                    selectedObject = null;
+                    eds.Dirty = true;
+                    PopulateObjectLists(eds);
+                    PopulateSubList();
+                    PopulateObject();
+                }
+            }
+        }
+
+        private void ContextMenu_object_add_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewIndex ni = new NewIndex(eds, (UInt16)(selectedObject == null ? 0x2000 : selectedObject.Index + 1));
 
             if (ni.ShowDialog() == DialogResult.OK)
             {
-
+                selectedObject = ni.od;
                 eds.Dirty = true;
-
-                ODentry od = new ODentry();
-
-                od.objecttype = ni.ot;
-                od.Index = ni.index;
-                od.StorageLocation = "RAM";
-                od.defaultvalue = "";
-                od.accesstype = EDSsharp.AccessType.rw;
-                od.datatype = ni.dt;
-                od.parameter_name = ni.name;
-
-                if (od.objecttype == ObjectType.REC || od.objecttype == ObjectType.ARRAY)
-                {
-                    {
-                        ODentry sod = new ODentry();
-
-                        sod.objecttype = ObjectType.VAR;
-                        sod.parent = od;
-                        sod.StorageLocation = "RAM";
-                        sod.defaultvalue = String.Format("{0}", ni.nosubindexes);
-                        sod.accesstype = EDSsharp.AccessType.ro;
-                        sod.datatype = DataType.UNSIGNED8;
-
-                        sod.parameter_name = "max sub-index";
-
-
-                        od.subobjects.Add(0, sod);
-                    }
-
-                    for (int p = 0; p < ni.nosubindexes; p++)
-                    {
-                        ODentry sod = new ODentry();
-
-                        sod.objecttype = ObjectType.VAR;
-                        sod.parent = od;
-                        sod.StorageLocation = "RAM";
-                        sod.defaultvalue = "";
-                        sod.accesstype = EDSsharp.AccessType.rw;
-                        sod.datatype = ni.dt;
-
-                        od.subobjects.Add((ushort)(p + 1), sod);
-                    }
-
-                }
-
-                eds.ods.Add(od.Index, od);
-
-                //Now switch to it as well Bug #26
-
-                updateselectedindexdisplay(od.Index, currentmodule);
-                selectedobject = eds.ods[od.Index];
-                validateanddisplaydata();
-
-
-                populateindexlists();
+                PopulateObjectLists(eds);
+                PopulateSubList();
+                PopulateObject();
             }
         }
 
-        private void addNewObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ContextMenu_object_delete_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            addNewObjectFromDialog();
-        }
-
-        private void disableSelectedObjects(ListView objectList)
-        {
-            ListView.SelectedListViewItemCollection selectedItems = objectList.SelectedItems;
+            ListView.SelectedListViewItemCollection selectedItems = selectedList.SelectedItems;
             if (selectedItems.Count > 0)
             {
-                foreach (ListViewItem item in selectedItems)
-                {
-                    ODentry od = (ODentry)item.Tag;
-
-                    eds.Dirty = true;
-                    od.Disabled = !od.Disabled;
-                    populateindexlists();
-                }
-
-                
-            }
-        }
-
-        private void deleteSelectedObjects(ListView objectList)
-        {
-            ListView.SelectedListViewItemCollection selectedItems = objectList.SelectedItems;
-            if (selectedItems.Count > 0)
-            {
-                DialogResult confirmDelete;
-
-                if(selectedItems.Count == 1)
-                {
-                    confirmDelete = MessageBox.Show("Do you really want to delete the selected item?", "Are you sure?", MessageBoxButtons.YesNo);
-                }
-                else
-                {
-                    confirmDelete = MessageBox.Show(string.Format("Do you really want to delete the selected {0} items?", selectedItems.Count), "Are you sure?", MessageBoxButtons.YesNo);
-                }
+                DialogResult confirmDelete = MessageBox.Show(string.Format("Do you really want to delete the selected {0} items?", selectedItems.Count), "Are you sure?", MessageBoxButtons.YesNo);
 
                 if (confirmDelete == DialogResult.Yes)
                 {
-
-
                     foreach (ListViewItem item in selectedItems)
                     {
-                        selecteditem = item;
                         ODentry od = (ODentry)item.Tag;
-
-                        //Check object is not used in a PDO before deleting
-
-
-                        for (UInt16 idx = 0x1600; idx < 0x1a00 + 0x01ff; idx++)
-                        {
-
-                            //Cheat as we want to only map 1600-17FF and 1a00-1bff
-                            if (idx == 0x1800)
-                                idx = 0x1a00;
-
-                            if (eds.ods.ContainsKey(idx))
-                            {
-                                ODentry pdood = eds.ods[idx];
-                                for (byte subno = 1; subno < pdood.Nosubindexes; subno++)
-                                {
-                                    try
-                                    {
-                                        UInt16 odindex = Convert.ToUInt16(pdood.subobjects[subno].defaultvalue.Substring(0, 4), 16);
-                                        if (odindex == od.Index)
-                                        {
-                                            MessageBox.Show(string.Format("Cannot delete OD entry it is mapped in PDO {0:4x}", pdood.Index));
-                                            return;
-                                        }
-                                    }
-                                    catch (Exception)
-                                    {
-                                        //Failed to parse the PDO
-                                    }
-                                }
-
-                                eds.Dirty = true;
-                                if (currentmodule == 0)
-                                {
-                                    eds.ods.Remove(od.Index);
-                                }
-
-                                populateindexlists();
-                            }
-                        }
+                        eds.ods.Remove(od.Index);
                     }
+
+                    eds.Dirty = true;
+                    selectedObject = null;
+                    PopulateObjectLists(eds);
+                    PopulateSubList();
+                    PopulateObject();
                 }
             }
         }
 
-        private void deleteObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ContextMenu_object_toggle_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deleteSelectedObjects(selectedList);
-        }
+            ListView.SelectedListViewItemCollection selectedItems = selectedList.SelectedItems;
 
-        private void deleteSelectedIndexes(ListView objectList, bool shiftUp)
-        {
-            ListView.SelectedListViewItemCollection selectedItems = objectList.SelectedItems;
-            if (selectedItems.Count > 0)
+            justUpdating = true;
+            foreach (ListViewItem item in selectedItems)
             {
-                if (shiftUp == false)
-                {
-                    foreach (ListViewItem item in selectedItems)
-                    {
-                        if (item.Tag != null)
-                        {
-                            ODentry od = (ODentry)item.Tag;
-                            if (od.parent != null)
-                                od = od.parent;
+                ODentry od = (ODentry)item.Tag;
 
-                            if (od.objecttype == ObjectType.ARRAY)
-                            {
-                                ODentry newsub = new ODentry();
-                                newsub.parent = od;
-                                newsub.datatype = od.datatype;
-                                newsub.accesstype = od.accesstype;
-                                newsub.PDOtype = od.PDOtype;
-                                newsub.objecttype = ObjectType.VAR;
-                                od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
-
-                                UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
-
-                                def++;
-                                od.subobjects[0].defaultvalue = def.ToString();
-
-
-                            }
-
-                            if (od.objecttype == ObjectType.REC)
-                            {
-                                DataType dt = od.datatype;
-
-                                NewIndex ni = new NewIndex(eds, dt, od.objecttype, od);
-
-                                if (ni.ShowDialog() == DialogResult.OK)
-                                {
-                                    ODentry newsub = new ODentry();
-                                    newsub.parent = od;
-                                    newsub.datatype = ni.dt;
-                                    newsub.accesstype = od.accesstype;
-                                    newsub.PDOtype = od.PDOtype;
-                                    newsub.objecttype = ObjectType.VAR;
-                                    newsub.parameter_name = ni.name;
-
-                                    od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
-
-                                    UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
-                                    def++;
-                                    od.subobjects[0].defaultvalue = def.ToString();
-                                }
-                            }
-
-                            eds.Dirty = true;
-                            updateselectedindexdisplay(selectedobject.Index, currentmodule);
-                            validateanddisplaydata();
-
-                        }
-
-                    }
-                }
-                else
-                {
-                    foreach (ListViewItem item in selectedItems)
-                    {
-                        if (item.Tag != null)
-                        {
-                            ODentry od = (ODentry)item.Tag;
-
-                            if (od.parent.objecttype == ObjectType.ARRAY || od.parent.objecttype == ObjectType.REC)
-                            {
-                                UInt16 count = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
-                                if (count > 0)
-                                    count--;
-                                od.parent.subobjects[0].defaultvalue = count.ToString();
-                            }
-
-                            bool success = od.parent.subobjects.Remove(od.Subindex);
-
-                            
-                            UInt16 countx = 0;
-
-                            SortedDictionary<UInt16, ODentry> newlist = new SortedDictionary<ushort, ODentry>();
-
-                            foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
-                            {
-                                ODentry sub = kvp.Value;
-                                newlist.Add(countx, sub);
-                                countx++;
-                            }
-
-                            od.parent.subobjects = newlist;
-                            
-
-                            eds.Dirty = true;
-                            updateselectedindexdisplay(selectedobject.Index, currentmodule);
-                            validateanddisplaydata();
-                        }
-                    }
-                }
+                od.prop.CO_disabled = !od.prop.CO_disabled;
             }
+            justUpdating = false;
+            eds.Dirty = true;
+            PopulateObjectLists(eds);
+            PopulateObject();
         }
 
-        private void disableObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ContextMenu_subObject_add_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            disableSelectedObjects(selectedList);
-        }
+            ListView.SelectedListViewItemCollection selectedItems = listView_subObjects.SelectedItems;
 
-        private void addNewSubItemFromDialog()
-        {
-            if (selecteditemsub.Tag != null)
+            ODentry newOd = null;
+
+            foreach (ListViewItem item in selectedItems)
             {
-                ODentry od = (ODentry)selecteditemsub.Tag;
+                ODentry od = (ODentry)item.Tag;
+                newOd = od.AddSubEntry();
+            }
 
-                if (od.parent != null)
-                    od = od.parent;
+            eds.Dirty = true;
+            selectedObject = newOd;
+            PopulateSubList();
+            PopulateObject();
+        }
 
-                if (od.objecttype == ObjectType.ARRAY)
-                {
-                    ODentry newsub = new ODentry();
-                    newsub.parent = od;
-                    newsub.datatype = od.datatype;
-                    newsub.accesstype = od.accesstype;
-                    newsub.PDOtype = od.PDOtype;
-                    newsub.objecttype = ObjectType.VAR;
-                    od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
+        private void ContextMenu_subObject_remove_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItems = listView_subObjects.SelectedItems;
+            bool renumber = sender == contextMenu_subObject_removeSubItemToolStripMenuItem;
+            bool update = false;
 
-                    UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
+            foreach (ListViewItem item in selectedItems)
+            {
+                ODentry od = (ODentry)item.Tag;
+                od.RemoveSubEntry(renumber);
+                update = true;
+            }
 
-                    def++;
-                    od.subobjects[0].defaultvalue = def.ToString();
-
-
-                }
-
-                if (od.objecttype == ObjectType.REC)
-                {
-                    DataType dt = od.datatype;
-
-                    NewIndex ni = new NewIndex(eds, dt, od.objecttype, od);
-
-                    if (ni.ShowDialog() == DialogResult.OK)
-                    {
-                        ODentry newsub = new ODentry();
-                        newsub.parent = od;
-                        newsub.datatype = ni.dt;
-                        newsub.accesstype = od.accesstype;
-                        newsub.PDOtype = od.PDOtype;
-                        newsub.objecttype = ObjectType.VAR;
-                        newsub.parameter_name = ni.name;
-
-                        od.subobjects.Add((UInt16)(od.subobjects.Count), newsub);
-
-                        UInt16 def = EDSsharp.ConvertToUInt16(od.subobjects[0].defaultvalue);
-                        def++;
-                        od.subobjects[0].defaultvalue = def.ToString();
-                    }
-                }
-
+            if (update)
+            {
                 eds.Dirty = true;
-                updateselectedindexdisplay(selectedobject.Index, currentmodule);
-                validateanddisplaydata();
-
+                selectedObject = selectedObject.parent;
+                PopulateSubList();
+                PopulateObject();
             }
-        }
-
-        private void addSubItemToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            addNewSubItemFromDialog();
-        }
-
-        private void removeSubItemToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //deleteSelectedIndexes(selectedList, true);
-            if (selecteditemsub.Tag != null)
-            {
-                ODentry od = (ODentry)selecteditemsub.Tag;
-
-                if (od.parent.objecttype == ObjectType.ARRAY || od.parent.objecttype == ObjectType.REC)
-                {
-                    UInt16 count = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
-                    if (count > 0)
-                        count--;
-                    od.parent.subobjects[0].defaultvalue = count.ToString();
-                }
-
-                bool success = od.parent.subobjects.Remove(od.Subindex);
-
-                UInt16 countx = 0;
-
-                SortedDictionary<UInt16, ODentry> newlist = new SortedDictionary<ushort, ODentry>();
-
-                foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
-                {
-                    ODentry sub = kvp.Value;
-                    newlist.Add(countx, sub);
-                    countx++;
-                }
-
-                od.parent.subobjects = newlist;
-
-                eds.Dirty = true;
-                updateselectedindexdisplay(selectedobject.Index, currentmodule);
-                validateanddisplaydata();
-            }
-        }
-
-        private void listView_optional_objects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            list_mouseclick(listView_optional_objects, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
-        }
-
-        private void listView_mandatory_objects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            list_mouseclick(listView_mandatory_objects, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
-        }
-
-        private void listView_manufacture_objects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            list_mouseclick(listView_manufacture_objects, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
-        }
-
-        private void changeMaxSubIndexToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //Change the max subindex, it is allowed to have a different max subindex to the physical array size
-            //as depending on implementation it might not be a simple array behind the scenes. Even 0x1010,0x1011 
-            //do this on their implementation in CANopenNode
-
-            if (selecteditemsub.Tag != null)
-            {
-                ODentry od = (ODentry)selecteditemsub.Tag;
-
-                if (od.parent.objecttype == ObjectType.ARRAY && od.Subindex==0)
-                {
-                    MaxSubIndexFrm frm = new MaxSubIndexFrm(od.Nosubindexes);
-
-                    if(frm.ShowDialog()==DialogResult.OK)
-                    {
-                        od.defaultvalue = string.Format("0x{0:x2}",frm.maxsubindex);
-                        updateselectedindexdisplay(selectedobject.Index, currentmodule);
-                        validateanddisplaydata();
-                    }
-                }
-            }
-
-
-            
-        }
-
-        private void listViewDetails_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-            if (listViewDetails.SelectedItems.Count == 0)
-                return;
-
-            if (checkdirty())
-                return;
-
-            ListViewItem lvi = listViewDetails.SelectedItems[0];
-
-            selecteditemsub = lvi;
-            selectedobject = (ODentry)lvi.Tag;
-            validateanddisplaydata();
-        }
-
-        private bool checkdirty()
-        {
-
-            if (button_save_changes.BackColor == Color.Red)
-            {
-                if (button_save_changes.BackColor == Color.Red)
-                {
-                    if (MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:x4}/{1:x2}\nDo you wish to change objects and loose your changes", lastselectedobject.Index, lastselectedobject.Subindex), "Unsaved changes",MessageBoxButtons.YesNo) == DialogResult.No)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        button_save_changes.BackColor = default(Color);
-                    }
-
-                }
-            }
-
-            return false;
-        }
-
-        private void comboBox_memory_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (comboBox_memory.SelectedItem!=null && comboBox_memory.SelectedItem.ToString() == "Add...")
-            {
-                NewMemoryType memory = new NewMemoryType();
-                if (memory.ShowDialog() == DialogResult.OK)
-                {
-                    if (comboBox_memory.FindStringExact(memory.name) == -1)
-                    {
-                        /* add string to the second to last position (before "add...") */
-                        comboBox_memory.Items.Insert(comboBox_memory.Items.Count - 1, memory.name);
-                        /* add new memory location to eds back end */
-                        eds.storageLocation.Add(memory.name);
-                    }
-                }
-            }
-        }
-
-        private ODentry getOD(UInt16 index, UInt16 selectedmodule)
-        {
-            if (selectedmodule == 0)
-            {
-                if (eds.ods.ContainsKey(index))
-                {
-                    return eds.ods[index];
-                }
-            }
-            else
-            {
-
-                if (eds.modules.ContainsKey(selectedmodule))
-                {
-                    return eds.modules[selectedmodule].modulesubext[index];
-                }
-  
-            }
-
-            return null; ;
-
-        }
-
-        private void removeSubItemleaveGapToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //deleteSelectedIndexes(selectedList, false);
-            if (selecteditemsub.Tag != null)
-            {
-                ODentry od = (ODentry)selecteditemsub.Tag;
-
-                if (od.parent.objecttype == ObjectType.ARRAY || od.parent.objecttype == ObjectType.REC)
-                {
-                    UInt16 count = EDSsharp.ConvertToUInt16(od.parent.subobjects[0].defaultvalue);
-                    if (count > 0)
-                        count--;
-                    od.parent.subobjects[0].defaultvalue = count.ToString();
-                }
-
-                bool success = od.parent.subobjects.Remove(od.Subindex);
-
-                /*
-                UInt16 countx = 0;
-                SortedDictionary<UInt16, ODentry> newlist = new SortedDictionary<ushort, ODentry>();
-                foreach (KeyValuePair<UInt16, ODentry> kvp in od.parent.subobjects)
-                {
-                    ODentry sub = kvp.Value;
-                    newlist.Add(countx, sub);
-                    countx++;
-                }
-                
-                od.parent.subobjects = newlist;
-                */
-
-                eds.Dirty = true;
-                updateselectedindexdisplay(selectedobject.Index, currentmodule);
-                validateanddisplaydata();
-            }
-
-
-        }
-
-        private void selectAllItemsInList(ListView selectedList)
-        {
-            foreach(ListViewItem item in selectedList.Items)
-            {
-                item.Selected = true;
-            }
-        }
-
-        private void listView_KeyDown_Handler(ListView selectedList, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-
-                case (Keys.Delete):
-                    deleteSelectedObjects(selectedList);
-                    break;
-                case (Keys.A):
-                    if (e.Modifiers == Keys.Control)
-                    {
-                        selectAllItemsInList(selectedList);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        //specialized KeyDown event handler for the object dictionary lists. 
-        //Usage: call this function before the general list KeyDown handler. If this function returns true, the keydown event was handled and the generic one should not be called (this allows default behavior to be overridden)
-        private bool listView_Objects_KeyDown_Handler(ListView selectedList, KeyEventArgs e)
-        {
-            bool keyDownHandled = false;
-            switch (e.KeyCode)
-            {
-                case (Keys.N):
-                    if (e.Modifiers == (Keys.Control | Keys.Shift))
-                    {
-                        keyDownHandled = true;
-                        addNewObjectFromDialog();
-                    }
-                    break;
-                default:
-                    break;
-            }
-            return keyDownHandled;
-        }
-
-        private bool listView_Subindexes_KeyDown_Handler(ListView selectedList, KeyEventArgs e)
-        {
-            bool keyDownHandled = false;
-            switch (e.KeyCode)
-            {
-                case (Keys.N):
-                    if (e.Modifiers == (Keys.Control | Keys.Shift))
-                    {
-                        keyDownHandled = true;
-                        addNewSubItemFromDialog();
-                    }
-                    break;
-                default:
-                    break;
-            }
-            return keyDownHandled;
-        }
-
-        private void listView_manufacture_objects_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(listView_Objects_KeyDown_Handler(listView_manufacture_objects, e) == false)
-            {
-                listView_KeyDown_Handler(listView_manufacture_objects, e);
-            }
-            
-        }
-
-        private void listView_optional_objects_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (listView_Objects_KeyDown_Handler(listView_optional_objects, e) == false)
-            {
-                listView_KeyDown_Handler(listView_optional_objects, e);
-            }
-        }
-
-        private void listView_mandatory_objects_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode != Keys.Delete)
-            {
-                listView_KeyDown_Handler(listView_mandatory_objects, e);
-            }
-        }
-
-        private void listViewDetails_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (listView_Subindexes_KeyDown_Handler(listView_optional_objects, e) == false)
-            {
-                listView_KeyDown_Handler(listView_optional_objects, e);
-            }
-        }
-
-        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            selectAllItemsInList(selectedList);
         }
     }
 
@@ -1511,7 +717,4 @@ namespace ODEditor
             method.Invoke(control, new object[] { ControlStyles.OptimizedDoubleBuffer, enable });
         }
     }
-
-  
-
 }

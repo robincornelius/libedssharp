@@ -86,12 +86,6 @@
     <Compile Include="DeviceODView.Designer.cs">
       <DependentUpon>DeviceODView.cs</DependentUpon>
     </Compile>
-    <Compile Include="DevicePDOView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DevicePDOView.Designer.cs">
-      <DependentUpon>DevicePDOView.cs</DependentUpon>
-    </Compile>
     <Compile Include="DevicePDOView2.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -113,12 +107,6 @@
     <Compile Include="ListViewEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="MaxSubIndexFrm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MaxSubIndexFrm.Designer.cs">
-      <DependentUpon>MaxSubIndexFrm.cs</DependentUpon>
-    </Compile>
     <Compile Include="ModuleInfo.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -128,17 +116,23 @@
     <Compile Include="MyTabUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="InsertObjects.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InsertObjects.Designer.cs">
+      <DependentUpon>InsertObjects.cs</DependentUpon>
+    </Compile>
     <Compile Include="NewIndex.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="NewIndex.Designer.cs">
       <DependentUpon>NewIndex.cs</DependentUpon>
     </Compile>
-    <Compile Include="NewMemoryType.cs">
+    <Compile Include="NewItem.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NewMemoryType.Designer.cs">
-      <DependentUpon>NewMemoryType.cs</DependentUpon>
+    <Compile Include="NewItem.Designer.cs">
+      <DependentUpon>NewItem.cs</DependentUpon>
     </Compile>
     <Compile Include="Preferences.cs">
       <SubType>Form</SubType>
@@ -169,9 +163,6 @@
     <EmbeddedResource Include="DeviceODView.resx">
       <DependentUpon>DeviceODView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DevicePDOView.resx">
-      <DependentUpon>DevicePDOView.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="DevicePDOView2.resx">
       <DependentUpon>DevicePDOView2.cs</DependentUpon>
     </EmbeddedResource>
@@ -181,20 +172,20 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MaxSubIndexFrm.resx">
-      <DependentUpon>MaxSubIndexFrm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ModuleInfo.resx">
       <DependentUpon>ModuleInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MyTabUserControl.resx">
       <DependentUpon>MyTabUserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="InsertObjects.resx">
+      <DependentUpon>InsertObjects.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="NewIndex.resx">
       <DependentUpon>NewIndex.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NewMemoryType.resx">
-      <DependentUpon>NewMemoryType.cs</DependentUpon>
+    <EmbeddedResource Include="NewItem.resx">
+      <DependentUpon>NewItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Preferences.resx">
       <DependentUpon>Preferences.cs</DependentUpon>
@@ -217,6 +208,9 @@
     </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="packages.config" />
+    <None Include="Profiles\DS301_profile.xpd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -250,7 +244,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Index_8287_16x.ico" />
-    <Content Include="Profiles\DS301_profile.xml">
+    <Content Include="Profiles\DS301_profile_old.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Profiles\DSP302-NMTMaster.xml">

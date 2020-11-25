@@ -22,10 +22,10 @@ namespace Tests
                 datatype = DataType.UNSIGNED8,
                 parameter_name = "Test VAR",
                 accesstype = EDSsharp.AccessType.ro,
-                TPDODetectCos = true,
                 PDOtype = PDOMappingType.optional,
                 Index = 0x2000
             };
+            od.prop.CO_flagsPDO = true;
 
             eds.ods.Add(0x2000, od);
 
@@ -37,7 +37,7 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.TPDODetectCos == false)
+            if (od.prop.CO_flagsPDO == false)
                 throw new Exception("TPDODetect not set in EDS for VAR");
 
             if (od.PDOtype != PDOMappingType.optional)
@@ -81,7 +81,7 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.PDOtype = PDOMappingType.optional;
             sub.objecttype = ObjectType.VAR;
-            sub.TPDODetectCos = true;
+            sub.prop.CO_flagsPDO = true;
 
             od.subobjects.Add(0x01, sub);
 
@@ -95,7 +95,7 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.subobjects[1].TPDODetectCos == false)
+            if (od.subobjects[1].prop.CO_flagsPDO == false)
                 throw new Exception("TPDODetect not set in EDS for REC");
 
             if (od.subobjects[1].PDOtype != PDOMappingType.optional)
@@ -147,7 +147,7 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.objecttype = ObjectType.VAR;
             sub.PDOtype = PDOMappingType.optional;
-            sub.TPDODetectCos = true;
+            sub.prop.CO_flagsPDO = true;
    
             od.subobjects.Add(0x01, sub);
  
@@ -159,7 +159,7 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.objecttype = ObjectType.VAR;
             sub.PDOtype = PDOMappingType.optional;
-            sub.TPDODetectCos = true;
+            sub.prop.CO_flagsPDO = true;
    
             od.subobjects.Add(0x02, sub);
 
@@ -173,7 +173,7 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.subobjects[1].TPDODetectCos == false)
+            if (od.subobjects[1].prop.CO_flagsPDO == false)
                 throw new Exception("TPDODetect not set in EDS for ARRAY");
 
             if (od.subobjects[1].PDOtype != PDOMappingType.optional)

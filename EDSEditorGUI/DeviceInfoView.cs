@@ -18,15 +18,9 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using libEDSsharp;
+using System.IO;
 
 namespace ODEditor
 {
@@ -45,25 +39,16 @@ namespace ODEditor
                 return;
 
             textBox_productname.Text = eds.di.ProductName;
-            textBox_productnumber.Text = eds.di.ProductNumber.ToString();
+            textBox_productnumber.Text = eds.di.ProductNumber;
             textBox_vendorname.Text = eds.di.VendorName;
-            textBox_vendornumber.Text = eds.di.VendorNumber.ToString();
+            textBox_vendornumber.Text = eds.di.VendorNumber;
 
-            textBox_fileversion.Text = eds.fi.EDSVersion;
-            textBox_modified_datetime.Text = eds.fi.ModificationDateTime.ToLongDateString();
-            textBox_modifiedby.Text = eds.fi.ModifiedBy;
-
-            textBox_filerevision.Text = eds.fi.FileRevision.ToString();
-            textBox_fileversion.Text = eds.fi.FileVersion.ToString();
-
-            textBox_createdby.Text = eds.fi.CreatedBy;
-            textBox_create_datetime.Text = eds.fi.CreationDateTime.ToString();
-
+            textBox_fileversion.Text = eds.fi.FileVersion;
             textBox_di_description.Text = eds.fi.Description;
-
-            textBox_edsversionm.Text = eds.fi.EDSVersion;
-
-            //textBox_fileversion.Text = eds.di
+            textBox_create_datetime.Text = eds.fi.CreationDateTime.ToString();
+            textBox_createdby.Text = eds.fi.CreatedBy;
+            textBox_modified_datetime.Text = eds.fi.ModificationDateTime.ToString();
+            textBox_modifiedby.Text = eds.fi.ModifiedBy;
 
             checkBox_baud_10.Checked = eds.di.BaudRate_10;
             heckBox_baud_20.Checked = eds.di.BaudRate_20;
@@ -73,52 +58,30 @@ namespace ODEditor
             heckBox_baud_500.Checked = eds.di.BaudRate_500;
             heckBox_baud_800.Checked = eds.di.BaudRate_800;
             heckBox_baud_1000.Checked = eds.di.BaudRate_1000;
+            checkBox_baud_auto.Checked = eds.di.BaudRate_auto;
 
-            checkBox_boot_master.Checked = eds.di.SimpleBootUpMaster;
-            checkBox_bootslave.Checked = eds.di.SimpleBootUpSlave;
-            textBox_compactPDO.Text = eds.di.CompactPDO.ToString();
-            checkBox_group_msg.Checked = eds.di.GroupMessaging;
-            checkBox_dynamicchan.Checked = eds.di.DynamicChannelsSupported;
-            checkBox_lss.Checked = eds.di.LSS_Supported;
-            if (eds.di.LSS_Type == "Client")
-            {
-                comboBox_lss.SelectedItem = "Client";
-            }
-            else
-            {
-                comboBox_lss.SelectedItem = "Server";
-            }
-            textBox_Gran.Text = eds.di.Granularity.ToString();
-
+            textBox_granularity.Text = eds.di.Granularity.ToString();
             textBox_rxpdos.Text = eds.di.NrOfRXPDO.ToString();
             textBox_txpdos.Text = eds.di.NrOfTXPDO.ToString();
+            checkBox_lss.Checked = eds.di.LSS_Supported;
+            checkBox_lssMaster.Checked = eds.di.LSS_Master;
 
-            if (eds.dc.NodeId == 0)
-            {
-                textBox_concretenodeid.Text = "";
-            }
+            textBox_projectFileName.Text = Path.GetFileName(eds.projectFilename);
+            if (eds.xddfilename_1_1 != "")
+                textBox_projectFileVersion.Text = "v1.1";
+            else if (eds.xddfilename_1_0 != "" && eds.xddfilename_1_0 == eds.projectFilename)
+                textBox_projectFileVersion.Text = "v1.0";
             else
-            {
-                textBox_concretenodeid.Text = eds.dc.NodeId.ToString();
-            }
-
-
-            if(eds.edsfilename!=null)
-                textBox_deviceedsname.Text = eds.edsfilename;
-
-            if (eds.dcffilename != null)
-                textBox_devicedcfname.Text = eds.dcffilename;
-
-            if (eds.xmlfilename != null)
-                textBox_devicefilename.Text = eds.xmlfilename;
-
-            if(eds.fi.exportFolder !=null)
-                textBox_exportfolder.Text = eds.fi.exportFolder;
-
+                textBox_projectFileVersion.Text = "";
+            textBox_deviceedsname.Text = Path.GetFileName(eds.edsfilename);
+            textBox_xddfilenameStripped.Text = Path.GetFileName(eds.xddfilenameStripped);
+            textBox_devicedcfname.Text = Path.GetFileName(eds.dcffilename);
+            textBox_canopennodeFileName.Text = Path.GetFileNameWithoutExtension(eds.ODfilename);
+            textBox_canopennodeFileVersion.Text = eds.ODfileVersion;
+            textBox_mdFileName.Text = Path.GetFileName(eds.mdfilename);
 
             //DCF support
-
-            if(eds.dc!=null)
+            if (eds.dc!=null)
             {
                 textBox_concretenodeid.Text = eds.dc.NodeId.ToString();
                 textBox_nodename.Text = eds.dc.NodeName;
@@ -126,11 +89,7 @@ namespace ODEditor
                 textBox_netnum.Text = eds.dc.NetNumber.ToString();
                 checkBox_canopenmanager.Checked = eds.dc.CANopenManager;
                 textBox_lssserial.Text = eds.dc.LSS_SerialNumber.ToString();
-
             }
-
-
-
         }
 
         private void button_update_devfile_info_Click(object sender, EventArgs e)
@@ -141,30 +100,15 @@ namespace ODEditor
             try
             {
                 eds.di.ProductName = textBox_productname.Text;
-                eds.di.ProductNumber = Convert.ToUInt32(textBox_productnumber.Text);
-
+                eds.di.ProductNumber = textBox_productnumber.Text;
                 eds.di.VendorName = textBox_vendorname.Text;
-                eds.di.VendorNumber = Convert.ToUInt32(textBox_vendornumber.Text);
+                eds.di.VendorNumber = textBox_vendornumber.Text;
 
-                eds.fi.EDSVersion = textBox_fileversion.Text;
-
-                eds.fi.ModificationDateTime = DateTime.Now;
-                textBox_modified_datetime.Text = DateTime.Now.ToString();
-
-                eds.fi.ModifiedBy = textBox_modifiedby.Text;
-
-                eds.fi.FileRevision = Convert.ToByte(textBox_filerevision.Text);
-
-                eds.fi.FileVersion = Convert.ToByte(textBox_fileversion.Text);
-
-
-                eds.fi.CreatedBy = textBox_createdby.Text;
-                eds.fi.CreationDateTime = DateTime.Parse(textBox_create_datetime.Text);
-
+                eds.fi.FileVersion = textBox_fileversion.Text;
                 eds.fi.Description = textBox_di_description.Text;
-
-                eds.fi.EDSVersion = textBox_edsversionm.Text;
-
+                eds.fi.CreationDateTime = DateTime.Parse(textBox_create_datetime.Text);
+                eds.fi.CreatedBy = textBox_createdby.Text;
+                eds.fi.ModifiedBy = textBox_modifiedby.Text;
 
                 eds.di.BaudRate_10 = checkBox_baud_10.Checked;
                 eds.di.BaudRate_20 = heckBox_baud_20.Checked;
@@ -174,22 +118,11 @@ namespace ODEditor
                 eds.di.BaudRate_500 = heckBox_baud_500.Checked;
                 eds.di.BaudRate_800 = heckBox_baud_800.Checked;
                 eds.di.BaudRate_1000 = heckBox_baud_1000.Checked;
+                eds.di.BaudRate_auto = checkBox_baud_auto.Checked;
 
-                eds.di.SimpleBootUpMaster = checkBox_boot_master.Checked;
-                eds.di.SimpleBootUpSlave = checkBox_bootslave.Checked;
-
-                eds.di.GroupMessaging = checkBox_group_msg.Checked;
-                eds.di.DynamicChannelsSupported = checkBox_dynamicchan.Checked;
+                eds.di.Granularity = Convert.ToByte(textBox_granularity.Text);
                 eds.di.LSS_Supported = checkBox_lss.Checked;
-                eds.di.LSS_Type = comboBox_lss.SelectedItem.ToString();
-                eds.di.Granularity = Convert.ToByte(textBox_Gran.Text);
-
-                eds.dc.NodeId = 0;
-                if (textBox_concretenodeid.Text != "")
-                {
-                    eds.dc.NodeId = Convert.ToByte(textBox_concretenodeid.Text);
-                }
-
+                eds.di.LSS_Master = checkBox_lssMaster.Checked;
 
                 doUpdatePDOs();
 
@@ -197,9 +130,7 @@ namespace ODEditor
                 //textBox_rxpdos.Text = eds.di.NrOfRXPDO.ToString();
                 //textBox_txpdos.Text = eds.di.NrOfTXPDO.ToString();
 
-
                 //DCF support
-
                 eds.dc.NodeId = Convert.ToByte(textBox_concretenodeid.Text);
                 eds.dc.NodeName = textBox_nodename.Text;
                 eds.dc.BaudRate = Convert.ToUInt16(textBox_baudrate.Text);
@@ -213,24 +144,6 @@ namespace ODEditor
             {
                 MessageBox.Show("Update failed, reason :-\n" + ex.ToString());
             }
-
-        }
-
-        private void checkBox_lss_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_lss.Checked)
-            {
-                comboBox_lss.Enabled = true;
-            }
-            else
-            {
-                comboBox_lss.Enabled = false;
-            }
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
         }
     }
 }

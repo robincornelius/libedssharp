@@ -15,13 +15,11 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
 
     Copyright(c) 2016 - 2020 Robin Cornelius <robin.cornelius@gmail.com>
-    based heavily on the files OD.h and OD.c from CANopenNode which is
-    Copyright(c) 2010 - 2020 Janez Paternoster
+    Copyright(c) 2020 Janez Paternoster
 */
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
@@ -29,7 +27,7 @@ using System.IO;
 namespace libEDSsharp
 {
     /// <summary>
-    /// Exporter for CanOpenNode_V3
+    /// Exporter for CanOpenNode_V4
     /// </summary>
     public class CanOpenNodeExporter_V4 : IExporter
     {
@@ -45,7 +43,7 @@ namespace libEDSsharp
         private List<string> ODList;
         private List<string> ODDefines;
         private List<string> ODDefinesLong;
-        private SortedDictionary<string, UInt16> ODCnt;
+        private Dictionary<string, UInt16> ODCnt;
 
         /// <summary>
         /// export the current data set in the CanOpen Node format V4
@@ -59,9 +57,9 @@ namespace libEDSsharp
         {
             this.odname = odname;
 
-            Prepare(eds.ods);
+            Prepare(eds);
 
-            Export_h(folderpath, filename, gitVersion, eds.fi, eds.di);
+            Export_h(folderpath, filename, gitVersion, eds);
             Export_c(folderpath, filename, gitVersion);
         }
 
@@ -70,7 +68,7 @@ namespace libEDSsharp
         /// Generate ODStorage, ODObjs, ODExts, ODList, ODDefines and ODCnt entries
         /// </summary>
         /// <param name="ods"></param>
-        private void Prepare(SortedDictionary<UInt16, ODentry> ods)
+        private void Prepare(EDSsharp eds)
         {
             ODStorageGroups = new List<string>();
             ODStorage_t = new Dictionary<string, List<string>>();
@@ -82,26 +80,23 @@ namespace libEDSsharp
             ODList = new List<string>();
             ODDefines = new List<string>();
             ODDefinesLong = new List<string>();
-            ODCnt = new SortedDictionary<string, UInt16>();
+            ODCnt = new Dictionary<string, UInt16>();
 
-            foreach (ODentry od in ods.Values)
+            List<string> mappingErrors = eds.VerifyPDOMapping();
+            if (mappingErrors.Count > 0)
+                Warnings.AddWarning($"Errors in PDO mappings:\r\n    " + string.Join("\r\n    ", mappingErrors), Warnings.warning_class.WARNING_BUILD);
+
+            foreach (ODentry od in eds.ods.Values)
             {
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
-                /* get data from eds */
                 string indexH = $"{od.Index:X4}";
                 string cName = Make_cname(od.parameter_name);
                 string varName = $"{indexH}_{cName}";
-                /* TODO get these from od, after available there */
-                var extIO = false;
-                var flagsPDO = false;
-                string countLabel = "ALL";
-                // UInt32 stringLength - implement this in Get_stringLength()
-                // var accessSRDO - implement this in Get_attributes()
 
-                /* verify extIO, this is absolutelly required for some objects. */
-                if (!extIO)
+                // verify CO_extensionIO, this is absolutelly required for some objects. */
+                if (!od.prop.CO_extensionIO)
                 {
                     switch (od.Index)
                     {
@@ -110,60 +105,59 @@ namespace libEDSsharp
                         case 0x1014:
                         case 0x1017:
                         case 0x1200:
-                            extIO = true;
-                            Warnings.AddWarning($"Error in 0x{indexH}: extIO must be enabled for this object!", Warnings.warning_class.WARNING_BUILD);
+                            od.prop.CO_extensionIO = true;
+                            Warnings.AddWarning($"Error in 0x{indexH}: 'Extension IO' must be enabled for this object!", Warnings.warning_class.WARNING_BUILD);
                             break;
                     }
                 }
 
-                /* storage group */
-                string group = od.StorageLocation;
-                if (ODStorageGroups.IndexOf(group) == -1)
+                // storage group
+                if (ODStorageGroups.IndexOf(od.prop.CO_storageGroup) == -1)
                 {
-                    ODStorageGroups.Add(group);
-                    ODStorage_t.Add(group, new List<string>());
-                    ODStorage.Add(group, new List<string>());
+                    ODStorageGroups.Add(od.prop.CO_storageGroup);
+                    ODStorage_t.Add(od.prop.CO_storageGroup, new List<string>());
+                    ODStorage.Add(od.prop.CO_storageGroup, new List<string>());
                 }
 
                 string odObjectType = "";
                 int subEntriesCount = 0;
 
-                /* ODStorage and ODObjs - object type specific */
+                // ODStorage and ODObjs - object type specific
                 switch (od.objecttype)
                 {
                     case ObjectType.VAR:
                         odObjectType = "VAR";
-                        subEntriesCount = Prepare_var(od, indexH, varName, group);
+                        subEntriesCount = Prepare_var(od, indexH, varName, od.prop.CO_storageGroup);
                         break;
 
                     case ObjectType.ARRAY:
                         odObjectType = "ARR";
-                        subEntriesCount = Prepare_arr(od, indexH, varName, group);
+                        subEntriesCount = Prepare_arr(od, indexH, varName, od.prop.CO_storageGroup);
                         break;
 
                     case ObjectType.REC:
                         odObjectType = "REC";
-                        subEntriesCount = Prepare_rec(od, indexH, varName, group);
+                        subEntriesCount = Prepare_rec(od, indexH, varName, od.prop.CO_storageGroup);
                         break;
                 }
 
                 if (subEntriesCount < 1)
                     continue;
 
-                /* extension */
-                if (extIO || flagsPDO)
+                // extension
+                if (od.prop.CO_extensionIO || od.prop.CO_flagsPDO)
                 {
                     string extIOAddr = "NULL";
                     string flagsPDOAddr = "NULL";
-                    if (extIO)
+                    if (od.prop.CO_extensionIO)
                     {
                         ODExts_t.Add($"OD_extensionIO_t xio_{varName};");
                         extIOAddr = $"&{odname}Exts.xio_{varName}";
                     }
-                    if (flagsPDO)
+                    if (od.prop.CO_flagsPDO)
                     {
                         ODExts_t.Add($"OD_flagsPDO_t flp_{varName}[{subEntriesCount}];");
-                        flagsPDOAddr = $"&{odname}_{group}.flp_{varName}[0]";
+                        flagsPDOAddr = $"&{odname}Exts.flp_{varName}[0]";
                     }
                     ODObjs_t.Add($"OD_obj_extended_t oE_{varName};");
                     ODObjs.Add($"    .oE_{varName} = {{");
@@ -173,21 +167,21 @@ namespace libEDSsharp
                     ODObjs.Add($"    }},");
                 }
 
-                /* defines */
+                // defines
                 ODDefines.Add($"#define {odname}_ENTRY_H{indexH} &{odname}.list[{ODList.Count}]");
                 ODDefinesLong.Add($"#define {odname}_ENTRY_H{varName} &{odname}.list[{ODList.Count}]");
 
-                /* object dictionary */
-                string E = (extIO || flagsPDO) ? "E" : "";
+                // object dictionary
+                string E = (od.prop.CO_extensionIO || od.prop.CO_flagsPDO) ? "E" : "";
                 ODList.Add($"{{0x{indexH}, 0x{subEntriesCount:X2}, ODT_{E}{odObjectType}, &{odname}Objs.o{E}_{varName}}}");
 
-                /* count labels */
-                if (countLabel != null && countLabel != "")
+                // count labels
+                if (od.prop.CO_countLabel != null && od.prop.CO_countLabel != "")
                 {
-                    if (ODCnt.ContainsKey(countLabel))
-                        ODCnt[countLabel]++;
+                    if (ODCnt.ContainsKey(od.prop.CO_countLabel))
+                        ODCnt[od.prop.CO_countLabel]++;
                     else
-                        ODCnt.Add(countLabel, 1);
+                        ODCnt.Add(od.prop.CO_countLabel, 1);
                 }
             }
         }
@@ -202,10 +196,10 @@ namespace libEDSsharp
         /// <returns></returns>
         private int Prepare_var(ODentry od, string indexH, string varName, string group)
         {
-            DataProperties data = Get_dataProperties(od.datatype, od.defaultvalue, Get_stringLength(od), indexH);
+            DataProperties data = Get_dataProperties(od.datatype, od.defaultvalue, od.prop.CO_stringLengthMin, indexH);
             string attr = Get_attributes(od, data.cTypeMultibyte);
 
-            /* data storage */
+            // data storage
             string dataPtr = "NULL";
             if (data.cValue != null)
             {
@@ -213,8 +207,12 @@ namespace libEDSsharp
                 ODStorage[group].Add($".x{varName} = {data.cValue}");
                 dataPtr = $"&{odname}_{group}.x{varName}{data.cTypeArray0}";
             }
+            else if (od.prop.CO_extensionIO == false)
+            {
+                Warnings.AddWarning($"Error in 0x{indexH}: If 'Default Value' is not defined, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
+            }
 
-            /* objects */
+            // objects
             ODObjs_t.Add($"OD_obj_var_t o_{varName};");
             ODObjs.Add($"    .o_{varName} = {{");
             ODObjs.Add($"        .data = {dataPtr},");
@@ -242,20 +240,19 @@ namespace libEDSsharp
                 return 0;
             }
 
-            /* prepare and verify each sub element */
+            // prepare and verify each sub element
             string cValue0 = "";
             DataProperties dataElem = new DataProperties();
             string attrElem0 = "";
             string attrElem = "";
             List<string> ODStorageValues = new List<string>();
-            for (UInt16 i = 0; i < subEntriesCount; i++)
+            UInt16 i = 0;
+            foreach (ODentry sub in od.subobjects.Values)
             {
-                ODentry sub = od.subobjects[i];
+                // If sub datatype is not known, use the od datatype
+                DataType dataType = (sub.datatype != DataType.UNKNOWN) ? sub.datatype : od.datatype;
 
-                /* TODO verify how the things are stored in eds. sub.datatype should always be correct? */
-                DataType dataType = (i == 0) ? sub.datatype : od.datatype;
-
-                DataProperties data = Get_dataProperties(dataType, sub.defaultvalue, Get_stringLength(sub), indexH);
+                DataProperties data = Get_dataProperties(dataType, sub.defaultvalue, sub.prop.CO_stringLengthMin, indexH);
                 string attr = Get_attributes(sub, data.cTypeMultibyte);
 
                 if (sub.Subindex != i)
@@ -273,6 +270,7 @@ namespace libEDSsharp
                 {
                     if (i == 1)
                     {
+                        // First array element. Other array elements must match this elements in data type and attributes
                         dataElem = data;
                         attrElem = attr;
                     }
@@ -287,6 +285,7 @@ namespace libEDSsharp
                     }
                     ODStorageValues.Add($"{data.cValue}");
                 }
+                i++;
             }
             string dataPtr0 = "NULL";
             string dataPtr = "NULL";
@@ -296,14 +295,22 @@ namespace libEDSsharp
                 ODStorage[group].Add($".x{varName}_sub0 = {cValue0}");
                 dataPtr0 = $"&{odname}_{group}.x{varName}_sub0";
             }
+            else if (od.prop.CO_extensionIO == false)
+            {
+                Warnings.AddWarning($"Error in 0x{indexH}, 0x00: If 'Default Value' is not defined, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
+            }
             if (dataElem.cValue != null)
             {
                 ODStorage_t[group].Add($"{dataElem.cType} x{varName}[{subEntriesCount - 1}]{dataElem.cTypeArray};");
                 ODStorage[group].Add($".x{varName} = {{{string.Join(", ", ODStorageValues)}}}");
                 dataPtr = $"&{odname}_{group}.x{varName}[0]{dataElem.cTypeArray0}";
             }
+            else if (od.prop.CO_extensionIO == false)
+            {
+                Warnings.AddWarning($"Error in 0x{indexH}: If 'Default Value' is not defined on array elements, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
+            }
 
-            /* objects */
+            // objects
             ODObjs_t.Add($"OD_obj_array_t o_{varName};");
             ODObjs.Add($"    .o_{varName} = {{");
             ODObjs.Add($"        .data0 = {dataPtr0},");
@@ -340,15 +347,13 @@ namespace libEDSsharp
             ODObjs_t.Add($"OD_obj_record_t o_{varName}[{subEntriesCount}];");
             ODObjs.Add($"    .o_{varName} = {{");
 
-            for (UInt16 i = 0; i < subEntriesCount; i++)
+            foreach (ODentry sub in od.subobjects.Values)
             {
-                ODentry sub = od.subobjects[i];
-
-                DataProperties data = Get_dataProperties(sub.datatype, sub.defaultvalue, Get_stringLength(sub), indexH);
+                DataProperties data = Get_dataProperties(sub.datatype, sub.defaultvalue, sub.prop.CO_stringLengthMin, indexH);
                 string attr = Get_attributes(sub, data.cTypeMultibyte);
 
-                if (i == 0 && (sub.Subindex != 0 || data.cType != "uint8_t" || data.length != 1))
-                    Warnings.AddWarning($"Error in 0x{indexH}: Data type in RECORD, first sub-entry, subIndex 0 must be UNSIGNED8, not {sub.datatype}!", Warnings.warning_class.WARNING_BUILD);
+                if (sub.Subindex == 0 && (data.cType != "uint8_t" || data.length != 1))
+                    Warnings.AddWarning($"Error in 0x{indexH}: Data type in RECORD, subIndex 0 must be UNSIGNED8, not {sub.datatype}!", Warnings.warning_class.WARNING_BUILD);
 
                 string subcName = Make_cname(sub.parameter_name);
                 string dataPtr = "NULL";
@@ -358,6 +363,10 @@ namespace libEDSsharp
                     subODStorage.Add($".{subcName} = {data.cValue}");
                     dataPtr = $"&{odname}_{group}.x{varName}.{subcName}{data.cTypeArray0}";
                 }
+                else if (od.prop.CO_extensionIO == false)
+                {
+                    Warnings.AddWarning($"Error in 0x{indexH}, 0x{sub.Subindex:X2}: If 'Default Value' is not defined on one or more subindexes, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
+                }
                 ODObjs.Add($"        {{");
                 ODObjs.Add($"            .data = {dataPtr},");
                 ODObjs.Add($"            .subIndex = {sub.Subindex},");
@@ -366,7 +375,7 @@ namespace libEDSsharp
                 ODObjs.Add($"        }},");
 
             }
-            /* remove last ',' and add closing bracket */
+            // remove last ',' and add closing bracket
             string s = ODObjs[ODObjs.Count - 1];
             ODObjs[ODObjs.Count - 1] = s.Remove(s.Length - 1);
             ODObjs.Add($"    }},");
@@ -391,7 +400,7 @@ namespace libEDSsharp
         /// <param name="gitVersion"></param>
         /// <param name="fi"></param>
         /// <param name="di"></param>
-        private void Export_h(string folderpath, string filename, string gitVersion, FileInfo fi, DeviceInfo di)
+        private void Export_h(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
 
             if (filename == "")
@@ -401,30 +410,40 @@ namespace libEDSsharp
 
             file.WriteLine(string.Format(
 @"/*******************************************************************************
-    CANopen Object Dictionary.
+    CANopen Object Dictionary definition for CANopenNode V4
 
-        This file was automatically generated with
-        libedssharp Object Dictionary Editor v{0}
+    This file was automatically generated with
+    libedssharp Object Dictionary Editor v{0}
+
+    https://github.com/CANopenNode/CANopenNode
+    https://github.com/robincornelius/libedssharp
 
     DON'T EDIT THIS FILE MANUALLY !!!!
 ********************************************************************************
 
     File info:
-        FileName:       {1}
-        FileVersion:    {2}
-        CreationTime:   {3}
-        CreationDate:   {4}
-        CreatedBy:      {5}
+        File Names:   {1}.h; {1}.c
+        Project File: {2}
+        File Version: {3}
+
+        Created:      {4}
+        Created By:   {5}
+        Modified:     {6}
+        Modified By:  {7}
 
     Device Info:
-        VendorName:     {6}
-        VendorNumber:   {7}
-        ProductName:    {8}
-        ProductNumber:  {9}
+        Vendor Name:  {8}
+        Vendor ID:    {9}
+        Product Name: {10}
+        Product ID:   {11}
+
+        Description:  {12}
 *******************************************************************************/",
-            gitVersion,
-            fi.FileName, fi.FileVersion, fi.CreationTime, fi.CreationDate, fi.CreatedBy,
-            di.VendorName, di.VendorNumber, di.ProductName, di.ProductNumber));
+            gitVersion, odname,
+            Path.GetFileName(eds.projectFilename), eds.fi.FileVersion,
+            eds.fi.CreationDateTime, eds.fi.CreatedBy, eds.fi.ModificationDateTime, eds.fi.ModifiedBy,
+            eds.di.VendorName, eds.di.VendorNumber, eds.di.ProductName, eds.di.ProductNumber,
+            eds.fi.Description));
 
             file.WriteLine(string.Format(@"
 #ifndef {0}_H
@@ -436,7 +455,7 @@ namespace libEDSsharp
 
             foreach (KeyValuePair<string, UInt16> kvp in ODCnt)
             {
-                Console.WriteLine($"#define {odname}_CNT_{kvp.Key} {kvp.Value}");
+                file.WriteLine($"#define {odname}_CNT_{kvp.Key} {kvp.Value}");
             }
 
             file.WriteLine(@"
@@ -499,10 +518,13 @@ namespace libEDSsharp
 
             file.WriteLine(string.Format(
 @"/*******************************************************************************
-    CANopen Object Dictionary.
+    CANopen Object Dictionary definition for CANopenNode V4
 
-        This file was automatically generated with
-        libedssharp Object Dictionary Editor v{0}
+    This file was automatically generated with
+    libedssharp Object Dictionary Editor v{0}
+
+    https://github.com/CANopenNode/CANopenNode
+    https://github.com/robincornelius/libedssharp
 
     DON'T EDIT THIS FILE MANUALLY, UNLESS YOU KNOW WHAT YOU ARE DOING !!!!
 *******************************************************************************/
@@ -542,7 +564,7 @@ typedef struct {{
 static {0}Exts_t {0}Exts = {{0}};", odname, string.Join("\n    ", ODExts_t)));
             }
 
-            /* remove ',' from the last element */
+            // remove ',' from the last element
             string s = ODObjs[ODObjs.Count - 1];
             ODObjs[ODObjs.Count - 1] = s.Remove(s.Length - 1);
 
@@ -586,44 +608,46 @@ const OD_t {0} = {{
         /// </summary>
         /// <param name="name">string, name to convert</param>
         /// <returns>string</returns>
-        private string Make_cname(string name)
+        private static string Make_cname(string name)
         {
             if (name == null || name == "")
                 return "";
 
-            Regex splitter = new Regex(@"[\W]+");
-
-            var bits = splitter.Split(name).Where(s => s != String.Empty);
+            // split string to tokens, separated by non-word characters
+            string[] tokens = Regex.Split(name.Replace('-', '_'), @"[\W]+");
 
             string output = "";
-
-            char lastchar = ' ';
-            foreach (string s in bits)
+            char prev = ' ';
+            foreach (string tok in tokens)
             {
-                if (Char.IsUpper(lastchar) && Char.IsUpper(s.First()))
-                    output += "_";
+                if (tok.Length == 0)
+                    continue;
 
-                if (s.Length > 1)
+                char first = tok[0];
+
+                if (Char.IsDigit(first) || Char.IsDigit(prev) || (Char.IsUpper(prev) && Char.IsUpper(first)))
                 {
-                    output += char.ToUpper(s[0]) + s.Substring(1);
+                    // add underscore, if tok starts with digit or we have two upper-case words
+                    output += "_" + tok;
+                }
+                else if (output.Length > 0)
+                {
+                    // all tokens except the first start with uppercse letter
+                    output += Char.ToUpper(first) + tok.Substring(1);
+                }
+                else if (Char.IsLower(tok[1]))
+                {
+                    // first token start with lower-case letter, except whole word is uppercase
+                    output += Char.ToLower(first) + tok.Substring(1);
                 }
                 else
                 {
-                    output += s;
+                    // use token as is
+                    output += tok;
                 }
 
-                if (output.Length > 0)
-                    lastchar = output.Last();
-
+                prev = tok[tok.Length - 1];
             }
-
-            if (output.Length > 1)
-            {
-                if (Char.IsLower(output[1]))
-                    output = Char.ToLower(output[0]) + output.Substring(1);
-            }
-            else
-                output = output.ToLower(); //single character
 
             return output;
         }
@@ -631,14 +655,14 @@ const OD_t {0} = {{
         /// <summary>
         /// Return from Get_dataProperties
         /// </summary>
-        private struct DataProperties
+        private class DataProperties
         {
-            public string cType;
-            public string cTypeArray;
-            public string cTypeArray0;
-            public bool cTypeMultibyte;
-            public UInt32 length;
-            public string cValue;
+            public string cType = "not specified";
+            public string cTypeArray = "";
+            public string cTypeArray0 = "";
+            public bool cTypeMultibyte = false;
+            public UInt32 length = 0;
+            public string cValue = null;
         }
 
         /// <summary>
@@ -651,15 +675,7 @@ const OD_t {0} = {{
         /// <returns>Structure filled with data</returns>
         private DataProperties Get_dataProperties(DataType dataType, string defaultvalue, UInt32 stringLength, string indexH)
         {
-            DataProperties data = new DataProperties
-            {
-                cType = "not specified",
-                cTypeArray = "",
-                cTypeArray0 = "",
-                cTypeMultibyte = false,
-                length = 0,
-                cValue = null
-            };
+            DataProperties data = new DataProperties();
 
             int nobase = 10;
             bool valueDefined = true;
@@ -668,36 +684,32 @@ const OD_t {0} = {{
             else if (dataType != DataType.VISIBLE_STRING && dataType != DataType.UNICODE_STRING && dataType != DataType.OCTET_STRING)
             {
                 defaultvalue = defaultvalue.Trim();
-                if (defaultvalue == "")
-                    valueDefined = false;
-                else
+
+                if (defaultvalue.Contains("$NODEID"))
                 {
-                    if (defaultvalue.Contains("$NODEID"))
-                    {
-                        defaultvalue = defaultvalue.Replace("$NODEID", "");
-                        defaultvalue = defaultvalue.Replace("+", "");
-                        defaultvalue = defaultvalue.Trim();
-                        if (defaultvalue == "")
-                            defaultvalue = "0";
-                    }
+                    defaultvalue = defaultvalue.Replace("$NODEID", "");
+                    defaultvalue = defaultvalue.Replace("+", "");
+                    defaultvalue = defaultvalue.Trim();
+                    if (defaultvalue == "")
+                        defaultvalue = "0";
+                }
 
-                    String pat = @"^0[xX][0-9a-fA-FUL]+";
-                    Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                    Match m = r.Match(defaultvalue);
-                    if (m.Success)
-                    {
-                        nobase = 16;
-                        defaultvalue = defaultvalue.Replace("U", "");
-                        defaultvalue = defaultvalue.Replace("L", "");
-                    }
+                String pat = @"^0[xX][0-9a-fA-FUL]+";
+                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+                Match m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 16;
+                    defaultvalue = defaultvalue.Replace("U", "");
+                    defaultvalue = defaultvalue.Replace("L", "");
+                }
 
-                    pat = @"^0[0-7]+";
-                    r = new Regex(pat, RegexOptions.IgnoreCase);
-                    m = r.Match(defaultvalue);
-                    if (m.Success)
-                    {
-                        nobase = 8;
-                    }
+                pat = @"^0[0-7]+";
+                r = new Regex(pat, RegexOptions.IgnoreCase);
+                m = r.Match(defaultvalue);
+                if (m.Success)
+                {
+                    nobase = 8;
                 }
             }
 
@@ -808,7 +820,7 @@ const OD_t {0} = {{
                         break;
 
                     case DataType.DOMAIN:
-                        /* keep default values (0 and null) */
+                        // keep default values (0 and null)
                         break;
 
                     case DataType.VISIBLE_STRING:
@@ -851,7 +863,7 @@ const OD_t {0} = {{
 
                             if (valueDefined)
                             {
-                                string[] strBytes = defaultvalue.Split(' ');
+                                string[] strBytes = defaultvalue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                                 foreach (string s in strBytes)
                                 {
                                     bytes.Add(String.Format("0x{0:X2}", Convert.ToByte(s, nobase)));
@@ -943,7 +955,7 @@ const OD_t {0} = {{
 
                 if (valueDefined && (signedNumber || unsignedNumber))
                 {
-                    /* write default value as a sequence of bytes, like "{0x56, 0x34, 0x12}" */
+                    // write default value as a sequence of bytes, like "{0x56, 0x34, 0x12}"
                     ulong value = signedNumber ? (ulong)Convert.ToInt64(defaultvalue, nobase) : Convert.ToUInt64(defaultvalue, nobase);
                     List<string> bytes = new List<string>();
                     for (UInt32 i = 0; i < data.length; i++)
@@ -980,53 +992,50 @@ const OD_t {0} = {{
         {
             List<string> attributes = new List<string>();
 
-            switch (od.accesstype)
+            switch (od.AccessSDO())
             {
-                case EDSsharp.AccessType.rw:
-                case EDSsharp.AccessType.rwr:
-                case EDSsharp.AccessType.rww:
-                    attributes.Add("ODA_SDO_RW");
-                    break;
-                case EDSsharp.AccessType.ro:
-                case EDSsharp.AccessType.@const:
+                case AccessSDO.ro:
                     attributes.Add("ODA_SDO_R");
                     break;
-                case EDSsharp.AccessType.wo:
+                case AccessSDO.wo:
                     attributes.Add("ODA_SDO_W");
                     break;
+                case AccessSDO.rw:
+                    attributes.Add("ODA_SDO_RW");
+                    break;
             }
 
-            switch (od.PDOtype)
+            switch (od.AccessPDO())
             {
-                case PDOMappingType.optional:
-                    attributes.Add("ODA_TRPDO");
-                    break;
-                case PDOMappingType.TPDO:
-                    attributes.Add("ODA_TPDO");
-                    break;
-                case PDOMappingType.RPDO:
+                case AccessPDO.r:
                     attributes.Add("ODA_RPDO");
                     break;
+                case AccessPDO.t:
+                    attributes.Add("ODA_TPDO");
+                    break;
+                case AccessPDO.tr:
+                    attributes.Add("ODA_TRPDO");
+                    break;
             }
 
-            //we currently have no support for SRDO in the object dictionary editor
+            switch (od.prop.CO_accessSRDO)
+            {
+                case AccessSRDO.rx:
+                    attributes.Add("ODA_RSRDO");
+                    break;
+                case AccessSRDO.tx:
+                    attributes.Add("ODA_TSRDO");
+                    break;
+                case AccessSRDO.trx:
+                    attributes.Add("ODA_TRSRDO");
+                    break;
+            }
 
             if (multibyte)
                 attributes.Add("ODA_MB");
 
             return string.Join(" | ", attributes);
         }
-
-        /// <summary>
-        /// Get stringLength custom property from OD entry or sub-entry
-        /// </summary>
-        /// <param name="od"></param>
-        /// <returns></returns>
-        private UInt32 Get_stringLength(ODentry od)
-        {
-            return 8;
-        }
-
         #endregion
     }
 }

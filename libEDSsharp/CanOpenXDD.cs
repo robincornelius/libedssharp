@@ -23,7 +23,7 @@
 using System;
 using System.Xml.Serialization;
 using System.IO;
-using XSDImport;
+using CanOpenXSD_1_0;
 using System.Text.RegularExpressions; //and nope this is not anywhere near the xml parsing
 using System.Collections.Generic;
 
@@ -219,7 +219,7 @@ namespace libEDSsharp
             device.DeviceIdentity.vendorName.readOnly = true;
 
             device.DeviceIdentity.vendorID = new vendorID();
-            device.DeviceIdentity.vendorID.Value = eds.di.VendorNumber.ToString();
+            device.DeviceIdentity.vendorID.Value = eds.di.VendorNumber;
             device.DeviceIdentity.vendorID.readOnly = true;
 
             device.DeviceIdentity.deviceFamily = new deviceFamily();
@@ -242,9 +242,9 @@ namespace libEDSsharp
 
             device.supportedLanguages = "en";
 
-            device.fileVersion = eds.fi.FileVersion.ToString();
+            device.fileVersion = eds.fi.FileVersion;
 
-            device.fileName = eds.fi.FileName;
+            device.fileName = Path.GetFileName(eds.projectFilename);
             
 
             //device.DeviceIdentity.vendorText
@@ -256,7 +256,7 @@ namespace libEDSsharp
             device.DeviceIdentity.productName.readOnly = true;
 
             device.DeviceIdentity.productID = new productID();
-            device.DeviceIdentity.productID.Value = eds.di.ProductNumber.ToString();
+            device.DeviceIdentity.productID.Value = eds.di.ProductNumber;
             device.DeviceIdentity.productID.readOnly = true;
 
             device.DeviceIdentity.productText = new productText();
@@ -326,7 +326,7 @@ namespace libEDSsharp
             foreach (ODentry od in eds.ods.Values)
             {
 
-                if (od.Disabled)
+                if (od.prop.CO_disabled)
                     continue;
 
                 parameter p = new parameter();
@@ -369,7 +369,7 @@ namespace libEDSsharp
             ProfileBody_CommunicationNetwork_CANopen comnet = (ProfileBody_CommunicationNetwork_CANopen)dev.ISO15745Profile[1].ProfileBody;
             comnet.Items = new object[3];
 
-            comnet.fileName = eds.fi.FileName;
+            comnet.fileName = Path.GetFileName(eds.projectFilename);
 
             comnet.fileCreator = eds.fi.CreatedBy; //etc
             comnet.fileCreationDate = eds.fi.CreationDateTime;
@@ -380,7 +380,7 @@ namespace libEDSsharp
             comnet.fileModificationTime = eds.fi.ModificationDateTime;
             comnet.fileModificationDateSpecified = true;
 
-            comnet.fileVersion = eds.fi.FileVersion.ToString();
+            comnet.fileVersion = eds.fi.FileVersion;
 
             comnet.supportedLanguages = "en";
 
@@ -404,7 +404,7 @@ namespace libEDSsharp
                 ODentry od = kvp.Value;
                 UInt16 subindex = kvp.Key;
 
-                if (od.Disabled)
+                if (od.prop.CO_disabled)
                     continue;
 
                 AppLayer.CANopenObjectList.CANopenObject[count] = new CANopenObjectListCANopenObject();
@@ -461,9 +461,9 @@ namespace libEDSsharp
                 AppLayer.CANopenObjectList.CANopenObject[count].uniqueIDRef = String.Format("UID_PARAM_{0:x4}", od.Index);
 
                 AppLayer.CANopenObjectList.CANopenObject[count].denotation = od.denotation;
-                AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extenstion_storagelocation = od.StorageLocation;
+                AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extenstion_storagelocation = od.prop.CO_storageGroup;
 
-                AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extension_notifyonchange = od.TPDODetectCos;
+                AppLayer.CANopenObjectList.CANopenObject[count].edseditor_extension_notifyonchange = od.prop.CO_flagsPDO;
 
                 AppLayer.CANopenObjectList.CANopenObject[count].highLimit = od.HighLimit;
                 AppLayer.CANopenObjectList.CANopenObject[count].lowLimit = od.LowLimit;
@@ -494,9 +494,12 @@ namespace libEDSsharp
 
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].denotation = subod.denotation;
 
-                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].edseditor_extension_notifyonchange = subod.TPDODetectCos;
+                        AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].edseditor_extension_notifyonchange = subod.prop.CO_flagsPDO;
 
-                        bytes = BitConverter.GetBytes((UInt16)subod.datatype);
+                        if (od.objecttype == ObjectType.ARRAY)
+                            bytes = BitConverter.GetBytes((UInt16)od.datatype);
+                        else
+                            bytes = BitConverter.GetBytes((UInt16)subod.datatype);
                         Array.Reverse(bytes);
 
                         // hack - special handling for rrw / rww access type
@@ -638,7 +641,7 @@ namespace libEDSsharp
             NetworkManagement.CANopenGeneralFeatures.granularity = eds.di.Granularity;
             NetworkManagement.CANopenGeneralFeatures.groupMessaging = eds.di.GroupMessaging;
 
-            NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported && eds.di.LSS_Type == "Server";
+            NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported;
             NetworkManagement.CANopenGeneralFeatures.nrOfRxPDO = eds.di.NrOfRXPDO;
             NetworkManagement.CANopenGeneralFeatures.nrOfTxPDO = eds.di.NrOfTXPDO;
             //extra items
@@ -652,7 +655,7 @@ namespace libEDSsharp
             //Extra items
             //NetworkManagment.CANopenMasterFeatures.configurationManager;
             //NetworkManagment.CANopenMasterFeatures.flyingMaster;
-            NetworkManagement.CANopenMasterFeatures.layerSettingServiceMaster = eds.di.LSS_Supported && eds.di.LSS_Type == "Client";
+            NetworkManagement.CANopenMasterFeatures.layerSettingServiceMaster = eds.di.LSS_Master;
             //NetworkManagment.CANopenMasterFeatures.SDOManager;
 
 
@@ -873,6 +876,7 @@ namespace libEDSsharp
                 } //Transport layer
 
                 eds.di.LSS_Supported = false;
+                eds.di.LSS_Master = false;
 
                 if (NetworkManagment != null)
                 {
@@ -887,8 +891,7 @@ namespace libEDSsharp
                         //Fix me if Client and Server are set in XDD i can't deal with this and will default to Server
                         if (NetworkManagment.CANopenMasterFeatures.layerSettingServiceMaster)
                         {
-                            eds.di.LSS_Supported = true;
-                            eds.di.LSS_Type = "Client";
+                            eds.di.LSS_Master = true;
                         }
 
                         //NetworkManagment.CANopenMasterFeatures.SDOManager;
@@ -906,7 +909,6 @@ namespace libEDSsharp
                         //Fix me if Client and Server are set in XDD i can't deal with this and will default to Server
                         if (NetworkManagment.CANopenGeneralFeatures.layerSettingServiceSlave)
                         {
-                            eds.di.LSS_Type = "Server";
                             eds.di.LSS_Supported = true;
                         }
 
@@ -932,7 +934,7 @@ namespace libEDSsharp
                 }
 
                 if (ApplicationLayers.CANopenObjectList.CANopenObject != null)
-                    foreach (XSDImport.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
+                    foreach (CanOpenXSD_1_0.CANopenObjectListCANopenObject obj3 in ApplicationLayers.CANopenObjectList.CANopenObject)
                     {
                         ODentry entry = new ODentry();
 
@@ -970,10 +972,14 @@ namespace libEDSsharp
                             entry.denotation = obj3.denotation;
 
                         if (obj3.edseditor_extenstion_storagelocation != null)
-                            entry.StorageLocation = obj3.edseditor_extenstion_storagelocation;
+                        {
+                            string sl = obj3.edseditor_extenstion_storagelocation;
+                            entry.prop.CO_storageGroup = sl;
+                            eds.CO_storageGroups.Add(sl);
+                        }
 
-                        if (obj3.edseditor_extension_notifyonchange != null)
-                            entry.TPDODetectCos = obj3.edseditor_extension_notifyonchange;
+                        if (obj3.edseditor_extension_notifyonchange)
+                            entry.prop.CO_flagsPDO = obj3.edseditor_extension_notifyonchange;
 
                             
 
@@ -1022,7 +1028,7 @@ namespace libEDSsharp
 
                         if (obj3.CANopenSubObject != null)
                         {
-                            foreach (XSDImport.CANopenObjectListCANopenObjectCANopenSubObject subobj in obj3.CANopenSubObject)
+                            foreach (CanOpenXSD_1_0.CANopenObjectListCANopenObjectCANopenSubObject subobj in obj3.CANopenSubObject)
                             {
 
                                 DataType datatype;
@@ -1083,8 +1089,7 @@ namespace libEDSsharp
 
                                 //extra items
 
-                                if (subobj.edseditor_extension_notifyonchange != null)
-                                    subentry.TPDODetectCos = subobj.edseditor_extension_notifyonchange;
+                                subentry.prop.CO_flagsPDO = subobj.edseditor_extension_notifyonchange;
 
                                 if (subobj.lowLimit!=null)
                                     subentry.LowLimit = subobj.lowLimit;
@@ -1129,9 +1134,9 @@ namespace libEDSsharp
                 if (obj.DeviceIdentity != null)
                 {
                     eds.di.ProductName = obj.DeviceIdentity.productName.Value;
-                    eds.di.ProductNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.productID.Value);
+                    eds.di.ProductNumber = obj.DeviceIdentity.productID.Value;
                     eds.di.VendorName = obj.DeviceIdentity.vendorName.Value;
-                    eds.di.VendorNumber = EDSsharp.ConvertToUInt32(obj.DeviceIdentity.vendorID.Value);
+                    eds.di.VendorNumber = obj.DeviceIdentity.vendorID.Value;
 
                     foreach (object o in obj.DeviceIdentity.productText.Items)
                     {
@@ -1156,7 +1161,7 @@ namespace libEDSsharp
                                             eds.fi.EDSVersion = keyvalue[1];
                                             break;
                                         case "FileRevision":
-                                            byte.TryParse(keyvalue[1],out eds.fi.FileVersion);
+                                            eds.fi.FileVersion = keyvalue[1];
                                             break;
                                         case "RevisionNum":
                                             byte.TryParse(keyvalue[1], out eds.fi.FileRevision);                                            break;
@@ -1295,7 +1300,7 @@ public class OpenEDSProject
 }
 
 
-namespace XSDImport
+namespace CanOpenXSD_1_0
 {
 
     //------------------------------------------------------------------------------

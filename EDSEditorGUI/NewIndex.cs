@@ -18,13 +18,6 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using libEDSsharp;
 
@@ -32,126 +25,101 @@ namespace ODEditor
 {
     public partial class NewIndex : Form
     {
-        public UInt16 index;
-        public ObjectType ot;
-        public string name;
-        public DataType dt = DataType.UNKNOWN;
-        public byte nosubindexes;
-        EDSsharp eds;
-        bool childaddition = false;
+        readonly EDSsharp eds;
+        public ODentry od = null;
 
-        public NewIndex(EDSsharp eds, DataType dt = DataType.UNKNOWN, ObjectType ot = ObjectType.UNKNOWN, ODentry parent =null)
+        public NewIndex(EDSsharp eds, UInt16 index)
         {
             this.eds = eds;
 
             InitializeComponent();
 
-            foreach (DataType foo in Enum.GetValues(typeof(DataType)))
-            {
-                comboBox_datatype.Items.Add(foo.ToString());
-            }
-
-            if (ot == ObjectType.REC)
-            {
-                    radioButton_array.Enabled = false;
-                    radioButton_rec.Enabled = false;
-                    radioButton_var.Enabled = false;
-
-                    numericUpDown_index.Enabled = false;
-                    numericUpDown_subindexes.Enabled = false;
-
-                    //order of next two matters
-                    radioButton_rec.Checked = true;
-                    comboBox_datatype.Enabled = true;
-
-                    childaddition = true;
-         
-                    numericUpDown_index.Value = parent.Index;
-                    Text = "Create new sub index";
-
-            }
-
+            numericUpDown_index.Value = index;
 
             DialogResult = DialogResult.Cancel;
         }
 
-        private void button_cancel_Click(object sender, EventArgs e)
+        private void Button_cancel_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void button_create_Click(object sender, EventArgs e)
+        private void Button_create_Click(object sender, EventArgs e)
         {
-            index = (UInt16) numericUpDown_index.Value;
-            ot = ObjectType.UNKNOWN;
+            UInt16 index = (UInt16) numericUpDown_index.Value;
+            if (eds.ods.ContainsKey(index))
+            {
+                MessageBox.Show(String.Format("Index 0x{0:X4} already exists in OD", index));
+                return;
+            }
 
-            if (radioButton_array.Checked)
-                ot = ObjectType.ARRAY;
-            if (radioButton_var.Checked)
-                ot = ObjectType.VAR;
-            if (radioButton_rec.Checked)
-                ot = ObjectType.REC;
-
-            name = textBox_name.Text;
-
-            if(name=="")
+            string name = textBox_name.Text;
+            if (name == "")
             {
                 MessageBox.Show("Please specify a name");
                 return;
             }
 
-            nosubindexes = (byte)numericUpDown_subindexes.Value;
-
-            if(comboBox_datatype.SelectedItem==null && ot != ObjectType.REC)
+            ObjectType objectType;
+            if (radioButton_var.Checked)
+                objectType = ObjectType.VAR;
+            else if (radioButton_array.Checked)
+                objectType = ObjectType.ARRAY;
+            else if (radioButton_record.Checked)
+                objectType = ObjectType.REC;
+            else
             {
-                MessageBox.Show(String.Format("Please select a datatype"));
+                MessageBox.Show("Please specify the Object Type");
                 return;
             }
 
-            if (comboBox_datatype.SelectedItem != null)
+            // create OD entry
+            if (objectType == ObjectType.VAR)
             {
-                dt = (DataType)Enum.Parse(typeof(DataType), comboBox_datatype.SelectedItem.ToString());
+                od = new ODentry
+                {
+                    parameter_name = name,
+                    Index = index,
+                    objecttype = objectType,
+                    datatype = DataType.UNSIGNED32,
+                    accesstype = EDSsharp.AccessType.rw,
+                    defaultvalue = "0"
+                };
             }
             else
             {
-                dt = DataType.UNSIGNED8;
-                nosubindexes = 0;
+                od = new ODentry
+                {
+                    parameter_name = name,
+                    Index = index,
+                    objecttype = objectType,
+                };
+
+                od.subobjects.Add(0, new ODentry
+                {
+                    parent = od,
+                    parameter_name = "Highest sub-index supported",
+                    objecttype = ObjectType.VAR,
+                    datatype = DataType.UNSIGNED8,
+                    accesstype = EDSsharp.AccessType.ro,
+                    defaultvalue = "0x01"
+                });
+
+                od.subobjects.Add(1, new ODentry
+                {
+                    parent = od,
+                    parameter_name = "Sub Object 1",
+                    objecttype = ObjectType.VAR,
+                    datatype = DataType.UNSIGNED32,
+                    accesstype = EDSsharp.AccessType.rw,
+                    defaultvalue = "0"
+                });
             }
 
-            //When adding a subindex to a rec we will be here with an unknown object
-            if (!childaddition && eds.ods.ContainsKey(index))
-            {
-                MessageBox.Show(String.Format("Index 0x{0:x4} already exists in OD", index));
-                return;
-            }
-
-            if(dt == DataType.UNKNOWN && ot != ObjectType.REC)
-            {
-                MessageBox.Show(String.Format("Please select a datatype"));
-                return;
-            }
+            eds.ods.Add(od.Index, od);
 
             DialogResult = DialogResult.OK;
             Close();
-
-        }
-
-        private void radioButton_var_CheckedChanged(object sender, EventArgs e)
-        {
-            numericUpDown_subindexes.Enabled = false;
-            comboBox_datatype.Enabled = true;
-        }
-
-        private void radioButton_array_CheckedChanged(object sender, EventArgs e)
-        {
-            numericUpDown_subindexes.Enabled = true;
-            comboBox_datatype.Enabled = true;
-        }
-
-        private void radioButton_rec_CheckedChanged(object sender, EventArgs e)
-        {
-            numericUpDown_subindexes.Enabled = false;
-            comboBox_datatype.Enabled = false;
         }
     }
 }
