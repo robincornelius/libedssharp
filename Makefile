@@ -1,7 +1,7 @@
 # Requires mono-devel and msbuild:
 # https://www.mono-project.com/download/stable/
 
-APP := EDSTest
+APP := EDSEditorGUI
 
 all:
 	msbuild $(APP)

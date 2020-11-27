@@ -18,31 +18,23 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using libEDSsharp;
-using System.Globalization;
-using Xml2CSharp;
 
 namespace ODEditor
 {
     public partial class DeviceView : MyTabUserControl
     {
 
-        public EDSsharp eds;
+        readonly public EDSsharp eds;
 
-        public DeviceView()
+        public DeviceView(EDSsharp eds_target)
         {
-          
+            eds = eds_target;
+
             InitializeComponent();
-            
-            foreach(TabPage tp in tabControl1.TabPages)
+
+            foreach (TabPage tp in tabControl1.TabPages)
             {
                 foreach(Object o in tp.Controls)
                 {
@@ -97,23 +89,11 @@ namespace ODEditor
             if (eds == null)
                 return;
 
-            deviceODView1.eds = eds;
-            deviceODView1.populatememorytypes();
-            deviceODView1.populateindexlists();
-            deviceODView1.validateanddisplaydata();
-            deviceODView1.updateselectedindexdisplay();
-
-
-
+            deviceODView1.PopulateObjectLists(eds);
+            deviceODView1.PopulateSubList();
+            deviceODView1.PopulateObject();
         }
 
         #endregion
-
-        private void deviceInfoView_Load(object sender, EventArgs e)
-        {
-
-        }
-  
- 
     }
 }

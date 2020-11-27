@@ -153,12 +153,8 @@ namespace Xml2CSharp
 		public List<CANopenSubObject> CANopenSubObject { get; set; }
 		[XmlAttribute(AttributeName="subNumber")]
 		public string SubNumber { get; set; }
-		[XmlAttribute(AttributeName="accessFunctionName")]
-		public string AccessFunctionName { get; set; }
 		[XmlAttribute(AttributeName="disabled")]
 		public string Disabled { get; set; }
-		[XmlElement(ElementName="accessFunctionPreCode")]
-		public string AccessFunctionPreCode { get; set; }
 		[XmlAttribute(AttributeName="TPDOdetectCOS")]
 		public string TPDOdetectCOS { get; set; }
     }
@@ -235,11 +231,11 @@ namespace Xml2CSharp
 		[XmlElement(ElementName="vendorName")]
 		public string VendorName { get; set; }
         [XmlElement(ElementName = "vendorNumber")]
-        public uint VendorNumber { get; set; }
+        public string VendorNumber { get; set; }
         [XmlElement(ElementName="productName")]
 		public string ProductName { get; set; }
 		[XmlElement(ElementName="productNumber")]
-        public uint ProductNumber { get; set; }
+        public string ProductNumber { get; set; }
         [XmlElement(ElementName = "productText")]
         public ProductText ProductText { get; set; }
         [XmlElement(ElementName = "concreteNoideId")]

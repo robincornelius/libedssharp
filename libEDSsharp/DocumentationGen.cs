@@ -15,13 +15,11 @@
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
  
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
+    Copyright(c) 2020 Janez Paternoster
 */
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace libEDSsharp
@@ -53,7 +51,7 @@ namespace libEDSsharp
            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
            {
                 ODentry od = kvp.Value;
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 if (od.Index == 0x1000 || od.Index == 0x1001 || od.Index == 0x1018)
@@ -67,7 +65,7 @@ namespace libEDSsharp
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 if ((od.Index > 0x1001 && od.Index != 0x1018 && od.Index<0x2000) || od.Index>=0x6000)
@@ -81,7 +79,7 @@ namespace libEDSsharp
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 if (od.Index >= 0x2000 && od.Index<0x6000)
@@ -126,7 +124,7 @@ namespace libEDSsharp
             write2linetablerow("Data Type", dt.ToString());
             write2linetablerow("Default Value", od.defaultvalue);
 
-            write2linetablerow("Location", od.StorageLocation);
+            write2linetablerow("Location", od.prop.CO_storageGroup);
             write2linetablerow("Access type", od.accesstype.ToString());
             write2linetablerow("PDO mapping", od.PDOMapping);
             write2linetablerow("No Sub index", od.Nosubindexes);
@@ -156,234 +154,269 @@ namespace libEDSsharp
             file.Write("<tr><th>{0}</th><th>{1}</th></tr>",a,b.ToString());
         }
 
-        public void genmddoc(string filepath, EDSsharp eds)
+        public void genmddoc(string filepath, EDSsharp eds, string gitVersion)
         {
-
             file = new StreamWriter(filepath, false);
+            file.NewLine = "\n";
 
+            file.WriteLine(string.Format(
+@"CANopen documentation
+=====================
+**{0}**
+
+{1}
+
+|              |                                |
+| ------------ | ------------------------------ |
+| Project File | {2,-30} |
+| File Version | {3,-30} |
+| Created      | {4,-30} |
+| Created By   | {5,-30} |
+| Modified     | {6,-30} |
+| Modified By  | {7,-30} |
+
+This file was automatically generated with [libedssharp](https://github.com/robincornelius/libedssharp) Object Dictionary Editor v{8}
+
+* [Device Information](#device-information)* [PDO Mapping](#pdo-mapping)* [Communication Specific Parameters](#communication-specific-parameters)* [Manufacturer Specific Parameters](#manufacturer-specific-parameters)* [Device Profile Specific Parameters](#device-profile-specific-parameters)",
+            eds.di.ProductName, eds.fi.Description,
+            Path.GetFileName(eds.projectFilename), eds.fi.FileVersion,
+            eds.fi.CreationDateTime, eds.fi.CreatedBy, eds.fi.ModificationDateTime, eds.fi.ModifiedBy,
+            gitVersion));
+
+            file.WriteLine(string.Format(@"
+Device Information {{#device-information}}
+----------------------------------------
+|              |                                |
+| ------------ | ------------------------------ |
+| Vendor Name  | {0,-30} |
+| Vendor ID    | {1,-30} |
+| Product Name | {2,-30} |
+| Product ID   | {3,-30} |
+| Granularity  | {4,-30} |
+| RPDO count   | {5,-30} |
+| TPDO count   | {6,-30} |
+| LSS Slave    | {7,-30} |
+| LSS Master   | {8,-30} |
+",          eds.di.VendorName, eds.di.VendorNumber, eds.di.ProductName, eds.di.ProductNumber,
+            eds.di.Granularity, eds.di.NrOfRXPDO.ToString(), eds.di.NrOfTXPDO.ToString(),
+            eds.di.LSS_Supported, eds.di.LSS_Master));
+
+            file.WriteLine($"#### Supported Baud rates");
+            file.WriteLine($"* [{(eds.di.BaudRate_10 ? "x" : " ")}] 10 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_20 ? "x" : " ")}] 20 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_50 ? "x" : " ")}] 50 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_125 ? "x" : " ")}] 125 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_250 ? "x" : " ")}] 250 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_500 ? "x" : " ")}] 500 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_800 ? "x" : " ")}] 800 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_1000 ? "x" : " ")}] 1000 kBit/s");
+            file.WriteLine($"* [{(eds.di.BaudRate_auto ? "x" : " ")}] auto");
             file.WriteLine();
-            file.WriteLine("# Device Information");
             file.WriteLine();
 
-            file.WriteLine("Product name");
-            file.WriteLine($"  ~ {eds.di.ProductName}");
-            file.WriteLine();
-            file.WriteLine("Product number");
-            file.WriteLine($"  ~ {eds.di.ProductNumber}");
-            file.WriteLine();
-            file.WriteLine("Revision number");
-            file.WriteLine($"  ~ {eds.di.RevisionNumber}");
-            file.WriteLine();
-            file.WriteLine("Vendor name");
-            file.WriteLine($"  ~ {eds.di.VendorName}");
-            file.WriteLine();
+            file.WriteLine("PDO Mapping {#pdo-mapping}");
+            file.WriteLine("--------------------------");
+            PrintPdoMd(eds);
 
-
-            file.WriteLine($"Granularity: {eds.di.Granularity}");
-            file.WriteLine();
-            file.WriteLine("Supported Baud rates:");
-            file.WriteLine();
-
-            file.WriteLine($"- [{(eds.di.BaudRate_1000 ? "x" : " ")}] 1000 kBit/s");
-            file.WriteLine($"- [{(eds.di.BaudRate_800 ? "x" : " ")}] 800 kBit/s");
-            file.WriteLine($"- [{(eds.di.BaudRate_500 ? "x" : " ")}] 500 kBit/s");
-            file.WriteLine($"- [{(eds.di.BaudRate_250 ? "x" : " ")}] 250 kBit/s");
-            file.WriteLine($"- [{(eds.di.BaudRate_125 ? "x" : " ")}] 125 kBit/s");
-            //file.WriteLine($"- [{(true ? "x" : " ")}] 100 kBit/s");
-            file.WriteLine($"- [{(eds.di.BaudRate_50 ? "x" : " ")}] 50 kBit/s");
-            file.WriteLine($"- [{(eds.di.BaudRate_20 ? "x" : " ")}] 20 kBit/s");
-            file.WriteLine($"- [{(eds.di.BaudRate_10 ? "x" : " ")}] 10 kBit/s");
-            file.WriteLine();
-
-            file.WriteLine("# PDO Mapping");
-            file.WriteLine();
-
-            PrintPdo(0x1600, 0x1800, "RPDO", eds);
-            PrintPdo(0x1a00, 0x1c00, "TPDO", eds);
-
-            file.WriteLine("# Mandatory objects");
-            file.WriteLine();
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            int chapter = 0;
+            foreach (ODentry od in eds.ods.Values)
             {
-                ODentry od = kvp.Value;
-                if (od.Disabled == true)
-                    continue;
-
-                if (od.Index == 0x1000 || od.Index == 0x1001 || od.Index == 0x1018)
+                if (chapter == 0)
                 {
-                    writeODentrymd(od);
+                    file.WriteLine();
+                    file.WriteLine("Communication Specific Parameters {#communication-specific-parameters}");
+                    file.WriteLine("----------------------------------------------------------------------");
+                    chapter++;
                 }
-            }
-
-            file.WriteLine("# Optional objects");
-            file.WriteLine();
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
-            {
-                ODentry od = kvp.Value;
-                if (od.Disabled == true)
-                    continue;
-
-                if ((od.Index > 0x1001 && od.Index != 0x1018 && od.Index < 0x2000) || od.Index >= 0x6000)
+                if (chapter == 1 && od.Index >= 0x2000)
                 {
-                    writeODentrymd(od);
+                    file.WriteLine();
+                    file.WriteLine("Manufacturer Specific Parameters {#manufacturer-specific-parameters}");
+                    file.WriteLine("--------------------------------------------------------------------");
+                    chapter++;
                 }
-            }
-
-            file.WriteLine("# Manufacturer specific objects");
-            file.WriteLine();
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
-            {
-                ODentry od = kvp.Value;
-                if (od.Disabled == true)
-                    continue;
-
-                if (od.Index >= 0x2000 && od.Index < 0x6000)
+                if (chapter == 2 && od.Index >= 0x6000)
                 {
-                    writeODentrymd(od);
+                    file.WriteLine();
+                    file.WriteLine("Device Profile Specific Parameters {#device-profile-specific-parameters}");
+                    file.WriteLine("------------------------------------------------------------------------");
+                    chapter++;
                 }
+
+                if (!od.prop.CO_disabled)
+                    PrintODentryMd(od);
             }
 
             file.Close();
         }
 
-        public void writeODentrymd(ODentry od)
+        private void PrintPdoMd(EDSsharp eds, bool skipDisabled = false)
         {
-            if (od.parent == null)
+            var parameters = new SortedDictionary<UInt16, ODentry>();
+            var mappings = new SortedDictionary<UInt16, ODentry>();
+            foreach (ODentry od in eds.ods.Values)
             {
-                file.WriteLine(String.Format("## 0x{0:x4} - {1}", od.Index, od.parameter_name));
-            }
-            else
-            {
-                file.WriteLine(String.Format("### 0x{0:x4} sub 0x{2:x2} - {1}", od.Index, od.parameter_name, od.Subindex));
-            }
-            file.WriteLine();
-           
-            write2linetableheadermd("Parameter", "Value");
-
-            ObjectType ot = od.objecttype;
-            if (ot == ObjectType.UNKNOWN && od.parent != null)
-                ot = od.parent.objecttype;
-
-            write2linetablerowmd("Object Type", ot.ToString());
-
-            DataType dt = od.datatype;
-            if (dt == DataType.UNKNOWN && od.parent != null)
-                dt = od.parent.datatype;
-
-            write2linetablerowmd("Data Type", dt.ToString());
-            write2linetablerowmd("Default Value", od.defaultvalue);
-            if (!String.IsNullOrEmpty(od.HighLimit))
-                write2linetablerowmd("High Value", od.HighLimit);
-            if (!String.IsNullOrEmpty(od.LowLimit))
-                write2linetablerowmd("Low Value", od.LowLimit);
-
-            write2linetablerowmd("Location", od.StorageLocation);
-            write2linetablerowmd("Access type", od.accesstype.ToString());
-            write2linetablerowmd("PDO mapping", od.PDOMapping);
-            if (od.parent == null)
-                write2linetablerowmd("No Sub index", od.Nosubindexes);
-
-            
-            file.WriteLine();
-
-            string description = od.Description;
-            file.WriteLine($"{description}");
-
-            file.WriteLine();
-
-            foreach (KeyValuePair<UInt16, ODentry> sub in od.subobjects)
-            {
-                ODentry subod = sub.Value;
-                writeODentrymd(subod);
+                if (od.Index < 0x1400 || od.prop.CO_disabled || od.objecttype != ObjectType.REC || od.subobjects.Count < 3)
+                    continue;
+                else if (od.Index < 0x1600)
+                    parameters.Add(od.Index, od);
+                else if (od.Index < 0x1800)
+                    mappings.Add(od.Index, od);
+                else if (od.Index < 0x1A00)
+                    parameters.Add(od.Index, od);
+                else if (od.Index < 0x1C00)
+                    mappings.Add(od.Index, od);
+                else
+                    break;
             }
 
-            if (od.parent == null)
+            foreach (ODentry par in parameters.Values)
             {
-                file.WriteLine("---------------");
+                UInt16 mappingIndex = (UInt16)(par.Index + 0x200);
+
+                if (!mappings.ContainsKey(mappingIndex))
+                    continue;
+
+                ODentry map = mappings[mappingIndex];
+                uint mapCount;
+
+                // skip, if PDO (is disabled and) has no mapped entries
+                try
+                {
+                    if (skipDisabled)
+                    {
+                        string cobId = par.subobjects[1].defaultvalue.Replace("$NODEID", "").Replace("+", "");
+                        uint cobIdNum = (uint)new System.ComponentModel.UInt32Converter().ConvertFromString(cobId);
+                        if ((cobIdNum & 0x80000000) != 0)
+                            continue;
+                    }
+                    mapCount = (uint)new System.ComponentModel.UInt32Converter().ConvertFromString(map.subobjects[0].defaultvalue);
+                    if (mapCount == 0)
+                        continue;
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+
+                string transmissionType = $"type={par.subobjects[2].defaultvalue}";
+                string PDO;
+
+                if (par.Index < 0x1600)
+                {
+                    PDO = "RPDO";
+                    if (par.subobjects.Count >= 6)
+                        transmissionType += $"; event-timer={par.subobjects[5].defaultvalue}";
+                }
+                else
+                {
+                    PDO = "TPDO";
+                    if (par.subobjects.Count >= 6)
+                        transmissionType += $"; inhibit-time={par.subobjects[3].defaultvalue}; event-timer={par.subobjects[5].defaultvalue}";
+                    if (par.subobjects.Count >= 7)
+                        transmissionType += $"; SYNC-start-value={par.subobjects[6].defaultvalue}";
+                }
+
+                file.WriteLine(string.Format(@"
+### {0} 0x{1:X4}
+|              |                                                               |
+| ------------ | ------------------------------------------------------------- |
+| COB_ID       | {2,-62}|
+| Transmission | {3,-62}|",
+                    PDO, par.Index, par.subobjects[1].defaultvalue, transmissionType));
+
+                for (byte subIdxPdo = 1; subIdxPdo <= mapCount; subIdxPdo++)
+                {
+                    UInt32 mapVal;
+                    try { mapVal = (UInt32)new System.ComponentModel.UInt32Converter().ConvertFromString(map.subobjects[subIdxPdo].defaultvalue); }
+                    catch (Exception) { break; }
+
+                    UInt16 mapIdx = (UInt16)(mapVal >> 16);
+                    UInt16 mapSub = (UInt16)((mapVal >> 8) & 0xFF);
+
+                    string nameIdx = "(MISSING)";
+                    string nameSub = " (MISSING)";
+                    if (eds.ods.ContainsKey(mapIdx))
+                    {
+                        ODentry odMapped = eds.ods[mapIdx];
+                        nameIdx = odMapped.parameter_name;
+
+                        if (odMapped.objecttype == ObjectType.VAR)
+                            nameSub = "";
+                        else if (odMapped.subobjects.ContainsKey(mapSub))
+                            nameSub = " (" + odMapped.subobjects[mapSub].parameter_name + ")";
+                    }
+                    else if (mapIdx < 0x20)
+                    {
+                        nameIdx = ((DataType)mapIdx).ToString();
+                        nameSub = "";
+                    }
+
+                    file.WriteLine(string.Format(@"|   0x{0:X8} | {1,-62}|", mapVal, nameIdx + nameSub));
+                }
                 file.WriteLine();
             }
         }
 
-        private void PrintPdo(ushort start, ushort end, string caption, EDSsharp eds)
+        private void PrintODentryMd(ODentry od)
         {
-            file.WriteLine("## {0}", caption);
-            file.WriteLine();
-            foreach (var kvp in eds.ods)
+            var descriptions = new List<string>();
+
+            file.WriteLine(string.Format(@"
+### 0x{0:X4} - {1}
+| Object Type | Count Label    | Storage Group  | IO extension  | PDO flags    |
+| ----------- | -------------- | -------------- | ------------- | ------------ |
+| {2,-12}| {3,-15}| {4,-15}| {5,-14}| {6,-13}|",
+                 od.Index, od.parameter_name,
+                 od.ObjectTypeString(), od.prop.CO_countLabel, od.prop.CO_storageGroup, od.prop.CO_extensionIO, od.prop.CO_flagsPDO));
+
+            if (od.Description != null && od.Description != "")
+                descriptions.Add(od.Description);
+
+            if (od.objecttype == ObjectType.VAR)
             {
-                ODentry od = kvp.Value;
-                int index = kvp.Key;
+                file.WriteLine(string.Format(@"
+| Data Type               | SDO | PDO | SRDO | Default Value                   |
+| ----------------------- | --- | --- | ---- | ------------------------------- |
+| {0,-24}| {1,-4}| {2,-4}| {3,-5}| {4,-32}|",
+                    PrintDataType(od), od.AccessSDO().ToString(), od.AccessPDO().ToString(),
+                    od.prop.CO_accessSRDO.ToString(), od.defaultvalue));
+            }
+            else
+            {
+                file.WriteLine(string.Format(@"
+| Sub  | Name                  | Data Type  | SDO | PDO | SRDO | Default Value |
+| ---- | --------------------- | ---------- | --- | --- | ---- | ------------- |"));
 
-                if (od.Disabled)
-                    continue;
-
-                if (od.Index >= start && od.Index < end)
+                foreach (ODentry subod in od.subobjects.Values)
                 {
-                    file.WriteLine(string.Format("### {0} {1:x4}", caption, od.Index));
-                    file.WriteLine();
-                    byte current_bit = 0;
-                    foreach (var kvp2 in od.subobjects)
-                    {
-                        ODentry odsub = kvp2.Value;
-                        ushort subindex = kvp2.Key;
+                    file.WriteLine(string.Format(@"| 0x{0:X2} | {1,-22}| {2,-11}| {3,-4}| {4,-4}| {5,-5}| {6,-14}|",
+                        subod.Subindex, subod.parameter_name, PrintDataType(subod),
+                        subod.AccessSDO().ToString(), subod.AccessPDO().ToString(),
+                        subod.prop.CO_accessSRDO.ToString(), subod.defaultvalue));
 
-                        if (subindex == 0)
-                            continue;
-
-                        var data = Convert.ToUInt32(odsub.defaultvalue, EDSsharp.Getbase(odsub.defaultvalue));
-
-                        if (data != 0)
-                        {
-                            byte datasize = (byte)(data & 0x000000FF);
-                            ushort pdoindex = (ushort)((data >> 16) & 0x0000FFFF);
-                            byte pdosub = (byte)((data >> 8) & 0x000000FF);
-
-                            file.Write($"* Byte{current_bit / 8}: ");
-
-                            if (eds.ods.ContainsKey(pdoindex) && (pdosub == 0 || eds.ods[pdoindex].Containssubindex(pdosub)))
-                            {
-                                ODentry maptarget;
-                                if (pdosub == 0)
-                                    maptarget = eds.ods[pdoindex];
-                                else
-                                    maptarget = eds.ods[pdoindex].Getsubobject(pdosub);
-
-                                if (!maptarget.Disabled && datasize == (8 * maptarget.Sizeofdatatype()))
-                                {
-                                    if (maptarget.parent == null)
-                                        file.Write(string.Format("[0x{0:x4} - {1}]", maptarget.Index, maptarget.parameter_name));
-                                    else
-                                        file.Write(string.Format("[0x{0:x4} sub 0x{1:x2} - {2}]", maptarget.Index, maptarget.Subindex, maptarget.parameter_name));
-                                }
-                            }
-                            file.WriteLine();
-                            var by = (datasize / 8);
-                            for (int i = 1; i < by; ++i)
-                                file.WriteLine($"* Byte{current_bit / 8 + i}: -\"-");
-                            current_bit += datasize;
-                        }
-                    }
-                    for (int i = (current_bit / 8); i < 8; ++i)
-                        file.WriteLine($"* Byte{i}: empty");
-                    file.WriteLine();
+                    if (subod.Description != null && subod.Description != "")
+                        descriptions.Add(subod.Description);
                 }
+            }
+
+            if (descriptions.Count > 0)
+            {
+                file.WriteLine();
+                file.WriteLine(string.Join("\n", descriptions));
             }
         }
 
-        public void write2linetablerowmd(string a, object b)
+        private string PrintDataType(ODentry od)
         {
-            if (b == null)
-                b = "";
-            file.WriteLine($"| {a} | {b.ToString()} |");
-        }
+            string dt = od.datatype.ToString();
+            if ((od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.UNICODE_STRING)
+                && od.prop.CO_stringLengthMin > od.defaultvalue.Length)
+            {
+                dt += $" (len={od.prop.CO_stringLengthMin})";
+            }
 
-        public void write2linetableheadermd(string a, object b)
-        {
-            write2linetablerowmd(a, b);
-            file.WriteLine("|:------|:-----|");
+            return dt;
         }
-
     }
 }

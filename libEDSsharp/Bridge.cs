@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xml2CSharp;
 using System.Text.RegularExpressions;
-using XSDImport;
 
 /* I know I'm going to regret this
  * 
@@ -58,18 +57,16 @@ namespace libEDSsharp
                     coo.Index = string.Format("{0:x4}", od.Index);
                     coo.Name = od.parameter_name;
                     coo.ObjectType = od.objecttype.ToString();
-                    coo.Disabled = od.Disabled.ToString().ToLower();
-                    coo.MemoryType = od.StorageLocation;
-                    eds.storageLocation.Add(od.StorageLocation);
+                    coo.Disabled = od.prop.CO_disabled.ToString().ToLower();
+                    coo.MemoryType = od.prop.CO_storageGroup;
+                    eds.CO_storageGroups.Add(od.prop.CO_storageGroup);
                     coo.AccessType = od.accesstype.ToString();
                     coo.DataType = string.Format("0x{0:x2}", (int)od.datatype);
                     coo.DefaultValue = od.defaultvalue;
                     coo.HighValue = od.HighLimit;
                     coo.LowValue = od.LowLimit;
                     coo.PDOmapping = od.PDOtype.ToString();
-                    coo.TPDOdetectCOS = od.TPDODetectCos.ToString().ToLower();
-                    coo.AccessFunctionPreCode = od.AccessFunctionPreCode;
-                    coo.AccessFunctionName = od.AccessFunctionName;
+                    coo.TPDOdetectCOS = od.prop.CO_flagsPDO.ToString().ToLower();
 
                     coo.Description = new Xml2CSharp.Description();
                     coo.Description.Text = od.Description;
@@ -97,7 +94,7 @@ namespace libEDSsharp
                             sub.LowValue = subod.LowLimit;
                             sub.PDOmapping = subod.PDOtype.ToString();
                             sub.SubIndex = String.Format("{0:x2}", subindex);
-                            sub.TPDOdetectCOS = subod.TPDODetectCos.ToString().ToLower();
+                            sub.TPDOdetectCOS = subod.prop.CO_flagsPDO.ToString().ToLower();
                             coo.CANopenSubObject.Add(sub);
 
                         }
@@ -208,7 +205,7 @@ namespace libEDSsharp
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("CompactPDO", eds.di.CompactPDO.ToString()));
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("GroupMessaging", eds.di.GroupMessaging.ToString()));
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("LSS_Supported", eds.di.LSS_Supported.ToString()));
-            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("LSS_Type", eds.di.LSS_Type));
+            dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("LSS_Master", eds.di.LSS_Master.ToString()));
 
             dev.Other.Capabilities.CharacteristicsList.Characteristic.Add(makecharcteristic("Granularity", eds.di.Granularity.ToString()));
 
@@ -238,7 +235,7 @@ namespace libEDSsharp
             dev.Other.File.FileModificationTime = eds.fi.ModificationDateTime.ToString("h:mmtt");
             dev.Other.File.FileModifedBy = eds.fi.ModifiedBy;
 
-            dev.Other.File.FileVersion = eds.fi.FileVersion.ToString();
+            dev.Other.File.FileVersion = eds.fi.FileVersion;
             dev.Other.File.FileRevision = eds.fi.FileRevision;
 
             dev.Other.File.ExportFolder = eds.fi.exportFolder;
@@ -332,10 +329,8 @@ namespace libEDSsharp
                 else
                     entry.PDOtype = PDOMappingType.no;
 
-                entry.TPDODetectCos = coo.TPDOdetectCOS == "true";
-                entry.AccessFunctionName = coo.AccessFunctionName;
-                entry.AccessFunctionPreCode = coo.AccessFunctionPreCode;
-                entry.Disabled = coo.Disabled == "true";
+                entry.prop.CO_flagsPDO = coo.TPDOdetectCOS == "true";
+                entry.prop.CO_disabled = coo.Disabled == "true";
 
                 if (coo.Description != null)
                     entry.Description = coo.Description.Text; //FIXME URL/LANG
@@ -345,8 +340,8 @@ namespace libEDSsharp
 
                 if (coo.MemoryType != null)
                 {
-                    entry.StorageLocation = coo.MemoryType;
-                    eds.storageLocation.Add(coo.MemoryType);
+                    entry.prop.CO_storageGroup = coo.MemoryType;
+                    eds.CO_storageGroups.Add(coo.MemoryType);
                 }
 
                 eds.ods.Add(entry.Index, entry);
@@ -400,19 +395,19 @@ namespace libEDSsharp
                         subentry.PDOtype = entry.PDOtype;
                     }
 
-                    subentry.StorageLocation = entry.StorageLocation;
+                    subentry.prop.CO_storageGroup = entry.prop.CO_storageGroup;
                     subentry.parent = entry;
 
                     subentry.objecttype = ObjectType.VAR;
 
                     if (coosub.TPDOdetectCOS != null)
                     {
-                        subentry.TPDODetectCos = coosub.TPDOdetectCOS == "true";
+                        subentry.prop.CO_flagsPDO = coosub.TPDOdetectCOS == "true";
                     }
                     else
                     {
                         if (coo.TPDOdetectCOS != null)
-                            subentry.TPDODetectCos = coo.TPDOdetectCOS == "true";
+                            subentry.prop.CO_flagsPDO = coo.TPDOdetectCOS == "true";
                     }
 
 
@@ -486,10 +481,10 @@ namespace libEDSsharp
                 eds.di.GroupMessaging = boolout;
             if (keypairs.ContainsKey("LSS_Supported") && bool.TryParse(keypairs["LSS_Supported"], out boolout))
                 eds.di.LSS_Supported = boolout;
-
-            if (keypairs.ContainsKey("LSS_Type") && keypairs["LSS_Type"]!=null)
-                eds.di.LSS_Type = keypairs["LSS_Type"].ToString();
-
+            if (keypairs.ContainsKey("LSS_Master") && bool.TryParse(keypairs["LSS_Master"], out boolout))
+                eds.di.LSS_Master = boolout;
+            else if (keypairs.ContainsKey("LSS_Type") && keypairs["LSS_Type"] != null && keypairs["LSS_Type"].ToString() == "Client")
+                eds.di.LSS_Master = true;
             if (keypairs.ContainsKey("Granularity") && byte.TryParse(keypairs["Granularity"], out byteout))
                 eds.di.Granularity = byteout;
 
@@ -547,27 +542,7 @@ namespace libEDSsharp
 
             dev.Other.Capabilities = dev.Other.Capabilities;
 
-            try
-            {
-                eds.fi.FileVersion = Convert.ToByte(dev.Other.File.FileVersion);
-            }
-            catch (Exception e)
-            {
-                if (dev.Other.File != null)
-                {
-                    // CANopenNode default project.xml contains - for fileversion, its suppose to be a byte field according to DS306
-                    if (dev.Other.File.FileVersion == "-")
-                    {
-                        dev.Other.File.FileVersion = "0";
-                    }
-                    else
-                    {
-                        Warnings.warning_list.Add(String.Format("Unable to parse FileVersion\"{0}\" {1}", dev.Other.File.FileVersion, e.ToString()));
-                    }
-                }
-
-                eds.fi.FileVersion = 0;
-            }
+            eds.fi.FileVersion = dev.Other.File.FileVersion;
 
             eds.fi.FileRevision = dev.Other.File.FileRevision;
 

@@ -170,7 +170,7 @@ namespace libEDSsharp
                 if (eds.ods.ContainsKey(idx))
                 {
                     ODentry od = eds.ods[idx];
-                    if (od.Disabled == true)
+                    if (od.prop.CO_disabled == true)
                         continue;
 
                     //protect against not completed new CommunicationParamater sections
@@ -201,7 +201,7 @@ namespace libEDSsharp
                     slot.ConfigurationIndex = idx;
 
                     slot.configAccessType = od.accesstype;
-                    slot.configloc = od.StorageLocation;
+                    slot.configloc = od.prop.CO_storageGroup;
 
 
                     Console.WriteLine(String.Format("Found PDO Entry {0:x4} {1:x3}", idx, slot.COB));
@@ -218,7 +218,7 @@ namespace libEDSsharp
                     uint totalsize = 0;
 
                     slot.mappingAccessType = od.accesstype;
-                    slot.mappingloc = od.StorageLocation;
+                    slot.mappingloc = od.prop.CO_storageGroup;
 
                     for (ushort subindex= 1; subindex<= mapping.Getmaxsubindex();subindex++)
                     {
@@ -248,31 +248,33 @@ namespace libEDSsharp
                         Console.WriteLine(string.Format("Mapping 0x{0:x4}/{1:x2} size {2}", pdoindex, pdosub, datasize));
 
                         //validate this against what is in the actual object mapped
-
-                        ODentry maptarget;
-                        if (pdosub == 0)
+                        try
                         {
-                            if(eds.tryGetODEntry(pdoindex, out maptarget)==false)
+                            ODentry maptarget;
+                            if (pdosub == 0)
                             {
-                                Console.WriteLine("MAPPING FAILED");
-                                //Critical PDO error
-                                return;
+                                if (eds.tryGetODEntry(pdoindex, out maptarget) == false)
+                                {
+                                    Console.WriteLine("MAPPING FAILED");
+                                    //Critical PDO error
+                                    return;
+                                }
                             }
-                        }
-                        else
-                            maptarget = eds.ods[pdoindex].Getsubobject(pdosub);
+                            else
+                                maptarget = eds.ods[pdoindex].Getsubobject(pdosub);
 
-                        if (maptarget.Disabled == false && datasize == (maptarget.Sizeofdatatype()))
-                        {
-                            //mappingfail = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine(String.Format("MAPPING FAILED {0} != {1}",datasize, maptarget.Sizeofdatatype()));
-                        }
+                            if (maptarget.prop.CO_disabled == false && datasize == (maptarget.Sizeofdatatype()))
+                            {
+                                //mappingfail = false;
+                            }
+                            else
+                            {
+                                Console.WriteLine(String.Format("MAPPING FAILED {0} != {1}", datasize, maptarget.Sizeofdatatype()));
+                            }
 
-                        slot.Mapping.Add(maptarget);
-
+                            slot.Mapping.Add(maptarget);
+                        }
+                        catch (Exception) { }
                     }
 
                     Console.WriteLine(String.Format("Total PDO Size {0}\n", totalsize));
@@ -309,7 +311,7 @@ namespace libEDSsharp
                 config.addsubobject(0x00,sub);
 
                 config.accesstype = slot.configAccessType;
-                config.StorageLocation = slot.configloc;
+                config.prop.CO_storageGroup = slot.configloc;
 
 
                 if (slot.isTXPDO())
@@ -375,7 +377,7 @@ namespace libEDSsharp
                 else
                     mapping.parameter_name = "RPDO mapping parameter";
 
-                mapping.StorageLocation = slot.mappingloc;
+                mapping.prop.CO_storageGroup = slot.mappingloc;
                 mapping.accesstype = slot.mappingAccessType;
 
                 sub = new ODentry("Number of mapped objects", (ushort)slot.MappingIndex, 0);

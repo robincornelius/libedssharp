@@ -275,7 +275,7 @@ namespace ODEditor
                 ODentry od = kvp.Value;
                 int index = kvp.Key;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 if (od.objecttype == ObjectType.VAR && (od.PDOtype == PDOMappingType.optional || (isTXPDO && (od.PDOtype == PDOMappingType.TPDO)) || (!isTXPDO && (od.PDOtype == PDOMappingType.RPDO))))
@@ -345,6 +345,9 @@ namespace ODEditor
 
             updateslotdisplay();
 
+            if (eds == null)
+                return;
+
             if(updatechoices)
                 addPDOchoices();
 
@@ -364,7 +367,7 @@ namespace ODEditor
                 ODentry od = kvp.Value;
                 int index = kvp.Key;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 if (od.objecttype == ObjectType.VAR && (od.PDOtype == PDOMappingType.optional || (isTXPDO && (od.PDOtype == PDOMappingType.TPDO)) || (!isTXPDO && (od.PDOtype == PDOMappingType.RPDO))))

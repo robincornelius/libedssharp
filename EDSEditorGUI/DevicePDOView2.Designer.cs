@@ -54,13 +54,13 @@
             this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.grid1 = new SourceGrid.Grid();
             this.button_down = new System.Windows.Forms.Button();
             this.button_up = new System.Windows.Forms.Button();
             this.contextMenuStrip_removeitem = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem_removeitem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem_insert = new System.Windows.Forms.ToolStripMenuItem();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1.SuspendLayout();
             this.contextMenuStrip_removeitem.SuspendLayout();
             this.SuspendLayout();
@@ -69,10 +69,9 @@
             // 
             this.button_addPDO.Image = global::ODEditor.Properties.Resources.action_add_16xLG;
             this.button_addPDO.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_addPDO.Location = new System.Drawing.Point(1178, 32);
-            this.button_addPDO.Margin = new System.Windows.Forms.Padding(4);
+            this.button_addPDO.Location = new System.Drawing.Point(884, 26);
             this.button_addPDO.Name = "button_addPDO";
-            this.button_addPDO.Size = new System.Drawing.Size(156, 33);
+            this.button_addPDO.Size = new System.Drawing.Size(117, 27);
             this.button_addPDO.TabIndex = 15;
             this.button_addPDO.Text = "Add new PDO";
             this.button_addPDO.UseVisualStyleBackColor = true;
@@ -97,41 +96,36 @@
             this.groupBox1.Controls.Add(this.textBox_cob);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Location = new System.Drawing.Point(704, 19);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox1.Location = new System.Drawing.Point(528, 15);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(453, 254);
+            this.groupBox1.Size = new System.Drawing.Size(340, 206);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Communication parameters";
             // 
             // textBox_mapping
             // 
-            this.textBox_mapping.Location = new System.Drawing.Point(130, 58);
-            this.textBox_mapping.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_mapping.Location = new System.Drawing.Point(98, 47);
             this.textBox_mapping.Name = "textBox_mapping";
             this.textBox_mapping.ReadOnly = true;
-            this.textBox_mapping.Size = new System.Drawing.Size(127, 22);
+            this.textBox_mapping.Size = new System.Drawing.Size(96, 20);
             this.textBox_mapping.TabIndex = 9;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 62);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(8, 50);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 17);
+            this.label1.Size = new System.Drawing.Size(48, 13);
             this.label1.TabIndex = 10;
             this.label1.Text = "Mapping";
             // 
             // checkBox_invalidpdo
             // 
             this.checkBox_invalidpdo.AutoSize = true;
-            this.checkBox_invalidpdo.Location = new System.Drawing.Point(277, 94);
-            this.checkBox_invalidpdo.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox_invalidpdo.Location = new System.Drawing.Point(208, 76);
             this.checkBox_invalidpdo.Name = "checkBox_invalidpdo";
-            this.checkBox_invalidpdo.Size = new System.Drawing.Size(70, 21);
+            this.checkBox_invalidpdo.Size = new System.Drawing.Size(57, 17);
             this.checkBox_invalidpdo.TabIndex = 2;
             this.checkBox_invalidpdo.Text = "Invalid";
             this.checkBox_invalidpdo.UseVisualStyleBackColor = true;
@@ -141,10 +135,9 @@
             // 
             this.button_savepdochanges.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.button_savepdochanges.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_savepdochanges.Location = new System.Drawing.Point(277, 198);
-            this.button_savepdochanges.Margin = new System.Windows.Forms.Padding(4);
+            this.button_savepdochanges.Location = new System.Drawing.Point(208, 161);
             this.button_savepdochanges.Name = "button_savepdochanges";
-            this.button_savepdochanges.Size = new System.Drawing.Size(135, 33);
+            this.button_savepdochanges.Size = new System.Drawing.Size(101, 27);
             this.button_savepdochanges.TabIndex = 8;
             this.button_savepdochanges.Text = "Save ";
             this.button_savepdochanges.UseVisualStyleBackColor = true;
@@ -154,10 +147,9 @@
             // 
             this.button_deletePDO.Image = global::ODEditor.Properties.Resources.Remove_16xLG;
             this.button_deletePDO.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_deletePDO.Location = new System.Drawing.Point(277, 158);
-            this.button_deletePDO.Margin = new System.Windows.Forms.Padding(4);
+            this.button_deletePDO.Location = new System.Drawing.Point(208, 128);
             this.button_deletePDO.Name = "button_deletePDO";
-            this.button_deletePDO.Size = new System.Drawing.Size(135, 33);
+            this.button_deletePDO.Size = new System.Drawing.Size(101, 27);
             this.button_deletePDO.TabIndex = 7;
             this.button_deletePDO.Text = "Delete PDO";
             this.button_deletePDO.UseVisualStyleBackColor = true;
@@ -165,119 +157,106 @@
             // 
             // textBox_slot
             // 
-            this.textBox_slot.Location = new System.Drawing.Point(130, 25);
-            this.textBox_slot.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_slot.Location = new System.Drawing.Point(98, 20);
             this.textBox_slot.Name = "textBox_slot";
-            this.textBox_slot.Size = new System.Drawing.Size(127, 22);
+            this.textBox_slot.Size = new System.Drawing.Size(96, 20);
             this.textBox_slot.TabIndex = 0;
             // 
             // textBox_syncstart
             // 
-            this.textBox_syncstart.Location = new System.Drawing.Point(130, 223);
-            this.textBox_syncstart.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_syncstart.Location = new System.Drawing.Point(98, 181);
             this.textBox_syncstart.Name = "textBox_syncstart";
-            this.textBox_syncstart.Size = new System.Drawing.Size(127, 22);
+            this.textBox_syncstart.Size = new System.Drawing.Size(96, 20);
             this.textBox_syncstart.TabIndex = 6;
             // 
             // textBox_eventtimer
             // 
-            this.textBox_eventtimer.Location = new System.Drawing.Point(130, 190);
-            this.textBox_eventtimer.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_eventtimer.Location = new System.Drawing.Point(98, 154);
             this.textBox_eventtimer.Name = "textBox_eventtimer";
-            this.textBox_eventtimer.Size = new System.Drawing.Size(127, 22);
+            this.textBox_eventtimer.Size = new System.Drawing.Size(96, 20);
             this.textBox_eventtimer.TabIndex = 5;
             // 
             // textBox_inhibit
             // 
-            this.textBox_inhibit.Location = new System.Drawing.Point(130, 157);
-            this.textBox_inhibit.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_inhibit.Location = new System.Drawing.Point(98, 128);
             this.textBox_inhibit.Name = "textBox_inhibit";
-            this.textBox_inhibit.Size = new System.Drawing.Size(127, 22);
+            this.textBox_inhibit.Size = new System.Drawing.Size(96, 20);
             this.textBox_inhibit.TabIndex = 4;
             // 
             // textBox_type
             // 
-            this.textBox_type.Location = new System.Drawing.Point(130, 124);
-            this.textBox_type.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_type.Location = new System.Drawing.Point(98, 101);
             this.textBox_type.Name = "textBox_type";
-            this.textBox_type.Size = new System.Drawing.Size(127, 22);
+            this.textBox_type.Size = new System.Drawing.Size(96, 20);
             this.textBox_type.TabIndex = 3;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 227);
-            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Location = new System.Drawing.Point(10, 184);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(71, 17);
+            this.label7.Size = new System.Drawing.Size(54, 13);
             this.label7.TabIndex = 6;
             this.label7.Text = "Sync start";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 161);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Location = new System.Drawing.Point(10, 131);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(45, 17);
+            this.label6.Size = new System.Drawing.Size(35, 13);
             this.label6.TabIndex = 5;
             this.label6.Text = "Inhibit";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(13, 194);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Location = new System.Drawing.Point(10, 158);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(84, 17);
+            this.label5.Size = new System.Drawing.Size(64, 13);
             this.label5.TabIndex = 4;
             this.label5.Text = "Event Timer";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 128);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(10, 104);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 17);
+            this.label4.Size = new System.Drawing.Size(31, 13);
             this.label4.TabIndex = 3;
             this.label4.Text = "Type";
             // 
             // textBox_cob
             // 
-            this.textBox_cob.Location = new System.Drawing.Point(130, 91);
-            this.textBox_cob.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox_cob.Location = new System.Drawing.Point(98, 74);
             this.textBox_cob.Name = "textBox_cob";
-            this.textBox_cob.Size = new System.Drawing.Size(127, 22);
+            this.textBox_cob.Size = new System.Drawing.Size(96, 20);
             this.textBox_cob.TabIndex = 1;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 95);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Location = new System.Drawing.Point(10, 77);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(37, 17);
+            this.label3.Size = new System.Drawing.Size(29, 13);
             this.label3.TabIndex = 1;
             this.label3.Text = "COB";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 29);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(8, 24);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(104, 17);
+            this.label2.Size = new System.Drawing.Size(79, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Communication";
             // 
             // label_availableobjects
             // 
             this.label_availableobjects.AutoSize = true;
-            this.label_availableobjects.Location = new System.Drawing.Point(37, 9);
-            this.label_availableobjects.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_availableobjects.Location = new System.Drawing.Point(28, 7);
             this.label_availableobjects.Name = "label_availableobjects";
-            this.label_availableobjects.Size = new System.Drawing.Size(172, 17);
+            this.label_availableobjects.Size = new System.Drawing.Size(130, 13);
             this.label_availableobjects.TabIndex = 18;
             this.label_availableobjects.Text = "Available Objects for PDO";
             // 
@@ -291,11 +270,10 @@
             this.columnHeader1});
             this.listView_TXPDO.FullRowSelect = true;
             this.listView_TXPDO.HideSelection = false;
-            this.listView_TXPDO.Location = new System.Drawing.Point(41, 29);
-            this.listView_TXPDO.Margin = new System.Windows.Forms.Padding(4);
+            this.listView_TXPDO.Location = new System.Drawing.Point(31, 24);
             this.listView_TXPDO.MultiSelect = false;
             this.listView_TXPDO.Name = "listView_TXPDO";
-            this.listView_TXPDO.Size = new System.Drawing.Size(655, 244);
+            this.listView_TXPDO.Size = new System.Drawing.Size(492, 199);
             this.listView_TXPDO.TabIndex = 17;
             this.listView_TXPDO.UseCompatibleStateImageBehavior = false;
             this.listView_TXPDO.View = System.Windows.Forms.View.Details;
@@ -321,16 +299,21 @@
             this.columnHeader17.Text = "Datatype";
             this.columnHeader17.Width = 183;
             // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Bits";
+            // 
             // grid1
             // 
             this.grid1.AllowDrop = true;
             this.grid1.DefaultWidth = 18;
             this.grid1.EnableSort = true;
-            this.grid1.Location = new System.Drawing.Point(40, 300);
+            this.grid1.Location = new System.Drawing.Point(30, 244);
+            this.grid1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grid1.Name = "grid1";
             this.grid1.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this.grid1.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this.grid1.Size = new System.Drawing.Size(1377, 354);
+            this.grid1.Size = new System.Drawing.Size(1033, 288);
             this.grid1.TabIndex = 21;
             this.grid1.TabStop = true;
             this.grid1.ToolTipText = "";
@@ -340,9 +323,10 @@
             // 
             // button_down
             // 
-            this.button_down.Location = new System.Drawing.Point(42, 659);
+            this.button_down.Location = new System.Drawing.Point(32, 535);
+            this.button_down.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button_down.Name = "button_down";
-            this.button_down.Size = new System.Drawing.Size(92, 37);
+            this.button_down.Size = new System.Drawing.Size(69, 30);
             this.button_down.TabIndex = 22;
             this.button_down.Text = "Zoom Out";
             this.button_down.UseVisualStyleBackColor = true;
@@ -350,9 +334,10 @@
             // 
             // button_up
             // 
-            this.button_up.Location = new System.Drawing.Point(140, 659);
+            this.button_up.Location = new System.Drawing.Point(105, 535);
+            this.button_up.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button_up.Name = "button_up";
-            this.button_up.Size = new System.Drawing.Size(100, 37);
+            this.button_up.Size = new System.Drawing.Size(75, 30);
             this.button_up.TabIndex = 23;
             this.button_up.Text = "Zoom In";
             this.button_up.UseVisualStyleBackColor = true;
@@ -365,30 +350,26 @@
             this.toolStripMenuItem_removeitem,
             this.toolStripMenuItem_insert});
             this.contextMenuStrip_removeitem.Name = "contextMenuStrip_removeitem";
-            this.contextMenuStrip_removeitem.Size = new System.Drawing.Size(167, 52);
+            this.contextMenuStrip_removeitem.Size = new System.Drawing.Size(145, 48);
             this.contextMenuStrip_removeitem.Text = "Remove Item";
             // 
             // toolStripMenuItem_removeitem
             // 
             this.toolStripMenuItem_removeitem.Name = "toolStripMenuItem_removeitem";
-            this.toolStripMenuItem_removeitem.Size = new System.Drawing.Size(166, 24);
+            this.toolStripMenuItem_removeitem.Size = new System.Drawing.Size(144, 22);
             this.toolStripMenuItem_removeitem.Tag = "remove";
             this.toolStripMenuItem_removeitem.Text = "Remove Item";
             // 
             // toolStripMenuItem_insert
             // 
             this.toolStripMenuItem_insert.Name = "toolStripMenuItem_insert";
-            this.toolStripMenuItem_insert.Size = new System.Drawing.Size(166, 24);
+            this.toolStripMenuItem_insert.Size = new System.Drawing.Size(144, 22);
             this.toolStripMenuItem_insert.Tag = "insert";
             this.toolStripMenuItem_insert.Text = "Insert Item";
             // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Bits";
-            // 
             // DevicePDOView2
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.Controls.Add(this.button_up);
@@ -398,8 +379,9 @@
             this.Controls.Add(this.listView_TXPDO);
             this.Controls.Add(this.button_addPDO);
             this.Controls.Add(this.groupBox1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "DevicePDOView2";
-            this.Size = new System.Drawing.Size(1423, 701);
+            this.Size = new System.Drawing.Size(1067, 570);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.contextMenuStrip_removeitem.ResumeLayout(false);

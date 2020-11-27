@@ -13,32 +13,41 @@
 
     You should have received a copy of the GNU General Public License
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
- 
+
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
     Copyright(c) 2017 Neuberger Gebäudeautomation martin.wagner@neuberger.net>
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ODEditor
 {
-    public partial class NewMemoryType : Form
+    public partial class NewItem : Form
     {
         public string name;
 
-        public NewMemoryType()
+        public NewItem(string title)
         {
             InitializeComponent();
+            Text = title;
 
             DialogResult = DialogResult.Cancel;
+        }
+
+        private void Create()
+        {
+            name = textBox_name.Text;
+
+            if (name == "")
+            {
+                MessageBox.Show("Please specify a name");
+            }
+            else
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
 
         private void button_cancel_Click(object sender, EventArgs e)
@@ -48,18 +57,19 @@ namespace ODEditor
 
         private void button_create_Click(object sender, EventArgs e)
         {
+            Create();
+        }
 
-            name = textBox_name.Text;
-
-            if (name == "")
+        private void textBox_name_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 0x1B)
             {
-                MessageBox.Show("Please specify a name");
-                return;
+                Close();
             }
-
-            MessageBox.Show(String.Format("You have to manually add the corresponding entries in OD 0x1010 and 0x1011."));
-            DialogResult = DialogResult.OK;
-            Close();
+            else if (e.KeyChar == '\r')
+            {
+                Create();
+            }
         }
     }
 }

@@ -136,7 +136,7 @@ namespace libEDSsharp
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
 
-                if (kvp.Value.Disabled == true)
+                if (kvp.Value.prop.CO_disabled == true)
                     continue;
 
                 if (kvp.Key >= start && kvp.Key <= end)
@@ -164,7 +164,7 @@ namespace libEDSsharp
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 string name = make_cname(od.parameter_name,od);
@@ -276,15 +276,8 @@ namespace libEDSsharp
             {
                 ODentry od = kvp.Value;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true || od.prop.CO_storageGroup != location)
                     continue;
-
-                if ((od.StorageLocation != location))
-                {
-                    if (!(od.StorageLocation == "Unused" && location == "RAM"))
-                        /* this entry doesn't belong in this section */
-                        continue;
-                }
 
                 sb.Append(print_h_entry(od));
 
@@ -306,7 +299,7 @@ namespace libEDSsharp
 
                     if (od.Lengthofstring == 0)
                     {
-                         Warnings.AddWarning(string.Format(" Object 0x{0:x4}/{1:x2} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index, od.Subindex),Warnings.warning_class.WARNING_STRING);
+                         Warnings.AddWarning(string.Format(" Object 0x{0:X4}/{1:X2} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index, od.Subindex),Warnings.warning_class.WARNING_STRING);
                         specialarraylength = "[1]";
                     }
                     else
@@ -381,7 +374,7 @@ namespace libEDSsharp
 
                             if (maxlength == 0)
                             {
-                                 Warnings.AddWarning(string.Format(" Object children of 0x{0:x4} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index),Warnings.warning_class.WARNING_STRING);
+                                 Warnings.AddWarning(string.Format(" Object children of 0x{0:X4} A string must have a default value to set the required datasize for canopen node, i have set this to [1] byte to prevent compile errors", od.Index),Warnings.warning_class.WARNING_STRING);
                                 maxlength = 1;
                             }
 
@@ -399,20 +392,18 @@ namespace libEDSsharp
 
         private void addHeader(StreamWriter file)
         {
-            file.WriteLine(@"/*******************************************************************************
+            file.WriteLine(string.Format(
+@"/*******************************************************************************
+    CANopen Object Dictionary definition for CANopenNode v1 to v2
 
-   File - CO_OD.c/CO_OD.h
-   CANopen Object Dictionary.
+    This file was automatically generated with
+    libedssharp Object Dictionary Editor v{0}
 
-   This file was automatically generated with libedssharp Object");
+    https://github.com/CANopenNode/CANopenNode
+    https://github.com/robincornelius/libedssharp
 
-            file.Write("   Dictionary Editor v" + this.gitVersion);
-
-            file.WriteLine(@"   DON'T EDIT THIS FILE MANUALLY !!!!
-*******************************************************************************/
-
-");
-
+    DON'T EDIT THIS FILE MANUALLY !!!!
+*******************************************************************************/", this.gitVersion));
         }
 
         private void export_h(string filename)
@@ -471,7 +462,7 @@ namespace libEDSsharp
 
             file.WriteLine("/*******************************************************************************");
             file.WriteLine("   FILE INFO:");
-            file.WriteLine(string.Format("      FileName:     {0}", eds.fi.FileName));
+            file.WriteLine(string.Format("      FileName:     {0}", Path.GetFileName(eds.projectFilename)));
             file.WriteLine(string.Format("      FileVersion:  {0}", eds.fi.FileVersion));
             file.WriteLine(string.Format("      CreationTime: {0}", eds.fi.CreationTime));
             file.WriteLine(string.Format("      CreationDate: {0}", eds.fi.CreationDate));
@@ -507,13 +498,13 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_SRDO                     {0}   //Associated objects: 1301-1341, 1381-13C0", noSRDO));
 
             int lssServer = 0;
-            if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Server")
+            if (eds.di.LSS_Supported == true)
             {
                 lssServer = 1;
             }
             file.WriteLine(string.Format("  #define CO_NO_LSS_SERVER               {0}   //LSS Slave", lssServer));
             int lssClient = 0;
-            if (eds.di.LSS_Supported == true && eds.di.LSS_Type == "Client")
+            if (eds.di.LSS_Master == true)
             {
                 lssClient = 1;
             }
@@ -599,7 +590,7 @@ namespace libEDSsharp
                     int suffix=1;
                     while (structmemberlist.Contains(proposedname))
                     {
-                        Warnings.AddWarning(string.Format("STRUCT WARNING; in 0x{0:x4}/{1:x2} Duplicate struct entry name, it has been auto numbered",subod.Index,subod.Subindex),Warnings.warning_class.WARNING_STRUCT);
+                        Warnings.AddWarning(string.Format("STRUCT WARNING; in 0x{0:X4}/{1:X2} Duplicate struct entry name, it has been auto numbered",subod.Index,subod.Subindex),Warnings.warning_class.WARNING_STRUCT);
                         proposedname = make_cname(subod.parameter_name,subod) + suffix.ToString();
                         suffix++;
                     }
@@ -636,7 +627,7 @@ namespace libEDSsharp
 
                 ODentry od = kvp.Value;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 DataType t = eds.Getdatatype(od);
@@ -699,7 +690,7 @@ namespace libEDSsharp
 *******************************************************************************/
 #define  CO_OD_FIRST_LAST_WORD     0x55 //Any value from 0x01 to 0xFE. If changed, EEPROM will be reinitialized.
 ");
-            foreach (string location in eds.storageLocation)
+            foreach (string location in eds.CO_storageGroups)
             {
                 if (location == "Unused")
                 {
@@ -726,7 +717,7 @@ namespace libEDSsharp
 
             file.WriteLine(@"/***** Declaration of Object Dictionary variables *****************************/");
 
-            foreach (string location in eds.storageLocation)
+            foreach (string location in eds.CO_storageGroups)
             {
                 if (location == "Unused")
                 {
@@ -753,10 +744,10 @@ file.WriteLine(@"/**************************************************************
 
                 ODentry od = kvp.Value;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
-                string loc = "CO_OD_" + od.StorageLocation;
+                string loc = "CO_OD_" + od.prop.CO_storageGroup;
 
                 DataType t = eds.Getdatatype(od);
 
@@ -854,16 +845,24 @@ file.WriteLine(@"/**************************************************************
 
             file.WriteLine("// clang-format off");
             addHeader(file);
-            file.WriteLine(@"#include ""301/CO_driver.h""
-#include """  +  filename + @".h""
-#include ""301/CO_SDOserver.h""
+            file.WriteLine(@"#if CO_VERSION_MAJOR < 2
+ #include ""CO_driver.h""
+ #include """ + filename + @".h""
+ #include ""CO_SDOserver.h""
+#elif CO_VERSION_MAJOR < 4
+ #include ""301/CO_driver.h""
+ #include """ + filename + @".h""
+ #include ""301/CO_SDOserver.h""
+#else
+ #error This Object dictionary is not compatible with CANopenNode v4.0 and up!
+#endif
 
 /*******************************************************************************
    DEFINITION AND INITIALIZATION OF OBJECT DICTIONARY VARIABLES
 *******************************************************************************/
 
 ");
-            foreach (string location in eds.storageLocation)
+            foreach (string location in eds.CO_storageGroups)
             {
                 if (location == "Unused")
                 {
@@ -929,7 +928,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 ODentry od = kvp.Value;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 returndata.Append(write_od_line(od));
@@ -944,24 +943,13 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         {
             StringBuilder sb = new StringBuilder();
 
-            string loc = "CO_OD_" + od.StorageLocation;
+            string loc = "CO_OD_" + od.prop.CO_storageGroup;
 
             byte flags = getflags(od);
 
             DataType t = eds.Getdatatype(od);
             int datasize = (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
   
-            string odf;
-
-            if (od.AccessFunctionName != null)
-            {
-                odf = od.AccessFunctionName;
-            }
-            else
-            {
-                odf = "CO_ODF";
-            }
-
             string array = "";
 
             //only needed for array objects
@@ -1053,7 +1041,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             if (od.objecttype == ObjectType.REC)
                 return 0;
 
-            switch(od.StorageLocation.ToUpper())
+            switch(od.prop.CO_storageGroup.ToUpper())
             {
                 case "ROM":
                     flags = 0x01;
@@ -1068,15 +1056,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                     flags = 0x03;
                     break;
             }
-
-            /*
-            flags = (byte)eds.storageLocation.IndexOf(od.StorageLocation);
-            //1 = ROM, 2 = RAM, >= 3 some EEPROM region
-            if (flags > 0x03)
-            {
-                flags = 0x03;
-            }
-            */
 
             /* some exceptions for rwr/rww. Those are entries that are always r/w via SDO transfer,
              * but can only be read -or- written via PDO */
@@ -1115,7 +1094,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 flags |= mapping;
             }
 
-            if(od.TPDODetectCos)
+            if(od.prop.CO_flagsPDO)
             {
               /* If variable is mapped to any PDO, then  is automatically send, if variable its value */
               flags |=0x40;
@@ -1287,7 +1266,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
                 }
             }
-            catch(Exception e)
+            catch(Exception)
             {
                  Warnings.AddWarning(String.Format("Error converting value {0} to type {1}", defaultvalue, dt.ToString()),Warnings.warning_class.WARNING_BUILD);
                 return "";
@@ -1392,10 +1371,11 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             if ((entry.Index >= 0x1a00) && (entry.Index < 0x1c00))
                 key = (UInt32)((0x1a00 << 8) + entry.Subindex);
 
-            if (acceptable_canopen_names.ContainsKey(key))
+            if (acceptable_canopen_names.ContainsKey(key) && !(entry.parent != null && entry.Subindex == 0))
             {
                 string newname = acceptable_canopen_names[key];
-                 Warnings.AddWarning(string.Format("Warning: index 0x{0:x4}/{1:x2} correcting name for CanOpenNode compatibility from {2} to {3}", entry.Index, entry.Subindex, output, newname),Warnings.warning_class.WARNING_RENAME);
+                if (output != newname)
+                 Warnings.AddWarning(string.Format("Warning: index 0x{0:X4}/{1:X2} correcting name for CanOpenNode compatibility from {2} to {3}", entry.Index, entry.Subindex, output, newname),Warnings.warning_class.WARNING_RENAME);
                 output = newname;
             }
 
@@ -1420,7 +1400,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 if (od.objecttype != ObjectType.REC)
                     continue;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true)
                     continue;
 
                 int count = od.subobjects.Count; //don't include index
@@ -1480,7 +1460,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             if (sub.datatype != DataType.DOMAIN)
             {
-                sb.AppendLine($"           {{(void*)&{"CO_OD_" + sub.parent.StorageLocation}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
+                sb.AppendLine($"           {{(void*)&{"CO_OD_" + sub.parent.prop.CO_storageGroup}.{cname}{arrayaccess}.{subcname}, 0x{getflags(sub):X2}, 0x{datasize:X} }},");
             }
             else
             {
@@ -1586,7 +1566,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             {
                 UInt16 index = kvp.Key;
 
-                if (kvp.Value.Disabled == true)
+                if (kvp.Value.prop.CO_disabled == true)
                     continue;
 
                 if (index >= 0x1400 && index < 0x1600)
@@ -1648,15 +1628,8 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             {
                 ODentry od = kvp.Value;
 
-                if (od.Disabled == true)
+                if (od.prop.CO_disabled == true || od.prop.CO_storageGroup != location)
                     continue;
-
-                if ((od.StorageLocation != location))
-                {
-                    if (!(od.StorageLocation == "Unused" && location == "RAM"))
-                        /* this entry doesn't belong in this section */
-                        continue;
-                }
 
                 if (od.Nosubindexes == 0)
                 {
