@@ -477,7 +477,7 @@ namespace libEDSsharp
                             devSubPar.Items = new object[] { new vendorTextLabel { lang = "en", Value = subod.parameter_name } };
                         }
                         if (!stripped)
-                            devSubPar.property = od.prop.SubOdeXdd();
+                            devSubPar.property = subod.prop.SubOdeXdd();
                         if (deviceCommissioning && subod.denotation != null && subod.denotation != "")
                         {
                             devPar.denotation = new denotation

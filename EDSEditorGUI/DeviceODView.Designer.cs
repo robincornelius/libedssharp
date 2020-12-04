@@ -510,7 +510,7 @@ namespace ODEditor
             // 
             // textBox_stringLengthMin
             // 
-            this.textBox_stringLengthMin.Location = new System.Drawing.Point(329, 99);
+            this.textBox_stringLengthMin.Location = new System.Drawing.Point(340, 99);
             this.textBox_stringLengthMin.Name = "textBox_stringLengthMin";
             this.textBox_stringLengthMin.Size = new System.Drawing.Size(122, 20);
             this.textBox_stringLengthMin.TabIndex = 24;
@@ -528,7 +528,7 @@ namespace ODEditor
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(472, 92);
+            this.label21.Location = new System.Drawing.Point(482, 92);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(67, 13);
             this.label21.TabIndex = 38;
@@ -537,7 +537,7 @@ namespace ODEditor
             // checkBox_ioExtension
             // 
             this.checkBox_ioExtension.AutoSize = true;
-            this.checkBox_ioExtension.Location = new System.Drawing.Point(554, 92);
+            this.checkBox_ioExtension.Location = new System.Drawing.Point(574, 92);
             this.checkBox_ioExtension.Name = "checkBox_ioExtension";
             this.checkBox_ioExtension.Size = new System.Drawing.Size(15, 14);
             this.checkBox_ioExtension.TabIndex = 33;
@@ -547,7 +547,7 @@ namespace ODEditor
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(472, 21);
+            this.label20.Location = new System.Drawing.Point(482, 21);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(64, 13);
             this.label20.TabIndex = 36;
@@ -557,7 +557,7 @@ namespace ODEditor
             // 
             this.comboBox_countLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_countLabel.FormattingEnabled = true;
-            this.comboBox_countLabel.Location = new System.Drawing.Point(554, 18);
+            this.comboBox_countLabel.Location = new System.Drawing.Point(574, 18);
             this.comboBox_countLabel.Name = "comboBox_countLabel";
             this.comboBox_countLabel.Size = new System.Drawing.Size(122, 21);
             this.comboBox_countLabel.TabIndex = 30;
@@ -585,7 +585,7 @@ namespace ODEditor
             // textBox_actualValue
             // 
             this.textBox_actualValue.BackColor = System.Drawing.Color.PeachPuff;
-            this.textBox_actualValue.Location = new System.Drawing.Point(329, 72);
+            this.textBox_actualValue.Location = new System.Drawing.Point(340, 72);
             this.textBox_actualValue.Name = "textBox_actualValue";
             this.textBox_actualValue.Size = new System.Drawing.Size(122, 20);
             this.textBox_actualValue.TabIndex = 23;
@@ -593,7 +593,7 @@ namespace ODEditor
             // 
             // textBox_lowLimit
             // 
-            this.textBox_lowLimit.Location = new System.Drawing.Point(329, 45);
+            this.textBox_lowLimit.Location = new System.Drawing.Point(340, 45);
             this.textBox_lowLimit.Name = "textBox_lowLimit";
             this.textBox_lowLimit.Size = new System.Drawing.Size(122, 20);
             this.textBox_lowLimit.TabIndex = 22;
@@ -601,7 +601,7 @@ namespace ODEditor
             // 
             // textBox_highLimit
             // 
-            this.textBox_highLimit.Location = new System.Drawing.Point(329, 18);
+            this.textBox_highLimit.Location = new System.Drawing.Point(340, 18);
             this.textBox_highLimit.Name = "textBox_highLimit";
             this.textBox_highLimit.Size = new System.Drawing.Size(122, 20);
             this.textBox_highLimit.TabIndex = 21;
@@ -638,9 +638,9 @@ namespace ODEditor
             // 
             this.button_saveChanges.Image = global::ODEditor.Properties.Resources.Save_6530;
             this.button_saveChanges.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_saveChanges.Location = new System.Drawing.Point(475, 138);
+            this.button_saveChanges.Location = new System.Drawing.Point(485, 138);
             this.button_saveChanges.Name = "button_saveChanges";
-            this.button_saveChanges.Size = new System.Drawing.Size(201, 35);
+            this.button_saveChanges.Size = new System.Drawing.Size(211, 35);
             this.button_saveChanges.TabIndex = 50;
             this.button_saveChanges.Text = "Save Changes";
             this.button_saveChanges.UseVisualStyleBackColor = true;
@@ -649,7 +649,7 @@ namespace ODEditor
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(472, 48);
+            this.label16.Location = new System.Drawing.Point(482, 48);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(76, 13);
             this.label16.TabIndex = 26;
@@ -659,7 +659,7 @@ namespace ODEditor
             // 
             this.comboBox_storageGroup.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_storageGroup.FormattingEnabled = true;
-            this.comboBox_storageGroup.Location = new System.Drawing.Point(554, 45);
+            this.comboBox_storageGroup.Location = new System.Drawing.Point(574, 45);
             this.comboBox_storageGroup.Name = "comboBox_storageGroup";
             this.comboBox_storageGroup.Size = new System.Drawing.Size(122, 21);
             this.comboBox_storageGroup.TabIndex = 31;
@@ -668,7 +668,7 @@ namespace ODEditor
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(472, 72);
+            this.label15.Location = new System.Drawing.Point(482, 72);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(46, 13);
             this.label15.TabIndex = 24;
@@ -677,7 +677,7 @@ namespace ODEditor
             // checkBox_enabled
             // 
             this.checkBox_enabled.AutoSize = true;
-            this.checkBox_enabled.Location = new System.Drawing.Point(554, 72);
+            this.checkBox_enabled.Location = new System.Drawing.Point(574, 72);
             this.checkBox_enabled.Name = "checkBox_enabled";
             this.checkBox_enabled.Size = new System.Drawing.Size(15, 14);
             this.checkBox_enabled.TabIndex = 32;
@@ -725,7 +725,7 @@ namespace ODEditor
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(472, 112);
+            this.label12.Location = new System.Drawing.Point(482, 112);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(58, 13);
             this.label12.TabIndex = 18;
@@ -743,7 +743,7 @@ namespace ODEditor
             // checkBox_pdoFlags
             // 
             this.checkBox_pdoFlags.AutoSize = true;
-            this.checkBox_pdoFlags.Location = new System.Drawing.Point(554, 112);
+            this.checkBox_pdoFlags.Location = new System.Drawing.Point(574, 112);
             this.checkBox_pdoFlags.Name = "checkBox_pdoFlags";
             this.checkBox_pdoFlags.Size = new System.Drawing.Size(15, 14);
             this.checkBox_pdoFlags.TabIndex = 34;
@@ -764,7 +764,7 @@ namespace ODEditor
             // 
             this.textBox_defaultValue.Location = new System.Drawing.Point(108, 153);
             this.textBox_defaultValue.Name = "textBox_defaultValue";
-            this.textBox_defaultValue.Size = new System.Drawing.Size(343, 20);
+            this.textBox_defaultValue.Size = new System.Drawing.Size(354, 20);
             this.textBox_defaultValue.TabIndex = 20;
             this.textBox_defaultValue.TextChanged += new System.EventHandler(this.DataDirty);
             // 

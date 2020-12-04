@@ -439,7 +439,7 @@ namespace ODEditor
                 od.LowLimit = textBox_lowLimit.Text;
 
                 // CO_stringLengthMin
-                if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.OCTET_STRING)
+                if (od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.UNICODE_STRING || od.datatype == DataType.OCTET_STRING)
                 {
                     try
                     {
