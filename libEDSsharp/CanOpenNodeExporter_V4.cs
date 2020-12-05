@@ -833,21 +833,27 @@ const OD_t {0} = {{
 
                             if (valueDefined)
                             {
-                                Encoding ascii = Encoding.ASCII;
-                                Byte[] encodedBytes = ascii.GetBytes(defaultvalue);
+                                UTF8Encoding utf8 = new UTF8Encoding();
+                                Byte[] encodedBytes = utf8.GetBytes(defaultvalue);
                                 foreach (Byte b in encodedBytes)
                                 {
-                                    chars.Add($"'{StringUnescape.Escape((char)b)}'");
+                                    if ((char)b == '\'')
+                                        chars.Add("'\\''");
+                                    else if (b >= 0x20 && b < 0x7F)
+                                        chars.Add($"'{(char)b}'");
+                                    else
+                                        chars.Add($"0x{b:X2}");
                                     len++;
                                 }
                             }
+                            /* fill unused bytes with nulls */
                             for (; len < stringLength; len++)
                             {
-                                chars.Add("'\\0'");
+                                chars.Add("0");
                             }
 
                             // extra string terminator
-                            chars.Add("'\\0'");
+                            chars.Add("0");
 
                             data.length = len;
                             data.cType = "char";
