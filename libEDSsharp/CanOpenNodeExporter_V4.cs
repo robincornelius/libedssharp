@@ -197,7 +197,7 @@ namespace libEDSsharp
         private int Prepare_var(ODentry od, string indexH, string varName, string group)
         {
             DataProperties data = Get_dataProperties(od.datatype, od.defaultvalue, od.prop.CO_stringLengthMin, indexH);
-            string attr = Get_attributes(od, data.cTypeMultibyte);
+            string attr = Get_attributes(od, data.cTypeMultibyte, data.cTypeString);
 
             // data storage
             string dataPtr = "NULL";
@@ -253,7 +253,7 @@ namespace libEDSsharp
                 DataType dataType = (sub.datatype != DataType.UNKNOWN) ? sub.datatype : od.datatype;
 
                 DataProperties data = Get_dataProperties(dataType, sub.defaultvalue, sub.prop.CO_stringLengthMin, indexH);
-                string attr = Get_attributes(sub, data.cTypeMultibyte);
+                string attr = Get_attributes(sub, data.cTypeMultibyte, data.cTypeString);
 
                 if (sub.Subindex != i)
                     Warnings.AddWarning($"Error in 0x{indexH}: SubIndexes in ARRAY must be in sequence!", Warnings.warning_class.WARNING_BUILD);
@@ -350,7 +350,7 @@ namespace libEDSsharp
             foreach (ODentry sub in od.subobjects.Values)
             {
                 DataProperties data = Get_dataProperties(sub.datatype, sub.defaultvalue, sub.prop.CO_stringLengthMin, indexH);
-                string attr = Get_attributes(sub, data.cTypeMultibyte);
+                string attr = Get_attributes(sub, data.cTypeMultibyte, data.cTypeString);
 
                 if (sub.Subindex == 0 && (data.cType != "uint8_t" || data.length != 1))
                     Warnings.AddWarning($"Error in 0x{indexH}: Data type in RECORD, subIndex 0 must be UNSIGNED8, not {sub.datatype}!", Warnings.warning_class.WARNING_BUILD);
@@ -661,6 +661,7 @@ const OD_t {0} = {{
             public string cTypeArray = "";
             public string cTypeArray0 = "";
             public bool cTypeMultibyte = false;
+            public bool cTypeString = false;
             public UInt32 length = 0;
             public string cValue = null;
         }
@@ -824,6 +825,7 @@ const OD_t {0} = {{
                         break;
 
                     case DataType.VISIBLE_STRING:
+                        data.cTypeString = true;
                         if (valueDefined || stringLength > 0)
                         {
                             List<string> chars = new List<string>();
@@ -831,22 +833,31 @@ const OD_t {0} = {{
 
                             if (valueDefined)
                             {
-                                Encoding ascii = Encoding.ASCII;
-                                Byte[] encodedBytes = ascii.GetBytes(defaultvalue);
+                                UTF8Encoding utf8 = new UTF8Encoding();
+                                Byte[] encodedBytes = utf8.GetBytes(defaultvalue);
                                 foreach (Byte b in encodedBytes)
                                 {
-                                    chars.Add($"'{StringUnescape.Escape((char)b)}'");
+                                    if ((char)b == '\'')
+                                        chars.Add("'\\''");
+                                    else if (b >= 0x20 && b < 0x7F)
+                                        chars.Add($"'{(char)b}'");
+                                    else
+                                        chars.Add($"0x{b:X2}");
                                     len++;
                                 }
                             }
+                            /* fill unused bytes with nulls */
                             for (; len < stringLength; len++)
                             {
-                                chars.Add("'\\0'");
+                                chars.Add("0");
                             }
+
+                            // extra string terminator
+                            chars.Add("0");
 
                             data.length = len;
                             data.cType = "char";
-                            data.cTypeArray = $"[{len}]";
+                            data.cTypeArray = $"[{len + 1}]";
                             data.cTypeArray0 = "[0]";
                             data.cValue = $"{{{string.Join(", ", chars)}}}";
                         }
@@ -866,7 +877,7 @@ const OD_t {0} = {{
                                 string[] strBytes = defaultvalue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                                 foreach (string s in strBytes)
                                 {
-                                    bytes.Add(String.Format("0x{0:X2}", Convert.ToByte(s, nobase)));
+                                    bytes.Add(String.Format("0x{0:X2}", Convert.ToByte(s, 16)));
                                     len++;
                                 }
                             }
@@ -883,6 +894,8 @@ const OD_t {0} = {{
                         }
                         break;
                     case DataType.UNICODE_STRING:
+                        data.cTypeString = true;
+                        data.cTypeMultibyte = true;
                         if (valueDefined || stringLength > 0)
                         {
                             List<string> words = new List<string>();
@@ -904,9 +917,12 @@ const OD_t {0} = {{
                                 words.Add("0x0000");
                             }
 
+                            // extra string terminator
+                            words.Add("0x0000");
+
                             data.length = len * 2;
                             data.cType = "uint16_t";
-                            data.cTypeArray = $"[{len}]";
+                            data.cTypeArray = $"[{len + 1}]";
                             data.cTypeArray0 = "[0]";
                             data.cValue = $"{{{string.Join(", ", words)}}}";
                         }
@@ -986,9 +1002,10 @@ const OD_t {0} = {{
         /// Get attributes from OD entry or sub-entry
         /// </summary>
         /// <param name="od"></param>
-        /// <param name="multibyte"></param>
+        /// <param name="cTypeMultibyte"></param>
+        /// <param name="cTypeString"></param>
         /// <returns></returns>
-        private string Get_attributes(ODentry od, bool multibyte)
+        private string Get_attributes(ODentry od, bool cTypeMultibyte, bool cTypeString)
         {
             List<string> attributes = new List<string>();
 
@@ -1031,8 +1048,11 @@ const OD_t {0} = {{
                     break;
             }
 
-            if (multibyte)
+            if (cTypeMultibyte)
                 attributes.Add("ODA_MB");
+
+            if (cTypeString)
+                attributes.Add("ODA_STR");
 
             return string.Join(" | ", attributes);
         }
