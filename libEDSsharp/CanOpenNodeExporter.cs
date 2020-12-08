@@ -833,7 +833,7 @@ file.WriteLine(@"/**************************************************************
             file.WriteLine(@"#if CO_VERSION_MAJOR < 2
  #include ""CO_driver.h""
  #include """ + filename + @".h""
- #include ""CO_SDOserver.h""
+ #include ""CO_SDO.h""
 #elif CO_VERSION_MAJOR < 4
  #include ""301/CO_driver.h""
  #include """ + filename + @".h""
