@@ -1514,12 +1514,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
 
             //TIME
-            checkfeature = 0;
             if (eds.ods.ContainsKey(0x1012))
-                checkfeature++;
-            if (eds.ods.ContainsKey(0x1013))
-                checkfeature++;
-            if (checkfeature == 2)
             {
                 noTIME = 1;
             }
