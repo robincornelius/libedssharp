@@ -177,7 +177,12 @@ namespace libEDSsharp
 
 This file was automatically generated with [libedssharp](https://github.com/robincornelius/libedssharp) Object Dictionary Editor v{8}
 
-* [Device Information](#device-information)* [PDO Mapping](#pdo-mapping)* [Communication Specific Parameters](#communication-specific-parameters)* [Manufacturer Specific Parameters](#manufacturer-specific-parameters)* [Device Profile Specific Parameters](#device-profile-specific-parameters)",
+* [Device Information](#device-information)
+* [PDO Mapping](#pdo-mapping)
+* [Communication Specific Parameters](#communication-specific-parameters)
+* [Manufacturer Specific Parameters](#manufacturer-specific-parameters)
+* [Device Profile Specific Parameters](#device-profile-specific-parameters)
+",
             eds.di.ProductName, eds.fi.Description,
             Path.GetFileName(eds.projectFilename), eds.fi.FileVersion,
             eds.fi.CreationDateTime, eds.fi.CreatedBy, eds.fi.ModificationDateTime, eds.fi.ModifiedBy,

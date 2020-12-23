@@ -895,7 +895,6 @@ const OD_t {0} = {{
                         break;
                     case DataType.UNICODE_STRING:
                         data.cTypeString = true;
-                        data.cTypeMultibyte = true;
                         if (valueDefined || stringLength > 0)
                         {
                             List<string> words = new List<string>();
