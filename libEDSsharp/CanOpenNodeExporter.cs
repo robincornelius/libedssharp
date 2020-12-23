@@ -830,7 +830,8 @@ file.WriteLine(@"/**************************************************************
 
             file.WriteLine("// clang-format off");
             addHeader(file);
-            file.WriteLine(@"#if CO_VERSION_MAJOR < 2
+            file.WriteLine(@"// For CANopenNode V2 users, C macro `CO_VERSION_MAJOR=2` has to be added to project options
+ #ifndef CO_VERSION_MAJOR
  #include ""CO_driver.h""
  #include """ + filename + @".h""
  #include ""CO_SDO.h""
