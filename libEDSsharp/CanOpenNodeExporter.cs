@@ -533,9 +533,16 @@ namespace libEDSsharp
 
             List<string> structnamelist = new List<string>();
 
+            /* make sure, we have all storage groups */
+            eds.CO_storageGroups.Add("ROM");
+            eds.CO_storageGroups.Add("EEPROM");
+
             foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
             {
                 ODentry od = kvp.Value;
+
+                /* make sure, we have all storage groups */
+                eds.CO_storageGroups.Add(od.prop.CO_storageGroup);
 
                 if (od.objecttype != ObjectType.REC)
                     continue;
@@ -831,7 +838,7 @@ file.WriteLine(@"/**************************************************************
             file.WriteLine("// clang-format off");
             addHeader(file);
             file.WriteLine(@"// For CANopenNode V2 users, C macro `CO_VERSION_MAJOR=2` has to be added to project options
- #ifndef CO_VERSION_MAJOR
+#ifndef CO_VERSION_MAJOR
  #include ""CO_driver.h""
  #include """ + filename + @".h""
  #include ""CO_SDO.h""
@@ -933,8 +940,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             byte flags = getflags(od);
 
-            DataType t = eds.Getdatatype(od);
-            int datasize = (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
+            int datasize = od.objecttype == ObjectType.REC ? 0 : (int)Math.Ceiling((double)od.Sizeofdatatype() / (double)8.0);
   
             string array = "";
 
@@ -1027,7 +1033,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             if (od.objecttype == ObjectType.REC)
                 return 0;
 
-            switch(od.prop.CO_storageGroup.ToUpper())
+            switch((od.parent == null ? od : od.parent).prop.CO_storageGroup.ToUpper())
             {
                 case "ROM":
                     flags = 0x01;
@@ -1073,6 +1079,19 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                     /* Variable is mappable for RPDO */
                     mapping |= 0x10;
                 }
+            }
+
+            if (od.Index == 0x1003)
+            {
+                /* SDO server may write to the variable */
+                flags |= 0x08;
+            }
+
+            switch (od.PDOtype)
+            {
+                case libEDSsharp.PDOMappingType.RPDO: mapping |= 0x10; break;
+                case libEDSsharp.PDOMappingType.TPDO: mapping |= 0x20; break;
+                case libEDSsharp.PDOMappingType.optional: mapping |= 0x30; break;
             }
 
             if (od.PDOMapping)

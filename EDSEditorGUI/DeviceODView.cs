@@ -303,8 +303,16 @@ namespace ODEditor
                                 ? od.parent.datatype.ToString()
                                 : od.datatype.ToString();
                 ComboBoxSet(comboBox_dataType, dataType);
-                comboBox_accessSDO.SelectedItem = od.AccessSDO().ToString();
-                comboBox_accessPDO.SelectedItem = od.AccessPDO().ToString();
+                if (CANopenNodeV4)
+                {
+                    comboBox_accessSDO.SelectedItem = od.AccessSDO().ToString();
+                    comboBox_accessPDO.SelectedItem = od.AccessPDO().ToString();
+                }
+                else
+                {
+                    comboBox_accessSDO.SelectedItem = od.accesstype.ToString();
+                    comboBox_accessPDO.SelectedItem = od.PDOtype.ToString();
+                }
                 comboBox_accessSRDO.SelectedItem = od.prop.CO_accessSRDO.ToString();
 
                 textBox_defaultValue.Text = od.defaultvalue;
@@ -401,27 +409,51 @@ namespace ODEditor
                     od.datatype = DataType.UNKNOWN;
                 }
 
-                AccessSDO accessSDO;
-                try
+                if (CANopenNodeV4)
                 {
-                    accessSDO = (AccessSDO)Enum.Parse(typeof(AccessSDO), comboBox_accessSDO.SelectedItem.ToString());
-                }
-                catch (Exception) {
-                    accessSDO = AccessSDO.ro;
-                }
+                    AccessSDO accessSDO;
+                    try
+                    {
+                        accessSDO = (AccessSDO)Enum.Parse(typeof(AccessSDO), comboBox_accessSDO.SelectedItem.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        accessSDO = AccessSDO.ro;
+                    }
 
-                AccessPDO accessPDO;
-                try
-                {
-                    accessPDO = (AccessPDO)Enum.Parse(typeof(AccessPDO), comboBox_accessPDO.SelectedItem.ToString());
-                }
-                catch (Exception)
-                {
-                    accessPDO = AccessPDO.no;
-                }
+                    AccessPDO accessPDO;
+                    try
+                    {
+                        accessPDO = (AccessPDO)Enum.Parse(typeof(AccessPDO), comboBox_accessPDO.SelectedItem.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        accessPDO = AccessPDO.no;
+                    }
 
-                od.AccessSDO(accessSDO, accessPDO);
-                od.AccessPDO(accessPDO);
+                    od.AccessSDO(accessSDO, accessPDO);
+                    od.AccessPDO(accessPDO);
+                }
+                else
+                {
+                    try
+                    {
+                        od.accesstype = (EDSsharp.AccessType)Enum.Parse(typeof(EDSsharp.AccessType), comboBox_accessSDO.SelectedItem.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        od.accesstype = EDSsharp.AccessType.ro;
+                    }
+
+                    try
+                    {
+                        od.PDOtype = (PDOMappingType)Enum.Parse(typeof(PDOMappingType), comboBox_accessPDO.SelectedItem.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        od.PDOtype = PDOMappingType.no;
+                    }
+                }
 
                 // CO_accessSRDO
                 try

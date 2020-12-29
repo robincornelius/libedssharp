@@ -53,6 +53,26 @@ namespace libEDSsharp
 
                 // if(od.subindex==-1)
                 {
+                    if (od.objecttype == ObjectType.ARRAY && od.datatype == DataType.UNKNOWN)
+                    {
+                        //add the datatype field to parent objects if they don't have it already
+                        //if the 2nd subobject does not exist then we do nothing.
+                        ODentry sub = od.Getsubobject(1);
+                        if (sub != null)
+                        {
+                            od.datatype = sub.datatype;
+                        }
+                    }
+
+                    if (od.objecttype == ObjectType.REC && od.accesstype == EDSsharp.AccessType.UNKNOWN)
+                    {
+                        ODentry sub = od.Getsubobject(1);
+                        if (sub != null)
+                        {
+                            od.accesstype = sub.accesstype;
+                        }
+                    }
+
                     Xml2CSharp.CANopenObject coo = new Xml2CSharp.CANopenObject();
                     coo.Index = string.Format("{0:x4}", od.Index);
                     coo.Name = od.parameter_name;
@@ -87,30 +107,17 @@ namespace libEDSsharp
                             sub.Description = new Xml2CSharp.Description();
                             sub.Description.Text = subod.Description;
                             sub.ObjectType = subod.objecttype.ToString();
-                            sub.AccessType = subod.accesstype.ToString();
-                            sub.DataType = string.Format("0x{0:x2}", (int)subod.datatype);
+                            sub.AccessType = subod.accesstype == EDSsharp.AccessType.UNKNOWN ? od.accesstype.ToString() : subod.accesstype.ToString();
+                            sub.DataType = string.Format("0x{0:x2}", (int)(subod.datatype == DataType.UNKNOWN ? od.datatype : subod.datatype));
                             sub.DefaultValue = subod.defaultvalue;
                             sub.HighValue = subod.HighLimit;
                             sub.LowValue = subod.LowLimit;
                             sub.PDOmapping = subod.PDOtype.ToString();
                             sub.SubIndex = String.Format("{0:x2}", subindex);
-                            sub.TPDOdetectCOS = subod.prop.CO_flagsPDO.ToString().ToLower();
+                            sub.TPDOdetectCOS = (subod.prop.CO_flagsPDO ? subod.prop.CO_flagsPDO : od.prop.CO_flagsPDO).ToString().ToLower();
                             coo.CANopenSubObject.Add(sub);
 
                         }
-                    }
-
-                    if (od.objecttype == ObjectType.ARRAY && od.datatype == DataType.UNKNOWN)
-                    {
-                        //add the datatype field to parent objects if they don't have it already
-                        //if the 2nd subobject does not exist then we do nothing.
-                        ODentry sub = od.Getsubobject(1);
-                        if (sub != null)
-                        {
-                            od.datatype = sub.datatype;
-                        }
-
-
                     }
 
                     dev.CANopenObjectList.CANopenObject.Add(coo);
