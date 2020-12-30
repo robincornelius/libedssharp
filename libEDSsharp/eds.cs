@@ -1274,6 +1274,7 @@ namespace libEDSsharp
                 default:
                 case "VAR": this.objecttype = ObjectType.VAR; break;
                 case "ARRAY": this.objecttype = ObjectType.ARRAY; break;
+                case "REC":
                 case "RECORD": this.objecttype = ObjectType.REC; break;
             }
         }
