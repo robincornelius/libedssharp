@@ -82,13 +82,12 @@ namespace ODEditor
                     comboBox_objectType.Items.Add(foo.ToString());
                 foreach (EDSsharp.AccessType foo in Enum.GetValues(typeof(EDSsharp.AccessType)))
                     comboBox_accessSDO.Items.Add(foo.ToString());
+                foreach (PDOMappingType foo in Enum.GetValues(typeof(PDOMappingType)))
+                    comboBox_accessPDO.Items.Add(foo.ToString());
 
-                comboBox_accessSDO.Items.Add("0x1003 rw/ro");
-                comboBox_accessSDO.Items.Add("0x1010 const/rw");
-                comboBox_accessSDO.Items.Add("0x1010 const/ro");
-
-                comboBox_accessPDO.Items.Add("no");
-                comboBox_accessPDO.Items.Add("optional");
+                //comboBox_accessSDO.Items.Add("0x1003 rw/ro");
+                //comboBox_accessSDO.Items.Add("0x1010 const/rw");
+                //comboBox_accessSDO.Items.Add("0x1010 const/ro");
             }
 
             foreach (AccessSRDO foo in Enum.GetValues(typeof(AccessSRDO)))
