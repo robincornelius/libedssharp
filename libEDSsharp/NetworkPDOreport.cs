@@ -32,6 +32,7 @@ namespace libEDSsharp
         {
 
             file = new StreamWriter(filepath, false);
+            file.NewLine = "\n";
 
             file.Write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /> <title>Network PDO report</title></head><body>");
 

@@ -73,6 +73,9 @@ namespace ODEditor
 
                 foreach (AccessPDO foo in Enum.GetValues(typeof(AccessPDO)))
                     comboBox_accessPDO.Items.Add(foo.ToString());
+
+                label_pdoFlags.Visible = false;
+                checkBox_pdoFlags.Visible = false;
             }
             else
             {
@@ -88,6 +91,9 @@ namespace ODEditor
                 //comboBox_accessSDO.Items.Add("0x1003 rw/ro");
                 //comboBox_accessSDO.Items.Add("0x1010 const/rw");
                 //comboBox_accessSDO.Items.Add("0x1010 const/ro");
+
+                label_pdoFlags.Visible = true;
+                checkBox_pdoFlags.Visible = true;
             }
 
             foreach (AccessSRDO foo in Enum.GetValues(typeof(AccessSRDO)))
@@ -353,7 +359,6 @@ namespace ODEditor
                 comboBox_countLabel.Enabled = true;
                 comboBox_storageGroup.Enabled = true;
                 checkBox_enabled.Enabled = true;
-                checkBox_ioExtension.Enabled = true;
                 checkBox_pdoFlags.Enabled = true;
             }
             else
@@ -363,14 +368,12 @@ namespace ODEditor
                 comboBox_countLabel.Enabled = false;
                 comboBox_storageGroup.Enabled = false;
                 checkBox_enabled.Enabled = false;
-                checkBox_ioExtension.Enabled = false;
                 checkBox_pdoFlags.Enabled = false;
             }
 
             ComboBoxSet(comboBox_countLabel, odBase.prop.CO_countLabel);
             ComboBoxSet(comboBox_storageGroup, odBase.prop.CO_storageGroup);
             checkBox_enabled.Checked = !odBase.prop.CO_disabled;
-            checkBox_ioExtension.Checked = odBase.prop.CO_extensionIO;
             checkBox_pdoFlags.Checked = odBase.prop.CO_flagsPDO;
 
             justUpdating = false;
@@ -511,7 +514,6 @@ namespace ODEditor
                 od.prop.CO_countLabel = comboBox_countLabel.SelectedItem.ToString();
                 od.prop.CO_storageGroup = comboBox_storageGroup.SelectedItem.ToString();
                 od.prop.CO_disabled = !checkBox_enabled.Checked;
-                od.prop.CO_extensionIO = checkBox_ioExtension.Checked;
                 od.prop.CO_flagsPDO = checkBox_pdoFlags.Checked;
             }
 
