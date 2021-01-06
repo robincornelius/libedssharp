@@ -32,6 +32,7 @@ namespace libEDSsharp
         {
 
             file = new StreamWriter(filepath, false);
+            file.NewLine = "\n";
 
            file.Write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /></head><body>");
 
@@ -369,11 +370,11 @@ Device Information {{#device-information}}
 
             file.WriteLine(string.Format(@"
 ### 0x{0:X4} - {1}
-| Object Type | Count Label    | Storage Group  | IO extension  | PDO flags    |
-| ----------- | -------------- | -------------- | ------------- | ------------ |
-| {2,-12}| {3,-15}| {4,-15}| {5,-14}| {6,-13}|",
+| Object Type | Count Label    | Storage Group  |
+| ----------- | -------------- | -------------- |
+| {2,-12}| {3,-15}| {4,-15}|",
                  od.Index, od.parameter_name,
-                 od.ObjectTypeString(), od.prop.CO_countLabel, od.prop.CO_storageGroup, od.prop.CO_extensionIO, od.prop.CO_flagsPDO));
+                 od.ObjectTypeString(), od.prop.CO_countLabel, od.prop.CO_storageGroup));
 
             if (od.Description != null && od.Description != "")
                 descriptions.Add(od.Description);

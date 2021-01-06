@@ -119,7 +119,6 @@ namespace libEDSsharp
         public bool CO_disabled = false;  // If true, object is completelly skipped by CANopenNode exporters, etc.
         public string CO_countLabel = "";
         public string CO_storageGroup = "RAM";
-        public bool CO_extensionIO = false;
         public bool CO_flagsPDO = false;
         public AccessSRDO CO_accessSRDO = AccessSRDO.no;
         public UInt32 CO_stringLengthMin = 0;
@@ -131,7 +130,6 @@ namespace libEDSsharp
                 CO_disabled = CO_disabled,
                 CO_countLabel = CO_countLabel,
                 CO_storageGroup = CO_storageGroup,
-                CO_extensionIO = CO_extensionIO,
                 CO_flagsPDO = CO_flagsPDO,
                 CO_accessSRDO = CO_accessSRDO,
                 CO_stringLengthMin = CO_stringLengthMin
@@ -149,7 +147,6 @@ namespace libEDSsharp
                         case "CO_disabled": CO_disabled = prop.value == "true"; break;
                         case "CO_countLabel": CO_countLabel = prop.value ?? ""; break;
                         case "CO_storageGroup": CO_storageGroup = prop.value ?? ""; break;
-                        case "CO_extensionIO": CO_extensionIO = prop.value == "true"; break;
                         case "CO_flagsPDO": CO_flagsPDO = prop.value == "true"; break;
                         case "CO_accessSRDO":
                             try { CO_accessSRDO = (AccessSRDO)Enum.Parse(typeof(AccessSRDO), prop.value); }
@@ -174,8 +171,6 @@ namespace libEDSsharp
                 props.Add(new property { name = "CO_countLabel", value = CO_countLabel });
             if (CO_storageGroup != "RAM")
                 props.Add(new property { name = "CO_storageGroup", value = CO_storageGroup });
-            if (CO_extensionIO)
-                props.Add(new property { name = "CO_extensionIO", value = "true" });
             if (CO_flagsPDO)
                 props.Add(new property { name = "CO_flagsPDO", value = "true" });
 
@@ -2652,6 +2647,7 @@ namespace libEDSsharp
             fi.EDSVersionMinor = 0;
 
             StreamWriter writer = File.CreateText(filename);
+            writer.NewLine = "\n";
             fi.Write(writer,ft);
             di.Write(writer,ft);
             du.Write(writer,ft);

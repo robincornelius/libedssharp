@@ -63,8 +63,6 @@ namespace ODEditor
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textBox_stringLengthMin = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.checkBox_ioExtension = new System.Windows.Forms.CheckBox();
             this.label20 = new System.Windows.Forms.Label();
             this.comboBox_countLabel = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
@@ -84,7 +82,7 @@ namespace ODEditor
             this.comboBox_objectType = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.comboBox_dataType = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
+            this.label_pdoFlags = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.checkBox_pdoFlags = new System.Windows.Forms.CheckBox();
             this.comboBox_accessSDO = new System.Windows.Forms.ComboBox();
@@ -470,8 +468,6 @@ namespace ODEditor
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.textBox_stringLengthMin);
             this.groupBox1.Controls.Add(this.label22);
-            this.groupBox1.Controls.Add(this.label21);
-            this.groupBox1.Controls.Add(this.checkBox_ioExtension);
             this.groupBox1.Controls.Add(this.label20);
             this.groupBox1.Controls.Add(this.comboBox_countLabel);
             this.groupBox1.Controls.Add(this.label19);
@@ -491,7 +487,7 @@ namespace ODEditor
             this.groupBox1.Controls.Add(this.comboBox_objectType);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.comboBox_dataType);
-            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.label_pdoFlags);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.checkBox_pdoFlags);
             this.groupBox1.Controls.Add(this.comboBox_accessSDO);
@@ -524,25 +520,6 @@ namespace ODEditor
             this.label22.Size = new System.Drawing.Size(75, 13);
             this.label22.TabIndex = 39;
             this.label22.Text = "String Len Min";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(482, 92);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(67, 13);
-            this.label21.TabIndex = 38;
-            this.label21.Text = "IO Extension";
-            // 
-            // checkBox_ioExtension
-            // 
-            this.checkBox_ioExtension.AutoSize = true;
-            this.checkBox_ioExtension.Location = new System.Drawing.Point(574, 92);
-            this.checkBox_ioExtension.Name = "checkBox_ioExtension";
-            this.checkBox_ioExtension.Size = new System.Drawing.Size(15, 14);
-            this.checkBox_ioExtension.TabIndex = 33;
-            this.checkBox_ioExtension.UseVisualStyleBackColor = true;
-            this.checkBox_ioExtension.CheckedChanged += new System.EventHandler(this.DataDirty);
             // 
             // label20
             // 
@@ -722,14 +699,14 @@ namespace ODEditor
             this.comboBox_dataType.TabIndex = 11;
             this.comboBox_dataType.SelectedIndexChanged += new System.EventHandler(this.DataDirty);
             // 
-            // label12
+            // label_pdoFlags
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(482, 112);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(58, 13);
-            this.label12.TabIndex = 18;
-            this.label12.Text = "PDO Flags";
+            this.label_pdoFlags.AutoSize = true;
+            this.label_pdoFlags.Location = new System.Drawing.Point(482, 92);
+            this.label_pdoFlags.Name = "label_pdoFlags";
+            this.label_pdoFlags.Size = new System.Drawing.Size(62, 13);
+            this.label_pdoFlags.TabIndex = 18;
+            this.label_pdoFlags.Text = "TPDO COS";
             // 
             // label9
             // 
@@ -743,7 +720,7 @@ namespace ODEditor
             // checkBox_pdoFlags
             // 
             this.checkBox_pdoFlags.AutoSize = true;
-            this.checkBox_pdoFlags.Location = new System.Drawing.Point(574, 112);
+            this.checkBox_pdoFlags.Location = new System.Drawing.Point(574, 92);
             this.checkBox_pdoFlags.Name = "checkBox_pdoFlags";
             this.checkBox_pdoFlags.Size = new System.Drawing.Size(15, 14);
             this.checkBox_pdoFlags.TabIndex = 34;
@@ -1000,7 +977,7 @@ namespace ODEditor
         private System.Windows.Forms.ComboBox comboBox_storageGroup;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.CheckBox checkBox_enabled;
-        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label_pdoFlags;
         private System.Windows.Forms.CheckBox checkBox_pdoFlags;
         private System.Windows.Forms.TextBox textBox_defaultValue;
         private System.Windows.Forms.Label label11;
@@ -1052,8 +1029,6 @@ namespace ODEditor
         private System.Windows.Forms.ColumnHeader columnHeader14;
         private System.Windows.Forms.TextBox textBox_index;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.CheckBox checkBox_ioExtension;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboBox_countLabel;
         private System.Windows.Forms.Label label22;

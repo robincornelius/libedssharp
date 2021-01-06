@@ -39,7 +39,6 @@ namespace libEDSsharp
 
         private List<string> ODObjs_t;
         private List<string> ODObjs;
-        private List<string> ODExts_t;
         private List<string> ODList;
         private List<string> ODDefines;
         private List<string> ODDefinesLong;
@@ -65,7 +64,7 @@ namespace libEDSsharp
 
         #region Prepare
         /// <summary>
-        /// Generate ODStorage, ODObjs, ODExts, ODList, ODDefines and ODCnt entries
+        /// Generate ODStorage, ODObjs, ODList, ODDefines and ODCnt entries
         /// </summary>
         /// <param name="ods"></param>
         private void Prepare(EDSsharp eds)
@@ -74,7 +73,6 @@ namespace libEDSsharp
             ODStorage_t = new Dictionary<string, List<string>>();
             ODStorage = new Dictionary<string, List<string>>();
 
-            ODExts_t = new List<string>();
             ODObjs_t = new List<string>();
             ODObjs = new List<string>();
             ODList = new List<string>();
@@ -94,22 +92,6 @@ namespace libEDSsharp
                 string indexH = $"{od.Index:X4}";
                 string cName = Make_cname(od.parameter_name);
                 string varName = $"{indexH}_{cName}";
-
-                // verify CO_extensionIO, this is absolutelly required for some objects. */
-                if (!od.prop.CO_extensionIO)
-                {
-                    switch (od.Index)
-                    {
-                        case 0x1003:
-                        case 0x1012:
-                        case 0x1014:
-                        case 0x1017:
-                        case 0x1200:
-                            od.prop.CO_extensionIO = true;
-                            Warnings.AddWarning($"Error in 0x{indexH}: 'Extension IO' must be enabled for this object!", Warnings.warning_class.WARNING_BUILD);
-                            break;
-                    }
-                }
 
                 // storage group
                 if (ODStorageGroups.IndexOf(od.prop.CO_storageGroup) == -1)
@@ -144,36 +126,12 @@ namespace libEDSsharp
                 if (subEntriesCount < 1)
                     continue;
 
-                // extension
-                if (od.prop.CO_extensionIO || od.prop.CO_flagsPDO)
-                {
-                    string extIOAddr = "NULL";
-                    string flagsPDOAddr = "NULL";
-                    if (od.prop.CO_extensionIO)
-                    {
-                        ODExts_t.Add($"OD_extensionIO_t xio_{varName};");
-                        extIOAddr = $"&{odname}Exts.xio_{varName}";
-                    }
-                    if (od.prop.CO_flagsPDO)
-                    {
-                        ODExts_t.Add($"OD_flagsPDO_t flp_{varName}[{subEntriesCount}];");
-                        flagsPDOAddr = $"&{odname}Exts.flp_{varName}[0]";
-                    }
-                    ODObjs_t.Add($"OD_obj_extended_t oE_{varName};");
-                    ODObjs.Add($"    .oE_{varName} = {{");
-                    ODObjs.Add($"        .extIO = {extIOAddr},");
-                    ODObjs.Add($"        .flagsPDO = {flagsPDOAddr},");
-                    ODObjs.Add($"        .odObjectOriginal = &{odname}Objs.o_{varName}");
-                    ODObjs.Add($"    }},");
-                }
-
                 // defines
-                ODDefines.Add($"#define {odname}_ENTRY_H{indexH} &{odname}.list[{ODList.Count}]");
-                ODDefinesLong.Add($"#define {odname}_ENTRY_H{varName} &{odname}.list[{ODList.Count}]");
+                ODDefines.Add($"#define {odname}_ENTRY_H{indexH} &{odname}->list[{ODList.Count}]");
+                ODDefinesLong.Add($"#define {odname}_ENTRY_H{varName} &{odname}->list[{ODList.Count}]");
 
                 // object dictionary
-                string E = (od.prop.CO_extensionIO || od.prop.CO_flagsPDO) ? "E" : "";
-                ODList.Add($"{{0x{indexH}, 0x{subEntriesCount:X2}, ODT_{E}{odObjectType}, &{odname}Objs.o{E}_{varName}}}");
+                ODList.Add($"{{0x{indexH}, 0x{subEntriesCount:X2}, ODT_{odObjectType}, &{odname}Objs.o_{varName}, NULL}}");
 
                 // count labels
                 if (od.prop.CO_countLabel != null && od.prop.CO_countLabel != "")
@@ -207,15 +165,11 @@ namespace libEDSsharp
                 ODStorage[group].Add($".x{varName} = {data.cValue}");
                 dataPtr = $"&{odname}_{group}.x{varName}{data.cTypeArray0}";
             }
-            else if (od.prop.CO_extensionIO == false)
-            {
-                Warnings.AddWarning($"Error in 0x{indexH}: If 'Default Value' is not defined, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
-            }
 
             // objects
             ODObjs_t.Add($"OD_obj_var_t o_{varName};");
             ODObjs.Add($"    .o_{varName} = {{");
-            ODObjs.Add($"        .data = {dataPtr},");
+            ODObjs.Add($"        .dataOrig = {dataPtr},");
             ODObjs.Add($"        .attribute = {attr},");
             ODObjs.Add($"        .dataLength = {data.length}");
             ODObjs.Add($"    }},");
@@ -295,26 +249,18 @@ namespace libEDSsharp
                 ODStorage[group].Add($".x{varName}_sub0 = {cValue0}");
                 dataPtr0 = $"&{odname}_{group}.x{varName}_sub0";
             }
-            else if (od.prop.CO_extensionIO == false)
-            {
-                Warnings.AddWarning($"Error in 0x{indexH}, 0x00: If 'Default Value' is not defined, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
-            }
             if (dataElem.cValue != null)
             {
                 ODStorage_t[group].Add($"{dataElem.cType} x{varName}[{subEntriesCount - 1}]{dataElem.cTypeArray};");
                 ODStorage[group].Add($".x{varName} = {{{string.Join(", ", ODStorageValues)}}}");
                 dataPtr = $"&{odname}_{group}.x{varName}[0]{dataElem.cTypeArray0}";
             }
-            else if (od.prop.CO_extensionIO == false)
-            {
-                Warnings.AddWarning($"Error in 0x{indexH}: If 'Default Value' is not defined on array elements, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
-            }
 
             // objects
             ODObjs_t.Add($"OD_obj_array_t o_{varName};");
             ODObjs.Add($"    .o_{varName} = {{");
-            ODObjs.Add($"        .data0 = {dataPtr0},");
-            ODObjs.Add($"        .data = {dataPtr},");
+            ODObjs.Add($"        .dataOrig0 = {dataPtr0},");
+            ODObjs.Add($"        .dataOrig = {dataPtr},");
             ODObjs.Add($"        .attribute0 = {attrElem0},");
             ODObjs.Add($"        .attribute = {attrElem},");
             ODObjs.Add($"        .dataElementLength = {dataElem.length},");
@@ -363,12 +309,8 @@ namespace libEDSsharp
                     subODStorage.Add($".{subcName} = {data.cValue}");
                     dataPtr = $"&{odname}_{group}.x{varName}.{subcName}{data.cTypeArray0}";
                 }
-                else if (od.prop.CO_extensionIO == false)
-                {
-                    Warnings.AddWarning($"Error in 0x{indexH}, 0x{sub.Subindex:X2}: If 'Default Value' is not defined on one or more subindexes, then 'Extension IO' should be enabled!", Warnings.warning_class.WARNING_BUILD);
-                }
                 ODObjs.Add($"        {{");
-                ODObjs.Add($"            .data = {dataPtr},");
+                ODObjs.Add($"            .dataOrig = {dataPtr},");
                 ODObjs.Add($"            .subIndex = {sub.Subindex},");
                 ODObjs.Add($"            .attribute = {attr},");
                 ODObjs.Add($"            .dataLength = {data.length}");
@@ -407,6 +349,7 @@ namespace libEDSsharp
                 filename = "OD";
 
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
+            file.NewLine = "\n";
 
             file.WriteLine(string.Format(
 @"/*******************************************************************************
@@ -480,7 +423,7 @@ namespace libEDSsharp
                     file.WriteLine($"extern {odname}_{group}_t {odname}_{group};");
                 }
             }
-            file.WriteLine($"extern const OD_t {odname};");
+            file.WriteLine($"extern OD_t *{odname};");
 
             file.WriteLine(string.Format(@"
 
@@ -515,6 +458,7 @@ namespace libEDSsharp
                 filename = "OD";
 
             StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
+            file.NewLine = "\n";
 
             file.WriteLine(string.Format(
 @"/*******************************************************************************
@@ -551,19 +495,6 @@ namespace libEDSsharp
                 }
             }
 
-            if (ODExts_t.Count > 0)
-            {
-                file.WriteLine(string.Format(@"
-/*******************************************************************************
-    IO extensions and flagsPDO (configurable by application)
-*******************************************************************************/
-typedef struct {{
-    {1}
-}} {0}Exts_t;
-
-static {0}Exts_t {0}Exts = {{0}};", odname, string.Join("\n    ", ODExts_t)));
-            }
-
             // remove ',' from the last element
             string s = ODObjs[ODObjs.Count - 1];
             ODObjs[ODObjs.Count - 1] = s.Remove(s.Length - 1);
@@ -571,13 +502,13 @@ static {0}Exts_t {0}Exts = {{0}};", odname, string.Join("\n    ", ODExts_t)));
             file.WriteLine(string.Format(@"
 
 /*******************************************************************************
-    All OD objects (const)
+    All OD objects (constant definitions)
 *******************************************************************************/
 typedef struct {{
     {1}
 }} {0}Objs_t;
 
-static const {0}Objs_t {0}Objs = {{
+static CO_PROGMEM {0}Objs_t {0}Objs = {{
 {2}
 }};", odname, string.Join("\n    ", ODObjs_t), string.Join("\n", ODObjs)));
 
@@ -586,15 +517,17 @@ static const {0}Objs_t {0}Objs = {{
 /*******************************************************************************
     Object dictionary
 *******************************************************************************/
-static const OD_entry_t {0}List[] = {{
+static OD_entry_t {0}List[] = {{
     {1},
     {{0x0000, 0x00, 0, NULL}}
 }};
 
-const OD_t {0} = {{
+static OD_t _{0} = {{
     (sizeof({0}List) / sizeof({0}List[0])) - 1,
     &{0}List[0]
-}};", odname, string.Join(",\n    ", ODList)));
+}};
+
+OD_t *{0} = &_{0};", odname, string.Join(",\n    ", ODList)));
 
             file.Close();
         }

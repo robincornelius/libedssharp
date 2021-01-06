@@ -111,7 +111,8 @@ namespace libEDSsharp
             XmlSerializer serializer = new XmlSerializer(typeof(CanOpenProject_1_1));
 
             StreamWriter stream = new StreamWriter(file);
-            XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings { Indent = true });
+            stream.NewLine = "\n";
+            XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings { Indent = true, NewLineChars = "\n" });
             writer.WriteStartDocument();
             writer.WriteComment(string.Format("CANopen Project file in custom format. It contains multiple standard CANopen device description files.", gitVersion));
             writer.WriteComment(string.Format("File is generated with libedssharp Object Dictionary Editor v{0}, URL: https://github.com/robincornelius/libedssharp", gitVersion));
@@ -136,7 +137,8 @@ namespace libEDSsharp
             XmlSerializer serializer = new XmlSerializer(typeof(ISO15745ProfileContainer));
 
             StreamWriter stream = new StreamWriter(file);
-            XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings { Indent = true });
+            stream.NewLine = "\n";
+            XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings { Indent = true, NewLineChars = "\n" });
             writer.WriteStartDocument();
             writer.WriteComment(string.Format("File is generated with libedssharp Object Dictionary Editor v{0}, URL: https://github.com/robincornelius/libedssharp", gitVersion));
             if (!stripped)
