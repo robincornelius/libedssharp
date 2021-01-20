@@ -397,7 +397,7 @@ namespace ODEditor
 
             od.parameter_name = textBox_name.Text;
             od.denotation = textBox_denotation.Text;
-            od.Description = textBox_description.Text;
+            od.Description = textBox_description.Text.Replace("\r\n", "\n");
             od.ObjectTypeString(od.parent == null ? comboBox_objectType.SelectedItem.ToString() : "VAR");
 
             if (od.objecttype == ObjectType.VAR)
