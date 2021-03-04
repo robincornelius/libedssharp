@@ -774,8 +774,10 @@ OD_t *{0} = &_{0};", odname, string.Join(",\n    ", ODList)));
                                         chars.Add("'\\''");
                                     else if (b >= 0x20 && b < 0x7F)
                                         chars.Add($"'{(char)b}'");
-                                    else
+                                    else if (b <= 0x7F)
                                         chars.Add($"0x{b:X2}");
+                                    else
+                                        chars.Add($"(char)0x{b:X2}");
                                     len++;
                                 }
                             }
