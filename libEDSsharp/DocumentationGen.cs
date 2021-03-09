@@ -161,8 +161,8 @@ namespace libEDSsharp
             file.NewLine = "\n";
 
             file.WriteLine(string.Format(
-@"CANopen documentation
-=====================
+@"CANopen device documentation
+============================
 **{0}**
 
 {1}
