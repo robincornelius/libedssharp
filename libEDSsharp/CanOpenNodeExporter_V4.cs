@@ -256,6 +256,10 @@ namespace libEDSsharp
                 dataPtr = $"&{odname}_{group}.x{varName}[0]{dataElem.cTypeArray0}";
             }
 
+            // sizeof data element inside the array
+            string dataElementSizeof = dataElem.cType == "not specified" && dataElem.length == 0
+                ? "0" : $"sizeof({dataElem.cType}{dataElem.cTypeArray})";
+
             // objects
             ODObjs_t.Add($"OD_obj_array_t o_{varName};");
             ODObjs.Add($"    .o_{varName} = {{");
@@ -264,7 +268,7 @@ namespace libEDSsharp
             ODObjs.Add($"        .attribute0 = {attrElem0},");
             ODObjs.Add($"        .attribute = {attrElem},");
             ODObjs.Add($"        .dataElementLength = {dataElem.length},");
-            ODObjs.Add($"        .dataElementSizeof = sizeof({dataElem.cType})");
+            ODObjs.Add($"        .dataElementSizeof = {dataElementSizeof}");
             ODObjs.Add($"    }},");
 
             return subEntriesCount;

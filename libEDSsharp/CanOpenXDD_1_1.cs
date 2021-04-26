@@ -419,8 +419,6 @@ namespace libEDSsharp
                     // Add at least label made from parameter name, because g_labels is required by schema
                     devPar.Items = new object[] { new vendorTextLabel { lang = "en", Value = od.parameter_name } };
                 }
-                if (!stripped)
-                    devPar.property = od.prop.OdeXdd();
                 if (deviceCommissioning && od.denotation != null && od.denotation != "")
                 {
                     devPar.denotation = new denotation
@@ -437,6 +435,15 @@ namespace libEDSsharp
 
                     netObj.PDOmappingSpecified = true;
 
+                    if (!stripped)
+                    {
+                        var propOd = od.prop.OdeXdd();
+                        var propSub = od.prop.SubOdeXdd();
+                        devPar.property = new property[propOd.Length + propSub.Length];
+                        propOd.CopyTo(devPar.property, 0);
+                        propSub.CopyTo(devPar.property, propOd.Length);
+                    }
+
                     WriteVar(devPar, od);
                     if (deviceCommissioning && od.actualvalue != null && od.actualvalue != "")
                         devPar.actualValue = new actualValue { value = od.actualvalue };
@@ -445,6 +452,9 @@ namespace libEDSsharp
                 {
                     netObj.subNumber = (byte)od.subobjects.Count;
                     netObj.subNumberSpecified = true;
+
+                    if (!stripped)
+                        devPar.property = od.prop.OdeXdd();
 
                     var netSubObjList = new List<CANopenObjectListCANopenObjectCANopenSubObject>();
                     var devStructSubList = new List<varDeclaration>();
