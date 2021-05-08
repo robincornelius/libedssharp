@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with libEDSsharp.  If not, see <http://www.gnu.org/licenses/>.
- 
+
     Copyright(c) 2016 - 2019 Robin Cornelius <robin.cornelius@gmail.com>
     Copyright(c) 2020 Janez Paternoster
 */
@@ -48,7 +48,7 @@ namespace libEDSsharp
            file.Write("</table>");
 
            file.Write("<h2>Mandatory objects</h2>");
-         
+
            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
            {
                 ODentry od = kvp.Value;
@@ -134,13 +134,13 @@ namespace libEDSsharp
 
             string description = od.Description;
             file.Write(string.Format("<pre>{0}</pre>", description));
-     
+
             foreach (KeyValuePair<UInt16,ODentry> sub in od.subobjects)
             {
                 ODentry subod = sub.Value;
                 writeODentryhtml(subod);
             }
-           
+
         }
 
         public void write2linetablerow(string a,object b)
@@ -178,11 +178,7 @@ namespace libEDSsharp
 
 This file was automatically generated with [libedssharp](https://github.com/robincornelius/libedssharp) Object Dictionary Editor v{8}
 
-* [Device Information](#device-information)
-* [PDO Mapping](#pdo-mapping)
-* [Communication Specific Parameters](#communication-specific-parameters)
-* [Manufacturer Specific Parameters](#manufacturer-specific-parameters)
-* [Device Profile Specific Parameters](#device-profile-specific-parameters)
+[TOC]
 ",
             eds.di.ProductName, eds.fi.Description,
             Path.GetFileName(eds.projectFilename), eds.fi.FileVersion,
@@ -190,8 +186,8 @@ This file was automatically generated with [libedssharp](https://github.com/robi
             gitVersion));
 
             file.WriteLine(string.Format(@"
-Device Information {{#device-information}}
-----------------------------------------
+Device Information
+------------------
 |              |                                |
 | ------------ | ------------------------------ |
 | Vendor Name  | {0,-30} |
@@ -220,8 +216,8 @@ Device Information {{#device-information}}
             file.WriteLine();
             file.WriteLine();
 
-            file.WriteLine("PDO Mapping {#pdo-mapping}");
-            file.WriteLine("--------------------------");
+            file.WriteLine("PDO Mapping");
+            file.WriteLine("-----------");
             PrintPdoMd(eds);
 
             int chapter = 0;
@@ -230,22 +226,22 @@ Device Information {{#device-information}}
                 if (chapter == 0)
                 {
                     file.WriteLine();
-                    file.WriteLine("Communication Specific Parameters {#communication-specific-parameters}");
-                    file.WriteLine("----------------------------------------------------------------------");
+                    file.WriteLine("Communication Specific Parameters");
+                    file.WriteLine("---------------------------------");
                     chapter++;
                 }
                 if (chapter == 1 && od.Index >= 0x2000)
                 {
                     file.WriteLine();
-                    file.WriteLine("Manufacturer Specific Parameters {#manufacturer-specific-parameters}");
-                    file.WriteLine("--------------------------------------------------------------------");
+                    file.WriteLine("Manufacturer Specific Parameters");
+                    file.WriteLine("--------------------------------");
                     chapter++;
                 }
                 if (chapter == 2 && od.Index >= 0x6000)
                 {
                     file.WriteLine();
-                    file.WriteLine("Device Profile Specific Parameters {#device-profile-specific-parameters}");
-                    file.WriteLine("------------------------------------------------------------------------");
+                    file.WriteLine("Device Profile Specific Parameters");
+                    file.WriteLine("----------------------------------");
                     chapter++;
                 }
 
