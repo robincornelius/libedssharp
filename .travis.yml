@@ -23,4 +23,4 @@ deploy:
   directory: $TRAVIS_BUILD_DIR/build/
 
   on:
-    branch: master
+    branch: main
