@@ -493,7 +493,7 @@ namespace libEDSsharp
             {
                 if (ODStorage.Count > 0)
                 {
-                    file.WriteLine($"ATTRIMUTE_{group} {odname}_{group}_t {odname}_{group} = {{");
+                    file.WriteLine($"ATTRIBUTE_{group} {odname}_{group}_t {odname}_{group} = {{");
                     file.WriteLine($"    {string.Join(",\n    ", ODStorage[group])}");
                     file.WriteLine($"}};\n");
                 }
