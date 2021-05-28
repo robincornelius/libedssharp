@@ -108,7 +108,7 @@ namespace libEDSsharp
 					CNT_NMT++;
 				if (od.Index==0x1016)
 					CNT_HB_CONS=(UInt16)(od.subobjects.Count-1);
-				if (od.Index==0x1014 || od.Index==0x1015)
+				if ((od.Index==0x1014 || od.Index==0x1015) && CNT_EM==0)
 					CNT_EM++;
 				if (od.Index>=0x1200 && od.Index<0x1280)
 					CNT_SDO_SRV++;
@@ -460,9 +460,78 @@ namespace libEDSsharp
             {
                 file.WriteLine($"#define {odname}_CNT_{kvp.Key} {kvp.Value}");
             }
+			file.WriteLine(@"
+/*******************************************************************************
+    OD config structure
+*******************************************************************************/
+#ifdef CO_MULTIPLE_OD
+#include ""CANopen.h""");
 
-            file.WriteLine(@"
-
+    string xxENTRY_H1017 = eds.ods.ContainsKey(0x1017) ? ($"{odname}_ENTRY_H1017_{Make_cname(eds.ods[0x1017].parameter_name)}"):("NULL");
+    string xxENTRY_H1016 = eds.ods.ContainsKey(0x1016) ? ($"{odname}_ENTRY_H1016_{Make_cname(eds.ods[0x1016].parameter_name)}"):("NULL");
+    string xxENTRY_H1001 = eds.ods.ContainsKey(0x1001) ? ($"{odname}_ENTRY_H1001_{Make_cname(eds.ods[0x1001].parameter_name)}"):("NULL");
+    string xxENTRY_H1014 = eds.ods.ContainsKey(0x1014) ? ($"{odname}_ENTRY_H1014_{Make_cname(eds.ods[0x1014].parameter_name)}"):("NULL");
+    string xxENTRY_H1015 = eds.ods.ContainsKey(0x1015) ? ($"{odname}_ENTRY_H1015_{Make_cname(eds.ods[0x1015].parameter_name)}"):("NULL");
+    string xxENTRY_H1003 = eds.ods.ContainsKey(0x1003) ? ($"{odname}_ENTRY_H1003_{Make_cname(eds.ods[0x1003].parameter_name)}"):("NULL");
+    string xxENTRY_H1200 = eds.ods.ContainsKey(0x1200) ? ($"{odname}_ENTRY_H1200_{Make_cname(eds.ods[0x1200].parameter_name)}"):("NULL");
+    string xxENTRY_H1280 = eds.ods.ContainsKey(0x1280) ? ($"{odname}_ENTRY_H1280_{Make_cname(eds.ods[0x1280].parameter_name)}"):("NULL");
+    string xxENTRY_H1012 = eds.ods.ContainsKey(0x1012) ? ($"{odname}_ENTRY_H1012_{Make_cname(eds.ods[0x1012].parameter_name)}"):("NULL");
+    string xxENTRY_H1005 = eds.ods.ContainsKey(0x1005) ? ($"{odname}_ENTRY_H1005_{Make_cname(eds.ods[0x1005].parameter_name)}"):("NULL");
+    string xxENTRY_H1006 = eds.ods.ContainsKey(0x1006) ? ($"{odname}_ENTRY_H1006_{Make_cname(eds.ods[0x1006].parameter_name)}"):("NULL");
+    string xxENTRY_H1007 = eds.ods.ContainsKey(0x1007) ? ($"{odname}_ENTRY_H1007_{Make_cname(eds.ods[0x1007].parameter_name)}"):("NULL");
+    string xxENTRY_H1019 = eds.ods.ContainsKey(0x1019) ? ($"{odname}_ENTRY_H1019_{Make_cname(eds.ods[0x1019].parameter_name)}"):("NULL");
+    string xxENTRY_H1400 = eds.ods.ContainsKey(0x1400) ? ($"{odname}_ENTRY_H1400_{Make_cname(eds.ods[0x1400].parameter_name)}"):("NULL");
+    string xxENTRY_H1600 = eds.ods.ContainsKey(0x1600) ? ($"{odname}_ENTRY_H1600_{Make_cname(eds.ods[0x1600].parameter_name)}"):("NULL");
+    string xxENTRY_H1800 = eds.ods.ContainsKey(0x1800) ? ($"{odname}_ENTRY_H1800_{Make_cname(eds.ods[0x1800].parameter_name)}"):("NULL");
+    string xxENTRY_H1A00 = eds.ods.ContainsKey(0x1A00) ? ($"{odname}_ENTRY_H1A00_{Make_cname(eds.ods[0x1A00].parameter_name)}"):("NULL");
+    string xxENTRY_H1300 = eds.ods.ContainsKey(0x1300) ? ($"{odname}_ENTRY_H1300_{Make_cname(eds.ods[0x1300].parameter_name)}"):("NULL");
+    string xxENTRY_H1301 = eds.ods.ContainsKey(0x1301) ? ($"{odname}_ENTRY_H1301_{Make_cname(eds.ods[0x1301].parameter_name)}"):("NULL");
+    string xxENTRY_H1381 = eds.ods.ContainsKey(0x1381) ? ($"{odname}_ENTRY_H1381_{Make_cname(eds.ods[0x1381].parameter_name)}"):("NULL");
+    string xxENTRY_H13FE = eds.ods.ContainsKey(0x13FE) ? ($"{odname}_ENTRY_H13FE_{Make_cname(eds.ods[0x13FE].parameter_name)}"):("NULL");
+    string xxENTRY_H13FF = eds.ods.ContainsKey(0x13FF) ? ($"{odname}_ENTRY_H13FF_{Make_cname(eds.ods[0x13FF].parameter_name)}"):("NULL");
+   	file.WriteLine($"#define {odname}_INIT_CONFIG(config) {{\\");
+	file.WriteLine($@"    (config).CNT_NMT={CNT_NMT};\
+	(config).ENTRY_H1017={xxENTRY_H1017};\
+    (config).CNT_HB_CONS={CNT_HB_CONS};\
+    (config).ENTRY_H1016={xxENTRY_H1016};\
+    (config).CNT_EM={CNT_EM};\
+    (config).ENTRY_H1001={xxENTRY_H1001};\
+    (config).ENTRY_H1014={xxENTRY_H1014};\
+    (config).ENTRY_H1015={xxENTRY_H1015};\
+    (config).ENTRY_H1003={xxENTRY_H1003};\
+    (config).CNT_SDO_SRV={CNT_SDO_SRV};\
+    (config).ENTRY_H1200={xxENTRY_H1200};\
+    (config).CNT_SDO_CLI={CNT_SDO_CLI};\
+    (config).ENTRY_H1280={xxENTRY_H1280};\
+    (config).CNT_TIME={CNT_TIME};\
+    (config).ENTRY_H1012={xxENTRY_H1012};\
+    (config).CNT_SYNC={CNT_SYNC};\
+    (config).ENTRY_H1005={xxENTRY_H1005};\
+    (config).ENTRY_H1006={xxENTRY_H1006};\
+    (config).ENTRY_H1007={xxENTRY_H1007};\
+    (config).ENTRY_H1019={xxENTRY_H1019};\
+    (config).CNT_RPDO={CNT_RPDO};\
+    (config).ENTRY_H1400={xxENTRY_H1400};\
+    (config).ENTRY_H1600={xxENTRY_H1600};\
+    (config).CNT_TPDO={CNT_TPDO};\
+    (config).ENTRY_H1800={xxENTRY_H1800};\
+    (config).ENTRY_H1A00={xxENTRY_H1A00};\
+    (config).CNT_LEDS={CNT_LEDS};\
+    (config).CNT_GFC={CNT_GFC};\
+    (config).ENTRY_H1300={xxENTRY_H1300};\
+    (config).CNT_SRDO={CNT_SRDO};\
+    (config).ENTRY_H1301={xxENTRY_H1301};\
+    (config).ENTRY_H1381={xxENTRY_H1381};\
+    (config).ENTRY_H13FE={xxENTRY_H13FE};\
+    (config).ENTRY_H13FF={xxENTRY_H13FF};\
+    (config).CNT_LSS_SLV={CNT_LSS_SLV};\
+    (config).CNT_LSS_MST={CNT_LSS_MST};\
+    (config).CNT_GTWA={CNT_GTWA};\
+    (config).CNT_TRACE={CNT_TRACE};\
+}}"
+			);
+    file.WriteLine(@"
+#endif
 /*******************************************************************************
     OD data declaration of all groups
 *******************************************************************************/");
@@ -506,12 +575,6 @@ namespace libEDSsharp
         }
 
 
-		string FirstLower(string s)
-			{
-				if(string.IsNullOrEmpty(s))
-					return s;
-				return s[0].ToString().ToLower() + s.Substring(1);
-			}
         /// <summary>
         /// Export the c file
         /// </summary>
@@ -547,76 +610,8 @@ namespace libEDSsharp
 #if CO_VERSION_MAJOR < 4
 #error This Object dictionary is compatible with CANopenNode V4.0 and above!
 #endif", gitVersion, filename));
-            file.WriteLine(@"
-/*******************************************************************************
-    OD config structure
-*******************************************************************************/
-#ifdef CO_MULTIPLE_OD");
 
-    string xxENTRY_H1017 = eds.ods.ContainsKey(0x1017) ? ($"{odname}_ENTRY_H1017_{FirstLower(eds.ods[0x1017].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1016 = eds.ods.ContainsKey(0x1016) ? ($"{odname}_ENTRY_H1016_{FirstLower(eds.ods[0x1016].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1001 = eds.ods.ContainsKey(0x1001) ? ($"{odname}_ENTRY_H1001_{FirstLower(eds.ods[0x1001].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1014 = eds.ods.ContainsKey(0x1014) ? ($"{odname}_ENTRY_H1014_{FirstLower(eds.ods[0x1014].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1015 = eds.ods.ContainsKey(0x1015) ? ($"{odname}_ENTRY_H1015_{FirstLower(eds.ods[0x1015].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1003 = eds.ods.ContainsKey(0x1003) ? ($"{odname}_ENTRY_H1003_{FirstLower(eds.ods[0x1003].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1200 = eds.ods.ContainsKey(0x1200) ? ($"{odname}_ENTRY_H1200_{FirstLower(eds.ods[0x1200].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1280 = eds.ods.ContainsKey(0x1280) ? ($"{odname}_ENTRY_H1280_{FirstLower(eds.ods[0x1280].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1012 = eds.ods.ContainsKey(0x1012) ? ($"{odname}_ENTRY_H1012_{FirstLower(eds.ods[0x1012].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1005 = eds.ods.ContainsKey(0x1005) ? ($"{odname}_ENTRY_H1005_{FirstLower(eds.ods[0x1005].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1006 = eds.ods.ContainsKey(0x1006) ? ($"{odname}_ENTRY_H1006_{FirstLower(eds.ods[0x1006].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1007 = eds.ods.ContainsKey(0x1007) ? ($"{odname}_ENTRY_H1007_{FirstLower(eds.ods[0x1007].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1019 = eds.ods.ContainsKey(0x1019) ? ($"{odname}_ENTRY_H1019_{FirstLower(eds.ods[0x1019].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1400 = eds.ods.ContainsKey(0x1400) ? ($"{odname}_ENTRY_H1400_{FirstLower(eds.ods[0x1400].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1600 = eds.ods.ContainsKey(0x1600) ? ($"{odname}_ENTRY_H1600_{FirstLower(eds.ods[0x1600].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1800 = eds.ods.ContainsKey(0x1800) ? ($"{odname}_ENTRY_H1800_{FirstLower(eds.ods[0x1800].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1A00 = eds.ods.ContainsKey(0x1A00) ? ($"{odname}_ENTRY_H1A00_{FirstLower(eds.ods[0x1A00].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1300 = eds.ods.ContainsKey(0x1300) ? ($"{odname}_ENTRY_H1300_{FirstLower(eds.ods[0x1300].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1301 = eds.ods.ContainsKey(0x1301) ? ($"{odname}_ENTRY_H1301_{FirstLower(eds.ods[0x1301].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H1381 = eds.ods.ContainsKey(0x1381) ? ($"{odname}_ENTRY_H1381_{FirstLower(eds.ods[0x1381].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H13FE = eds.ods.ContainsKey(0x13FE) ? ($"{odname}_ENTRY_H13FE_{FirstLower(eds.ods[0x13FE].parameter_name.Replace(" ",""))}"):("NULL");
-    string xxENTRY_H13FF = eds.ods.ContainsKey(0x13FF) ? ($"{odname}_ENTRY_H13FF_{FirstLower(eds.ods[0x13FF].parameter_name.Replace(" ",""))}"):("NULL");
-    file.WriteLine($"const CO_config_t {odname}_config = {{");
-	file.WriteLine($@"    .CNT_NMT={CNT_NMT},
-    .ENTRY_H1017={xxENTRY_H1016},
-    .CNT_HB_CONS={CNT_HB_CONS},
-    .ENTRY_H1016={xxENTRY_H1016},
-    .CNT_EM={CNT_EM},
-    .ENTRY_H1001={xxENTRY_H1001},
-    .ENTRY_H1014={xxENTRY_H1014},
-    .ENTRY_H1015={xxENTRY_H1015},
-    .ENTRY_H1003={xxENTRY_H1003},
-    .CNT_SDO_SRV={CNT_SDO_SRV},
-    .ENTRY_H1200={xxENTRY_H1200},
-    .CNT_SDO_CLI={CNT_SDO_CLI},
-    .ENTRY_H1280={xxENTRY_H1280},
-    .CNT_TIME={CNT_TIME},
-    .ENTRY_H1012={xxENTRY_H1012},
-    .CNT_SYNC={CNT_SYNC},
-    .ENTRY_H1005={xxENTRY_H1005},
-    .ENTRY_H1006={xxENTRY_H1006},
-    .ENTRY_H1007={xxENTRY_H1007},
-    .ENTRY_H1019={xxENTRY_H1019},
-    .CNT_RPDO={CNT_RPDO},
-    .ENTRY_H1400={xxENTRY_H1400},
-    .ENTRY_H1600={xxENTRY_H1600},
-    .CNT_TPDO={CNT_TPDO},
-    .ENTRY_H1800={xxENTRY_H1800},
-    .ENTRY_H1A00={xxENTRY_H1A00},
-    .CNT_LEDS={CNT_LEDS},
-    .CNT_GFC={CNT_GFC},
-    .ENTRY_H1300={xxENTRY_H1300},
-    .CNT_SRDO={CNT_SRDO},
-    .ENTRY_H1301={xxENTRY_H1301},
-    .ENTRY_H1381={xxENTRY_H1381},
-    .ENTRY_H13FE={xxENTRY_H13FE},
-    .ENTRY_H13FF={xxENTRY_H13FF},
-    .CNT_LSS_SLV={CNT_LSS_SLV},
-    .CNT_LSS_MST={CNT_LSS_MST},
-    .CNT_GTWA={CNT_GTWA},
-    .CNT_TRACE={CNT_TRACE}"
-			);
-            file.WriteLine(@"}
-#endif
+    file.WriteLine(@"
 /*******************************************************************************
     OD data initialization of all groups
 *******************************************************************************/");
