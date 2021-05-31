@@ -59,6 +59,7 @@ namespace libEDSsharp
 		UInt16 CNT_LSS_MST=0;
 		UInt16 CNT_GTWA=0;
 		UInt16 CNT_TRACE=0;
+		UInt16 CNT_PROD=0;
         /// <summary>
         /// export the current data set in the CanOpen Node format V4
         /// </summary>
@@ -126,6 +127,8 @@ namespace libEDSsharp
 					CNT_GFC++;
 				if (od.Index>=0x1301 && od.Index<0x1380)
 					CNT_SRDO++;
+				if (od.Index==0x1014)
+					CNT_PROD++;
                 string indexH = $"{od.Index:X4}";
                 string cName = Make_cname(od.parameter_name);
                 string varName = $"{indexH}_{cName}";
@@ -182,21 +185,22 @@ namespace libEDSsharp
 			CNT_SRDO=(UInt16)(CNT_SRDO/2);
 			// The code below is nessesary if you have old eds file, that do not have "CO_countLabel" set.
 			if (ODCnt.Count==0) {
-				ODCnt.Add("CNT_HB_CONS", CNT_HB_CONS);
-				ODCnt.Add("CNT_NMT", CNT_NMT);
-				ODCnt.Add("CNT_EM", CNT_EM);
-				ODCnt.Add("CNT_SDO_SRV", CNT_SDO_SRV);
-				ODCnt.Add("CNT_SDO_CLI", CNT_SDO_CLI);
-				ODCnt.Add("CNT_TIME", CNT_TIME);
-				ODCnt.Add("CNT_SYNC", CNT_SYNC);
-				ODCnt.Add("CNT_RPDO", CNT_RPDO);
-				ODCnt.Add("CNT_TPDO", CNT_TPDO);
-				ODCnt.Add("CNT_GFC", CNT_GFC);
-				ODCnt.Add("CNT_SRDO", CNT_SRDO);
-				ODCnt.Add("CNT_LSS_SLV", CNT_LSS_SLV);
-				ODCnt.Add("CNT_LSS_MST", CNT_LSS_MST);
-				ODCnt.Add("CNT_GTWA", CNT_GTWA);
-				ODCnt.Add("CNT_TRACE", CNT_TRACE);
+				ODCnt.Add("HB_CONS", CNT_HB_CONS);
+				ODCnt.Add("NMT", CNT_NMT);
+				ODCnt.Add("EM", CNT_EM);
+				ODCnt.Add("SDO_SRV", CNT_SDO_SRV);
+				ODCnt.Add("SDO_CLI", CNT_SDO_CLI);
+				ODCnt.Add("TIME", CNT_TIME);
+				ODCnt.Add("SYNC", CNT_SYNC);
+				ODCnt.Add("RPDO", CNT_RPDO);
+				ODCnt.Add("TPDO", CNT_TPDO);
+				ODCnt.Add("GFC", CNT_GFC);
+				ODCnt.Add("SRDO", CNT_SRDO);
+				ODCnt.Add("LSS_SLV", CNT_LSS_SLV);
+				ODCnt.Add("LSS_MST", CNT_LSS_MST);
+				ODCnt.Add("GTWA", CNT_GTWA);
+				ODCnt.Add("TRACE", CNT_TRACE);
+				ODCnt.Add("HB_PROD", CNT_PROD);
 			}
         }
 
