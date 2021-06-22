@@ -424,10 +424,16 @@ namespace libEDSsharp
             {
                 if (ODStorage_t.Count > 0)
                 {
-                    file.WriteLine($"extern ATTRIBUTE_{group} {odname}_{group}_t {odname}_{group};");
+                    file.WriteLine($"#ifndef {odname}_ATTR_{group}");
+                    file.WriteLine($"#define {odname}_ATTR_{group}");
+                    file.WriteLine($"#endif");
+                    file.WriteLine($"extern {odname}_ATTR_{group} {odname}_{group}_t {odname}_{group};\n");
                 }
             }
-            file.WriteLine($"extern ATTRIBUTE_OD OD_t *{odname};");
+            file.WriteLine($"#ifndef {odname}_ATTR_OD");
+            file.WriteLine($"#define {odname}_ATTR_OD");
+            file.WriteLine($"#endif");
+            file.WriteLine($"extern {odname}_ATTR_OD OD_t *{odname};");
 
             file.WriteLine(string.Format(@"
 
@@ -493,7 +499,7 @@ namespace libEDSsharp
             {
                 if (ODStorage.Count > 0)
                 {
-                    file.WriteLine($"ATTRIBUTE_{group} {odname}_{group}_t {odname}_{group} = {{");
+                    file.WriteLine($"{odname}_ATTR_{group} {odname}_{group}_t {odname}_{group} = {{");
                     file.WriteLine($"    {string.Join(",\n    ", ODStorage[group])}");
                     file.WriteLine($"}};\n");
                 }
@@ -521,7 +527,7 @@ static CO_PROGMEM {0}Objs_t {0}Objs = {{
 /*******************************************************************************
     Object dictionary
 *******************************************************************************/
-static ATTRIBUTE_OD OD_entry_t {0}List[] = {{
+static {0}_ATTR_OD OD_entry_t {0}List[] = {{
     {1},
     {{0x0000, 0x00, 0, NULL, NULL}}
 }};
