@@ -721,7 +721,7 @@ namespace ODEditor
             {
                 gitVersion = "Unknown";
             }
-            this.Text += "v" + gitVersion;
+            this.Text += gitVersion;
             this.gitVersion = gitVersion;
 
             //First lets create an appdata folder
