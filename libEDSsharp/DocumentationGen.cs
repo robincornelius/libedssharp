@@ -176,7 +176,7 @@ namespace libEDSsharp
 | Modified     | {6,-30} |
 | Modified By  | {7,-30} |
 
-This file was automatically generated with [libedssharp](https://github.com/robincornelius/libedssharp) Object Dictionary Editor v{8}
+This file was automatically generated with [libedssharp](https://github.com/robincornelius/libedssharp) Object Dictionary Editor {8}
 
 [TOC]
 ",

@@ -360,7 +360,7 @@ namespace libEDSsharp
     CANopen Object Dictionary definition for CANopenNode V4
 
     This file was automatically generated with
-    libedssharp Object Dictionary Editor v{0}
+    libedssharp Object Dictionary Editor {0}
 
     https://github.com/CANopenNode/CANopenNode
     https://github.com/robincornelius/libedssharp
@@ -475,7 +475,7 @@ namespace libEDSsharp
     CANopen Object Dictionary definition for CANopenNode V4
 
     This file was automatically generated with
-    libedssharp Object Dictionary Editor v{0}
+    libedssharp Object Dictionary Editor {0}
 
     https://github.com/CANopenNode/CANopenNode
     https://github.com/robincornelius/libedssharp

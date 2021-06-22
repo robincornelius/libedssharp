@@ -115,7 +115,7 @@ namespace libEDSsharp
             XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings { Indent = true, NewLineChars = "\n" });
             writer.WriteStartDocument();
             writer.WriteComment(string.Format("CANopen Project file in custom format. It contains multiple standard CANopen device description files.", gitVersion));
-            writer.WriteComment(string.Format("File is generated with libedssharp Object Dictionary Editor v{0}, URL: https://github.com/robincornelius/libedssharp", gitVersion));
+            writer.WriteComment(string.Format("File is generated with libedssharp Object Dictionary Editor {0}, URL: https://github.com/robincornelius/libedssharp", gitVersion));
             writer.WriteComment("File includes additional custom properties for CANopenNode, CANopen protocol stack, URL: https://github.com/CANopenNode/CANopenNode");
             serializer.Serialize(writer, oep);
             writer.WriteEndDocument();
@@ -140,7 +140,7 @@ namespace libEDSsharp
             stream.NewLine = "\n";
             XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings { Indent = true, NewLineChars = "\n" });
             writer.WriteStartDocument();
-            writer.WriteComment(string.Format("File is generated with libedssharp Object Dictionary Editor v{0}, URL: https://github.com/robincornelius/libedssharp", gitVersion));
+            writer.WriteComment(string.Format("File is generated with libedssharp Object Dictionary Editor {0}, URL: https://github.com/robincornelius/libedssharp", gitVersion));
             if (!stripped)
                 writer.WriteComment("File includes additional custom properties for CANopenNode, CANopen protocol stack, URL: https://github.com/CANopenNode/CANopenNode");
             serializer.Serialize(writer, dev);

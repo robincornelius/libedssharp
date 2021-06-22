@@ -1,10 +1,20 @@
 CANopenEditor
 =============
-CANopen Object Dictionary Editor
+CANopenEditor is a fork from https://github.com/robincornelius/libedssharp, author Robin Cornelius.
+Its homepage is https://github.com/CANopenNode/CANopenEditor
+
+CANopen Object Dictionary Editor:
  - Imports: CANopen electronic data sheets in EDS or XDD format.
  - Exports: CANopen electronic data sheets in EDS or XDD format, documentation, CANopenNode C source files.
+ - GUI editor for CANopen Object Dictionary, Device information, etc.
 
-This is a fork from https://github.com/robincornelius/libedssharp, author Robin Cornelius.
+CANopen is the internationally standardized (EN 50325-4) ([CiA301](http://can-cia.org/standardization/technical-documents)) higher-layer protocol for embedded control system built on top of CAN. For more information on CANopen see http://www.can-cia.org/
+
+[CANopenNode](https://github.com/CANopenNode/CANopenNode) is free and open source CANopen Stack
+
+This is the `main` branch with sources. For binaries see the `build` branch.
+
+----
 
 Join us on slack
 --------
@@ -52,17 +62,6 @@ improving the code
 	* martinwag
 	* trojanobelix
 	* many others...
-
-Releases
---------
-
-If you would like to try a pre compiled version, then head over to the
-[releases page!](https://github.com/robincornelius/libedssharp/releases)
-
-If you want to try the latest and greatest version from the development tip then it can be found here
-[latest auto build!](https://github.com/robincornelius/libedssharp/raw/gh-pages/build/OpenEDSEditor-latest.zip) this version is auto built on travis-ci using mono 6.10.0 for the last build log please see [build log](https://travis-ci.org/github/robincornelius/libedssharp)
-
-Current Features
 
 Library
 -------
