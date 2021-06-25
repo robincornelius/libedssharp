@@ -308,6 +308,7 @@ namespace libEDSsharp
                 ODentry sub = new ODentry("max sub-index", (ushort)slot.ConfigurationIndex, 0);
                 sub.defaultvalue = "6";
                 sub.datatype = DataType.UNSIGNED8;
+                sub.accesstype = EDSsharp.AccessType.ro;
                 config.addsubobject(0x00,sub);
 
                 config.accesstype = slot.configAccessType;
@@ -322,31 +323,37 @@ namespace libEDSsharp
                     sub = new ODentry("COB-ID used by TPDO", (ushort)slot.ConfigurationIndex, 1);
                     sub.datatype = DataType.UNSIGNED32;
                     sub.defaultvalue = slot.COB.ToHexString();
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x01, sub);
 
                     sub = new ODentry("transmission type", (ushort)slot.ConfigurationIndex, 2);
                     sub.datatype = DataType.UNSIGNED8;
                     sub.defaultvalue = slot.transmissiontype.ToString();
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x02, sub);
 
                     sub = new ODentry("inhibit time", (ushort)slot.ConfigurationIndex, 3);
                     sub.datatype = DataType.UNSIGNED16;
                     sub.defaultvalue = slot.inhibit.ToString();
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x03, sub);
 
                     sub = new ODentry("compatibility entry", (ushort)slot.ConfigurationIndex, 4);
                     sub.datatype = DataType.UNSIGNED8;
                     sub.defaultvalue = "0";
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x04, sub);
 
                     sub = new ODentry("event timer", (ushort)slot.ConfigurationIndex, 5);
                     sub.datatype = DataType.UNSIGNED16;
                     sub.defaultvalue = slot.eventtimer.ToString();
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x05, sub);
 
                     sub = new ODentry("SYNC start value", (ushort)slot.ConfigurationIndex, 6);
                     sub.datatype = DataType.UNSIGNED8;
                     sub.defaultvalue = slot.syncstart.ToString(); ;
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x06, sub);
 
                 }
@@ -357,11 +364,13 @@ namespace libEDSsharp
                     sub = new ODentry("COB-ID used by RPDO", (ushort)slot.ConfigurationIndex, 1);
                     sub.datatype = DataType.UNSIGNED32;
                     sub.defaultvalue = slot.COB.ToHexString();
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x01, sub);
 
                     sub = new ODentry("transmission type", (ushort)slot.ConfigurationIndex, 2);
                     sub.datatype = DataType.UNSIGNED8;
                     sub.defaultvalue = slot.transmissiontype.ToString();
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     config.addsubobject(0x02, sub);
                 }
 
@@ -383,6 +392,7 @@ namespace libEDSsharp
                 sub = new ODentry("Number of mapped objects", (ushort)slot.MappingIndex, 0);
                 sub.datatype = DataType.UNSIGNED8;
                 sub.defaultvalue = slot.Mapping.Count().ToString();
+                sub.accesstype = EDSsharp.AccessType.rw;
                 mapping.addsubobject(0x00, sub);
 
                 byte mappingcount = 1;
@@ -391,6 +401,7 @@ namespace libEDSsharp
                     sub = new ODentry(String.Format("Mapped object {0:x}",mappingcount), (ushort)slot.MappingIndex, mappingcount);
                     sub.datatype = DataType.UNSIGNED32;
                     sub.defaultvalue = string.Format("0x{0:x4}{1:x2}{2:x2}", mapslot.Index, mapslot.Subindex, mapslot.Sizeofdatatype());
+                    sub.accesstype = EDSsharp.AccessType.rw;
                     mapping.addsubobject(mappingcount, sub);
 
                     mappingcount++;
