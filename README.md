@@ -12,7 +12,7 @@ CANopen is the internationally standardized (EN 50325-4) ([CiA301](http://can-ci
 
 [CANopenNode](https://github.com/CANopenNode/CANopenNode) is free and open source CANopen Stack
 
-This is the `main` branch with sources. For binaries see the `build` branch.
+This is the `main` branch with sources. For binaries see the `build` branch or download latest [CANopenEditor-build.zip](https://github.com/CANopenNode/CANopenEditor/archive/refs/heads/build.zip).
 
 ----
 

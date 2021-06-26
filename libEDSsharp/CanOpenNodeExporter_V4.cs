@@ -43,6 +43,19 @@ namespace libEDSsharp
         private List<string> ODDefines;
         private List<string> ODDefinesLong;
         private Dictionary<string, UInt16> ODCnt;
+        private Dictionary<string, int> ODArrSize;
+
+        UInt16 CNT_NMT = 0;
+        UInt16 CNT_HB_CONS = 0;
+        UInt16 CNT_EM = 0;
+        UInt16 CNT_SDO_SRV = 0;
+        UInt16 CNT_SDO_CLI = 0;
+        UInt16 CNT_TIME = 0;
+        UInt16 CNT_SYNC = 0;
+        UInt16 CNT_RPDO = 0;
+        UInt16 CNT_TPDO = 0;
+        UInt16 CNT_GFC = 0;
+        UInt16 CNT_SRDO = 0;
 
         /// <summary>
         /// export the current data set in the CanOpen Node format V4
@@ -59,7 +72,7 @@ namespace libEDSsharp
             Prepare(eds);
 
             Export_h(folderpath, filename, gitVersion, eds);
-            Export_c(folderpath, filename, gitVersion);
+            Export_c(folderpath, filename, gitVersion, eds);
         }
 
         #region Prepare
@@ -79,16 +92,39 @@ namespace libEDSsharp
             ODDefines = new List<string>();
             ODDefinesLong = new List<string>();
             ODCnt = new Dictionary<string, UInt16>();
+            ODArrSize = new Dictionary<string, int>();
 
             List<string> mappingErrors = eds.VerifyPDOMapping();
             if (mappingErrors.Count > 0)
                 Warnings.AddWarning($"Errors in PDO mappings:\r\n    " + string.Join("\r\n    ", mappingErrors), Warnings.warning_class.WARNING_BUILD);
-
             foreach (ODentry od in eds.ods.Values)
             {
                 if (od.prop.CO_disabled == true)
                     continue;
-
+                // The code below is nessesary if you have old eds file, that do not have "CO_countLabel" set.
+                // Count objects for initialization of CO_config_t object.
+                if (od.Index==0x1017)
+                    CNT_NMT++;
+                if (od.Index==0x1016)
+                    CNT_HB_CONS++;
+                if ((od.Index==0x1014 || od.Index==0x1015) && CNT_EM==0)
+                    CNT_EM++;
+                if (od.Index>=0x1200 && od.Index<0x1280)
+                    CNT_SDO_SRV++;
+                if (od.Index>=0x1280 && od.Index<0x1300)
+                    CNT_SDO_CLI++;
+                if (od.Index==0x1012)
+                    CNT_TIME++;
+                if (od.Index==0x1005)
+                    CNT_SYNC++;
+                if (od.Index>=0x1400 && od.Index<0x1500)
+                    CNT_RPDO++;
+                if (od.Index>=0x1800 && od.Index<0x1900)
+                    CNT_TPDO++;
+                if (od.Index==0x1300)
+                    CNT_GFC++;
+                if (od.Index>=0x1301 && od.Index<0x1380)
+                    CNT_SRDO++;
                 string indexH = $"{od.Index:X4}";
                 string cName = Make_cname(od.parameter_name);
                 string varName = $"{indexH}_{cName}";
@@ -142,6 +178,21 @@ namespace libEDSsharp
                         ODCnt.Add(od.prop.CO_countLabel, 1);
                 }
             }
+            CNT_SRDO=(UInt16)(CNT_SRDO/2);
+            // The code below is nessesary if you have old eds file, that do not have "CO_countLabel" set.
+            if (ODCnt.Count==0) {
+                ODCnt.Add("HB_CONS", CNT_HB_CONS);
+                ODCnt.Add("NMT", CNT_NMT);
+                ODCnt.Add("EM", CNT_EM);
+                ODCnt.Add("SDO_SRV", CNT_SDO_SRV);
+                ODCnt.Add("SDO_CLI", CNT_SDO_CLI);
+                ODCnt.Add("TIME", CNT_TIME);
+                ODCnt.Add("SYNC", CNT_SYNC);
+                ODCnt.Add("RPDO", CNT_RPDO);
+                ODCnt.Add("TPDO", CNT_TPDO);
+                ODCnt.Add("GFC", CNT_GFC);
+                ODCnt.Add("SRDO", CNT_SRDO);
+            }
         }
 
         /// <summary>
@@ -193,6 +244,9 @@ namespace libEDSsharp
                 Warnings.AddWarning($"Error in 0x{indexH}: ARRAY must have minimum two sub entries, not {subEntriesCount}!", Warnings.warning_class.WARNING_BUILD);
                 return 0;
             }
+
+            // add size of array
+            ODArrSize.Add(indexH, subEntriesCount - 1);
 
             // prepare and verify each sub element
             string cValue0 = "";
@@ -251,7 +305,7 @@ namespace libEDSsharp
             }
             if (dataElem.cValue != null)
             {
-                ODStorage_t[group].Add($"{dataElem.cType} x{varName}[{subEntriesCount - 1}]{dataElem.cTypeArray};");
+                ODStorage_t[group].Add($"{dataElem.cType} x{varName}[{odname}_CNT_ARR_{indexH}]{dataElem.cTypeArray};");
                 ODStorage[group].Add($".x{varName} = {{{string.Join(", ", ODStorageValues)}}}");
                 dataPtr = $"&{odname}_{group}.x{varName}[0]{dataElem.cTypeArray0}";
             }
@@ -359,11 +413,10 @@ namespace libEDSsharp
 @"/*******************************************************************************
     CANopen Object Dictionary definition for CANopenNode V4
 
-    This file was automatically generated with
-    libedssharp Object Dictionary Editor {0}
+    This file was automatically generated by CANopenEditor {0}
 
     https://github.com/CANopenNode/CANopenNode
-    https://github.com/robincornelius/libedssharp
+    https://github.com/CANopenNode/CANopenEditor
 
     DON'T EDIT THIS FILE MANUALLY !!!!
 ********************************************************************************
@@ -403,6 +456,16 @@ namespace libEDSsharp
             foreach (KeyValuePair<string, UInt16> kvp in ODCnt)
             {
                 file.WriteLine($"#define {odname}_CNT_{kvp.Key} {kvp.Value}");
+            }
+
+            file.WriteLine(string.Format(@"
+
+/*******************************************************************************
+    Sizes of OD arrays
+*******************************************************************************/"));
+            foreach (KeyValuePair<string, int> kvp in ODArrSize)
+            {
+                file.WriteLine($"#define {odname}_CNT_ARR_{kvp.Key} {kvp.Value}");
             }
 
             file.WriteLine(@"
@@ -447,13 +510,64 @@ namespace libEDSsharp
 /*******************************************************************************
     Object dictionary entries - shortcuts with names
 *******************************************************************************/
-{1}
+{0}", string.Join("\n", ODDefinesLong)));
 
-#endif /* {0}_H */",
-            odname, string.Join("\n", ODDefinesLong)));
+            file.WriteLine($@"
+
+/*******************************************************************************
+    OD config structure
+*******************************************************************************/
+#ifdef CO_MULTIPLE_OD
+#define {odname}_INIT_CONFIG(config) {{\
+    (config).CNT_NMT = {(ODCnt.ContainsKey("NMT") ? odname + "_CNT_NMT" : "0")};\
+    (config).ENTRY_H1017 = {(eds.ods.ContainsKey(0x1017) ? odname + "_ENTRY_H1017" : "NULL")};\
+    (config).CNT_HB_CONS = {(ODCnt.ContainsKey("HB_CONS") ? odname + "_CNT_HB_CONS" : "0")};\
+    (config).CNT_ARR_1016 = {(eds.ods.ContainsKey(0x1016) ? odname + "_CNT_ARR_1016" : "0")};\
+    (config).ENTRY_H1016 = {(eds.ods.ContainsKey(0x1016) ? odname + "_ENTRY_H1016" : "NULL")};\
+    (config).CNT_EM = {(ODCnt.ContainsKey("EM") ? odname + "_CNT_EM" : "0")};\
+    (config).ENTRY_H1001 = {(eds.ods.ContainsKey(0x1001) ? odname + "_ENTRY_H1001" : "NULL")};\
+    (config).ENTRY_H1014 = {(eds.ods.ContainsKey(0x1014) ? odname + "_ENTRY_H1014" : "NULL")};\
+    (config).ENTRY_H1015 = {(eds.ods.ContainsKey(0x1015) ? odname + "_ENTRY_H1015" : "NULL")};\
+    (config).CNT_ARR_1003 = {(eds.ods.ContainsKey(0x1003) ? odname + "_CNT_ARR_1003" : "0")};\
+    (config).ENTRY_H1003 = {(eds.ods.ContainsKey(0x1003) ? odname + "_ENTRY_H1003" : "NULL")};\
+    (config).CNT_SDO_SRV = {(ODCnt.ContainsKey("SDO_SRV") ? odname + "_CNT_SDO_SRV" : "0")};\
+    (config).ENTRY_H1200 = {(eds.ods.ContainsKey(0x1200) ? odname + "_ENTRY_H1200" : "NULL")};\
+    (config).CNT_SDO_CLI = {(ODCnt.ContainsKey("SDO_CLI") ? odname + "_CNT_SDO_CLI" : "0")};\
+    (config).ENTRY_H1280 = {(eds.ods.ContainsKey(0x1280) ? odname + "_ENTRY_H1280" : "NULL")};\
+    (config).CNT_TIME = {(ODCnt.ContainsKey("TIME") ? odname + "_CNT_TIME" : "0")};\
+    (config).ENTRY_H1012 = {(eds.ods.ContainsKey(0x1012) ? odname + "_ENTRY_H1012" : "NULL")};\
+    (config).CNT_SYNC = {(ODCnt.ContainsKey("SYNC") ? odname + "_CNT_SYNC" : "0")};\
+    (config).ENTRY_H1005 = {(eds.ods.ContainsKey(0x1005) ? odname + "_ENTRY_H1005" : "NULL")};\
+    (config).ENTRY_H1006 = {(eds.ods.ContainsKey(0x1006) ? odname + "_ENTRY_H1006" : "NULL")};\
+    (config).ENTRY_H1007 = {(eds.ods.ContainsKey(0x1007) ? odname + "_ENTRY_H1007" : "NULL")};\
+    (config).ENTRY_H1019 = {(eds.ods.ContainsKey(0x1019) ? odname + "_ENTRY_H1019" : "NULL")};\
+    (config).CNT_RPDO = {(ODCnt.ContainsKey("RPDO") ? odname + "_CNT_RPDO" : "0")};\
+    (config).ENTRY_H1400 = {(eds.ods.ContainsKey(0x1400) ? odname + "_ENTRY_H1400" : "NULL")};\
+    (config).ENTRY_H1600 = {(eds.ods.ContainsKey(0x1600) ? odname + "_ENTRY_H1600" : "NULL")};\
+    (config).CNT_TPDO = {(ODCnt.ContainsKey("TPDO") ? odname + "_CNT_TPDO" : "0")};\
+    (config).ENTRY_H1800 = {(eds.ods.ContainsKey(0x1800) ? odname + "_ENTRY_H1800" : "NULL")};\
+    (config).ENTRY_H1A00 = {(eds.ods.ContainsKey(0x1A00) ? odname + "_ENTRY_H1A00" : "NULL")};\
+    (config).CNT_LEDS = 0;\
+    (config).CNT_GFC = {(ODCnt.ContainsKey("GFC") ? odname + "_CNT_GFC" : "0")};\
+    (config).ENTRY_H1300 = {(eds.ods.ContainsKey(0x1300) ? odname + "_ENTRY_H1300" : "NULL")};\
+    (config).CNT_SRDO = {(ODCnt.ContainsKey("SRDO") ? odname + "_CNT_SRDO" : "0")};\
+    (config).ENTRY_H1301 = {(eds.ods.ContainsKey(0x1301) ? odname + "_ENTRY_H1301" : "NULL")};\
+    (config).ENTRY_H1381 = {(eds.ods.ContainsKey(0x1381) ? odname + "_ENTRY_H1381" : "NULL")};\
+    (config).ENTRY_H13FE = {(eds.ods.ContainsKey(0x13FE) ? odname + "_ENTRY_H13FE" : "NULL")};\
+    (config).ENTRY_H13FF = {(eds.ods.ContainsKey(0x13FF) ? odname + "_ENTRY_H13FF" : "NULL")};\
+    (config).CNT_LSS_SLV = 0;\
+    (config).CNT_LSS_MST = 0;\
+    (config).CNT_GTWA = 0;\
+    (config).CNT_TRACE = 0;\
+}}
+#endif");
+
+            file.WriteLine(string.Format(@"
+#endif /* {0}_H */", odname));
 
             file.Close();
         }
+
 
         /// <summary>
         /// Export the c file
@@ -461,7 +575,7 @@ namespace libEDSsharp
         /// <param name="folderpath"></param>
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
-        private void Export_c(string folderpath, string filename, string gitVersion)
+        private void Export_c(string folderpath, string filename, string gitVersion, EDSsharp eds)
             {
 
             if (filename == "")
@@ -474,11 +588,10 @@ namespace libEDSsharp
 @"/*******************************************************************************
     CANopen Object Dictionary definition for CANopenNode V4
 
-    This file was automatically generated with
-    libedssharp Object Dictionary Editor {0}
+    This file was automatically generated by CANopenEditor {0}
 
     https://github.com/CANopenNode/CANopenNode
-    https://github.com/robincornelius/libedssharp
+    https://github.com/CANopenNode/CANopenEditor
 
     DON'T EDIT THIS FILE MANUALLY, UNLESS YOU KNOW WHAT YOU ARE DOING !!!!
 *******************************************************************************/
@@ -491,7 +604,7 @@ namespace libEDSsharp
 #error This Object dictionary is compatible with CANopenNode V4.0 and above!
 #endif", gitVersion, filename));
 
-            file.WriteLine(@"
+    file.WriteLine(@"
 /*******************************************************************************
     OD data initialization of all groups
 *******************************************************************************/");
@@ -620,7 +733,6 @@ OD_t *{0} = &_{0};", odname, string.Join(",\n    ", ODList)));
         private DataProperties Get_dataProperties(DataType dataType, string defaultvalue, UInt32 stringLength, string indexH)
         {
             DataProperties data = new DataProperties();
-
             int nobase = 10;
             bool valueDefined = true;
             if (defaultvalue == null || defaultvalue == "")
@@ -666,99 +778,99 @@ OD_t *{0} = &_{0};", odname, string.Join(",\n    ", ODList)));
                 {
                     case DataType.BOOLEAN:
                         data.length = 1;
+                        data.cType = "bool_t";
                         if (valueDefined)
                         {
-                            data.cType = "bool_t";
                             data.cValue = (defaultvalue.ToLower() == "false" || defaultvalue == "0") ? "false" : "true";
                         }
                         break;
                     case DataType.INTEGER8:
                         data.length = 1;
+                        data.cType = "int8_t";
                         if (valueDefined)
                         {
-                            data.cType = "int8_t";
                             data.cValue = $"{Convert.ToSByte(defaultvalue, nobase)}";
                         }
                         break;
                     case DataType.INTEGER16:
                         data.length = 2;
+                        data.cType = "int16_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "int16_t";
                             data.cValue = $"{Convert.ToInt16(defaultvalue, nobase)}";
                         }
                         break;
                     case DataType.INTEGER32:
                         data.length = 4;
+                        data.cType = "int32_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "int32_t";
                             data.cValue = $"{Convert.ToInt32(defaultvalue, nobase)}";
                         }
                         break;
                     case DataType.INTEGER64:
                         data.length = 8;
+                        data.cType = "int64_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "int64_t";
                             data.cValue = $"{Convert.ToInt64(defaultvalue, nobase)}";
                         }
                         break;
 
                     case DataType.UNSIGNED8:
                         data.length = 1;
+                        data.cType = "uint8_t";
                         if (valueDefined)
                         {
-                            data.cType = "uint8_t";
                             data.cValue = String.Format("0x{0:X2}", Convert.ToByte(defaultvalue, nobase));
                         }
                         break;
                     case DataType.UNSIGNED16:
                         data.length = 2;
+                        data.cType = "uint16_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "uint16_t";
                             data.cValue = String.Format("0x{0:X4}", Convert.ToUInt16(defaultvalue, nobase));
                         }
                         break;
                     case DataType.UNSIGNED32:
                         data.length = 4;
+                        data.cType = "uint32_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "uint32_t";
                             data.cValue = String.Format("0x{0:X8}", Convert.ToUInt32(defaultvalue, nobase));
                         }
                         break;
                     case DataType.UNSIGNED64:
                         data.length = 8;
+                        data.cType = "uint64_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "uint64_t";
                             data.cValue = String.Format("0x{0:X16}", Convert.ToUInt64(defaultvalue, nobase));
                         }
                         break;
 
                     case DataType.REAL32:
                         data.length = 4;
+                        data.cType = "float32_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "float32_t";
                             data.cValue = defaultvalue;
                         }
                         break;
                     case DataType.REAL64:
                         data.length = 8;
+                        data.cType = "float64_t";
                         data.cTypeMultibyte = true;
                         if (valueDefined)
                         {
-                            data.cType = "float64_t";
                             data.cValue = defaultvalue;
                         }
                         break;
