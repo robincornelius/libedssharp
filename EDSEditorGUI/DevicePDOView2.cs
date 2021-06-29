@@ -755,14 +755,20 @@ namespace ODEditor
                     MessageBox.Show(string.Format("Invalid RXPDO Communication parameters index 0x{0:x4}", config));
                     return;
                 }
-            }
+            }            
 
             UInt16 inhibit = libEDSsharp.EDSsharp.ConvertToUInt16(textBox_inhibit.Text);
             UInt16 eventtimer = libEDSsharp.EDSsharp.ConvertToUInt16(textBox_eventtimer.Text);
+            UInt32 COB = libEDSsharp.EDSsharp.ConvertToUInt32(textBox_cob.Text);
             byte syncstart = libEDSsharp.EDSsharp.ConvertToByte(textBox_syncstart.Text);
             byte transmissiontype = libEDSsharp.EDSsharp.ConvertToByte(textBox_type.Text);
 
             selectedslot.ConfigurationIndex = config;
+            selectedslot.COB = COB;
+            selectedslot.inhibit = inhibit;
+            selectedslot.eventtimer = eventtimer;
+            selectedslot.syncstart = syncstart;
+            selectedslot.transmissiontype = transmissiontype;
 
             try
             {
