@@ -67,6 +67,7 @@
     <Compile Include="ExporterTests.cs" />
     <Compile Include="PDOHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ExporterTestsV4.cs" />
     <Compile Include="XDDImportExportTest.cs" />
   </ItemGroup>
   <ItemGroup>

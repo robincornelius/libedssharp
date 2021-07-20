@@ -664,7 +664,7 @@ OD_t *{0} = &_{0};", odname, string.Join(",\n    ", ODList)));
         /// </summary>
         /// <param name="name">string, name to convert</param>
         /// <returns>string</returns>
-        private static string Make_cname(string name)
+        protected static string Make_cname(string name)
         {
             if (name == null || name == "")
                 return "";
