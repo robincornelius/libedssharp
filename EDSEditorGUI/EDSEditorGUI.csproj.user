@@ -10,4 +10,27 @@
     <FallbackCulture>en-US</FallbackCulture>
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InsertObjects.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="NewIndex.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="NewItem.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Preferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ReportView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Warnings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
