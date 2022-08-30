@@ -70,14 +70,14 @@
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBox_baud_auto = new System.Windows.Forms.CheckBox();
-            this.heckBox_baud_125 = new System.Windows.Forms.CheckBox();
+            this.checkBox_baud_125 = new System.Windows.Forms.CheckBox();
             this.checkBox_baud_10 = new System.Windows.Forms.CheckBox();
-            this.heckBox_baud_20 = new System.Windows.Forms.CheckBox();
-            this.heckBox_baud_50 = new System.Windows.Forms.CheckBox();
-            this.heckBox_baud_250 = new System.Windows.Forms.CheckBox();
-            this.heckBox_baud_1000 = new System.Windows.Forms.CheckBox();
-            this.heckBox_baud_500 = new System.Windows.Forms.CheckBox();
-            this.heckBox_baud_800 = new System.Windows.Forms.CheckBox();
+            this.checkBox_baud_20 = new System.Windows.Forms.CheckBox();
+            this.checkBox_baud_50 = new System.Windows.Forms.CheckBox();
+            this.checkBox_baud_250 = new System.Windows.Forms.CheckBox();
+            this.checkBox_baud_1000 = new System.Windows.Forms.CheckBox();
+            this.checkBox_baud_500 = new System.Windows.Forms.CheckBox();
+            this.checkBox_baud_800 = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox_granularity = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -494,14 +494,14 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.checkBox_baud_auto);
-            this.groupBox1.Controls.Add(this.heckBox_baud_125);
+            this.groupBox1.Controls.Add(this.checkBox_baud_125);
             this.groupBox1.Controls.Add(this.checkBox_baud_10);
-            this.groupBox1.Controls.Add(this.heckBox_baud_20);
-            this.groupBox1.Controls.Add(this.heckBox_baud_50);
-            this.groupBox1.Controls.Add(this.heckBox_baud_250);
-            this.groupBox1.Controls.Add(this.heckBox_baud_1000);
-            this.groupBox1.Controls.Add(this.heckBox_baud_500);
-            this.groupBox1.Controls.Add(this.heckBox_baud_800);
+            this.groupBox1.Controls.Add(this.checkBox_baud_20);
+            this.groupBox1.Controls.Add(this.checkBox_baud_50);
+            this.groupBox1.Controls.Add(this.checkBox_baud_250);
+            this.groupBox1.Controls.Add(this.checkBox_baud_1000);
+            this.groupBox1.Controls.Add(this.checkBox_baud_500);
+            this.groupBox1.Controls.Add(this.checkBox_baud_800);
             this.groupBox1.Location = new System.Drawing.Point(395, 14);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(120, 192);
@@ -521,13 +521,13 @@
             // 
             // heckBox_baud_125
             // 
-            this.heckBox_baud_125.AutoSize = true;
-            this.heckBox_baud_125.Location = new System.Drawing.Point(10, 72);
-            this.heckBox_baud_125.Name = "heckBox_baud_125";
-            this.heckBox_baud_125.Size = new System.Drawing.Size(70, 17);
-            this.heckBox_baud_125.TabIndex = 3;
-            this.heckBox_baud_125.Text = "125 kbps";
-            this.heckBox_baud_125.UseVisualStyleBackColor = true;
+            this.checkBox_baud_125.AutoSize = true;
+            this.checkBox_baud_125.Location = new System.Drawing.Point(10, 72);
+            this.checkBox_baud_125.Name = "checkBox_baud_125";
+            this.checkBox_baud_125.Size = new System.Drawing.Size(70, 17);
+            this.checkBox_baud_125.TabIndex = 3;
+            this.checkBox_baud_125.Text = "125 kbps";
+            this.checkBox_baud_125.UseVisualStyleBackColor = true;
             // 
             // checkBox_baud_10
             // 
@@ -541,63 +541,63 @@
             // 
             // heckBox_baud_20
             // 
-            this.heckBox_baud_20.AutoSize = true;
-            this.heckBox_baud_20.Location = new System.Drawing.Point(10, 37);
-            this.heckBox_baud_20.Name = "heckBox_baud_20";
-            this.heckBox_baud_20.Size = new System.Drawing.Size(64, 17);
-            this.heckBox_baud_20.TabIndex = 1;
-            this.heckBox_baud_20.Text = "20 kbps";
-            this.heckBox_baud_20.UseVisualStyleBackColor = true;
+            this.checkBox_baud_20.AutoSize = true;
+            this.checkBox_baud_20.Location = new System.Drawing.Point(10, 37);
+            this.checkBox_baud_20.Name = "checkBox_baud_20";
+            this.checkBox_baud_20.Size = new System.Drawing.Size(64, 17);
+            this.checkBox_baud_20.TabIndex = 1;
+            this.checkBox_baud_20.Text = "20 kbps";
+            this.checkBox_baud_20.UseVisualStyleBackColor = true;
             // 
-            // heckBox_baud_50
+            // checkBox_baud_50
             // 
-            this.heckBox_baud_50.AutoSize = true;
-            this.heckBox_baud_50.Location = new System.Drawing.Point(10, 54);
-            this.heckBox_baud_50.Name = "heckBox_baud_50";
-            this.heckBox_baud_50.Size = new System.Drawing.Size(64, 17);
-            this.heckBox_baud_50.TabIndex = 2;
-            this.heckBox_baud_50.Text = "50 kbps";
-            this.heckBox_baud_50.UseVisualStyleBackColor = true;
+            this.checkBox_baud_50.AutoSize = true;
+            this.checkBox_baud_50.Location = new System.Drawing.Point(10, 54);
+            this.checkBox_baud_50.Name = "checkBox_baud_50";
+            this.checkBox_baud_50.Size = new System.Drawing.Size(64, 17);
+            this.checkBox_baud_50.TabIndex = 2;
+            this.checkBox_baud_50.Text = "50 kbps";
+            this.checkBox_baud_50.UseVisualStyleBackColor = true;
             // 
-            // heckBox_baud_250
+            // checkBox_baud_250
             // 
-            this.heckBox_baud_250.AutoSize = true;
-            this.heckBox_baud_250.Location = new System.Drawing.Point(10, 90);
-            this.heckBox_baud_250.Name = "heckBox_baud_250";
-            this.heckBox_baud_250.Size = new System.Drawing.Size(70, 17);
-            this.heckBox_baud_250.TabIndex = 4;
-            this.heckBox_baud_250.Text = "250 kbps";
-            this.heckBox_baud_250.UseVisualStyleBackColor = true;
+            this.checkBox_baud_250.AutoSize = true;
+            this.checkBox_baud_250.Location = new System.Drawing.Point(10, 90);
+            this.checkBox_baud_250.Name = "checkBox_baud_250";
+            this.checkBox_baud_250.Size = new System.Drawing.Size(70, 17);
+            this.checkBox_baud_250.TabIndex = 4;
+            this.checkBox_baud_250.Text = "250 kbps";
+            this.checkBox_baud_250.UseVisualStyleBackColor = true;
             // 
-            // heckBox_baud_1000
+            // checkBox_baud_1000
             // 
-            this.heckBox_baud_1000.AutoSize = true;
-            this.heckBox_baud_1000.Location = new System.Drawing.Point(10, 145);
-            this.heckBox_baud_1000.Name = "heckBox_baud_1000";
-            this.heckBox_baud_1000.Size = new System.Drawing.Size(76, 17);
-            this.heckBox_baud_1000.TabIndex = 7;
-            this.heckBox_baud_1000.Text = "1000 kbps";
-            this.heckBox_baud_1000.UseVisualStyleBackColor = true;
+            this.checkBox_baud_1000.AutoSize = true;
+            this.checkBox_baud_1000.Location = new System.Drawing.Point(10, 145);
+            this.checkBox_baud_1000.Name = "checkBox_baud_1000";
+            this.checkBox_baud_1000.Size = new System.Drawing.Size(76, 17);
+            this.checkBox_baud_1000.TabIndex = 7;
+            this.checkBox_baud_1000.Text = "1000 kbps";
+            this.checkBox_baud_1000.UseVisualStyleBackColor = true;
             // 
-            // heckBox_baud_500
+            // checkBox_baud_500
             // 
-            this.heckBox_baud_500.AutoSize = true;
-            this.heckBox_baud_500.Location = new System.Drawing.Point(10, 109);
-            this.heckBox_baud_500.Name = "heckBox_baud_500";
-            this.heckBox_baud_500.Size = new System.Drawing.Size(70, 17);
-            this.heckBox_baud_500.TabIndex = 5;
-            this.heckBox_baud_500.Text = "500 kbps";
-            this.heckBox_baud_500.UseVisualStyleBackColor = true;
+            this.checkBox_baud_500.AutoSize = true;
+            this.checkBox_baud_500.Location = new System.Drawing.Point(10, 109);
+            this.checkBox_baud_500.Name = "checkBox_baud_500";
+            this.checkBox_baud_500.Size = new System.Drawing.Size(70, 17);
+            this.checkBox_baud_500.TabIndex = 5;
+            this.checkBox_baud_500.Text = "500 kbps";
+            this.checkBox_baud_500.UseVisualStyleBackColor = true;
             // 
-            // heckBox_baud_800
+            // checkBox_baud_800
             // 
-            this.heckBox_baud_800.AutoSize = true;
-            this.heckBox_baud_800.Location = new System.Drawing.Point(10, 127);
-            this.heckBox_baud_800.Name = "heckBox_baud_800";
-            this.heckBox_baud_800.Size = new System.Drawing.Size(70, 17);
-            this.heckBox_baud_800.TabIndex = 6;
-            this.heckBox_baud_800.Text = "800 kbps";
-            this.heckBox_baud_800.UseVisualStyleBackColor = true;
+            this.checkBox_baud_800.AutoSize = true;
+            this.checkBox_baud_800.Location = new System.Drawing.Point(10, 127);
+            this.checkBox_baud_800.Name = "checkBox_baud_800";
+            this.checkBox_baud_800.Size = new System.Drawing.Size(70, 17);
+            this.checkBox_baud_800.TabIndex = 6;
+            this.checkBox_baud_800.Text = "800 kbps";
+            this.checkBox_baud_800.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
@@ -872,14 +872,14 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBox_lss;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox heckBox_baud_125;
+        private System.Windows.Forms.CheckBox checkBox_baud_125;
         private System.Windows.Forms.CheckBox checkBox_baud_10;
-        private System.Windows.Forms.CheckBox heckBox_baud_20;
-        private System.Windows.Forms.CheckBox heckBox_baud_50;
-        private System.Windows.Forms.CheckBox heckBox_baud_250;
-        private System.Windows.Forms.CheckBox heckBox_baud_1000;
-        private System.Windows.Forms.CheckBox heckBox_baud_500;
-        private System.Windows.Forms.CheckBox heckBox_baud_800;
+        private System.Windows.Forms.CheckBox checkBox_baud_20;
+        private System.Windows.Forms.CheckBox checkBox_baud_50;
+        private System.Windows.Forms.CheckBox checkBox_baud_250;
+        private System.Windows.Forms.CheckBox checkBox_baud_1000;
+        private System.Windows.Forms.CheckBox checkBox_baud_500;
+        private System.Windows.Forms.CheckBox checkBox_baud_800;
         private System.Windows.Forms.TextBox textBox_projectFileName;
         private System.Windows.Forms.TextBox textBox_deviceedsname;
         private System.Windows.Forms.TextBox textBox_canopennodeFileName;

@@ -51,13 +51,13 @@ namespace ODEditor
             textBox_modifiedby.Text = eds.fi.ModifiedBy;
 
             checkBox_baud_10.Checked = eds.di.BaudRate_10;
-            heckBox_baud_20.Checked = eds.di.BaudRate_20;
-            heckBox_baud_50.Checked = eds.di.BaudRate_50;
-            heckBox_baud_125.Checked = eds.di.BaudRate_125;
-            heckBox_baud_250.Checked = eds.di.BaudRate_250;
-            heckBox_baud_500.Checked = eds.di.BaudRate_500;
-            heckBox_baud_800.Checked = eds.di.BaudRate_800;
-            heckBox_baud_1000.Checked = eds.di.BaudRate_1000;
+            checkBox_baud_20.Checked = eds.di.BaudRate_20;
+            checkBox_baud_50.Checked = eds.di.BaudRate_50;
+            checkBox_baud_125.Checked = eds.di.BaudRate_125;
+            checkBox_baud_250.Checked = eds.di.BaudRate_250;
+            checkBox_baud_500.Checked = eds.di.BaudRate_500;
+            checkBox_baud_800.Checked = eds.di.BaudRate_800;
+            checkBox_baud_1000.Checked = eds.di.BaudRate_1000;
             checkBox_baud_auto.Checked = eds.di.BaudRate_auto;
 
             textBox_granularity.Text = eds.di.Granularity.ToString();
@@ -111,13 +111,13 @@ namespace ODEditor
                 eds.fi.ModifiedBy = textBox_modifiedby.Text;
 
                 eds.di.BaudRate_10 = checkBox_baud_10.Checked;
-                eds.di.BaudRate_20 = heckBox_baud_20.Checked;
-                eds.di.BaudRate_50 = heckBox_baud_50.Checked;
-                eds.di.BaudRate_125 = heckBox_baud_125.Checked;
-                eds.di.BaudRate_250 = heckBox_baud_250.Checked;
-                eds.di.BaudRate_500 = heckBox_baud_500.Checked;
-                eds.di.BaudRate_800 = heckBox_baud_800.Checked;
-                eds.di.BaudRate_1000 = heckBox_baud_1000.Checked;
+                eds.di.BaudRate_20 = checkBox_baud_20.Checked;
+                eds.di.BaudRate_50 = checkBox_baud_50.Checked;
+                eds.di.BaudRate_125 = checkBox_baud_125.Checked;
+                eds.di.BaudRate_250 = checkBox_baud_250.Checked;
+                eds.di.BaudRate_500 = checkBox_baud_500.Checked;
+                eds.di.BaudRate_800 = checkBox_baud_800.Checked;
+                eds.di.BaudRate_1000 = checkBox_baud_1000.Checked;
                 eds.di.BaudRate_auto = checkBox_baud_auto.Checked;
 
                 eds.di.Granularity = Convert.ToByte(textBox_granularity.Text);

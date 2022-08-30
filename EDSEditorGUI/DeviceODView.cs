@@ -460,6 +460,7 @@ namespace ODEditor
                 // CO_accessSRDO
                 try
                 {
+                    if(comboBox_accessSRDO.SelectedItem != null) 
                     od.prop.CO_accessSRDO = (AccessSRDO)Enum.Parse(typeof(AccessSRDO), comboBox_accessSRDO.SelectedItem.ToString());
                 }
                 catch (Exception)
