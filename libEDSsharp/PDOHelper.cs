@@ -407,8 +407,8 @@ namespace libEDSsharp
         /// <param name="configindex"></param>
         public void addPDOslot(UInt16 configindex)
         {
-            //quick range check, it must be a config index for an RXPDO or a TXPDO
-            if( (configindex<0x1400) || (configindex >= 0x1a00)  || ((configindex>=1600) && (configindex<0x1800)))
+            //quick range check, it must be a config index for an RXPDO or a TXPDO. True if not in range 0x1400...0x15FF OR  0x1800...0x19FF
+            if ((configindex < 0x1400) || (configindex >= 0x1a00) || ((configindex >= 0x1600) && (configindex < 0x1800)))   
                 return;
 
             foreach(PDOSlot slot in pdoslots)
