@@ -747,21 +747,21 @@ namespace libEDSsharp
         public UInt32 RevisionNumber;
 
         [EdsExport]
-        public bool BaudRate_10 = true;
+        public bool BaudRate_10 = false;
         [EdsExport]
-        public bool BaudRate_20 = true;
+        public bool BaudRate_20 = false;
         [EdsExport]
-        public bool BaudRate_50 = true;
+        public bool BaudRate_50 = false;
         [EdsExport]
-        public bool BaudRate_125 = true;
+        public bool BaudRate_125 = false;
         [EdsExport]
-        public bool BaudRate_250 = true;
+        public bool BaudRate_250 = false;
         [EdsExport]
-        public bool BaudRate_500 = true;
+        public bool BaudRate_500 = false;
         [EdsExport]
-        public bool BaudRate_800 = true;
+        public bool BaudRate_800 = false;
         [EdsExport]
-        public bool BaudRate_1000 = true;
+        public bool BaudRate_1000 = false;
 
         public bool BaudRate_auto = false;
 
@@ -2982,11 +2982,11 @@ namespace libEDSsharp
         public bool CreatePDO(bool rx,UInt16 index)
         {
             //check if we are creating an RX PDO it is a valid index
-            if (rx && (index < 0x1400 || index > 0x15ff))
+            if (rx && (index < 0x1400 || index >= 0x1600))
                 return false;
 
             //check if we are creating an PDO TX it is a valid index
-            if (!rx & (index < 0x1800 || index > 0x19ff))
+            if (!rx & (index < 0x1800 || index >= 0x1A00))
                 return false;
 
             //Check it does not already exist
