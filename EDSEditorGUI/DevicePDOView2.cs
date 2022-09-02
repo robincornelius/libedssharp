@@ -171,7 +171,7 @@ namespace ODEditor
 
                 if (P.Y > y && P.Y < y2)
                 {
-                    foundrow = row.Index;
+                    foundrow = row.Index + grid1.VScrollBar.Value;
                 }
                 y = y2;
             }
@@ -185,14 +185,14 @@ namespace ODEditor
 
                 if (P.X > x && P.X < x2)
                 {
-                    foundcol = col.Index;
+                    foundcol = col.Index + grid1.HScrollBar.Value; 
                 }
                 x = x2;
             }
 
             Console.WriteLine(string.Format("Found grid at {0}x{1}", foundcol, foundrow));
-
-            SourceGrid.Cells.ICellVirtual v = grid1.GetCell(foundrow, foundcol);
+            
+            SourceGrid.Cells.ICellVirtual v =  grid1.GetCell(foundrow, foundcol);
 
             return v;
 
@@ -342,7 +342,11 @@ namespace ODEditor
 
         public void UpdatePDOinfo(bool updatechoices=true)
         {
+            int savVScrollValue = 0;
 
+            if (!updatechoices)
+                savVScrollValue = grid1.VScrollBar.Value;                
+            
             updateslotdisplay();
 
             if (eds == null)
@@ -482,6 +486,9 @@ namespace ODEditor
                 }
                 row++;
             }
+
+            if (!updatechoices)
+                grid1.VScrollBar.Value = savVScrollValue;
         }
 
         private void ComboStandard_Changed(object sender, EventArgs e)
