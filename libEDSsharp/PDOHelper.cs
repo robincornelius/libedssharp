@@ -407,8 +407,10 @@ namespace libEDSsharp
         /// <param name="configindex"></param>
         public void addPDOslot(UInt16 configindex)
         {
+
             //quick range check, it must be a config index for an RXPDO or a TXPDO
             if( (configindex<0x1400) || (configindex >= 0x1a00)  || ((configindex>=0x1600) && (configindex<0x1800)))
+
                 return;
 
             foreach(PDOSlot slot in pdoslots)
@@ -422,7 +424,9 @@ namespace libEDSsharp
             PDOSlot newslot = new PDOSlot();
             newslot.ConfigurationIndex = configindex;
 
-            newslot.COB = 0x180; //Fixme need a better default???
+            newslot.COB = 0x180;        // Fixme need better defaults???
+            newslot.configloc = "RAM";
+            newslot.mappingloc = "RAM";
 
             pdoslots.Add(newslot);
 
