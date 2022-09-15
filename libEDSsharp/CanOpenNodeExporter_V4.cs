@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Linq;
 
 namespace libEDSsharp
 {
@@ -664,45 +665,55 @@ OD_t *{0} = &_{0};", odname, string.Join(",\n    ", ODList)));
         /// </summary>
         /// <param name="name">string, name to convert</param>
         /// <returns>string</returns>
-        private static string Make_cname(string name)
+        protected static string Make_cname(string name)
         {
             if (name == null || name == "")
                 return "";
 
-            // split string to tokens, separated by non-word characters
-            string[] tokens = Regex.Split(name.Replace('-', '_'), @"[\W]+");
+            // split string to tokens, separated by non-word characters. Remove any empty strings
+            var tokens = Regex.Split(name.Replace('-', '_'), @"[\W]+").Where(s => s != String.Empty);
 
             string output = "";
             char prev = ' ';
             foreach (string tok in tokens)
             {
-                if (tok.Length == 0)
-                    continue;
-
                 char first = tok[0];
 
-                if (Char.IsDigit(first) || Char.IsDigit(prev) || (Char.IsUpper(prev) && Char.IsUpper(first)))
+                if (Char.IsUpper(prev) && Char.IsUpper(first))
                 {
-                    // add underscore, if tok starts with digit or we have two upper-case words
-                    output += "_" + tok;
+                    // add underscore, if we have two upper-case words
+                    output += "_";
                 }
-                else if (output.Length > 0)
+
+                if (tok.Length > 1 && Char.IsLetter(first))
                 {
-                    // all tokens except the first start with uppercse letter
+                    // all tokens except the first start with uppercase letter
                     output += Char.ToUpper(first) + tok.Substring(1);
-                }
-                else if (Char.IsLower(tok[1]))
-                {
-                    // first token start with lower-case letter, except whole word is uppercase
-                    output += Char.ToLower(first) + tok.Substring(1);
                 }
                 else
                 {
-                    // use token as is
+                    // use token as is and handle what the start of the output looks like outside of the loop 
                     output += tok;
                 }
 
                 prev = tok[tok.Length - 1];
+            }
+
+            if (Char.IsDigit(output[0]))
+            {
+                // output that starts with a digit needs a starting underscore 
+                output = "_" + output;
+            }
+            else if (output.Length > 1)
+            {
+                // output that doesnt start with all-cap-words should have word start with a lower case character
+                if (Char.IsLetter(output[0]) && Char.IsLower(output[1]))
+                    output = Char.ToLower(output[0]) + output.Substring(1);
+            }
+            else
+            {
+                // single character output
+                output = output.ToLower();
             }
 
             return output;
