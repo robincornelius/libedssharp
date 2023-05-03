@@ -424,10 +424,10 @@ namespace libEDSsharp
             {
                 if (ODStorage_t.Count > 0)
                 {
-                    file.WriteLine($"extern {odname}_{group}_t {odname}_{group};");
+                    file.WriteLine($"extern ATTRIBUTE_{group} {odname}_{group}_t {odname}_{group};");
                 }
             }
-            file.WriteLine($"extern OD_t *{odname};");
+            file.WriteLine($"extern ATTRIBUTE_OD OD_t *{odname};");
 
             file.WriteLine(string.Format(@"
 
@@ -493,7 +493,7 @@ namespace libEDSsharp
             {
                 if (ODStorage.Count > 0)
                 {
-                    file.WriteLine($"{odname}_{group}_t {odname}_{group} = {{");
+                    file.WriteLine($"ATTRIBUTE_{group} {odname}_{group}_t {odname}_{group} = {{");
                     file.WriteLine($"    {string.Join(",\n    ", ODStorage[group])}");
                     file.WriteLine($"}};\n");
                 }
@@ -521,7 +521,7 @@ static CO_PROGMEM {0}Objs_t {0}Objs = {{
 /*******************************************************************************
     Object dictionary
 *******************************************************************************/
-static OD_entry_t {0}List[] = {{
+static ATTRIBUTE_OD OD_entry_t {0}List[] = {{
     {1},
     {{0x0000, 0x00, 0, NULL, NULL}}
 }};
