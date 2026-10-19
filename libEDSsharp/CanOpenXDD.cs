@@ -1109,7 +1109,23 @@ namespace libEDSsharp
 
                                 subentry.uniqueID = subobj.uniqueIDRef;
 
-                                entry.subobjects.Add(subobj.subIndex[0], subentry);
+                                // XDD hexBinary values are big-endian. Our writer emits two bytes,
+                                // while other tools may emit a single byte for a CANopen subindex.
+                                byte[] subIndexBytes = subobj.subIndex;
+                                if (subIndexBytes == null || subIndexBytes.Length == 0 || subIndexBytes.Length > 2)
+                                {
+                                    throw new FormatException("Invalid XDD subindex encoding.");
+                                }
+
+                                ushort subIndex = subIndexBytes.Length == 1
+                                    ? subIndexBytes[0]
+                                    : EDSsharp.ConvertToUInt16(subIndexBytes);
+                                if (subIndex > byte.MaxValue)
+                                {
+                                    throw new FormatException("XDD subindex exceeds the CANopen 8-bit range.");
+                                }
+
+                                entry.subobjects.Add(subIndex, subentry);
 
                             }
                         }

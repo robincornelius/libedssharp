@@ -7,8 +7,10 @@ namespace Tests
     public class PDOHelperTests : libEDSsharp.EDSsharp
     {
 
-        [Fact]
-        public void Test_TPDO()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Test_TPDO(bool isCANopenNodeV4)
         {
 
             PDOHelper pdo = new PDOHelper(this);
@@ -36,7 +38,13 @@ namespace Tests
             tryGetODEntry(0x0004, out od);
             slot.Mapping.Add(od);
 
-            pdo.buildmappingsfromlists(true);
+            pdo.buildmappingsfromlists(isCANopenNodeV4);
+
+            ODentry generatedMapping = ods[slot.MappingIndex];
+            Assert.Equal("3", generatedMapping.subobjects[0].defaultvalue);
+            Assert.Equal("0x00020008", generatedMapping.subobjects[1].defaultvalue);
+            Assert.Equal("0x00030010", generatedMapping.subobjects[2].defaultvalue);
+            Assert.Equal("0x00040020", generatedMapping.subobjects[3].defaultvalue);
 
             //check configuration object exists
             ODentry comparamOD;
@@ -53,11 +61,12 @@ namespace Tests
                 throw new Exception("Mapping paramaters not generated");
             }
 
-            if (comparamOD.subobjects.Count != 7)
-                throw new Exception("Wrong number of sub objects generated");
-
-            if(comparamOD.Nosubindexes!=7)
-                throw new Exception("Wrong number of sub objects generated");
+            // V4 omits reserved subindex 4; the highest supported subindex remains 6.
+            Assert.Equal(isCANopenNodeV4 ? 6 : 7, comparamOD.Nosubindexes);
+            Assert.Equal(new ushort[] { 0, 1, 2, 3, 5, 6 },
+                System.Linq.Enumerable.Where(comparamOD.subobjects.Keys, key => key != 4));
+            Assert.Equal("0x06", comparamOD.subobjects[0].defaultvalue);
+            Assert.Equal(!isCANopenNodeV4, comparamOD.subobjects.ContainsKey(4));
 
             if (comparamOD.subobjects[1].datatype != DataType.UNSIGNED32)
                 throw new Exception("Wrong data type for COB");
@@ -65,7 +74,7 @@ namespace Tests
                 throw new Exception("Wrong data type for Transmission type");
             if (comparamOD.subobjects[3].datatype != DataType.UNSIGNED16)
                 throw new Exception("Wrong data type for Inhibit time");
-            if (comparamOD.subobjects[4].datatype != DataType.UNSIGNED8)
+            if (!isCANopenNodeV4 && comparamOD.subobjects[4].datatype != DataType.UNSIGNED8)
                 throw new Exception("Wrong data type for Compatibility Entry");
             if (comparamOD.subobjects[5].datatype != DataType.UNSIGNED16)
                 throw new Exception("Wrong data type for Event timer");
@@ -85,8 +94,10 @@ namespace Tests
 
         }
 
-        [Fact]
-        public void Test_RPDO()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Test_RPDO(bool isCANopenNodeV4)
         {
 
             PDOHelper pdo = new PDOHelper(this);
@@ -115,7 +126,13 @@ namespace Tests
             tryGetODEntry(0x0004, out od);
             slot.Mapping.Add(od);
 
-            pdo.buildmappingsfromlists(true);
+            pdo.buildmappingsfromlists(isCANopenNodeV4);
+
+            ODentry generatedMapping = ods[slot.MappingIndex];
+            Assert.Equal("3", generatedMapping.subobjects[0].defaultvalue);
+            Assert.Equal("0x00020008", generatedMapping.subobjects[1].defaultvalue);
+            Assert.Equal("0x00030010", generatedMapping.subobjects[2].defaultvalue);
+            Assert.Equal("0x00040020", generatedMapping.subobjects[3].defaultvalue);
 
             //check configuration object exists
             ODentry comparamOD;
@@ -132,11 +149,16 @@ namespace Tests
                 throw new Exception("Mapping paramaters not generated");
             }
 
-            if (comparamOD.subobjects.Count != 3)
-                throw new Exception("Wrong number of sub objects generated");
-
-            if (comparamOD.Nosubindexes != 3)
-                throw new Exception("Wrong number of sub objects generated");
+            // V4 adds the RPDO event timer at subindex 5, leaving gaps at 3 and 4.
+            Assert.Equal(isCANopenNodeV4 ? 4 : 3, comparamOD.Nosubindexes);
+            Assert.Equal(isCANopenNodeV4 ? new ushort[] { 0, 1, 2, 5 } : new ushort[] { 0, 1, 2 },
+                comparamOD.subobjects.Keys);
+            Assert.Equal(isCANopenNodeV4 ? "0x05" : "0x02", comparamOD.subobjects[0].defaultvalue);
+            if (isCANopenNodeV4)
+            {
+                Assert.Equal(DataType.UNSIGNED16, comparamOD.subobjects[5].datatype);
+                Assert.Equal("20", comparamOD.subobjects[5].defaultvalue);
+            }
 
             if (comparamOD.subobjects[1].datatype != DataType.UNSIGNED32)
                 throw new Exception("Wrong data type for COB");

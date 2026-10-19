@@ -1484,6 +1484,8 @@ namespace libEDSsharp
         /// </summary>
         /// <param name="writer">Handle to the stream writer to write to</param>
         /// <param name="ft">File type being written</param>
+        /// <param name="odt">Normal or modular object dictionary entry format.</param>
+        /// <param name="module">Module number for modular dictionary entries.</param>
         /// 
         public void Write(StreamWriter writer, InfoSection.Filetype ft, Odtype odt= Odtype.NORMAL, int module=0)
         {

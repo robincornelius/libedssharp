@@ -6,7 +6,97 @@ namespace Tests
 {
     public class XddImportExportTest : CanOpenNodeExporter
     {
-        /// </summary>
+        [Theory]
+        [InlineData(false, ObjectType.RECORD)]
+        [InlineData(true, ObjectType.RECORD)]
+        [InlineData(false, ObjectType.ARRAY)]
+        [InlineData(true, ObjectType.ARRAY)]
+        public void TestSubindexEncoding(bool singleByte, ObjectType objectType)
+        {
+            EDSsharp source = new EDSsharp();
+            source.ods.Clear();
+            ODentry parent = new ODentry
+            {
+                Index = 0x2000,
+                objecttype = objectType,
+                datatype = DataType.UNSIGNED32,
+                parameter_name = "Subindex encoding",
+                accesstype = EDSsharp.AccessType.rw
+            };
+            foreach (ushort subindex in new ushort[] { 0, 1, 0x7F, 0xFF })
+            {
+                parent.addsubobject((byte)subindex, new ODentry("Entry " + subindex, parent.Index,
+                    subindex == 0 ? DataType.UNSIGNED8 : DataType.UNSIGNED32,
+                    subindex.ToString(), EDSsharp.AccessType.rw, PDOMappingType.no, parent));
+            }
+            source.ods.Add(parent.Index, parent);
+
+            string filename = System.IO.Path.GetTempFileName();
+            try
+            {
+                new CanOpenXDD().writeXML(filename, source);
+                if (singleByte)
+                {
+                    // Also accept tools which encode the 8-bit subindex without a leading zero byte.
+                    string xml = System.IO.File.ReadAllText(filename);
+                    xml = System.Text.RegularExpressions.Regex.Replace(xml,
+                        "subIndex=\"00([0-9A-Fa-f]{2})\"", "subIndex=\"$1\"");
+                    System.IO.File.WriteAllText(filename, xml);
+                }
+
+                EDSsharp imported = new CanOpenXDD().readXML(filename);
+                Assert.NotNull(imported);
+                ODentry actual = imported.ods[parent.Index];
+                Assert.Equal(parent.subobjects.Keys, actual.subobjects.Keys);
+                foreach (ushort subindex in parent.subobjects.Keys)
+                {
+                    Assert.Equal(parent.subobjects[subindex].defaultvalue, actual.subobjects[subindex].defaultvalue);
+                    Assert.Equal(parent.subobjects[subindex].parameter_name, actual.subobjects[subindex].parameter_name);
+                    Assert.Same(actual, actual.subobjects[subindex].parent);
+                }
+            }
+            finally
+            {
+                System.IO.File.Delete(filename);
+            }
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("000001")]
+        [InlineData("0100")]
+        public void TestRejectInvalidSubindexEncoding(string encoding)
+        {
+            EDSsharp source = new EDSsharp();
+            source.ods.Clear();
+            ODentry parent = new ODentry
+            {
+                Index = 0x2000,
+                objecttype = ObjectType.RECORD,
+                parameter_name = "Invalid subindex encoding"
+            };
+            parent.addsubobject(0, new ODentry("Highest subindex", parent.Index,
+                DataType.UNSIGNED8, "0", EDSsharp.AccessType.ro, PDOMappingType.no, parent));
+            source.ods.Add(parent.Index, parent);
+
+            string filename = System.IO.Path.GetTempFileName();
+            try
+            {
+                new CanOpenXDD().writeXML(filename, source);
+                string xml = System.IO.File.ReadAllText(filename);
+                xml = System.Text.RegularExpressions.Regex.Replace(xml,
+                    "subIndex=\"[^\"]*\"", "subIndex=\"" + encoding + "\"");
+                System.IO.File.WriteAllText(filename, xml);
+
+                // Never truncate an invalid encoding into a different, apparently valid OD entry.
+                Assert.Throws<FormatException>(() => new CanOpenXDD().readXML(filename));
+            }
+            finally
+            {
+                System.IO.File.Delete(filename);
+            }
+        }
+
         [Fact]
         public void TestImportExportVar()
         {

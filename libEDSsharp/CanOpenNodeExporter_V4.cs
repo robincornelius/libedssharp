@@ -68,7 +68,7 @@ namespace libEDSsharp
         /// <summary>
         /// Generate ODStorage, ODObjs, ODList, ODDefines and ODCnt entries
         /// </summary>
-        /// <param name="ods"></param>
+        /// <param name="eds">Object dictionary and device metadata to export.</param>
         private void Prepare(EDSsharp eds)
         {
             ODStorageGroups = new List<string>();
@@ -383,8 +383,7 @@ namespace libEDSsharp
         /// <param name="folderpath"></param>
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
-        /// <param name="fi"></param>
-        /// <param name="di"></param>
+        /// <param name="eds">Object dictionary and device metadata to export.</param>
         private void Export_h(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
 
@@ -561,6 +560,7 @@ namespace libEDSsharp
         /// <param name="folderpath"></param>
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
+        /// <param name="eds">Object dictionary and device metadata to export.</param>
         private void Export_c(string folderpath, string filename, string gitVersion, EDSsharp eds)
             {
 
