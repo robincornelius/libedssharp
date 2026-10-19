@@ -19,6 +19,8 @@ edseditor-Setup.exe
 /EDSSharp/bin/Debug
 /EDSSharp/obj
 /EDSSharp/bin/Release
+/EDSSharp/bin/x64/
+**/.vs/
 /EDSEditorGUI/bin/*.zip
 /Backup
 /SourceGrid_4.21
