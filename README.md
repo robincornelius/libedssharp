@@ -1,3 +1,11 @@
+# Obsolete original repository
+
+This original libedssharp repository is obsolete. Maintained source code, bug
+fixes, releases and new issues belong in
+[CANopenNode/CANopenEditor](https://github.com/CANopenNode/CANopenEditor).
+Please use that project for ongoing development. This repository is retained
+for historical reference; current fixes are published in the maintained project.
+
 
 This project went upstream and became a part of CanOpenNode!
 
